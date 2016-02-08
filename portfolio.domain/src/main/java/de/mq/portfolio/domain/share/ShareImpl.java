@@ -18,7 +18,6 @@ public class ShareImpl {
 	private String index; 
 	
 	ShareImpl(String code, String name, String index) {
-		
 		this.code = code;
 		this.name = name;
 		this.index = index;
