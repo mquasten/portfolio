@@ -1,0 +1,218 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>de.mq</groupId>
+  <artifactId>portfolio.parent</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>portfplio.parent</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <slf4j.version>1.6.1</slf4j.version>
+    <spring.version>4.2.4.RELEASE</spring.version>
+		
+		<junit.version>4.9</junit.version>
+		<mockito.version>1.8.4</mockito.version>
+		<log4j.version>1.2.16</log4j.version>
+	
+		
+		
+		
+		<java.version>1.8</java.version>
+		<maven-compiler-plugin.version>3.0</maven-compiler-plugin.version>
+		<jacoco.version>0.6.2.201302030002</jacoco.version>
+	
+	
+	
+		<jackson-mapper-asl.version>1.9.11</jackson-mapper-asl.version>
+		<jsf.version>2.1.16</jsf.version>
+		<el.version>2.2</el.version>
+		<servlet-api.version>3.0.1</servlet-api.version>
+		
+		<mongo-driver.version>2.12.4</mongo-driver.version>
+		<mongo-data-mogo.version>1.6.0.RELEASE</mongo-data-mogo.version>
+    
+    
+  </properties>
+
+  <dependencies>
+   <dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>${mockito.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		
+
+
+		<!-- mongodb java driver -->
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>${mongo-driver.version}</version>
+		
+
+		</dependency>
+
+		<!-- Spring data mongodb -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-mongodb</artifactId>
+			<version>${mongo-data-mogo.version}</version>
+		
+		</dependency>
+		
+
+		
+	
+		
+
+
+
+		
+
+		
+  </dependencies>
+  
+  <repositories>
+
+
+		<repository>
+			<id>spring-milestone</id>
+			<name>spring-milestone</name>
+		
+			<url>http://repo.spring.io/milestone/</url>
+		</repository>
+
+		
+	</repositories>
+	
+	
+	<build>
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+			
+			
+			
+			
+
+
+			<plugin>
+
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.4.201502262128</version>
+
+				<configuration>
+				    <excludes>
+        			<exclude>**/*DatabaseSetup.*</exclude>
+        			</excludes>
+    
+    				 
+					<destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
+					<dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
+				</configuration>
+				<executions>
+					<execution>
+						<id>jacoco-initialize</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						
+							
+						</goals>
+					
+					</execution>
+					<execution>
+						<id>jacoco-site</id>
+						<phase>package</phase>
+						
+						<goals>
+							<goal>report</goal>
+							
+						</goals>
+					   
+					</execution>
+					
+				</executions>
+				
+			
+			</plugin>
+			
+
+			
+		</plugins>
+
+	</build>
+	
+</project>
