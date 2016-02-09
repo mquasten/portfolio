@@ -2,24 +2,37 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>de.mq</groupId>
-  <artifactId>portfolio.application</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
+ 
+  
 
-  <name>portfolio.application</name>
-  <url>http://maven.apache.org</url>
+<artifactId>portfolio.application</artifactId>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+	<packaging>jar</packaging>
+	<parent>
+	<groupId>de.mq</groupId>
+	<artifactId>portfolio.parent</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<name>portfolio.application</name>
+	<url>http://hsqldb.org/repos/SNAPSHOT</url>
+
+
+
 
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
+<groupId>de.mq</groupId>
+	<artifactId>portfolio.domain</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+</dependency>
+  
+  <dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+  
+    
   </dependencies>
 </project>

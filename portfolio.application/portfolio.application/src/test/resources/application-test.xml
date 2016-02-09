@@ -12,7 +12,7 @@
 	<mongo:mongo host="127.0.0.1" port="27017" />
 	<mongo:db-factory dbname="portfolio" />
 
-
+<context:component-scan base-package="de.mq.portfolio.share" />
 
 
 	<bean id="defaultMongoTypeMapper"
@@ -34,9 +34,17 @@
 
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
-	</bean>
-
 	
+	</bean>
+	
+	
+	
+
+<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+   
+</bean>
+	
+
 
 	
 </beans>

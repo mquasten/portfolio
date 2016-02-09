@@ -1,4 +1,4 @@
-package de.mq.portfolio.domain.share;
+package de.mq.portfolio.share;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import de.mq.portfolio.share.ShareImpl;
 
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
