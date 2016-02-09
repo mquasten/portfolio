@@ -1,4 +1,4 @@
-package de.mq.portfolio.share;
+package de.mq.portfolio.share.support;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -7,6 +7,8 @@ import java.util.Date;
 import org.springframework.data.annotation.Transient;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import de.mq.portfolio.share.Data;
 
 
 
@@ -19,7 +21,7 @@ class DataImpl implements Data {
 	
 
 	/* (non-Javadoc)
-	 * @see de.mq.portfolio.share.Data#date()
+	 * @see de.mq.portfolio.share.support.Data#date()
 	 */
 	@Override
 	public Date date() {
@@ -36,7 +38,7 @@ class DataImpl implements Data {
 	
 
 	/* (non-Javadoc)
-	 * @see de.mq.portfolio.share.Data#getValue()
+	 * @see de.mq.portfolio.share.support.Data#getValue()
 	 */
 	@Override
 	public double getValue() {

@@ -1,4 +1,4 @@
-package de.mq.portfolio.share;
+package de.mq.portfolio.share.support;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import de.mq.portfolio.share.ShareImpl;
+import de.mq.portfolio.share.support.ShareImpl;
 
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)

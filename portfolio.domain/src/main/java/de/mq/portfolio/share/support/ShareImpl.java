@@ -1,8 +1,10 @@
-package de.mq.portfolio.share;
+package de.mq.portfolio.share.support;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.StringUtils;
+
+import de.mq.portfolio.share.Share;
 
 @Document(collection = "share")
 class ShareImpl implements Share {
@@ -38,7 +40,7 @@ class ShareImpl implements Share {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.mq.portfolio.share.Share#name()
+	 * @see de.mq.portfolio.share.support.Share#name()
 	 */
 	@Override
 	public String name() {
@@ -48,7 +50,7 @@ class ShareImpl implements Share {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.mq.portfolio.share.Share#index()
+	 * @see de.mq.portfolio.share.support.Share#index()
 	 */
 	@Override
 	public String index() {
@@ -58,7 +60,7 @@ class ShareImpl implements Share {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.mq.portfolio.share.Share#code()
+	 * @see de.mq.portfolio.share.support.Share#code()
 	 */
 	@Override
 	public String code() {
@@ -68,7 +70,7 @@ class ShareImpl implements Share {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.mq.portfolio.share.Share#isIndex()
+	 * @see de.mq.portfolio.share.support.Share#isIndex()
 	 */
 	@Override
 	public boolean isIndex() {

@@ -1,5 +1,4 @@
-package de.mq.portfolio.share;
-
+package de.mq.portfolio.share.support;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,13 +9,15 @@ import java.util.GregorianCalendar;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestOperations;
 
+import de.mq.portfolio.share.Data;
+import de.mq.portfolio.share.Share;
+import de.mq.portfolio.share.TimeCourse;
 
-
-@Service
-public class StockpriceServiceImpl {
+@Repository
+class HistoryRestRepositoryImpl implements HistoryRepository {
 	
 	@Autowired
 	private RestOperations restOperations; 
@@ -26,27 +27,22 @@ public class StockpriceServiceImpl {
 	private final String url = "http://real-chart.finance.yahoo.com/table.csv?s=%s&a=%s&b=%s&c=%s";
 
 	
-	
+	private final int periodeInDays = 365;
 	
 
 	
+
+	@Override
 	public final TimeCourse history(final Share share ) {
 		
 		final GregorianCalendar cal = new GregorianCalendar();
-		cal.add(Calendar.DATE, -365);
+		cal.add(Calendar.DATE, -periodeInDays);
 		final int month = cal.get(Calendar.MONTH);
 		final int day = cal.get(Calendar.DAY_OF_MONTH);
 		final int year = cal.get(Calendar.YEAR);
-		
-	
-		
-		
+			
 		final String requestUrl = String.format(url, share.code(), month, day, year);
 	
-		
-	
-		
-
 		final Collection<Data> rates = getValues(requestUrl, 4);
 	
 		final Collection<Data> dividends = getValues(requestUrl + "&g=v", 1);
@@ -70,6 +66,6 @@ public class StockpriceServiceImpl {
 			return false;
 		}
 	}
-	
-	
+
+
 }
