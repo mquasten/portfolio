@@ -13,8 +13,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <slf4j.version>1.6.1</slf4j.version>
-    <spring.version>4.2.4.RELEASE</spring.version>
-		
+<!--     <spring.version>4.2.4.RELEASE,)</spring.version> -->
+		<spring.version>4.0.5.RELEASE</spring.version>
 		<junit.version>4.9</junit.version>
 		<mockito.version>1.8.4</mockito.version>
 		<log4j.version>1.2.16</log4j.version>
@@ -36,7 +36,7 @@
 		<mongo-driver.version>2.12.4</mongo-driver.version>
 		<mongo-data-mogo.version>1.6.0.RELEASE</mongo-data-mogo.version>
     
-    
+    	<spring.batch.version>3.0.6.RELEASE</spring.batch.version>
   </properties>
 
   <dependencies>

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 
-@Repository
+@Repository("shareRepository")
 class ShareMongoRepositoryImpl implements ShareRepository {
 	
 	private final MongoOperations mongoOperations;
@@ -27,6 +27,8 @@ class ShareMongoRepositoryImpl implements ShareRepository {
 	 */
 	@Override
 	public final Collection<Share> shares(){
+		
+		System.out.println("***************************************************");
 		return Collections.unmodifiableList( mongoOperations.findAll(ShareImpl.class));
 	}
 	

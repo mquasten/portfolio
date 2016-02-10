@@ -3,6 +3,7 @@ package de.mq.portfolio.share.support;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
 
@@ -10,7 +11,7 @@ import de.mq.portfolio.share.TimeCourse;
 
 
 
-@Service
+@Service("shareService")
 class ShareServiceImpl implements ShareService {
 	
 	private HistoryRepository historyRepository;
@@ -38,6 +39,14 @@ class ShareServiceImpl implements ShareService {
 			shareRepository.save(timeCourse);
 		});
 	}
+	
+	public final TimeCourse timeCourse(final Share share) {
+		return historyRepository.history(share);
+	}
 
+	public final void replacetTmeCourse(final TimeCourse timeCourse) {
+		shareRepository.deleteTimeCourse(timeCourse.share());
+		shareRepository.save(timeCourse);
+	}
 	
 }
