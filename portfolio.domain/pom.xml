@@ -13,10 +13,14 @@
 	</parent>
 
 	<name>portfolio.domain</name>
+	
 	<url>http://hsqldb.org/repos/SNAPSHOT</url>
 
 
   <dependencies>
    
   </dependencies>
+  <build>
+  <finalName>${project.name}</finalName>
+  </build>
 </project>

@@ -13,4 +13,6 @@ interface ShareRepository {
 
 	void deleteTimeCourse(final Share share);
 
+	void save(final Share share);
+
 }

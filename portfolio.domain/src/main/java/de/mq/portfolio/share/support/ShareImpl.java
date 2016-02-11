@@ -1,6 +1,7 @@
 package de.mq.portfolio.share.support;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.StringUtils;
 
@@ -12,6 +13,7 @@ class ShareImpl implements Share {
 	@Id
 	private String id;
 
+	@Indexed( unique=true)
 	private String code;
 
 	private String name;

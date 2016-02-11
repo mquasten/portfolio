@@ -1,8 +1,9 @@
 package de.mq.portfolio.share.support;
+
 import java.util.HashMap;
 import java.util.Map;
 
-
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.Job;
@@ -19,26 +20,29 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/importTimeCourses.xml" })
-public class ShareImportJobIntegrationTest {
+@ContextConfiguration(locations = { "/importShares.xml" })
+@Ignore
+public class ImportSharesCoursesIntegrationTest {
 	
 	@Autowired
-	JobLauncher jobLauncher;
+	private  JobLauncher jobLauncher;
 	@Autowired
-	Job job; 
+	private Job job; 
+	
+	
 	@Test
-	public final void run() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
-		Map<String,JobParameter> params = new HashMap<>();
-		params.put("hotScore",  new JobParameter(10L));
+	public final void runJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+		final Map<String,JobParameter> params = new HashMap<>();
+		params.put("filename", new JobParameter("data/stocks.csv"));
 		final JobParameters jobParameters = new JobParameters(params);
-		
-		System.out.println(params.get("hotScore"));
+	
+		System.out.println("*** ShareImport stared ***");
 		
 		JobExecution execution =  jobLauncher.run(job, jobParameters);
+		System.out.println("*** ShareImport finished ***");
 		System.out.println(execution.getStatus());
 		
 		System.out.println(execution.getStepExecutions());
-		
 	}
 
 }

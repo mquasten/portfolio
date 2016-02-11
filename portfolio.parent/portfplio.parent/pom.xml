@@ -4,7 +4,7 @@
 
   <groupId>de.mq</groupId>
   <artifactId>portfolio.parent</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>${portfolio.version}</version>
   <packaging>pom</packaging>
 
   <name>portfplio.parent</name>
@@ -20,7 +20,7 @@
 		<log4j.version>1.2.16</log4j.version>
 	
 		
-		
+		<portfolio.version>0.0.1-SNAPSHOT</portfolio.version>
 		
 		<java.version>1.8</java.version>
 		<maven-compiler-plugin.version>3.0</maven-compiler-plugin.version>

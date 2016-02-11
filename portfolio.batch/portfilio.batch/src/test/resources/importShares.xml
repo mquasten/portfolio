@@ -16,40 +16,41 @@
 	<import resource="classpath*:application.xml" />
 	<context:component-scan base-package="de.mq.portfolio.share.support.support"
 		annotation-config="true" />
-	<batch:job id="importTimeCourses">
+	<batch:job id="importShares">
 
 
 
 
-		<batch:step id="doImportTimeCourses">
+		<batch:step id="doImportShares">
 			<batch:tasklet>
-				<batch:chunk reader="shareReader" writer="timeCourseWriter"
-					commit-interval="1" processor="shareProcessor" />
+				<batch:chunk reader="shareCsvReader" writer="shareWriter"
+					commit-interval="1"  />
 
 			</batch:tasklet>
 		</batch:step>
 	</batch:job>
 
-	<bean id="shareReader"
+	
+	
+	<bean id="shareCsvReader"
 		class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl">
-		<constructor-arg ref="shareService" />
+		<constructor-arg ref="shareCSVInputService" />
 
 		<constructor-arg value="shares" />
+		
+		<constructor-arg>
+			<list>
+				<value>filename</value>
+			</list>	
+		</constructor-arg>
 	</bean>
-
-	<bean id="shareProcessor"
-		class="de.mq.portfolio.batch.support.SimpleItemProcessorServiceAdapterImpl">
-		<constructor-arg ref="shareService" />
-
-		<constructor-arg value="timeCourse" />
-	</bean>
-
-
-	<bean id="timeCourseWriter"
+	
+	
+	<bean id="shareWriter"
 		class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl">
 		<constructor-arg ref="shareService" />
 
-		<constructor-arg value="replacetTmeCourse" />
+		<constructor-arg value="save" />
 	</bean>
 
 

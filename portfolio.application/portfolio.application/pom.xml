@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>de.mq</groupId>
 			<artifactId>portfolio.domain</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${portfolio.version}</version>
 		</dependency>
 
 		<dependency>
@@ -35,4 +35,8 @@
 
 
 	</dependencies>
+
+	<build>
+		<finalName>${project.name}</finalName>
+	</build>
 </project>

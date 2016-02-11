@@ -51,6 +51,49 @@
 
 		<constructor-arg value="replacetTmeCourse" />
 	</bean>
+	
+	
+	
+	
+	
+	<batch:job id="importShares">
+
+
+
+
+		<batch:step id="doImportShares">
+			<batch:tasklet>
+				<batch:chunk reader="shareCsvReader" writer="shareWriter"
+					commit-interval="1"  />
+
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+	
+	
+	<bean id="shareCsvReader"
+		class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl">
+		<constructor-arg ref="shareCSVInputService" />
+
+		<constructor-arg value="shares" />
+		
+		<constructor-arg>
+			<list>
+				<value>filename</value>
+			</list>	
+		</constructor-arg>
+	</bean>
+	
+	
+	<bean id="shareWriter"
+		class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl">
+		<constructor-arg ref="shareService" />
+
+		<constructor-arg value="save" />
+	</bean>
+	
+	
 
 
 	<bean id="jobRepository"
