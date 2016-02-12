@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.data.annotation.Reference;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import de.mq.portfolio.share.Data;
@@ -22,6 +23,9 @@ import de.mq.portfolio.share.TimeCourse;
 class TimeCourseImpl implements TimeCourse {
 	
 	private Share share; 
+	
+	@Indexed(unique=true)
+	private String code;
 
 	@Reference()
 	private final List<Data> rates = new ArrayList<>();
@@ -59,6 +63,7 @@ class TimeCourseImpl implements TimeCourse {
 	
 	
 	void onBeforeSave() {
+		code=share.code();
 		final Data[] samples = toArray(rates);
 		double n = rates.size()-1;
 		meanRate=  sum(samples, (v, i) -> rateOfReturn(v, i)) /n;

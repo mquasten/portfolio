@@ -13,6 +13,7 @@ class TimeCourseListenerImpl extends AbstractMongoEventListener<TimeCourseImpl> 
 		 timeCourse.onBeforeSave();
 		 dbo.put("meanRate", timeCourse.meanRate());
 		 dbo.put("variance", timeCourse.variance());
+		 dbo.put("code" , timeCourse.share().code());
 	}
 	
 	
