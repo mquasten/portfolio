@@ -25,7 +25,7 @@ class ShareMongoRepositoryImpl implements ShareRepository {
 	}
 	
 	/* (non-Javadoc)
-	 * @see de.mq.portfolio.share.support.support.ShareRepository#shares()
+	 * @see de.mq.portfolio.share.support.support.support.ShareRepository#shares()
 	 */
 	@Override
 	public final Collection<Share> shares(){
@@ -35,7 +35,7 @@ class ShareMongoRepositoryImpl implements ShareRepository {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.share.support.ShareRepository#save(de.mq.portfolio.share.TimeCourse)
+	 * @see de.mq.portfolio.share.support.support.ShareRepository#save(de.mq.portfolio.share.support.TimeCourse)
 	 */
 	@Override
 	public final void save(final TimeCourse timeCourse) {
@@ -43,7 +43,7 @@ class ShareMongoRepositoryImpl implements ShareRepository {
 	}
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.share.support.ShareRepository#deleteTimeCourse(de.mq.portfolio.share.Share)
+	 * @see de.mq.portfolio.share.support.support.ShareRepository#deleteTimeCourse(de.mq.portfolio.share.support.Share)
 	 */
 	@Override
 	public final void deleteTimeCourse(final Share share) {

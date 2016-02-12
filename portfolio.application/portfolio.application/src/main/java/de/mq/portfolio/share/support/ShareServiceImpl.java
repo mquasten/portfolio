@@ -29,7 +29,7 @@ class ShareServiceImpl implements ShareService {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.share.ShareService#timeCourse(de.mq.portfolio.share.Share)
+	 * @see de.mq.portfolio.share.support.ShareService#timeCourse(de.mq.portfolio.share.support.Share)
 	 */
 	@Override
 	public final TimeCourse timeCourse(final Share share) {
@@ -38,7 +38,7 @@ class ShareServiceImpl implements ShareService {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.share.ShareService#replacetTmeCourse(de.mq.portfolio.share.TimeCourse)
+	 * @see de.mq.portfolio.share.support.ShareService#replacetTmeCourse(de.mq.portfolio.share.support.TimeCourse)
 	 */
 	@Override
 	public final void replacetTmeCourse(final TimeCourse timeCourse) {
@@ -47,7 +47,7 @@ class ShareServiceImpl implements ShareService {
 	}
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.share.ShareService#shares()
+	 * @see de.mq.portfolio.share.support.ShareService#shares()
 	 */
 	@Override
 	public final Collection<Share> shares() {
@@ -56,7 +56,7 @@ class ShareServiceImpl implements ShareService {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.share.ShareService#save(de.mq.portfolio.share.Share)
+	 * @see de.mq.portfolio.share.support.ShareService#save(de.mq.portfolio.share.support.Share)
 	 */
 	@Override
 	public final void save(final Share share) {

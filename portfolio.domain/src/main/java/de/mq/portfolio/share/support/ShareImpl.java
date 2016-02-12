@@ -42,7 +42,7 @@ class ShareImpl implements Share {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.mq.portfolio.share.support.Share#name()
+	 * @see de.mq.portfolio.share.support.support.Share#name()
 	 */
 	@Override
 	public String name() {
@@ -52,7 +52,7 @@ class ShareImpl implements Share {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.mq.portfolio.share.support.Share#index()
+	 * @see de.mq.portfolio.share.support.support.Share#index()
 	 */
 	@Override
 	public String index() {
@@ -62,7 +62,7 @@ class ShareImpl implements Share {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.mq.portfolio.share.support.Share#code()
+	 * @see de.mq.portfolio.share.support.support.Share#code()
 	 */
 	@Override
 	public String code() {
@@ -72,7 +72,7 @@ class ShareImpl implements Share {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.mq.portfolio.share.support.Share#isIndex()
+	 * @see de.mq.portfolio.share.support.support.Share#isIndex()
 	 */
 	@Override
 	public boolean isIndex() {

@@ -21,7 +21,7 @@ class DataImpl implements Data {
 	
 
 	/* (non-Javadoc)
-	 * @see de.mq.portfolio.share.support.Data#date()
+	 * @see de.mq.portfolio.share.support.support.Data#date()
 	 */
 	@Override
 	public Date date() {
@@ -38,10 +38,10 @@ class DataImpl implements Data {
 	
 
 	/* (non-Javadoc)
-	 * @see de.mq.portfolio.share.support.Data#getValue()
+	 * @see de.mq.portfolio.share.support.support.Data#getValue()
 	 */
 	@Override
-	public double getValue() {
+	public double value() {
 		Assert.notNull(value, "Value is mandatory");
 		return value;
 	}
@@ -58,5 +58,8 @@ class DataImpl implements Data {
 	private DataImpl()  {
 		
 	}
+	
+	
+	
 
 }

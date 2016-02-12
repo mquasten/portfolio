@@ -6,6 +6,6 @@ public interface Data {
 
 	public abstract Date date();
 
-	public abstract double getValue();
+	public abstract double value();
 
 }

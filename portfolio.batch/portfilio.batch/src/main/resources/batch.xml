@@ -14,7 +14,7 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
 
 	<import resource="classpath*:application.xml" />
-	<context:component-scan base-package="de.mq.portfolio.share.support.support"
+	<context:component-scan base-package="de.mq.portfolio.share.support.support.support"
 		annotation-config="true" />
 	<batch:job id="importTimeCourses">
 
