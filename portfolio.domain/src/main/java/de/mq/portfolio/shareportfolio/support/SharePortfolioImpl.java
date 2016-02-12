@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.Assert;
 
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @Document(collection="Portfolio")
 class SharePortfolioImpl implements SharePortfolio {
@@ -29,7 +30,7 @@ class SharePortfolioImpl implements SharePortfolio {
 	
 	private double[][] covariances;
 	
-	private double[][] correlation;
+	private double[][] correlations;
 
 
 	SharePortfolioImpl(final String name, final List<TimeCourse>  timeCourses) {
@@ -70,14 +71,14 @@ class SharePortfolioImpl implements SharePortfolio {
 	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolio#getCorrelation()
 	 */
 	@Override
-	public double[][] getCorrelation() {
-		return correlation;
+	public double[][] correlations() {
+		return correlations;
 	}
    
    void onBeforeSave() {
    	variances=toVarianceArray(timeCourses);
    	covariances=toMatrix(timeCourses, (timeCourses, i,j) -> timeCourses.get(i).covariance( timeCourses.get(j)));
-   	correlation=toMatrix(timeCourses,  (timeCourses, i,j) -> timeCourses.get(i).covariance( timeCourses.get(j)) / (Math.sqrt(variances[i] )*Math.sqrt(variances[j]) ));
+   	correlations=toMatrix(timeCourses,  (timeCourses, i,j) -> timeCourses.get(i).covariance( timeCourses.get(j)) / (Math.sqrt(variances[i] )*Math.sqrt(variances[j]) ));
    }
 
 

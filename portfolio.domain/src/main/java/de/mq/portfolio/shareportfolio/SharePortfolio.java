@@ -1,10 +1,10 @@
-package de.mq.portfolio.shareportfolio.support;
+package de.mq.portfolio.shareportfolio;
 
 import java.util.List;
 
 import de.mq.portfolio.share.TimeCourse;
 
-interface SharePortfolio {
+public interface SharePortfolio {
 
 	List<TimeCourse> timeCourses();
 
@@ -12,6 +12,6 @@ interface SharePortfolio {
 
 	double[][] getCovariances();
 
-	double[][] getCorrelation();
+	double[][] correlations();
 
 }
