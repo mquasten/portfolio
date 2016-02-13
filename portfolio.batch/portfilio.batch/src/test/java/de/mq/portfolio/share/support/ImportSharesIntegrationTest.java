@@ -22,7 +22,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/importShares.xml" })
 @Ignore
-public class ImportSharesCoursesIntegrationTest {
+public class ImportSharesIntegrationTest {
 	
 	@Autowired
 	private  JobLauncher jobLauncher;
@@ -43,6 +43,8 @@ public class ImportSharesCoursesIntegrationTest {
 		System.out.println(execution.getStatus());
 		
 		System.out.println(execution.getStepExecutions());
+		
+
 	}
 
 }

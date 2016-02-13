@@ -10,6 +10,7 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
 		http://www.springframework.org/schema/data/repository http://www.springframework.org/schema/data/repository/spring-repository-1.6.xsd">
 
+	<context:component-scan base-package="de.mq.portfolio.shareportfolio,de.mq.portfolio.share" />
 
 	<mongo:mongo host="127.0.0.1" port="27017" />
 	<mongo:db-factory dbname="portfolio" />

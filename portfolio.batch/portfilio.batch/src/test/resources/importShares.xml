@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:task="http://www.springframework.org/schema/task"
-	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-3.0.xsd
@@ -14,7 +12,7 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
 
 	<import resource="classpath*:application.xml" />
-	<context:component-scan base-package="de.mq.portfolio.share.support.support.support"
+	<context:component-scan base-package="de.mq.portfolio.share.support"
 		annotation-config="true" />
 	<batch:job id="importShares">
 
@@ -24,33 +22,38 @@
 		<batch:step id="doImportShares">
 			<batch:tasklet>
 				<batch:chunk reader="shareCsvReader" writer="shareWriter"
-					commit-interval="1"  />
+					commit-interval="1" />
 
 			</batch:tasklet>
 		</batch:step>
 	</batch:job>
 
-	
-	
+
+
 	<bean id="shareCsvReader"
 		class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl">
-		<constructor-arg ref="shareCSVInputService" />
-
-		<constructor-arg value="shares" />
-		
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodTargetImpl">
+				<constructor-arg ref="shareCSVInputService" />
+				<constructor-arg value="shares" />
+			</bean>
+		</constructor-arg>
 		<constructor-arg>
 			<list>
 				<value>filename</value>
-			</list>	
+			</list>
 		</constructor-arg>
 	</bean>
-	
-	
+
+
 	<bean id="shareWriter"
 		class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl">
-		<constructor-arg ref="shareService" />
-
-		<constructor-arg value="save" />
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodTargetImpl">
+				<constructor-arg ref="shareService" />
+				<constructor-arg value="save" />
+			</bean>
+		</constructor-arg>
 	</bean>
 
 

@@ -14,7 +14,7 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
 
 	<import resource="classpath*:application.xml" />
-	<context:component-scan base-package="de.mq.portfolio.share.support.support.support"
+	<context:component-scan base-package="de.mq.portfolio.share.support"
 		annotation-config="true" />
 	<batch:job id="importTimeCourses">
 
@@ -30,26 +30,38 @@
 		</batch:step>
 	</batch:job>
 
-	<bean id="shareReader"
-		class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl">
-		<constructor-arg ref="shareService" />
-
-		<constructor-arg value="shares" />
+	<bean id="shareReader" class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl"  scope="job">
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodTargetImpl">
+				<constructor-arg ref="shareService" />
+				<constructor-arg value="shares" />
+			</bean>
+		</constructor-arg>
+		
+	
 	</bean>
 
-	<bean id="shareProcessor"
-		class="de.mq.portfolio.batch.support.SimpleItemProcessorServiceAdapterImpl">
-		<constructor-arg ref="shareService" />
-
-		<constructor-arg value="timeCourse" />
+	<bean id="shareProcessor"  class="de.mq.portfolio.batch.support.SimpleItemProcessorServiceAdapterImpl"  scope="job">
+	
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodTargetImpl">
+				<constructor-arg ref="shareService" />
+				<constructor-arg value="timeCourse" />
+			</bean>
+		</constructor-arg>
+		
 	</bean>
 
 
-	<bean id="timeCourseWriter"
-		class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl">
-		<constructor-arg ref="shareService" />
-
-		<constructor-arg value="replacetTmeCourse" />
+	<bean id="timeCourseWriter" class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl"  scope="job" >
+	
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodTargetImpl">
+				<constructor-arg ref="shareService" />
+				<constructor-arg value="replacetTimeCourse" />
+			</bean>
+		</constructor-arg>
+		
 	</bean>
 	
 	
@@ -73,10 +85,16 @@
 	
 	
 	<bean id="shareCsvReader"
-		class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl">
-		<constructor-arg ref="shareCSVInputService" />
-
-		<constructor-arg value="shares" />
+		class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl" scope="job">
+		
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodTargetImpl">
+				<constructor-arg ref="shareCSVInputService" />
+				<constructor-arg value="shares" />
+			</bean>
+		</constructor-arg>
+		
+		
 		
 		<constructor-arg>
 			<list>
@@ -86,11 +104,15 @@
 	</bean>
 	
 	
-	<bean id="shareWriter"
-		class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl">
-		<constructor-arg ref="shareService" />
-
-		<constructor-arg value="save" />
+	<bean id="shareWriter"  class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl"  scope="job">
+	
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodTargetImpl">
+				<constructor-arg ref="shareService" />
+				<constructor-arg value="save" />
+			</bean>
+		</constructor-arg>
+		
 	</bean>
 	
 	

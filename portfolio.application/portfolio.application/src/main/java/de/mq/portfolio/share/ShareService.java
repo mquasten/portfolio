@@ -9,7 +9,7 @@ public interface ShareService{
 
 	TimeCourse timeCourse(final Share share);
 
-	void replacetTmeCourse(final TimeCourse timeCourse);
+	void replacetTimeCourse(final TimeCourse timeCourse);
 
 	Collection<Share> shares();
 

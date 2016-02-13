@@ -3,6 +3,7 @@ package de.mq.portfolio.shareportfolio.support;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/mongo.xml" })
-
+@Ignore
 public class SharePortfolioIntegrationTest {
 	
 	@Autowired
@@ -29,7 +30,7 @@ public class SharePortfolioIntegrationTest {
 		final Query query = new Query(Criteria.where("share.code").in(Arrays.asList("ADS.DE","BAYN.DE","BMW.DE","SAP.DE","HEN3.DE","BA","PG","JNJ","KO","GS")));
 		final List<TimeCourse> timeCourses = mongoOperations.find(query, TimeCourse.class, "TimeCourse");
 		final SharePortfolio sharePortfolio = new SharePortfolioImpl("mq-test", timeCourses);
-		((SharePortfolioImpl) sharePortfolio).onBeforeSave();
+	
 		mongoOperations.save(sharePortfolio);
 	}
 }

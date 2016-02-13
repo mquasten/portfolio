@@ -14,58 +14,30 @@
 	<import resource="classpath*:application.xml" />
 	<context:component-scan base-package="de.mq.portfolio.share.support"
 		annotation-config="true" />
-	<batch:job id="importTimeCourses">
+	<batch:job id="calculatePortfolio">
 
 
 
 
-		<batch:step id="doImportTimeCourses">
+		<batch:step id="doCalculatePortfolio">
 			<batch:tasklet>
-				<batch:chunk reader="shareReader" writer="timeCourseWriter"
-					commit-interval="1" processor="shareProcessor" />
-
+				<batch:chunk reader="samplesReader" writer="resultWriter" commit-interval="1"  />
 			</batch:tasklet>
+		
 		</batch:step>
+	
 	</batch:job>
-
-	<bean id="shareReader"
-		class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl">
-
-		<constructor-arg>
-			<bean class="de.mq.portfolio.batch.support.MethodTargetImpl">
-				<constructor-arg ref="shareService" />
-				<constructor-arg value="shares" />
-			</bean>
-		</constructor-arg>
-
-	</bean>
-
-	<bean id="shareProcessor"
-		class="de.mq.portfolio.batch.support.SimpleItemProcessorServiceAdapterImpl">
-
-		<constructor-arg>
-			<bean class="de.mq.portfolio.batch.support.MethodTargetImpl">
-				<constructor-arg ref="shareService" />
-				<constructor-arg value="timeCourse" />
-			</bean>
-		</constructor-arg>
-
-	</bean>
-
-
-	<bean id="timeCourseWriter"
-		class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl">
-
-		<constructor-arg>
-			<bean class="de.mq.portfolio.batch.support.MethodTargetImpl">
-				<constructor-arg ref="shareService" />
-				<constructor-arg value="replacetTimeCourse" />
-			</bean>
-		</constructor-arg>
-
-	</bean>
-
-
+	
+	
+	<bean id="samplesReader" class="org.mockito.Mockito" factory-method="mock"> 
+    <constructor-arg value="org.springframework.batch.item.ItemReader" /> 
+	</bean> 
+	
+	<bean id="resultWriter" class="org.mockito.Mockito" factory-method="mock"> 
+    <constructor-arg value="org.springframework.batch.item.ItemWriter" /> 
+	</bean> 
+	
+	
 	<bean id="jobRepository"
 		class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
 		<property name="transactionManager" ref="transactionManager" />
@@ -80,9 +52,8 @@
 		class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
 		<property name="jobRepository" ref="jobRepository" />
 	</bean>
-
-
-
-
-
-</beans> 
+	
+	</beans>	
+	
+	
+		

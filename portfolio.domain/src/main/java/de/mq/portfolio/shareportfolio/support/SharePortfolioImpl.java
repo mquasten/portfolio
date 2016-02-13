@@ -31,6 +31,11 @@ class SharePortfolioImpl implements SharePortfolio {
 	private double[][] covariances;
 	
 	private double[][] correlations;
+	
+	private boolean committed; 
+
+
+	
 
 
 	SharePortfolioImpl(final String name, final List<TimeCourse>  timeCourses) {
@@ -47,39 +52,63 @@ class SharePortfolioImpl implements SharePortfolio {
 		return Collections.unmodifiableList(timeCourses);
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolio#variances()
-	 */
-	@Override
-   public double[]  variances() {
-   	Assert.notNull(variances, "Variances not calculated");
+	
+   double[]  variances() {
+   	variancesExistsGuard();
    	return variances;
    }
-	/*
-	 * (non-Javadoc)
-	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolio#getCovariances()
-	 */
-	@Override
-	public double[][] getCovariances() {
-		Assert.notNull(covariances, "Covariances not calculated");
+
+
+	void variancesExistsGuard() {
+		Assert.notNull(variances, "Variances not calculated");
+	}
+	
+	double[][] covariances() {
+		covariancesExistsGuard();
 		return covariances;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolio#getCorrelation()
-	 */
-	@Override
-	public double[][] correlations() {
+
+	private void covariancesExistsGuard() {
+		Assert.notNull(covariances, "Covariances not calculated");
+	}
+
+	
+	double[][] correlations() {
 		return correlations;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.SharePortfolio#risk(double[])
+	 */
+	@Override
+	public final double risk(final double[] weightingVector) {
+		variancesExistsGuard();
+		covariancesExistsGuard();
+		weightingVectorExistsGuard(weightingVector);
+		Assert.isTrue(variances.length == covariances.length);
+		Assert.isTrue(weightingVector.length == variances.length);
+		final double[] sum = {IntStream.range(0, variances.length).mapToDouble(i ->  Math.pow(weightingVector[i], 2)*variances[i]).reduce((result, yi) -> result +yi).orElse(0)};
+		IntStream.range(0, variances.length).forEach(i-> IntStream.range(i+1, variances.length).forEach(j -> sum[0]+=2*weightingVector[i] * weightingVector[j] * covariances[i][j]));
+		return sum[0];
+		
+	}
+
+
+	private void weightingVectorExistsGuard(final double[] weightingVector) {
+		Assert.notNull(weightingVector, "WeightingVector should be given");
+	}
    
-   void onBeforeSave() {
+  boolean  onBeforeSave() {
+	  	if( timeCourses.isEmpty()) {
+	  		return false;
+	  	}
    	variances=toVarianceArray(timeCourses);
    	covariances=toMatrix(timeCourses, (timeCourses, i,j) -> timeCourses.get(i).covariance( timeCourses.get(j)));
    	correlations=toMatrix(timeCourses,  (timeCourses, i,j) -> timeCourses.get(i).covariance( timeCourses.get(j)) / (Math.sqrt(variances[i] )*Math.sqrt(variances[j]) ));
-   }
+      return true; 
+  }
 
 
 	private double[][] toMatrix(final List<TimeCourse> timeCourses, final MatixFunction function) {
@@ -94,6 +123,11 @@ class SharePortfolioImpl implements SharePortfolio {
    	
    	IntStream.range(0, timeCourses.size()).forEach(i -> results[i]=timeCourses().get(i).variance());
    	return results;
+	}
+	
+	@Override
+	public boolean isCommitted() {
+		return committed;
 	}
    
    

@@ -8,10 +8,10 @@ public interface SharePortfolio {
 
 	List<TimeCourse> timeCourses();
 
-	double[] variances();
+	double risk(double[] weightingVector);
 
-	double[][] getCovariances();
-
-	double[][] correlations();
+	boolean isCommitted();
+	
+	
 
 }

@@ -2,8 +2,6 @@ package de.mq.portfolio.share.support;
 import java.util.HashMap;
 import java.util.Map;
 
-
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;

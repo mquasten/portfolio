@@ -1,5 +1,6 @@
 package de.mq.portfolio.share.support;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import de.mq.portfolio.share.TimeCourse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/mongo.xml" })
+@Ignore
 public class TimeshareIntegrationTest {
 	
 	@Autowired

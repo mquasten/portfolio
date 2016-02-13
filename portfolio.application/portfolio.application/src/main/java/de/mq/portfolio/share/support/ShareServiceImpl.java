@@ -41,7 +41,7 @@ class ShareServiceImpl implements ShareService {
 	 * @see de.mq.portfolio.share.support.ShareService#replacetTmeCourse(de.mq.portfolio.share.support.TimeCourse)
 	 */
 	@Override
-	public final void replacetTmeCourse(final TimeCourse timeCourse) {
+	public final void replacetTimeCourse(final TimeCourse timeCourse) {
 		shareRepository.deleteTimeCourse(timeCourse.share());
 		shareRepository.save(timeCourse);
 	}
