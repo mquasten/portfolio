@@ -2,7 +2,6 @@ package de.mq.portfolio.share.support;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.Job;
@@ -15,18 +14,21 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/importTimeCourses.xml" })
-@Ignore
+@ContextConfiguration(locations = { "/batch.xml" })
 public class ImportTimeCoursesIntegrationTest {
 	
 	@Autowired
-	JobLauncher jobLauncher;
+	private JobLauncher jobLauncher;
 	@Autowired
-	Job job; 
+	@Qualifier("importTimeCourses")
+	private Job job; 
+	
+	
 	@Test
 	public final void run() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		final Map<String,JobParameter> params = new HashMap<>();
