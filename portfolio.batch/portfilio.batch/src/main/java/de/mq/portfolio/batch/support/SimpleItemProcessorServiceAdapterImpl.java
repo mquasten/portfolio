@@ -3,6 +3,7 @@ package de.mq.portfolio.batch.support;
 
 import org.springframework.batch.item.ItemProcessor;
 
+import de.mq.portfolio.batch.JobContent;
 import de.mq.portfolio.batch.MethodParameterInjection;
 
 
@@ -14,7 +15,9 @@ public class SimpleItemProcessorServiceAdapterImpl<T,R> extends AbstractServiceA
 		super(methodInvoker);
 	}
 	
-	
+	protected SimpleItemProcessorServiceAdapterImpl(final MethodParameterInjection<String> methodInvoker, final JobContent<String> jobContent) {
+		super(methodInvoker, jobContent);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override

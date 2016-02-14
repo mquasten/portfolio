@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.batch.item.ItemWriter;
 
+import de.mq.portfolio.batch.JobContent;
 import de.mq.portfolio.batch.MethodParameterInjection;
 
 
@@ -13,6 +14,10 @@ public class SimpleItemWriterServiceAdapterImpl<T> extends AbstractServiceAdapte
 	protected SimpleItemWriterServiceAdapterImpl(final MethodParameterInjection<String> methodParameterInjection) {
 		super(methodParameterInjection);
 		
+	}
+	
+	protected SimpleItemWriterServiceAdapterImpl(final MethodParameterInjection<String> methodInvoker, final JobContent<String> jobContent) {
+		super(methodInvoker, jobContent);
 	}
 	
 	@Override

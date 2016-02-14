@@ -12,7 +12,7 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
 
 	<import resource="classpath*:application.xml" />
-	<context:component-scan base-package="de.mq.portfolio.share.support"
+	<context:component-scan base-package="de.mq.portfolio.share.support,de.mq.portfolio.shareportfolio.support"
 		annotation-config="true" />
 	<batch:job id="calculatePortfolio">
 
@@ -21,7 +21,7 @@
 
 		<batch:step id="doCalculatePortfolio">
 			<batch:tasklet>
-				<batch:chunk reader="samplesReader" writer="resultWriter" commit-interval="1"  />
+				<batch:chunk reader="samplesReader" processor="sampleProcessor"  writer="resultWriter" commit-interval="1"  />
 			</batch:tasklet>
 		
 		</batch:step>
@@ -29,14 +29,71 @@
 	</batch:job>
 	
 	
-	<bean id="samplesReader" class="org.mockito.Mockito" factory-method="mock"> 
-    <constructor-arg value="org.springframework.batch.item.ItemReader" /> 
-	</bean> 
+	
 	
 	<bean id="resultWriter" class="org.mockito.Mockito" factory-method="mock"> 
     <constructor-arg value="org.springframework.batch.item.ItemWriter" /> 
 	</bean> 
 	
+	
+	<bean id="samplesReader" class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl"  scope="job">
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+				<constructor-arg ref="sharePortfolioService" />
+				<constructor-arg value="samples" />
+				<constructor-arg>
+					<list>
+						<value>portfolio</value>
+					</list>
+				</constructor-arg>
+			</bean>
+			
+		</constructor-arg>
+		
+		<constructor-arg ref="calculatePortfolioContent" />
+			
+		
+		
+		<constructor-arg>
+			<map>
+				<entry key="portfolio"  >
+				
+				<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+				<constructor-arg ref="sharePortfolioService" />
+				<constructor-arg value="committedPortfolio" />
+				<constructor-arg>
+				<list>
+					<value>portfolioName</value>
+				</list>
+				</constructor-arg>
+			</bean>
+					
+				</entry>
+			</map>
+		
+		</constructor-arg>
+	
+	</bean>
+	
+	<bean  id="calculatePortfolioContent" class="de.mq.portfolio.batch.support.JobContentImpl"   scope="job"/>
+	
+	<bean id="sampleProcessor"  class="de.mq.portfolio.batch.support.SimpleItemProcessorServiceAdapterImpl"  scope="job">
+	
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+				<constructor-arg ref="sharePortfolioService" />
+				<constructor-arg value="risk" />
+				<constructor-arg>
+					<list>
+						<value>portfolio</value>
+						<null/>
+						
+					</list>	
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
+		<constructor-arg ref="calculatePortfolioContent" />
+	</bean>
 	
 	<bean id="jobRepository"
 		class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">

@@ -130,6 +130,14 @@ class SharePortfolioImpl implements SharePortfolio {
 		return committed;
 	}
    
+	
+	@Override
+	public final void commit() {
+		if( timeCourses. size() <= 1) {
+			throw new IllegalArgumentException("Portfolio should have at least 2 TimeCourse");
+		}
+		this.committed=true;
+	}
    
 }
 

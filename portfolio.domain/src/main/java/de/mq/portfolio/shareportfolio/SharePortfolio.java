@@ -11,6 +11,8 @@ public interface SharePortfolio {
 	double risk(double[] weightingVector);
 
 	boolean isCommitted();
+
+	void commit();
 	
 	
 

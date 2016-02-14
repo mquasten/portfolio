@@ -17,12 +17,21 @@ import java.util.List;
 
 
 
+
+
+
+
+
+
+import java.util.Map;
+
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.util.CollectionUtils;
 
+import de.mq.portfolio.batch.JobContent;
 import de.mq.portfolio.batch.MethodParameterInjection;
 
 class SimpleListItemReaderServiceAdapterImpl<T> extends AbstractServiceAdapter implements ItemReader<T>  {
@@ -38,6 +47,9 @@ class SimpleListItemReaderServiceAdapterImpl<T> extends AbstractServiceAdapter i
 	}
 	
 	
+	SimpleListItemReaderServiceAdapterImpl(final MethodParameterInjection<String> methodParameterInjection, JobContent<String> jobContent, final Map<String, MethodParameterInjection<String>> enrichers) {
+		 super(methodParameterInjection, jobContent, enrichers);
+	}
 	
 
 	
