@@ -31,9 +31,7 @@
 	
 	
 	
-	<bean id="resultWriter" class="org.mockito.Mockito" factory-method="mock"> 
-    <constructor-arg value="org.springframework.batch.item.ItemWriter" /> 
-	</bean> 
+	
 	
 	
 	<bean id="samplesReader" class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl"  scope="job">
@@ -44,6 +42,7 @@
 				<constructor-arg>
 					<list>
 						<value>portfolio</value>
+						<value>samples</value>
 					</list>
 				</constructor-arg>
 			</bean>
@@ -93,6 +92,23 @@
 			</bean>
 		</constructor-arg>
 		<constructor-arg ref="calculatePortfolioContent" />
+	</bean>
+	
+	
+	<bean id="resultWriter"  class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl"  scope="job">
+	
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+				<constructor-arg ref="sharePortfolioService" />
+				<constructor-arg value="save" />
+				<constructor-arg>
+					<list>
+						<null/>
+					</list>	
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
+		
 	</bean>
 	
 	<bean id="jobRepository"

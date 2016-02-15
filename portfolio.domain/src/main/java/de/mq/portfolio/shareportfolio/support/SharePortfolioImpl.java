@@ -22,7 +22,8 @@ class SharePortfolioImpl implements SharePortfolio {
 	
 	@Indexed(unique=true)
 	private final String name;
-	
+
+
 	@Reference
 	private List<TimeCourse>  timeCourses = new ArrayList<>();
 	
@@ -76,6 +77,15 @@ class SharePortfolioImpl implements SharePortfolio {
 	
 	double[][] correlations() {
 		return correlations;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.SharePortfolio#name()
+	 */
+	@Override
+	public String name() {
+		return name;
 	}
 	
 	/*

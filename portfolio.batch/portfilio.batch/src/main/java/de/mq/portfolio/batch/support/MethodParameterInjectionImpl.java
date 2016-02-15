@@ -43,8 +43,7 @@ class MethodParameterInjectionImpl<T> implements MethodParameterInjection<T> {
 	@Override
 	public final Object invokeMethod(final Map<T,Object> dependencies) {
 		method.setAccessible(true);
-	
-		return ReflectionUtils.invokeMethod(method,target, arguments(dependencies));
+	   return ReflectionUtils.invokeMethod(method,target, arguments(dependencies));
 	}
 	
 	

@@ -1,12 +1,15 @@
 package de.mq.portfolio.shareportfolio.support;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @Service("sharePortfolioService")
@@ -38,18 +41,51 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#samples(de.mq.portfolio.shareportfolio.SharePortfolio)
 	 */
 	@Override
-	public final Collection<double[]> samples(final SharePortfolio sharePortfolio) {
+	public final Collection<double[]> samples(final SharePortfolio sharePortfolio, final Number size) {
 		Assert.notNull(sharePortfolio);
-		 final Collection<double[]> results = new ArrayList<>();
-		 results.add(new double[]{0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1});
-		 return results;
+		Assert.notNull(size);
+		Assert.isTrue(size.intValue() > 1);
+		final int n = sharePortfolio.timeCourses().size();
+		return IntStream.range(0, size.intValue()).mapToObj(i -> sample(n)).collect(Collectors.toList());
+	}
+
+	private  double[] sample(final int n) {
+		final double[] result = new double[n];
+		final double sum[] = {0} ; 
+		IntStream.range(0, n).forEach(i -> {
+			final double x = Math.random();
+			result[i]=x;
+			sum[0]= sum[0]+ x;
+			
+		});
+	
+		IntStream.range(0, n).forEach(i -> {result[i]=result[i]/sum[0];});
+		return result;
 	}
 	
-	public final double risk(final SharePortfolio sharePortfolio, final double[] samples) {
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#risk(de.mq.portfolio.shareportfolio.SharePortfolio, double[])
+	 */
+	@Override
+	public final PortfolioOptimisation risk(final SharePortfolio sharePortfolio, final double[] samples) {
 		Assert.notNull(sharePortfolio);
 		Assert.notNull(samples);
-		return sharePortfolio.risk(samples);
+		final double risk =  sharePortfolio.risk(samples);
+		return new PortfolioOptimisationImpl(sharePortfolio.name(), samples, risk);
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#save(de.mq.portfolio.shareportfolio.PortfolioOptimisation)
+	 */
+	@Override
+	public final void save(final PortfolioOptimisation portfolioOptimisation) {
+		sharePortfolioRepository.save(portfolioOptimisation);
+	}
+	
+	
+	
 
 }
  

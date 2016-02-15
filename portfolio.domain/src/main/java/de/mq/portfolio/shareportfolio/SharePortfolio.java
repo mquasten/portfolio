@@ -13,6 +13,8 @@ public interface SharePortfolio {
 	boolean isCommitted();
 
 	void commit();
+
+	String name();
 	
 	
 

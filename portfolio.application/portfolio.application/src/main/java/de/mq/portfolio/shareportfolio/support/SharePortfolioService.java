@@ -2,12 +2,20 @@ package de.mq.portfolio.shareportfolio.support;
 
 import java.util.Collection;
 
+import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 interface SharePortfolioService {
 
-	public abstract SharePortfolio committedPortfolio(String name);
+	SharePortfolio committedPortfolio(String name);
 
-	public abstract Collection<double[]> samples(SharePortfolio sharePortfolio);
+
+	Collection<double[]> samples(SharePortfolio sharePortfolio, Number size);
+
+
+	PortfolioOptimisation risk(final SharePortfolio sharePortfolio, final double[] samples);
+
+
+	void save(final PortfolioOptimisation portfolioOptimisation);
 
 }

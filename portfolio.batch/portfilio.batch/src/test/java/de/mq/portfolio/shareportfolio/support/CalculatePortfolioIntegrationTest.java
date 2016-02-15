@@ -23,7 +23,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/calculatePortfolio.xml" })
 @Ignore
-public class CalculatePortfolio {
+public class CalculatePortfolioIntegrationTest {
 
 	@Autowired
 	private JobLauncher jobLauncher;
@@ -38,10 +38,11 @@ public class CalculatePortfolio {
 		
 		final Map<String,JobParameter> params = new HashMap<>();
 		params.put("portfolioName", new JobParameter("mq-test"));
+		params.put("samples", new JobParameter((long) 500000));
 	
 		final JobParameters jobParameters = new JobParameters(params);
 	
-		System.out.println("*** CalculatePortfolio stared ***");
+		System.out.println("*** CalculatePortfolioIntegrationTest stared ***");
 		
 		JobExecution execution =  jobLauncher.run(job, jobParameters);
 		System.out.println(execution.getStepExecutions());
