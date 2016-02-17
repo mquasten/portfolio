@@ -6,7 +6,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import org.springframework.core.convert.support.ConfigurableConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
@@ -20,7 +23,7 @@ class MethodParameterInjectionImpl<T> implements MethodParameterInjection<T> {
 	private final Object target;
 	
 	
-	
+	final ConfigurableConversionService conversionService = new DefaultConversionService();
 	private final List<T> parameterKeys = new ArrayList<>();
 	
 	MethodParameterInjectionImpl(final Object target, final String methodName) {
@@ -43,14 +46,35 @@ class MethodParameterInjectionImpl<T> implements MethodParameterInjection<T> {
 	@Override
 	public final Object invokeMethod(final Map<T,Object> dependencies) {
 		method.setAccessible(true);
-	   return ReflectionUtils.invokeMethod(method,target, arguments(dependencies));
+		
+		final List<Class<?>> classes = Arrays.asList(method.getParameterTypes()).stream().map(t -> t).collect(Collectors.toList());
+		
+	   return ReflectionUtils.invokeMethod(method,target, arguments(dependencies, classes));
 	}
 	
 	
-	private final   Object[] arguments(final Map<T,Object>  dependencies) {
-		final List<Object> argumentsAsList =  parameterKeys.stream().map(name ->  dependencies.get(name)).collect(Collectors.toList());
-		 final Object[] arguments = argumentsAsList.toArray( new Object[argumentsAsList.size()]);
+	private final   Object[] arguments(final Map<T,Object>  dependencies, List<Class<?>> types) {
+		
+		Assert.isTrue(parameterKeys.size() == types.size());
+		
+		final List<Object> argumentsAsList = IntStream.range(0, parameterKeys.size()).mapToObj(i -> convert(dependencies, i, types)).collect(Collectors.toList());
+		
+		//final List<Object> argumentsAsList =  parameterKeys.stream().map(name ->  dependencies.get(name)).collect(Collectors.toList());
+		
+		
+		final Object[] arguments = argumentsAsList.toArray( new Object[argumentsAsList.size()]);
 		return arguments;
+	}
+
+	private Object convert(final Map<T, Object> dependencies, int i, final List<Class<?>> types) {
+		final Object value = dependencies.get(parameterKeys.get(i));
+		final Class<?> type = types.get(i);
+	
+		
+		if( conversionService.canConvert(value.getClass(), type)) {
+			return conversionService.convert(value, type);
+		}
+		return value;
 	}
 
 	

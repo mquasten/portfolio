@@ -133,6 +133,119 @@
 	</bean>
 	
 	
+	
+	<batch:job id="calculatePortfolio">
+
+
+
+
+		<batch:step id="doCalculatePortfolio" next="decision" >
+			<batch:tasklet>
+				<batch:chunk reader="samplesReader" processor="sampleProcessor"  writer="resultWriter" commit-interval="1"  />
+			</batch:tasklet>
+	      
+	        
+	       
+	     
+		</batch:step>
+	
+	
+	
+	<batch:decision id="decision" decider="countDecider">
+	
+        <batch:next on="COMPLETED" to="doCalculatePortfolio" />
+     	
+     <batch:end on="STOPPED"/>
+     	
+    </batch:decision>
+    
+   
+   
+	</batch:job>
+	
+	
+	
+	
+	
+	
+	
+	<bean id="samplesReader" class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl"  scope="job">
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+				<constructor-arg ref="sharePortfolioService" />
+				<constructor-arg value="samples" />
+				<constructor-arg>
+					<list>
+						<value>portfolio</value>
+						<value>samples</value>
+					</list>
+				</constructor-arg>
+			</bean>
+			
+		</constructor-arg>
+		
+		<constructor-arg ref="calculatePortfolioContent" />
+			
+		
+		
+		<constructor-arg>
+			<map>
+				<entry key="portfolio"  >
+				
+				<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+				<constructor-arg ref="sharePortfolioService" />
+				<constructor-arg value="committedPortfolio" />
+				<constructor-arg>
+				<list>
+					<value>portfolioName</value>
+				</list>
+				</constructor-arg>
+			</bean>
+					
+				</entry>
+			</map>
+		
+		</constructor-arg>
+	
+	</bean>
+	
+	<bean  id="calculatePortfolioContent" class="de.mq.portfolio.batch.support.JobContentImpl"   scope="job"/>
+	
+	<bean id="sampleProcessor"  class="de.mq.portfolio.batch.support.SimpleItemProcessorServiceAdapterImpl"  scope="job">
+	
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+				<constructor-arg ref="sharePortfolioService" />
+				<constructor-arg value="risk" />
+				<constructor-arg>
+					<list>
+						<value>portfolio</value>
+						<null/>
+						
+					</list>	
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
+		<constructor-arg ref="calculatePortfolioContent" />
+	</bean>
+	
+	
+	<bean id="resultWriter"  class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl"  scope="job">
+	
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+				<constructor-arg ref="sharePortfolioService" />
+				<constructor-arg value="save" />
+				<constructor-arg>
+					<list>
+						<null/>
+					</list>	
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
+		
+	</bean>
+	
 
 
 	<bean id="jobRepository"
@@ -152,6 +265,7 @@
 
 
 
+	<bean id= "countDecider" class="de.mq.portfolio.batch.support.SimpleDeciderImpl" /> 
 
 
 </beans> 

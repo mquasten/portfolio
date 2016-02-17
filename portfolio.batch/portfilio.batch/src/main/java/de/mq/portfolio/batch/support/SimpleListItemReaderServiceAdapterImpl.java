@@ -64,7 +64,8 @@ class SimpleListItemReaderServiceAdapterImpl<T> extends AbstractServiceAdapter i
 		
 		if (!items.isEmpty()) {
 			return items.remove(0);
-		}
+		} 
+		items=null;
 		return null;
 	}
 

@@ -1,5 +1,7 @@
 package de.mq.portfolio.shareportfolio.support;
 
+import java.util.Optional;
+
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
@@ -11,6 +13,6 @@ interface SharePortfolioRepository {
 	
 	void save(final PortfolioOptimisation sharePortfolio);
 
-	void minRisk(String name);
+	Optional<PortfolioOptimisation> minRisk(String name);
 
 }

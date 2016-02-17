@@ -1,10 +1,13 @@
 package de.mq.portfolio.batch.support;
 
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
+
+
 
 
 import de.mq.portfolio.batch.JobContent;
@@ -20,6 +23,8 @@ abstract  class AbstractServiceAdapter   {
 	private final Map<String,Object> params = new HashMap<>();
 	
 	final Map<String, MethodParameterInjection<String>> enrichters = new HashMap<>();
+	
+	
 	
 	protected AbstractServiceAdapter(final MethodParameterInjection<String> methodParameterInjection) {
 		this(methodParameterInjection, new JobContentImpl<String>(), new HashMap<>());

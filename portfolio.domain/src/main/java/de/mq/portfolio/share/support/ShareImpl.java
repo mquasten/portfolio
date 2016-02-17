@@ -7,7 +7,7 @@ import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.share.Share;
 
-@Document(collection = "share")
+@Document(collection = "Share")
 class ShareImpl implements Share {
 
 	@Id

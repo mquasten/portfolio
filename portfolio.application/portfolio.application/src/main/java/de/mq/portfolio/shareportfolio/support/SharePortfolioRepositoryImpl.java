@@ -1,7 +1,9 @@
 package de.mq.portfolio.shareportfolio.support;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
@@ -55,26 +57,28 @@ class SharePortfolioRepositoryImpl implements SharePortfolioRepository {
 	}
 	
 	@Override
-	public final void minRisk(final String name) {
+	public final Optional<PortfolioOptimisation> minRisk(final String name) {
 		
 		Aggregation agg = Aggregation.newAggregation(
 				Aggregation.match(Criteria.where("portfolio").is(name)),
-				Aggregation.group("portfolio").min("risk").as("risk"),
-				Aggregation.project("risk").and("portfolio").previousOperation()
+				Aggregation.group("portfolio").min("variance").as("variance"),
+				Aggregation.project("variance").and("portfolio").previousOperation()
 				
 					
 			);
 		
 		AggregationResults<? extends PortfolioOptimisation> groupResults  = mongoOperations.aggregate(agg, PortfolioOptimisationImpl.class, PortfolioOptimisationImpl.class);
-		final List<? extends PortfolioOptimisation> result = groupResults.getMappedResults();
+		final List<? extends PortfolioOptimisation> aggregationResults = groupResults.getMappedResults();
 	
-		System.out.println(result.size());
 		
-		result.forEach(r -> {
-			System.out.println(r.portfolio() + ":" + r.risk());
-			
+		
+		final Collection<PortfolioOptimisation> results = new ArrayList<>();
+		aggregationResults.forEach(r -> {
+			final Query query =new Query(Criteria.where("variance").lte(r.variance()));
+			results.addAll(mongoOperations.find(query, PortfolioOptimisationImpl.class));
 		});
 	
+		return Optional.ofNullable(DataAccessUtils.singleResult(results));
 		
 	}
 

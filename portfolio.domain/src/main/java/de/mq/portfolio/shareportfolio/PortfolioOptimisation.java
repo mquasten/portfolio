@@ -2,7 +2,7 @@ package de.mq.portfolio.shareportfolio;
 
 public interface PortfolioOptimisation {
 
-	double risk();
+	double variance();
 
 	double[] weights();
 

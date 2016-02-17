@@ -1,0 +1,25 @@
+#!/bin/bash
+
+
+if [ $# -lt 1 ] 
+then
+ echo "$0 <job> [parameter=value] [parameter=value] ..." 
+ exit 1
+fi 
+
+
+DIR=`pwd`
+export PROJECT_DIR=/cygdrive/c/GitHub/portfolio/portfolio.batch/portfilio.batch
+cd $PROJECT_DIR
+
+mvn package
+
+export BIN_DIR=$PROJECT_DIR/target
+
+cd $BIN_DIR
+
+echo $BIN_DIR
+
+java -jar portfolio.batch.jar batch.xml $*
+
+cd $DIR

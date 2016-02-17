@@ -11,7 +11,7 @@ class PortfolioOptimisationImpl implements PortfolioOptimisation {
 	@Id
 	private String id;
 	
-	private final double risk;
+	private final double variance;
 
 	private final double[] weights;
 	
@@ -19,7 +19,7 @@ class PortfolioOptimisationImpl implements PortfolioOptimisation {
 	
 	
 	PortfolioOptimisationImpl(final String portfolio, final double[] weights, final double risk) {
-		this.risk = risk;
+		this.variance = risk;
 		this.weights = weights;
 		this.portfolio = portfolio;
 	}
@@ -29,8 +29,8 @@ class PortfolioOptimisationImpl implements PortfolioOptimisation {
 	 * @see de.mq.portfolio.shareportfolio.support.PortfolioOptimisation#risk()
 	 */
 	@Override
-	public double risk() {
-		return risk;
+	public double variance() {
+		return variance;
 	}
 
 
