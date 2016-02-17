@@ -18,8 +18,12 @@ class PortfolioOptimisationImpl implements PortfolioOptimisation {
 	private final String portfolio;
 	
 	
-	PortfolioOptimisationImpl(final String portfolio, final double[] weights, final double risk) {
-		this.variance = risk;
+	PortfolioOptimisationImpl() {
+		this(null, new double[]{},0);
+	}
+	
+	PortfolioOptimisationImpl(final String portfolio, final double[] weights, final double variance) {
+		this.variance = variance;
 		this.weights = weights;
 		this.portfolio = portfolio;
 	}
