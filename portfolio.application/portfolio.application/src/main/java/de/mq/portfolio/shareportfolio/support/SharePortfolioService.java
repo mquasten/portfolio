@@ -13,9 +13,21 @@ interface SharePortfolioService {
 	Collection<double[]> samples(SharePortfolio sharePortfolio, Number size);
 
 
-	PortfolioOptimisation risk(final SharePortfolio sharePortfolio, final double[] samples);
+	PortfolioOptimisation variance(final SharePortfolio sharePortfolio, final double[] samples);
 
 
-	void save(final PortfolioOptimisation portfolioOptimisation);
+	
+
+
+	void create(final PortfolioOptimisation portfolioOptimisation);
+
+
+	SharePortfolio assign(final PortfolioOptimisation portfolioOptimisation);
+
+
+	void save(final SharePortfolio sharePortfolio);
+
+
+	PortfolioOptimisation minVariance(final String portfolioName);
 
 }

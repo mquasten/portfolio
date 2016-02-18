@@ -3,6 +3,7 @@ package de.mq.portfolio.batch.support;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -52,6 +53,9 @@ class SimpleListItemReaderServiceAdapterImpl<T> extends AbstractServiceAdapter i
 	}
 	
 
+	SimpleListItemReaderServiceAdapterImpl(final MethodParameterInjection<String> methodParameterInjection, JobContent<String> jobContent) {
+		 super(methodParameterInjection, jobContent, new HashMap<>());
+	}
 	
 
 	

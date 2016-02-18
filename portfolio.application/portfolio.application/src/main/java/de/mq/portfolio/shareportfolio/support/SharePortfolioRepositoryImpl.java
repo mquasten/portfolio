@@ -57,7 +57,7 @@ class SharePortfolioRepositoryImpl implements SharePortfolioRepository {
 	}
 	
 	@Override
-	public final Optional<PortfolioOptimisation> minRisk(final String name) {
+	public final Optional<PortfolioOptimisation> minVariance(final String name) {
 		
 		Aggregation agg = Aggregation.newAggregation(
 				Aggregation.match(Criteria.where("portfolio").is(name)),

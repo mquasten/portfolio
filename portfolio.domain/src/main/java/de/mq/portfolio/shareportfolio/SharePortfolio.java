@@ -1,6 +1,7 @@
 package de.mq.portfolio.shareportfolio;
 
 import java.util.List;
+import java.util.Optional;
 
 import de.mq.portfolio.share.TimeCourse;
 
@@ -15,6 +16,8 @@ public interface SharePortfolio {
 	void commit();
 
 	String name();
+
+	Optional<PortfolioOptimisation> minVariance();
 	
 	
 

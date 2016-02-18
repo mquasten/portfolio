@@ -9,10 +9,10 @@ interface SharePortfolioRepository {
 
 	SharePortfolio portfolio(String name);
 
-	void save(SharePortfolio sharePortfolio);
+	void save(final SharePortfolio sharePortfolio);
 	
 	void save(final PortfolioOptimisation sharePortfolio);
 
-	Optional<PortfolioOptimisation> minRisk(String name);
+	Optional<PortfolioOptimisation> minVariance(final String name);
 
 }

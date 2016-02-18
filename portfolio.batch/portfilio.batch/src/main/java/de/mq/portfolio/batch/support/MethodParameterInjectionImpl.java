@@ -50,12 +50,14 @@ class MethodParameterInjectionImpl<T> implements MethodParameterInjection<T> {
 		final List<Class<?>> classes = Arrays.asList(method.getParameterTypes()).stream().map(t -> t).collect(Collectors.toList());
 		
 	   return ReflectionUtils.invokeMethod(method,target, arguments(dependencies, classes));
+	 
+	  
 	}
 	
 	
 	private final   Object[] arguments(final Map<T,Object>  dependencies, List<Class<?>> types) {
 		
-		Assert.isTrue(parameterKeys.size() == types.size());
+		Assert.isTrue(parameterKeys.size() == types.size(), String.format("Confiured methodparameters for method %s did not match to arguments: %s" , method, parameterKeys));
 		
 		final List<Object> argumentsAsList = IntStream.range(0, parameterKeys.size()).mapToObj(i -> convert(dependencies, i, types)).collect(Collectors.toList());
 		
@@ -71,6 +73,13 @@ class MethodParameterInjectionImpl<T> implements MethodParameterInjection<T> {
 		final Class<?> type = types.get(i);
 	
 		
+		return convert(value, type);
+	}
+
+	private Object convert(final Object value, final Class<?> type) {
+		 if( value == null){
+		   	return null;
+		}
 		if( conversionService.canConvert(value.getClass(), type)) {
 			return conversionService.convert(value, type);
 		}

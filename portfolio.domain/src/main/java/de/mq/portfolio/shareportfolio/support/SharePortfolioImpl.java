@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 import org.springframework.data.annotation.Id;
@@ -13,6 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.Assert;
 
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @Document(collection="Portfolio")
@@ -22,6 +24,8 @@ class SharePortfolioImpl implements SharePortfolio {
 	
 	@Indexed(unique=true)
 	private final String name;
+	
+	private PortfolioOptimisation minVariance; 
 
 
 	@Reference
@@ -148,6 +152,12 @@ class SharePortfolioImpl implements SharePortfolio {
 		}
 		this.committed=true;
 	}
+	
+	@Override
+	public Optional<PortfolioOptimisation> minVariance() {
+		return Optional.ofNullable(minVariance);
+	}
+
    
 }
 

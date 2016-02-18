@@ -16,7 +16,7 @@ class PortfolioOptimisationImpl implements PortfolioOptimisation {
 	private final double[] weights;
 	
 	private final String portfolio;
-	
+
 	
 	PortfolioOptimisationImpl() {
 		this(null, new double[]{},0);

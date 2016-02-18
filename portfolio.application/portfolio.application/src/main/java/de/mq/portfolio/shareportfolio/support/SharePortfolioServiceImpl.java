@@ -1,13 +1,14 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -68,7 +69,7 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#risk(de.mq.portfolio.shareportfolio.SharePortfolio, double[])
 	 */
 	@Override
-	public final PortfolioOptimisation risk(final SharePortfolio sharePortfolio, final double[] samples) {
+	public final PortfolioOptimisation variance(final SharePortfolio sharePortfolio, final double[] samples) {
 		Assert.notNull(sharePortfolio);
 		Assert.notNull(samples);
 		final double risk =  sharePortfolio.risk(samples);
@@ -80,11 +81,81 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#save(de.mq.portfolio.shareportfolio.PortfolioOptimisation)
 	 */
 	@Override
-	public final void save(final PortfolioOptimisation portfolioOptimisation) {
+	public final void create(final PortfolioOptimisation portfolioOptimisation) {
 		sharePortfolioRepository.save(portfolioOptimisation);
 	}
 	
+
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#save(de.mq.portfolio.shareportfolio.SharePortfolio)
+	 */
+	@Override
+	public final void save(final SharePortfolio sharePortfolio) {
+		Assert.notNull(sharePortfolio ,"SharePortfolio should be given.");
+	   sharePortfolioRepository.save(sharePortfolio);		
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#assign(de.mq.portfolio.shareportfolio.PortfolioOptimisation)
+	 */
+	@Override
+	public final SharePortfolio assign(final PortfolioOptimisation portfolioOptimisation) {
+		Assert.notNull(portfolioOptimisation, "PortfolioOptimisation should be given.");
+		final SharePortfolio  result = sharePortfolioRepository.portfolio(portfolioOptimisation.portfolio());
+		ReflectionUtils.doWithFields(result.getClass(), field -> {
+			field.setAccessible(true);
+			ReflectionUtils.setField(field, result, portfolioOptimisation);
+		}, field -> field.getType().isAssignableFrom(PortfolioOptimisation.class));
+		
+		
+		return result;
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#minVariance(java.lang.String)
+	 */
+	 @Override
+	  public final PortfolioOptimisation minVariance(final String portfolioName) {
+		  final Optional<PortfolioOptimisation> result = sharePortfolioRepository.minVariance(portfolioName);
+		
+		  if(! result.isPresent()){
+			  throw new IllegalArgumentException(String.format("No Results found for Portfolio %s.", portfolioName));
+		  }
+		  return result.get();
+		 
+	  }
 	
+    final String status(final String status, final Long counter, final Long limit) {
+	
+   	 final long max = (limit ==null) ? 0 : limit;
+											
+		if( ! status.equalsIgnoreCase("COMPLETED")){
+			return status;
+		}
+		
+		Assert.notNull(counter , "Counter should be defined in JobContent.");
+		
+		
+		if( counter < max) {
+			return "CONTINUE";
+		}
+		
+		
+		return "COMPLETED";
+		
+	}
+	
+  final Long incCounter(final Long counter) {
+		if( counter==null) {
+			return 1L;
+		}
+		
+		return counter+1;
+		
+	}
+  
+ 
 	
 
 }

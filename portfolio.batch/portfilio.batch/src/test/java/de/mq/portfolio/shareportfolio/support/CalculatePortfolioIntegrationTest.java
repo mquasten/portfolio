@@ -41,6 +41,7 @@ public class CalculatePortfolioIntegrationTest {
 		final Map<String,JobParameter> params = new HashMap<>();
 		params.put("portfolioName", new JobParameter("mq-test"));
 		params.put("samples", new JobParameter( "1000"));
+		params.put("limit", new JobParameter( "10"));
 	
 		final JobParameters jobParameters = new JobParameters(params);
 	

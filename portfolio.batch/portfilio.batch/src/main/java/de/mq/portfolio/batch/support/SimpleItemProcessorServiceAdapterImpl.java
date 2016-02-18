@@ -22,6 +22,7 @@ public class SimpleItemProcessorServiceAdapterImpl<T,R> extends AbstractServiceA
 	@SuppressWarnings("unchecked")
 	@Override
 	public final R process(final T item) throws Exception {
+		
 		super.putItem(item);
 		return (R) invokeMethod();
 	}

@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:task="http://www.springframework.org/schema/task"
-	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-3.0.xsd
@@ -30,54 +28,60 @@
 		</batch:step>
 	</batch:job>
 
-	<bean id="shareReader" class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl"  scope="job">
+	<bean id="shareReader"
+		class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl"
+		scope="job">
 		<constructor-arg>
 			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
 				<constructor-arg ref="shareService" />
 				<constructor-arg value="shares" />
 			</bean>
 		</constructor-arg>
-		
-	
+
+
 	</bean>
 
-	<bean id="shareProcessor"  class="de.mq.portfolio.batch.support.SimpleItemProcessorServiceAdapterImpl"  scope="job">
-	
+	<bean id="shareProcessor"
+		class="de.mq.portfolio.batch.support.SimpleItemProcessorServiceAdapterImpl"
+		scope="job">
+
 		<constructor-arg>
 			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
 				<constructor-arg ref="shareService" />
 				<constructor-arg value="timeCourse" />
 				<constructor-arg>
 					<list>
-						<null/>
-					</list>	
+						<null />
+					</list>
 				</constructor-arg>
 			</bean>
 		</constructor-arg>
-		
+
 	</bean>
 
 
-	<bean id="timeCourseWriter" class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl"  scope="job" >
-	
+	<bean id="timeCourseWriter"
+		class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl"
+		scope="job">
+
 		<constructor-arg>
 			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
 				<constructor-arg ref="shareService" />
 				<constructor-arg value="replacetTimeCourse" />
 				<constructor-arg>
 					<list>
-						<null/>
-					</list>	
+						<null />
+					</list>
 				</constructor-arg>
 			</bean>
 		</constructor-arg>
-		
+
 	</bean>
-	
-	
-	
-	
-	
+
+
+
+
+
 	<batch:job id="importShares">
 
 
@@ -86,17 +90,18 @@
 		<batch:step id="doImportShares">
 			<batch:tasklet>
 				<batch:chunk reader="shareCsvReader" writer="shareWriter"
-					commit-interval="1"  />
+					commit-interval="1" />
 
 			</batch:tasklet>
 		</batch:step>
 	</batch:job>
 
-	
-	
+
+
 	<bean id="shareCsvReader"
-		class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl" scope="job">
-		
+		class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl"
+		scope="job">
+
 		<constructor-arg>
 			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
 				<constructor-arg ref="shareCSVInputService" />
@@ -104,72 +109,82 @@
 				<constructor-arg>
 					<list>
 						<value>filename</value>
-					</list>	
+					</list>
 				</constructor-arg>
 			</bean>
 		</constructor-arg>
-		
-		
-		
-		
+
+
+
+
 	</bean>
-	
-	
-	<bean id="shareWriter"  class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl"  scope="job">
-	
+
+
+	<bean id="shareWriter"
+		class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl"
+		scope="job">
+
 		<constructor-arg>
 			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
 				<constructor-arg ref="shareService" />
 				<constructor-arg value="save" />
-				
+
 				<constructor-arg>
 					<list>
-						<null/>
-					</list>	
+						<null />
+					</list>
 				</constructor-arg>
 			</bean>
 		</constructor-arg>
-		
+
 	</bean>
-	
-	
-	
+
+
+
 	<batch:job id="calculatePortfolio">
 
 
 
 
-		<batch:step id="doCalculatePortfolio" next="decision" >
+		<batch:step id="doCalculatePortfolio" next="decision">
 			<batch:tasklet>
-				<batch:chunk reader="samplesReader" processor="sampleProcessor"  writer="resultWriter" commit-interval="1"  />
+				<batch:chunk reader="samplesReader" processor="sampleProcessor"
+					writer="resultWriter" commit-interval="1" />
 			</batch:tasklet>
-	      
-	        
-	       
-	     
+
+
+
+
 		</batch:step>
-	
-	
-	
-	<batch:decision id="decision" decider="countDecider">
-	
-        <batch:next on="COMPLETED" to="doCalculatePortfolio" />
-     	
-     <batch:end on="STOPPED"/>
-     	
-    </batch:decision>
-    
-   
-   
+
+
+
+		<batch:decision id="decision" decider="countDecider">
+
+			<batch:next on="CONTINUE" to="doCalculatePortfolio" />
+			<batch:next on="COMPLETED" to="doWriteCalculationResult" />
+			<batch:end on="*" />
+
+		</batch:decision>
+
+		<batch:step id="doWriteCalculationResult">
+			<batch:tasklet>
+				<batch:chunk reader="sharePortfolioReader" processor="sharePortfolioProcessor"
+					writer="sharePortfolioWriter" commit-interval="1" />
+			</batch:tasklet>
+		</batch:step>
+
 	</batch:job>
-	
-	
-	
-	
-	
-	
-	
-	<bean id="samplesReader" class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl"  scope="job">
+
+
+
+
+
+
+
+	<bean id="samplesReader"
+		class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl"
+		scope="job">
 		<constructor-arg>
 			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
 				<constructor-arg ref="sharePortfolioService" />
@@ -181,71 +196,90 @@
 					</list>
 				</constructor-arg>
 			</bean>
-			
+
 		</constructor-arg>
-		
+
 		<constructor-arg ref="calculatePortfolioContent" />
-			
-		
-		
+
+
+
 		<constructor-arg>
 			<map>
-				<entry key="portfolio"  >
-				
-				<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
-				<constructor-arg ref="sharePortfolioService" />
-				<constructor-arg value="committedPortfolio" />
-				<constructor-arg>
-				<list>
-					<value>portfolioName</value>
-				</list>
-				</constructor-arg>
-			</bean>
-					
+				<entry key="portfolio">
+
+					<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+						<constructor-arg ref="sharePortfolioService" />
+						<constructor-arg value="committedPortfolio" />
+						<constructor-arg>
+							<list>
+								<value>portfolioName</value>
+							</list>
+						</constructor-arg>
+					</bean>
+
+				</entry>
+
+				<entry key="counter">
+
+					<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+						<constructor-arg ref="sharePortfolioService" />
+						<constructor-arg value="incCounter" />
+						<constructor-arg>
+							<list>
+								<value>counter</value>
+							</list>
+						</constructor-arg>
+					</bean>
+
 				</entry>
 			</map>
-		
+
 		</constructor-arg>
-	
+
 	</bean>
-	
-	<bean  id="calculatePortfolioContent" class="de.mq.portfolio.batch.support.JobContentImpl"   scope="job"/>
-	
-	<bean id="sampleProcessor"  class="de.mq.portfolio.batch.support.SimpleItemProcessorServiceAdapterImpl"  scope="job">
-	
+
+	<bean id="calculatePortfolioContent" class="de.mq.portfolio.batch.support.JobContentImpl"
+		scope="job" />
+
+	<bean id="sampleProcessor"
+		class="de.mq.portfolio.batch.support.SimpleItemProcessorServiceAdapterImpl"
+		scope="job">
+
 		<constructor-arg>
 			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
 				<constructor-arg ref="sharePortfolioService" />
-				<constructor-arg value="risk" />
+				<constructor-arg value="variance" />
 				<constructor-arg>
 					<list>
 						<value>portfolio</value>
-						<null/>
-						
-					</list>	
+						<null />
+
+					</list>
 				</constructor-arg>
 			</bean>
 		</constructor-arg>
 		<constructor-arg ref="calculatePortfolioContent" />
 	</bean>
-	
-	
-	<bean id="resultWriter"  class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl"  scope="job">
-	
+
+
+	<bean id="resultWriter"
+		class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl"
+		scope="job">
+
 		<constructor-arg>
 			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
 				<constructor-arg ref="sharePortfolioService" />
-				<constructor-arg value="save" />
+				<constructor-arg value="create" />
 				<constructor-arg>
 					<list>
-						<null/>
-					</list>	
+						<null />
+					</list>
 				</constructor-arg>
 			</bean>
 		</constructor-arg>
-		
+
 	</bean>
-	
+
 
 
 	<bean id="jobRepository"
@@ -265,7 +299,88 @@
 
 
 
-	<bean id= "countDecider" class="de.mq.portfolio.batch.support.SimpleDeciderImpl" /> 
+	<bean id="countDecider" class="de.mq.portfolio.batch.support.SimpleDeciderImpl">
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+				<constructor-arg ref="sharePortfolioService" />
+				<constructor-arg value="status" />
+				<constructor-arg>
+					<list>
+						<null />
+						<value>counter</value>
+						<value>limit</value>
+					</list>
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
+		<constructor-arg ref="calculatePortfolioContent" />
+
+	</bean>
+
+
+
+	<bean id="sharePortfolioReader"
+		class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl"
+		scope="job">
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+				<constructor-arg ref="sharePortfolioService" />
+				<constructor-arg value="minVariance" />
+				<constructor-arg>
+					<list>
+						<value>portfolioName</value>
+					</list>
+				</constructor-arg>
+			</bean>
+
+		</constructor-arg>
+
+		<constructor-arg ref="calculatePortfolioContent" />
+
+
+	</bean>
+
+
+	<bean id="sharePortfolioWriter"
+		class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl"
+		scope="job">
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+				<constructor-arg ref="sharePortfolioService" />
+				<constructor-arg value="save" />
+				<constructor-arg>
+					<list>
+						<null />
+					</list>
+				</constructor-arg>
+			</bean>
+
+		</constructor-arg>
+
+		<constructor-arg ref="calculatePortfolioContent" />
+
+	</bean>
+
+	<bean id="sharePortfolioProcessor"
+		class="de.mq.portfolio.batch.support.SimpleItemProcessorServiceAdapterImpl"
+		scope="job">
+
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+				<constructor-arg ref="sharePortfolioService" />
+				<constructor-arg value="assign" />
+				<constructor-arg>
+					<list>
+
+						<null />
+
+					</list>
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
+		<constructor-arg ref="calculatePortfolioContent" />
+	</bean>
+
 
 
 </beans> 
