@@ -1,5 +1,6 @@
 package de.mq.portfolio.batch.support;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,4 +61,8 @@ abstract class AbstractServiceAdapter {
 		params.put(null, item);
 	}
 
+	protected final Map<String, Object> params() {
+		return  Collections.unmodifiableMap(params);
+	}
+	
 }

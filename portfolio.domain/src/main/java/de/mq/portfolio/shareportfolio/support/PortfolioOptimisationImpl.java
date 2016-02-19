@@ -16,16 +16,21 @@ class PortfolioOptimisationImpl implements PortfolioOptimisation {
 	private final double[] weights;
 	
 	private final String portfolio;
+	
+	private  final Long samples; 
 
 	
-	PortfolioOptimisationImpl() {
-		this(null, new double[]{},0);
+	
+	@SuppressWarnings("unused")
+	private PortfolioOptimisationImpl() {
+		this(null, new double[]{},0,1L);
 	}
 	
-	PortfolioOptimisationImpl(final String portfolio, final double[] weights, final double variance) {
+	PortfolioOptimisationImpl(final String portfolio, final double[] weights, final double variance, final Long samples) {
 		this.variance = variance;
 		this.weights = weights;
 		this.portfolio = portfolio;
+		this.samples=samples;
 	}
 	
 	
@@ -55,5 +60,9 @@ class PortfolioOptimisationImpl implements PortfolioOptimisation {
 		return portfolio;
 	}
 
+	@Override
+	public Long samples() {
+		return samples;
+	}
 
 }

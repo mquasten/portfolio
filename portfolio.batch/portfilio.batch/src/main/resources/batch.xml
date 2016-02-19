@@ -147,7 +147,7 @@
 
 
 		<batch:step id="doCalculatePortfolio" next="decision">
-			<batch:tasklet>
+			<batch:tasklet ref="">
 				<batch:chunk reader="samplesReader" processor="sampleProcessor"
 					writer="resultWriter" commit-interval="1" />
 			</batch:tasklet>
@@ -277,6 +277,20 @@
 				</constructor-arg>
 			</bean>
 		</constructor-arg>
+		
+		<constructor-arg ref="calculatePortfolioContent" />
+		
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+				<constructor-arg ref="sharePortfolioService" />
+				<constructor-arg value="aggregate" />
+				<constructor-arg>
+					<list>
+						<null />
+					</list>
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
 
 	</bean>
 
@@ -358,6 +372,7 @@
 		</constructor-arg>
 
 		<constructor-arg ref="calculatePortfolioContent" />
+		
 
 	</bean>
 

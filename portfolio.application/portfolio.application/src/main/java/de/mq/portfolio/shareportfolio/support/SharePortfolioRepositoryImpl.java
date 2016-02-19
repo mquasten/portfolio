@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -13,6 +14,8 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
+
+import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -61,21 +64,27 @@ class SharePortfolioRepositoryImpl implements SharePortfolioRepository {
 		
 		Aggregation agg = Aggregation.newAggregation(
 				Aggregation.match(Criteria.where("portfolio").is(name)),
-				Aggregation.group("portfolio").min("variance").as("variance"),
-				Aggregation.project("variance").and("portfolio").previousOperation()
+				Aggregation.group("portfolio").min("variance").as("variance").sum("samples").as("samples"),
+				Aggregation.project("variance", "samples").and("portfolio").previousOperation()
 				
 					
 			);
 		
 		AggregationResults<? extends PortfolioOptimisation> groupResults  = mongoOperations.aggregate(agg, PortfolioOptimisationImpl.class, PortfolioOptimisationImpl.class);
+		
+		
+		
 		final List<? extends PortfolioOptimisation> aggregationResults = groupResults.getMappedResults();
 	
 		
 		
 		final Collection<PortfolioOptimisation> results = new ArrayList<>();
 		aggregationResults.forEach(r -> {
+			
 			final Query query =new Query(Criteria.where("variance").lte(r.variance()));
-			results.addAll(mongoOperations.find(query, PortfolioOptimisationImpl.class));
+			final List<? extends PortfolioOptimisation> existing =  mongoOperations.find(query, PortfolioOptimisationImpl.class);
+			existing.stream().forEach(result -> {ReflectionUtils.doWithFields(result.getClass(), field -> { field.setAccessible(true);ReflectionUtils.setField(field, result, r.samples());}, field -> field.getName().equals("samples"));});
+			results.addAll(existing);
 		});
 	
 		return Optional.ofNullable(DataAccessUtils.singleResult(results));

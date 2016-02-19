@@ -8,4 +8,6 @@ public interface PortfolioOptimisation {
 
 	String portfolio();
 
+	Long samples();
+
 }
