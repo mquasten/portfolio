@@ -18,7 +18,11 @@ public interface TimeCourse {
 
 	List<Data> rates();
 
+	List<Data> dividends();
+
 	double correlation(final TimeCourse other);
+
+	
 
 	
 

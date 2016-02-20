@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Reference;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -21,6 +22,8 @@ import de.mq.portfolio.share.TimeCourse;
 
 @Document(collection="TimeCourse")
 class TimeCourseImpl implements TimeCourse {
+	@Id
+	private String id; 
 	
 	private Share share; 
 	
@@ -66,6 +69,8 @@ class TimeCourseImpl implements TimeCourse {
 		code=share.code();
 		final Data[] samples = toArray(rates);
 		double n = rates.size()-1;
+		
+	
 		meanRate=  sum(samples, (v, i) -> rateOfReturn(v, i)) /n;
 		variance=sum(samples , (v,i) -> Math.pow(rateOfReturn(v, i) - meanRate, 2)) / n; 
 	}
@@ -75,7 +80,7 @@ class TimeCourseImpl implements TimeCourse {
 	}
 
 	private double rateOfReturn(final Data[] v, final int i) {
-		return  (v[i-1].value() - v[i].value())/v[i-1].value();
+		return  (v[i].value() - v[i-1].value())/v[i-1].value();
 	}
 	/*
 	 * (non-Javadoc)
@@ -90,18 +95,13 @@ class TimeCourseImpl implements TimeCourse {
 		IntStream.range(1, otherSamples.length).forEach(i -> rateOfReturnDelta.put(otherSamples[i].date(), rateOfReturn(otherSamples,i) - other.meanRate()));
 		final Collection<Data> inBoth = IntStream.range(0, samples.length).filter(i -> rateOfReturnDelta.containsKey(samples[i].date())|| i == 0 ).mapToObj(i -> samples[i]).collect(Collectors.toList());
 		final Data[] sampleVector = toArray(inBoth);
-		
+	
 		return   sum(sampleVector, (v,i) -> ( rateOfReturn(v, i) - meanRate ) *  rateOfReturnDelta.get(sampleVector[i].date()))  / (sampleVector.length-1);
 	
 	
 	}
 	
-	@Override
-	public final double correlation(final TimeCourse other) {
-		return covariance(other)/(Math.sqrt(variance) * Math.sqrt(other.variance()));
-		
-		
-	}
+	
 	
 	private <T> double  sum(final Data[] samples, final SampleFunction function)  {
 		return IntStream.range(1, samples.length).mapToDouble(i -> function.f(samples,i)).reduce((result, yi) ->  result +yi).orElse(0);
@@ -132,6 +132,17 @@ class TimeCourseImpl implements TimeCourse {
 	@Override
 	public List<Data> rates() {
 		return Collections.unmodifiableList(this.rates);
+	}
+
+	@Override
+	public List<Data> dividends() {
+		return Collections.unmodifiableList(this.dividends);
+	}
+	
+	
+	@Override
+	public final double correlation(final TimeCourse other) {
+		return covariance(other) / ( Math.sqrt(variance)* Math.sqrt(other.variance()));
 	}
 	
 }

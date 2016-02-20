@@ -4,8 +4,8 @@ import java.util.Date;
 
 public interface Data {
 
-	public abstract Date date();
+	Date date();
 
-	public abstract double value();
+	double value();
 
 }

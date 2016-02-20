@@ -56,7 +56,7 @@ class ShareImpl implements Share {
 	 */
 	@Override
 	public String index() {
-		return name;
+		return index;
 	}
 
 	/*
