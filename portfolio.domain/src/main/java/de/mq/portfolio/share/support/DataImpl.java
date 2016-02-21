@@ -6,16 +6,16 @@ import java.util.Date;
 
 import org.springframework.data.annotation.Transient;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
-
 import de.mq.portfolio.share.Data;
 
 
 
 class DataImpl implements Data {
 	
+	static final String DATE_PATTERN = "yyyy-MM-dd";
+
 	@Transient
-	private final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	private final SimpleDateFormat df = new SimpleDateFormat(DATE_PATTERN);
 	
 	private String  date;
 	
@@ -26,9 +26,8 @@ class DataImpl implements Data {
 	@Override
 	public Date date() {
 		try {
-			if( ! StringUtils.hasText(date)) {
-				Assert.hasText(date, "Date is mandatory");
-			}
+			Assert.hasText(date);
+			
 			return df.parse(this.date);
 		} catch (ParseException e) {
 			 throw new IllegalArgumentException(String.format("Invalid Date %s", this.date));

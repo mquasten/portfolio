@@ -134,12 +134,19 @@ class TimeCourseImpl implements TimeCourse {
 		return Collections.unmodifiableList(this.rates);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.share.TimeCourse#dividends()
+	 */
 	@Override
 	public List<Data> dividends() {
 		return Collections.unmodifiableList(this.dividends);
 	}
 	
-	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.share.TimeCourse#correlation(de.mq.portfolio.share.TimeCourse)
+	 */
 	@Override
 	public final double correlation(final TimeCourse other) {
 		return covariance(other) / ( Math.sqrt(variance)* Math.sqrt(other.variance()));
@@ -147,9 +154,20 @@ class TimeCourseImpl implements TimeCourse {
 	
 }
 
+/**
+ * Austauschbarer Algorithmus auf einer zeitvarianten REihe
+ * @author Admin
+ *
+ */
 @FunctionalInterface
 interface SampleFunction {
 	
+	/**
+	 * Berechnung auf einem SampleVector.
+	 * @param samples Array mit Daten beschreibt eine zeitvariante Reihe
+	 * @param i der Index des aktuellen Wertes in der Reihen 
+	 * @return das Ergebnis der Berechnung
+	 */
 	 double f(final Data[]  samples, int i);
 	
 }

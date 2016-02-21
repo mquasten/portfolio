@@ -8,12 +8,16 @@ import com.mongodb.DBObject;
 @Component
 class TimeCourseListenerImpl extends AbstractMongoEventListener<TimeCourseImpl> {
 
+	static final String CODE = "code";
+	static final String VARIANCE = "variance";
+	static final String MEAN_RATE = "meanRate";
+
 	@Override
 	public void onBeforeSave(final TimeCourseImpl timeCourse, final DBObject dbo) {
 		 timeCourse.onBeforeSave();
-		 dbo.put("meanRate", timeCourse.meanRate());
-		 dbo.put("variance", timeCourse.variance());
-		 dbo.put("code" , timeCourse.share().code());
+		 dbo.put(MEAN_RATE, timeCourse.meanRate());
+		 dbo.put(VARIANCE, timeCourse.variance());
+		 dbo.put(CODE , timeCourse.share().code());
 	}
 	
 	
