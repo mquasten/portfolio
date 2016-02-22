@@ -1,29 +1,16 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.util.ArrayList;
-
 import java.util.Collection;
-
 import java.util.List;
-
-
-
-
-
+import java.util.Optional;
 
 import junit.framework.Assert;
 
-
-
-
-
-
 import org.junit.Test;
 import org.mockito.Mockito;
-
+import org.springframework.beans.BeanUtils;
 import org.springframework.dao.support.DataAccessUtils;
-
-
 import org.springframework.util.CollectionUtils;
 
 import de.mq.portfolio.share.TimeCourse;
@@ -32,6 +19,10 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 public class SharePortfolioServiceTest {
 	
+	private static final long NEXT_COUNTER = 2L;
+	private static final String STATUS_STPPED = "STOPPED";
+	private static final Long LIMIT = 10L;
+	private static final Long COUNTER = 1L;
 	private static final double VARIANCE = 1e-3;
 	private static final int SAMPLES_SIZE = 100;
 	private static final String NAME = "mq-test";
@@ -113,5 +104,58 @@ public class SharePortfolioServiceTest {
 		Assert.assertEquals(1L, (long) result.samples());
 		Assert.assertEquals(weightingVector, result.weights());
 		Assert.assertEquals(NAME, result.portfolio());
+	}
+	
+	@Test
+	public final void create() {
+		final PortfolioOptimisation portfolioOptimisation = Mockito.mock(PortfolioOptimisation.class);
+		sharePortfolioService.create(portfolioOptimisation);
+		Mockito.verify(sharePortfolioRepository).save(portfolioOptimisation);
+	}
+	
+	
+	@Test
+	public final void save() {
+		sharePortfolioService.save(sharePortfolio);
+		Mockito.verify(sharePortfolioRepository).save(sharePortfolio);
+	}
+	
+	@Test
+	public final void assign() {
+		final SharePortfolio sharePortfolio = BeanUtils.instantiateClass(SharePortfolioImpl.class);
+		Mockito.when(sharePortfolioRepository.portfolio(NAME)).thenReturn(sharePortfolio);
+		final PortfolioOptimisation portfolioOptimisation = Mockito.mock(PortfolioOptimisation.class);
+		Mockito.when(portfolioOptimisation.portfolio()).thenReturn(NAME);
+		Assert.assertFalse(sharePortfolio.minVariance().isPresent());
+		Assert.assertEquals(sharePortfolio, sharePortfolioService.assign(portfolioOptimisation));
+		
+		Assert.assertTrue(sharePortfolio.minVariance().isPresent());
+		Assert.assertEquals(portfolioOptimisation, sharePortfolio.minVariance().get());
+	}
+	@Test
+	public final void  minVariance() {
+		final PortfolioOptimisation portfolioOptimisation  = Mockito.mock(PortfolioOptimisation.class);
+		Mockito.when(sharePortfolioRepository.minVariance(NAME)).thenReturn(Optional.of(portfolioOptimisation));
+		
+		Assert.assertEquals(portfolioOptimisation, sharePortfolioService.minVariance(NAME));
+	}
+	@Test(expected=IllegalArgumentException.class)
+	public final void  minVarianceNotFound() {
+		Mockito.when(sharePortfolioRepository.minVariance(NAME)).thenReturn(Optional.empty());
+		sharePortfolioService.minVariance(NAME);
+	}
+	
+	@Test
+	public final void  status() {
+		Assert.assertEquals(SharePortfolioServiceImpl.STATUS_CONTINUE, (((SharePortfolioServiceImpl)  sharePortfolioService).status(SharePortfolioServiceImpl.STATUS_COMPLETED, COUNTER, LIMIT)));
+		Assert.assertEquals(SharePortfolioServiceImpl.STATUS_COMPLETED, (((SharePortfolioServiceImpl)  sharePortfolioService).status(SharePortfolioServiceImpl.STATUS_COMPLETED,LIMIT, LIMIT)));
+		Assert.assertEquals(STATUS_STPPED, (((SharePortfolioServiceImpl)  sharePortfolioService).status(STATUS_STPPED, COUNTER, LIMIT)));
+		Assert.assertEquals(SharePortfolioServiceImpl.STATUS_COMPLETED, (((SharePortfolioServiceImpl)  sharePortfolioService).status(SharePortfolioServiceImpl.STATUS_COMPLETED,COUNTER, null)));
+	}
+	
+	@Test
+	public final void  incCounter() {
+		 Assert.assertEquals(NEXT_COUNTER, (long) ((SharePortfolioServiceImpl)  sharePortfolioService).incCounter(COUNTER));
+		 Assert.assertEquals(COUNTER, ((SharePortfolioServiceImpl)  sharePortfolioService).incCounter(null));
 	}
 }

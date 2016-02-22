@@ -37,6 +37,11 @@ class SharePortfolioImpl implements SharePortfolio {
 	private double[][] correlations;
 
 	private boolean committed;
+	
+	@SuppressWarnings("unused")
+	private SharePortfolioImpl() {
+		name=null;
+	}
 
 	SharePortfolioImpl(final String name, final List<TimeCourse> timeCourses) {
 		this.name = name;

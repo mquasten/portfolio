@@ -19,6 +19,8 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 @Service("sharePortfolioService")
 class SharePortfolioServiceImpl implements SharePortfolioService {
 
+	static final String STATUS_CONTINUE = "CONTINUE";
+	static final String STATUS_COMPLETED = "COMPLETED";
 	private final SharePortfolioRepository sharePortfolioRepository;
 
 	@Autowired
@@ -158,17 +160,17 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 
 		final long max = (limit == null) ? 0 : limit;
 
-		if (!status.equalsIgnoreCase("COMPLETED")) {
+		if (!status.equalsIgnoreCase(STATUS_COMPLETED)) {
 			return status;
 		}
 
 		Assert.notNull(counter, "Counter should be defined in JobContent.");
 
 		if (counter < max) {
-			return "CONTINUE";
+			return STATUS_CONTINUE;
 		}
 
-		return "COMPLETED";
+		return STATUS_COMPLETED;
 
 	}
 
