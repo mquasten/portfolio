@@ -57,6 +57,7 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 		Assert.notNull(size);
 		Assert.isTrue(size.intValue() > 1);
 		final int n = sharePortfolio.timeCourses().size();
+		Assert.isTrue(n > 2 , "Al least 2 Timecourses must be present." );
 		return IntStream.range(0, size.intValue()).mapToObj(i -> sample(n)).collect(Collectors.toList());
 	}
 
@@ -87,8 +88,8 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 	public final PortfolioOptimisation variance(final SharePortfolio sharePortfolio, final double[] samples) {
 		Assert.notNull(sharePortfolio);
 		Assert.notNull(samples);
-		final double risk = sharePortfolio.risk(samples);
-		return new PortfolioOptimisationImpl(sharePortfolio.name(), samples, risk, 1L);
+		final double variance = sharePortfolio.risk(samples);
+		return new PortfolioOptimisationImpl(sharePortfolio.name(), samples, variance, 1L);
 	}
 
 	/*
