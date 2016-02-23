@@ -9,27 +9,25 @@ import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
 
-
-
-
-
 @Service("shareService")
 class ShareServiceImpl implements ShareService {
-	
+
 	private HistoryRepository historyRepository;
 
 	private ShareRepository shareRepository;
-	
+
 	@Autowired
 	ShareServiceImpl(HistoryRepository historyRepository, ShareRepository shareRepository) {
 		this.historyRepository = historyRepository;
 		this.shareRepository = shareRepository;
 	}
 
-
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.share.support.ShareService#timeCourse(de.mq.portfolio.share.support.Share)
+	 * 
+	 * @see
+	 * de.mq.portfolio.share.support.ShareService#timeCourse(de.mq.portfolio.
+	 * share.support.Share)
 	 */
 	@Override
 	public final TimeCourse timeCourse(final Share share) {
@@ -38,29 +36,37 @@ class ShareServiceImpl implements ShareService {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.share.support.ShareService#replacetTmeCourse(de.mq.portfolio.share.support.TimeCourse)
+	 * 
+	 * @see
+	 * de.mq.portfolio.share.support.ShareService#replacetTmeCourse(de.mq.portfolio
+	 * .share.support.TimeCourse)
 	 */
 	@Override
 	public final void replacetTimeCourse(final TimeCourse timeCourse) {
 		shareRepository.deleteTimeCourse(timeCourse.share());
 		shareRepository.save(timeCourse);
 	}
+
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see de.mq.portfolio.share.support.ShareService#shares()
 	 */
 	@Override
 	public final Collection<Share> shares() {
 		return shareRepository.shares();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.share.support.ShareService#save(de.mq.portfolio.share.support.Share)
+	 * 
+	 * @see
+	 * de.mq.portfolio.share.support.ShareService#save(de.mq.portfolio.share.
+	 * support.Share)
 	 */
 	@Override
 	public final void save(final Share share) {
 		shareRepository.save(share);
 	}
-	
+
 }
