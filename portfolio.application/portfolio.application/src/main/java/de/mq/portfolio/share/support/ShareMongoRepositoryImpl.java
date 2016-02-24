@@ -17,6 +17,8 @@ import de.mq.portfolio.share.TimeCourse;
 @Repository("shareRepository")
 class ShareMongoRepositoryImpl implements ShareRepository {
 	
+	static final String CODE_FIELD = "code";
+	static final String SHARE_CODE_FIELD = "share.code";
 	private final MongoOperations mongoOperations;
 
 	@Autowired
@@ -47,14 +49,14 @@ class ShareMongoRepositoryImpl implements ShareRepository {
 	 */
 	@Override
 	public final void deleteTimeCourse(final Share share) {
-		final Query query = new Query(Criteria.where("share.code").is(share.code()));
+		final Query query = new Query(Criteria.where(SHARE_CODE_FIELD).is(share.code()));
 		mongoOperations.remove(query, TimeCourseImpl.class);
 	}
 	
 	@Override
 	public final void save(final Share share) {
-		final Query query = new Query(Criteria.where("code").is(share.code()));
-		Share existing =  mongoOperations.findOne(query, ShareImpl.class);
+		final Query query = new Query(Criteria.where(CODE_FIELD).is(share.code()));
+		final Share existing =  mongoOperations.findOne(query, ShareImpl.class);
 		if( existing != null) {
 			ReflectionUtils.doWithFields(ShareImpl.class, field -> {
 				  field.setAccessible(true);

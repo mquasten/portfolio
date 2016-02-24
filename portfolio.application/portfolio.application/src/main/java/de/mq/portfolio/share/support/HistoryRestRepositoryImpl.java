@@ -19,18 +19,23 @@ import de.mq.portfolio.share.TimeCourse;
 @Repository
 class HistoryRestRepositoryImpl implements HistoryRepository {
 	
-	@Autowired
-	private RestOperations restOperations; 
 	
-	private final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	private final RestOperations restOperations; 
+	
+
+
+
+	final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 	
 	private final String url = "http://real-chart.finance.yahoo.com/table.csv?s=%s&a=%s&b=%s&c=%s";
 
 	
 	private final int periodeInDays = 365;
 	
-
-	
+	@Autowired
+	HistoryRestRepositoryImpl(final RestOperations restOperations) {
+		this.restOperations = restOperations;
+	}
 
 	@Override
 	public final TimeCourse history(final Share share ) {
