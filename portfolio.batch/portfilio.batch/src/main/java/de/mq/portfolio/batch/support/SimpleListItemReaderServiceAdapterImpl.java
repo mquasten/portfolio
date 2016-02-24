@@ -40,7 +40,7 @@ class SimpleListItemReaderServiceAdapterImpl<T> extends AbstractServiceAdapter i
 	
 
 	
-	private List<T> items = null;
+	private List<T> items ;
 	
 	
 	SimpleListItemReaderServiceAdapterImpl(final MethodParameterInjection<String> methodParameterInjection) {
