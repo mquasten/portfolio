@@ -20,7 +20,6 @@ class JobContentImpl<T> implements JobContent<T>   {
 	}
 	
 	JobContentImpl(final Map<T,Object> content) {
-		content.clear();
 		this.content.putAll(content);
 	}
 
