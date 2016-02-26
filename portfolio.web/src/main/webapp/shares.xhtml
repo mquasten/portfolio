@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="template.xhtml">
+	<ui:param name="headline" value="Aktien suchen" />
+
+<ui:define name="content">
+
+<h:form>
+
+<h:panelGrid style="margin-bottom: 25px;" columns="2">
+<h:panelGrid id="searchGrid"   columns="2"   >
+ <f:facet name="header">
+ 		Aktie suchen
+ </f:facet>
+         	<h:outputLabel for="name" value="Name"/>
+            <p:inputText id="name"  value="#{sharesView.name}" />
+            <h:outputLabel for="code" value="Code"/>
+            <p:inputText id="code"  value="#{sharesView.code}"  />  
+            <h:outputLabel for="index" value="Index"/>
+            <p:inputText id="index"  value="#{sharesView.index}"    />  
+            
+            <f:facet name="footer">
+         <h:panelGroup style="display:block; text-align:center">
+            <p:commandButton id="searchButton" value="Suchen"  process="searchGrid" update="@form" />
+            
+          
+         </h:panelGroup>
+		</f:facet>	
+		
+</h:panelGrid>
+
+<h:panelGrid style="margin-left: 25px;"  >
+<f:facet name="header">
+ 		<h:outputText value="Portfolio"  />
+ </f:facet>
+
+<h:outputText  value="xxxx"/>
+
+
+
+</h:panelGrid>
+
+</h:panelGrid>	
+
+ <p:dataTable id="sharesTable" var="share" value="#{sharesController.shares(sharesView.search)}" selection="#{sharesView.selectedShare}" rowKey="#{share.code()}"  scrollable="true"   scrollWidth="100%"   resizableColumns="true"   scrollHeight="400"  >
+        
+        <p:column selectionMode="single" style="width:16px;text-align:center"/>
+        <p:column headerText="Name">
+            <h:outputText value="#{share.name()}" />
+        </p:column>
+        <p:column headerText="Code">
+            <h:outputText value="#{share.code()}" />
+        </p:column>
+        <p:column headerText="Index">
+            <h:outputText value="#{share.index()}" />
+        </p:column>
+        
+        
+    </p:dataTable>
+
+
+
+</h:form>
+	
+	
+</ui:define>
+
+</ui:composition>
+</html>

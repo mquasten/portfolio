@@ -1,0 +1,17 @@
+
+.hide-column-names table thead tr {
+    display: none;
+}
+
+.color-red {
+    color: #F00;
+}
+
+input[type='file'] {
+   color: transparent ;
+
+}
+
+
+
+

@@ -9,5 +9,7 @@ public interface Share {
 	public abstract String code();
 
 	public abstract boolean isIndex();
+	
+	
 
 }
