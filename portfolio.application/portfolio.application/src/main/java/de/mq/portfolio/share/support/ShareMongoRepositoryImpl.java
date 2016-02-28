@@ -2,14 +2,18 @@ package de.mq.portfolio.share.support;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
@@ -34,6 +38,51 @@ class ShareMongoRepositoryImpl implements ShareRepository {
 		return Collections.unmodifiableList( mongoOperations.findAll(ShareImpl.class));
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.share.support.ShareRepository#timeCourses(org.springframework.data.domain.Pageable, de.mq.portfolio.share.Share)
+	 */
+	@Override
+	public final  Collection<TimeCourse> timeCourses(final Pageable pageable, final Share criteria) {
+		final Query query = query(criteria);
+		
+		query.skip(pageable.getOffset());
+		query.limit(pageable.getPageSize());
+		if(pageable.getSort() != null ){
+			query.with(pageable.getSort());
+		}
+		
+		return Collections.unmodifiableList(mongoOperations.find(query, TimeCourseImpl.class));
+		
+		
+	}
+
+	private Query query(final Share criteria) {
+		final Query query = new Query();
+		
+		if( StringUtils.hasText(criteria.name())) {
+			
+			query.addCriteria(Criteria.where("share.name").regex(pattern(criteria.name())));
+		}
+		
+		if( StringUtils.hasText(criteria.code())) {
+			query.addCriteria(Criteria.where("share.code").regex(pattern(criteria.code())));
+		}
+		
+		if( StringUtils.hasText(criteria.index())) {
+			query.addCriteria(Criteria.where("share.index").is(criteria.index()));
+		}
+		return query;
+	}
+
+	private Pattern pattern(final String pattern) {
+		return Pattern.compile( pattern, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+	}
+	
+	@Override
+	public Pageable pageable(final Share criteria, final Number pageSize) {
+		return new ClosedIntervalPageRequest(pageSize.intValue(),new Sort("name", "id"), mongoOperations.count(query(criteria), TimeCourseImpl.class));
+	}
 
 	/*
 	 * (non-Javadoc)

@@ -18,15 +18,15 @@
  		Aktie suchen
  </f:facet>
          	<h:outputLabel for="name" value="Name"/>
-            <p:inputText id="name"  value="#{sharesView.name}" />
+            <p:inputText id="name"  value="#{sharesSearch.name}" />
             <h:outputLabel for="code" value="Code"/>
-            <p:inputText id="code"  value="#{sharesView.code}"  />  
+            <p:inputText id="code"  value="#{sharesSearch.code}"  />  
             <h:outputLabel for="index" value="Index"/>
-            <p:inputText id="index"  value="#{sharesView.index}"    />  
+            <p:inputText id="index"  value="#{sharesSearch.index}"    />  
             
             <f:facet name="footer">
          <h:panelGroup style="display:block; text-align:center">
-            <p:commandButton id="searchButton" value="Suchen"  process="searchGrid" update="@form" />
+            <p:commandButton id="searchButton" value="Suchen"  process="searchGrid" update="sharesTable" action="#{sharesController.page(sharesSearch)}" />
             
           
          </h:panelGroup>
@@ -41,23 +41,32 @@
 
 <h:outputText  value="xxxx"/>
 
-
-
 </h:panelGrid>
 
 </h:panelGrid>	
 
- <p:dataTable id="sharesTable" var="share" value="#{sharesController.shares(sharesView.search)}" selection="#{sharesView.selectedShare}" rowKey="#{share.code()}"  scrollable="true"   scrollWidth="100%"   resizableColumns="true"   scrollHeight="400"  >
+ <p:dataTable id="sharesTable" var="entry" value="#{sharesController.timeCourses(sharesSearch)}" selection="#{sharesSearch.selectedTimeCourse}" rowKey="#{entry.key.code()}"  lazy="true"    resizableColumns="true"     >
+        <f:facet name="header">  
+       
+  
+  <p:commandButton icon="ui-icon-next"   action="#{sharesController.next(sharesSearch)}"  process="@this"  update="sharesTable"  disabled="#{!sharesSearch.pageable.hasNext()}" />
+            <p:commandButton icon="ui-icon-last" action="#{sharesController.last(sharesSearch)}"  process="@this"     update="sharesTable"  disabled="#{sharesSearch.pageable.isLast()}"  />
         
+        	<h:outputText  value="#{sharesSearch.pageable.pageNumber}"/>
+        
+           <p:commandButton icon="ui-icon-prev" action="#{sharesController.previous(sharesSearch)}" process="@this"  update="sharesTable"  disabled="#{!sharesSearch.pageable.hasPrevious()}"   />
+           <p:commandButton icon="ui-icon-first" action="#{sharesController.first(sharesSearch)}"   process="@this" update="sharesTable"  disabled="#{sharesSearch.pageable.isFirst()}"  />
+
+        </f:facet>
         <p:column selectionMode="single" style="width:16px;text-align:center"/>
         <p:column headerText="Name">
-            <h:outputText value="#{share.name()}" />
+            <h:outputText value="#{entry.key.name()}" />
         </p:column>
         <p:column headerText="Code">
-            <h:outputText value="#{share.code()}" />
+            <h:outputText value="#{entry.key.code()}" />
         </p:column>
         <p:column headerText="Index">
-            <h:outputText value="#{share.index()}" />
+            <h:outputText value="#{entry.key.index()}" />
         </p:column>
         
         

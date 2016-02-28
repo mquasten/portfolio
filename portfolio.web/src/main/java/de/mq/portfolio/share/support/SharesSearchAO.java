@@ -3,19 +3,27 @@ package de.mq.portfolio.share.support;
 import java.io.Serializable;
 
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import de.mq.portfolio.share.Share;
+import de.mq.portfolio.share.TimeCourse;
 
-@Component("sharesView")
+@Component("sharesSearch")
 @Scope("view")
-public class SharesView  implements Serializable{
+public class SharesSearchAO  implements Serializable{
 	
 
 	private static final long serialVersionUID = 1L;
-	private Share selectedShare;
+	private TimeCourse selectedTimeCourse;
 	
 	
+	private Pageable pageable; 
+
+	
+
+	
+
 	private String name;
 	
 	
@@ -24,13 +32,7 @@ public class SharesView  implements Serializable{
 	
 	private String index; 
 
-	public final Share getSelectedShare() {
-		return selectedShare;
-	}
-
-	public final void setSelectedShare(final Share selectedShare) {
-		this.selectedShare = selectedShare;
-	}
+	
 	
 	public final Share getSearch() {
 		return new ShareImpl(code,name,index);
@@ -60,5 +62,22 @@ public class SharesView  implements Serializable{
 	public void setIndex(String index) {
 		this.index = index;
 	}
+	
+	public TimeCourse getSelectedTimeCourse() {
+		return selectedTimeCourse;
+	}
+
+	public void setSelectedTimeCourse(TimeCourse selectedTimeCourse) {
+		this.selectedTimeCourse = selectedTimeCourse;
+	}
+	
+	public Pageable getPageable() {
+		return pageable;
+	}
+
+	public void setPageable(Pageable pageable) {
+		this.pageable = pageable;
+	}
+	
 
 }

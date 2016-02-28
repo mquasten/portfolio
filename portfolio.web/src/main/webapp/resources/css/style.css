@@ -12,6 +12,19 @@ input[type='file'] {
 
 }
 
+.ui-icon-next{
+    background-image: url("#{resource['images/arrow_right.png']}") !important;
+}
+
+.ui-icon-prev{
+    background-image: url("#{resource['images/arrow_left.png']}") !important;
+}
 
 
+.ui-icon-first{
+    background-image: url("#{resource['images/arrow_in.png']}") !important;
+}
+.ui-icon-last{
+    background-image: url("#{resource['images/arrow_out.png']}") !important;
+}
 
