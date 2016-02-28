@@ -55,6 +55,8 @@ class TimeCourseImpl implements TimeCourse {
    
    
    
+   
+   
 	
 	/* (non-Javadoc)
 	 * @see de.mq.portfolio.share.support.support.TimeCourse#share()
@@ -151,6 +153,14 @@ class TimeCourseImpl implements TimeCourse {
 	public final double correlation(final TimeCourse other) {
 		return covariance(other) / ( Math.sqrt(variance)* Math.sqrt(other.variance()));
 	}
+	
+	@Override
+ 	public final double standardDeviation() {
+ 	
+ 		return Math.sqrt(variance);
+ 	}
+	
+	
 	
 }
 

@@ -22,6 +22,8 @@ public interface TimeCourse {
 
 	double correlation(final TimeCourse other);
 
+	double standardDeviation();
+
 	
 
 	

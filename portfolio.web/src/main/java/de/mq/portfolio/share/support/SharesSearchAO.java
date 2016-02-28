@@ -1,6 +1,11 @@
 package de.mq.portfolio.share.support;
 
 import java.io.Serializable;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +20,10 @@ public class SharesSearchAO  implements Serializable{
 	
 
 	private static final long serialVersionUID = 1L;
+	
+	private final Collection<Entry<Share,TimeCourse>> timeCourses = new ArrayList<>();
+	
+
 	private TimeCourse selectedTimeCourse;
 	
 	
@@ -79,5 +88,21 @@ public class SharesSearchAO  implements Serializable{
 		this.pageable = pageable;
 	}
 	
+	public final String getPageInfo() {
+	
+		if( pageable == null){
+			return null ; 
+		}
+	   return  (1+pageable.getPageNumber()) + "/" +  + (1+((ClosedIntervalPageRequest) pageable).maxPage());
+	}
+	
+	public final Collection<Entry<Share, TimeCourse>> getTimeCourses() {
+		return timeCourses;
+	}
+
+	public final void  setTimeCorses(final Collection<TimeCourse> timeCourses) {
+		this.timeCourses.clear();
+		this.timeCourses.addAll(timeCourses.stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(tc.share(), tc)).collect(Collectors.toList()));
+	}
 
 }

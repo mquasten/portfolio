@@ -45,14 +45,14 @@
 
 </h:panelGrid>	
 
- <p:dataTable id="sharesTable" var="entry" value="#{sharesController.timeCourses(sharesSearch)}" selection="#{sharesSearch.selectedTimeCourse}" rowKey="#{entry.key.code()}"  lazy="true"    resizableColumns="true"     >
+ <p:dataTable id="sharesTable" var="entry" value="#{sharesSearch.timeCourses}" selection="#{sharesSearch.selectedTimeCourse}" rowKey="#{entry.key.code()}"  lazy="true"    resizableColumns="true"     >
         <f:facet name="header">  
        
   
   <p:commandButton icon="ui-icon-next"   action="#{sharesController.next(sharesSearch)}"  process="@this"  update="sharesTable"  disabled="#{!sharesSearch.pageable.hasNext()}" />
             <p:commandButton icon="ui-icon-last" action="#{sharesController.last(sharesSearch)}"  process="@this"     update="sharesTable"  disabled="#{sharesSearch.pageable.isLast()}"  />
         
-        	<h:outputText  value="#{sharesSearch.pageable.pageNumber}"/>
+        	<h:outputText  value="#{sharesSearch.pageInfo}"/>
         
            <p:commandButton icon="ui-icon-prev" action="#{sharesController.previous(sharesSearch)}" process="@this"  update="sharesTable"  disabled="#{!sharesSearch.pageable.hasPrevious()}"   />
            <p:commandButton icon="ui-icon-first" action="#{sharesController.first(sharesSearch)}"   process="@this" update="sharesTable"  disabled="#{sharesSearch.pageable.isFirst()}"  />
@@ -69,7 +69,14 @@
             <h:outputText value="#{entry.key.index()}" />
         </p:column>
         
+       
+        <p:column headerText="Standardabweichung">
+            <h:outputText value="#{entry.value.standardDeviation()}" />
+        </p:column>
         
+         <p:column headerText="Delta/Tag">
+            <h:outputText value="#{entry.value.meanRate()}" />
+        </p:column>
     </p:dataTable>
 
 
