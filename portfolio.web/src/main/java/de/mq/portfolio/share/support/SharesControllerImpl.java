@@ -18,19 +18,25 @@ public class SharesControllerImpl {
 	}
 
 	
+	public final void init(final SharesSearchAO sharesSearchAO) {
+		
+		sharesSearchAO.setIndexes(shareService.indexes());
+		page(sharesSearchAO);
+	
+	}
 	
 	public final void page(final SharesSearchAO sharesSearchAO) {
-		System.out.println("setPage");
+		
 		sharesSearchAO.setPageable(shareService.pageable(sharesSearchAO.getSearch(), 10));
 		
 		refreshTimeCourses(sharesSearchAO);
 		
 	}
 
-
+	
+	
 
 	private void refreshTimeCourses(final SharesSearchAO sharesSearchAO) {
-		System.out.println("call Service");
 		sharesSearchAO.setTimeCorses(shareService.timeCourses(sharesSearchAO.getPageable(), sharesSearchAO.getSearch()));
 	}
 	

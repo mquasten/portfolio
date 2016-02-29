@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
@@ -21,6 +22,7 @@ import de.mq.portfolio.share.TimeCourse;
 @Repository("shareRepository")
 class ShareMongoRepositoryImpl implements ShareRepository {
 	
+	private static final String INDEX_FIELD = "index";
 	static final String CODE_FIELD = "code";
 	static final String SHARE_CODE_FIELD = "share.code";
 	private final MongoOperations mongoOperations;
@@ -56,6 +58,17 @@ class ShareMongoRepositoryImpl implements ShareRepository {
 		
 		
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.share.support.ShareRepository#distinctIndex()
+	 */
+	@Override
+	public final Collection<String> distinctIndex() {
+		@SuppressWarnings("unchecked")
+		final Collection<String> results = mongoOperations.getCollection(ShareImpl.class.getAnnotation(Document.class).collection()).distinct(INDEX_FIELD);
+		return results;
+	}
 
 	private Query query(final Share criteria) {
 		final Query query = new Query();
@@ -72,6 +85,7 @@ class ShareMongoRepositoryImpl implements ShareRepository {
 		if( StringUtils.hasText(criteria.index())) {
 			query.addCriteria(Criteria.where("share.index").is(criteria.index()));
 		}
+		
 		return query;
 	}
 
@@ -79,6 +93,10 @@ class ShareMongoRepositoryImpl implements ShareRepository {
 		return Pattern.compile( pattern, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.share.support.ShareRepository#pageable(de.mq.portfolio.share.Share, java.lang.Number)
+	 */
 	@Override
 	public Pageable pageable(final Share criteria, final Number pageSize) {
 		return new ClosedIntervalPageRequest(pageSize.intValue(),new Sort("name", "id"), mongoOperations.count(query(criteria), TimeCourseImpl.class));
@@ -102,6 +120,10 @@ class ShareMongoRepositoryImpl implements ShareRepository {
 		mongoOperations.remove(query, TimeCourseImpl.class);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.share.support.ShareRepository#save(de.mq.portfolio.share.Share)
+	 */
 	@Override
 	public final void save(final Share share) {
 		final Query query = new Query(Criteria.where(CODE_FIELD).is(share.code()));

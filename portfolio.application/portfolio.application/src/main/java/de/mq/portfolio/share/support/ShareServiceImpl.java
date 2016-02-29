@@ -50,6 +50,11 @@ class ShareServiceImpl implements ShareService {
 		return shareRepository.pageable(share, size);
 	}
 	
+	@Override
+	public Collection<String> indexes() {
+		return shareRepository.distinctIndex();
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

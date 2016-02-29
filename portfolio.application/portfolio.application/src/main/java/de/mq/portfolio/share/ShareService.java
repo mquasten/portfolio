@@ -21,6 +21,8 @@ public interface ShareService{
 
 	Pageable pageable(final Share share, final Number size);
 
+	Collection<String> indexes();
+
 	
 
 	

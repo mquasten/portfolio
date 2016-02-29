@@ -21,6 +21,8 @@ interface ShareRepository {
 
 	Pageable pageable(final Share criteria, final Number pageSize);
 
+	Collection<String> distinctIndex();
+
 	
 
 }

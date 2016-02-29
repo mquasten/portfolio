@@ -8,6 +8,17 @@
 <ui:composition template="template.xhtml">
 	<ui:param name="headline" value="Aktien suchen" />
 
+<ui:define name="meta">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<f:metadata>
+			
+			<f:viewAction action="#{sharesController.init(sharesSearch)}" />
+
+		</f:metadata>
+
+	</ui:define>
+
+
 <ui:define name="content">
 
 <h:form>
@@ -22,8 +33,12 @@
             <h:outputLabel for="code" value="Code"/>
             <p:inputText id="code"  value="#{sharesSearch.code}"  />  
             <h:outputLabel for="index" value="Index"/>
-            <p:inputText id="index"  value="#{sharesSearch.index}"    />  
+        
             
+            <p:selectOneMenu id="index" value="#{sharesSearch.index}" effect="fold" editable="true" >
+           <f:selectItem />
+            <f:selectItems value="#{sharesSearch.indexes}" />
+            </p:selectOneMenu>
             <f:facet name="footer">
          <h:panelGroup style="display:block; text-align:center">
             <p:commandButton id="searchButton" value="Suchen"  process="searchGrid" update="sharesTable" action="#{sharesController.page(sharesSearch)}" />
