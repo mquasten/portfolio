@@ -73,8 +73,8 @@ class TimeCourseImpl implements TimeCourse {
 		double n = rates.size()-1;
 		
 	
-		meanRate=  sum(samples, (v, i) -> rateOfReturn(v, i)) /n;
-		variance=sum(samples , (v,i) -> Math.pow(rateOfReturn(v, i) - meanRate, 2)) / n; 
+		meanRate=  sum(samples, 1, (v, i) -> rateOfReturn(v, i)) /n;
+		variance=sum(samples ,1, (v,i) -> Math.pow(rateOfReturn(v, i) - meanRate, 2)) / n; 
 	}
 
 	private Data[] toArray(final Collection<Data> col) {
@@ -98,15 +98,15 @@ class TimeCourseImpl implements TimeCourse {
 		final Collection<Data> inBoth = IntStream.range(0, samples.length).filter(i -> rateOfReturnDelta.containsKey(samples[i].date())|| i == 0 ).mapToObj(i -> samples[i]).collect(Collectors.toList());
 		final Data[] sampleVector = toArray(inBoth);
 	
-		return   sum(sampleVector, (v,i) -> ( rateOfReturn(v, i) - meanRate ) *  rateOfReturnDelta.get(sampleVector[i].date()))  / (sampleVector.length-1);
+		return   sum(sampleVector, 1, (v,i) -> ( rateOfReturn(v, i) - meanRate ) *  rateOfReturnDelta.get(sampleVector[i].date()))  / (sampleVector.length-1);
 	
 	
 	}
 	
 	
 	
-	private <T> double  sum(final Data[] samples, final SampleFunction function)  {
-		return IntStream.range(1, samples.length).mapToDouble(i -> function.f(samples,i)).reduce((result, yi) ->  result +yi).orElse(0);
+	private <T> double  sum(final Data[] samples, final int startIndex, final SampleFunction function )  {
+		return IntStream.range(startIndex, samples.length).mapToDouble(i -> function.f(samples,i)).reduce((result, yi) ->  result +yi).orElse(0);
 	}
 	
 	/*
@@ -114,8 +114,33 @@ class TimeCourseImpl implements TimeCourse {
 	 * @see de.mq.portfolio.share.support.support.TimeCourse#meanRate()
 	 */
 	@Override
-	public double meanRate() {
+	public  double meanRate() {
 		return meanRate;
+	}
+	
+	@Override
+	public final double totalRate() {
+		if(rates.size() < 2) {
+			return 0d;
+		}
+		return rateOfReturn(rates.get(rates.size()-1).value(), rates.get(0).value(), rates.get(0).value());
+	}
+	
+	@Override
+	public final double totalRateDividends() {
+		if (dividends.size()==0){
+			return 0;
+		}
+		
+		if( rates.size()==0) {
+			return 0;
+		}
+	
+		return rateOfReturn(sum(toArray(dividends), 0, (v,i) -> v[i].value()), 0, rates.get(0).value());
+	}
+
+	private double rateOfReturn(final double falsch, final double richtig, final double wahr) {
+		return (falsch - richtig)/wahr;
 	}
 	
 	/*

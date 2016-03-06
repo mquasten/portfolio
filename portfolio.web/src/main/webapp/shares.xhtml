@@ -29,27 +29,42 @@
  		Aktie suchen
  </f:facet>
          	<h:outputLabel for="name" value="Name"/>
-            <p:inputText id="name"  value="#{sharesSearch.name}" />
+            <p:inputText id="name"  value="#{sharesSearch.name}" style="width:100%" />
             <h:outputLabel for="code" value="Code"/>
-            <p:inputText id="code"  value="#{sharesSearch.code}"  />  
+            <p:inputText id="code"  value="#{sharesSearch.code}" style="width:100%" />  
             <h:outputLabel for="index" value="Index"/>
         
             
-            <p:selectOneMenu id="index" value="#{sharesSearch.index}" effect="fold" editable="true" >
+            <p:selectOneMenu id="index" value="#{sharesSearch.index}" style="width:100%" >
            <f:selectItem />
             <f:selectItems value="#{sharesSearch.indexes}" />
             </p:selectOneMenu>
-            <f:facet name="footer">
-         <h:panelGroup style="display:block; text-align:center">
-            <p:commandButton id="searchButton" value="Suchen"  process="searchGrid" update="sharesTable" action="#{sharesController.page(sharesSearch)}" />
             
-          
-         </h:panelGroup>
+            <h:outputLabel for="name" value="Sortierung"/>
+             <p:selectOneMenu id="sorting"  style="width:100%" >
+             <f:selectItem />
+            
+            </p:selectOneMenu>
+            
+            <f:facet name="footer">
+         <h:panelGrid  columns="2" >
+            <p:commandButton id="searchButton" value="Suchen"  process="searchGrid" update="sharesTable,searchGrid" action="#{sharesController.page(sharesSearch)}" />
+          	<h:panelGrid columns="5" >
+            <p:commandButton icon="ui-icon-next"   action="#{sharesController.next(sharesSearch)}"  process="@this"  update="sharesTable,searchGrid"  disabled="#{!sharesSearch.pageable.hasNext()}" />
+            <p:commandButton icon="ui-icon-last" action="#{sharesController.last(sharesSearch)}"  process="@this"     update="sharesTable,searchGrid"  disabled="#{sharesSearch.pageable.isLast()}"  />
+        
+        	<h:outputText  value="#{sharesSearch.pageInfo}"/>
+        
+           <p:commandButton icon="ui-icon-prev" action="#{sharesController.previous(sharesSearch)}" process="@this"  update="sharesTable,searchGrid"  disabled="#{!sharesSearch.pageable.hasPrevious()}"   />
+           <p:commandButton icon="ui-icon-first" action="#{sharesController.first(sharesSearch)}"   process="@this" update="sharesTable,searchGrid"  disabled="#{sharesSearch.pageable.isFirst()}"  />
+          </h:panelGrid>
+           </h:panelGrid>
+        
 		</f:facet>	
 		
 </h:panelGrid>
 
-<h:panelGrid style="margin-left: 25px;"  >
+<h:panelGrid style="margin-left: 50px;"  >
 <f:facet name="header">
  		<h:outputText value="Portfolio"  />
  </f:facet>
@@ -61,18 +76,7 @@
 </h:panelGrid>	
 
  <p:dataTable id="sharesTable" var="entry" value="#{sharesSearch.timeCourses}" selection="#{sharesSearch.selectedTimeCourse}" rowKey="#{entry.key.code()}"  lazy="true"    resizableColumns="true"     >
-        <f:facet name="header">  
-       
-  
-  <p:commandButton icon="ui-icon-next"   action="#{sharesController.next(sharesSearch)}"  process="@this"  update="sharesTable"  disabled="#{!sharesSearch.pageable.hasNext()}" />
-            <p:commandButton icon="ui-icon-last" action="#{sharesController.last(sharesSearch)}"  process="@this"     update="sharesTable"  disabled="#{sharesSearch.pageable.isLast()}"  />
-        
-        	<h:outputText  value="#{sharesSearch.pageInfo}"/>
-        
-           <p:commandButton icon="ui-icon-prev" action="#{sharesController.previous(sharesSearch)}" process="@this"  update="sharesTable"  disabled="#{!sharesSearch.pageable.hasPrevious()}"   />
-           <p:commandButton icon="ui-icon-first" action="#{sharesController.first(sharesSearch)}"   process="@this" update="sharesTable"  disabled="#{sharesSearch.pageable.isFirst()}"  />
-
-        </f:facet>
+      
         <p:column selectionMode="single" style="width:16px;text-align:center"/>
         <p:column headerText="Name">
             <h:outputText value="#{entry.key.name()}" />
@@ -85,13 +89,30 @@
         </p:column>
         
        
-        <p:column headerText="Standardabweichung">
-            <h:outputText value="#{entry.value.standardDeviation()}" />
+        <p:column headerText="Standardabweichung [%]">
+            <h:outputText value="#{entry.value.standardDeviation() *100}" >
+             <f:convertNumber pattern="#0.00" />
+            </h:outputText>
         </p:column>
         
-         <p:column headerText="Delta/Tag">
-            <h:outputText value="#{entry.value.meanRate()}" />
+         <p:column headerText="Tag [‰]">
+            <h:outputText value="#{entry.value.meanRate() *1000}" >
+               <f:convertNumber pattern="#0.00" />
+         </h:outputText>
         </p:column>
+        
+        <p:column headerText="Total [%] ">
+            <h:outputText value="#{entry.value.totalRate()*100}" >
+            <f:convertNumber pattern="#0.00" />
+         </h:outputText>
+        </p:column>
+        
+        <p:column headerText="Dividenden [%]">
+            <h:outputText value="#{entry.value.totalRateDividends()*100}" >
+            <f:convertNumber pattern="#0.00" />
+            </h:outputText>
+        </p:column>
+       
     </p:dataTable>
 
 

@@ -24,6 +24,10 @@ public interface TimeCourse {
 
 	double standardDeviation();
 
+	double totalRate();
+
+	double totalRateDividends();
+
 	
 
 	
