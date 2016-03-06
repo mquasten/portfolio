@@ -18,7 +18,6 @@ class DataImpl implements Data {
 	private final SimpleDateFormat df = new SimpleDateFormat(DATE_PATTERN);
 	
 	private String  date;
-	
 
 	/* (non-Javadoc)
 	 * @see de.mq.portfolio.share.support.support.Data#date()
