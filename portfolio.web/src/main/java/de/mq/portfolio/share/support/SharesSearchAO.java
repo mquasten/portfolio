@@ -7,8 +7,11 @@ import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import javax.faces.model.SelectItem;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import de.mq.portfolio.share.Share;
@@ -24,6 +27,10 @@ public class SharesSearchAO  implements Serializable{
 	private final Collection<Entry<Share,TimeCourse>> timeCourses = new ArrayList<>();
 	
 	private final Collection<String> indexes = new ArrayList<>();
+	
+	
+
+	
 
 	private TimeCourse selectedTimeCourse;
 	
@@ -32,7 +39,10 @@ public class SharesSearchAO  implements Serializable{
 
 	
 
+	private String selectedSort="id";
+
 	
+
 
 	private String name;
 	
@@ -114,6 +124,15 @@ public class SharesSearchAO  implements Serializable{
 		this.indexes.clear();
 		this.indexes.addAll(indexes);
 	
+	}
+	
+	
+	public String getSelectedSort() {
+		return selectedSort;
+	}
+
+	public void setSelectedSort(final String selectedSort) {
+		this.selectedSort=selectedSort;
 	}
 
 }

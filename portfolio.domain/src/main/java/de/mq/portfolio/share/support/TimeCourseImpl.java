@@ -38,9 +38,14 @@ class TimeCourseImpl implements TimeCourse {
 	
 	private double meanRate;
 	
+	private double totalRate;
+	
+	private double totalRateDividends;
 
 
 	private double variance;
+
+	private double standardDeviation;
 	
    TimeCourseImpl(final  Share share, final Collection<Data> rates, final Collection<Data> dividends) {
 		this.share=share;
@@ -75,6 +80,12 @@ class TimeCourseImpl implements TimeCourse {
 	
 		meanRate=  sum(samples, 1, (v, i) -> rateOfReturn(v, i)) /n;
 		variance=sum(samples ,1, (v,i) -> Math.pow(rateOfReturn(v, i) - meanRate, 2)) / n; 
+		if( rates.size() > 1){
+			totalRate = rateOfReturn(rates.get(rates.size()-1).value(), rates.get(0).value(), rates.get(0).value());
+		}
+		totalRateDividends=calculateDividends();
+		
+		standardDeviation=Math.sqrt(variance);
 	}
 
 	private Data[] toArray(final Collection<Data> col) {
@@ -120,14 +131,15 @@ class TimeCourseImpl implements TimeCourse {
 	
 	@Override
 	public final double totalRate() {
-		if(rates.size() < 2) {
-			return 0d;
-		}
-		return rateOfReturn(rates.get(rates.size()-1).value(), rates.get(0).value(), rates.get(0).value());
+		return totalRate;
 	}
 	
 	@Override
 	public final double totalRateDividends() {
+		return totalRateDividends;
+	}
+
+	private double calculateDividends() {
 		if (dividends.size()==0){
 			return 0;
 		}
@@ -181,8 +193,7 @@ class TimeCourseImpl implements TimeCourse {
 	
 	@Override
  	public final double standardDeviation() {
- 	
- 		return Math.sqrt(variance);
+		return standardDeviation;
  	}
 	
 	

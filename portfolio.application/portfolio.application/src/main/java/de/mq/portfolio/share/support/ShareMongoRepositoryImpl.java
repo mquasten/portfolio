@@ -98,8 +98,8 @@ class ShareMongoRepositoryImpl implements ShareRepository {
 	 * @see de.mq.portfolio.share.support.ShareRepository#pageable(de.mq.portfolio.share.Share, java.lang.Number)
 	 */
 	@Override
-	public Pageable pageable(final Share criteria, final Number pageSize) {
-		return new ClosedIntervalPageRequest(pageSize.intValue(),new Sort("name", "id"), mongoOperations.count(query(criteria), TimeCourseImpl.class));
+	public Pageable pageable(final Share criteria,final Sort sort, final Number pageSize) {
+		return new ClosedIntervalPageRequest(pageSize.intValue(),sort, mongoOperations.count(query(criteria), TimeCourseImpl.class));
 	}
 
 	/*

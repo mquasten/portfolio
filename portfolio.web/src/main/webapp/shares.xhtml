@@ -41,11 +41,15 @@
             </p:selectOneMenu>
             
             <h:outputLabel for="name" value="Sortierung"/>
-             <p:selectOneMenu id="sorting"  style="width:100%" >
-             <f:selectItem />
-            
+             <p:selectOneMenu id="sorting" value="#{sharesSearch.selectedSort}" style="width:100%"  >
+              <f:selectItem itemValue="id"  itemLabel="---"/>
+             <f:selectItem itemValue="name"  itemLabel="Name"/>
+              <f:selectItem itemValue="meanRate"  itemLabel="Performance Tag"/>
+              <f:selectItem itemValue="totalRate"  itemLabel="Performance Gesamt"/>
+             <f:selectItem itemValue="totalRateDividends"  itemLabel="Performance Dividenden"/>
+             <f:selectItem itemValue="standardDeviation"  itemLabel="Risiko"/>
             </p:selectOneMenu>
-            
+            <p:message for="sorting"  />
             <f:facet name="footer">
          <h:panelGrid  columns="2" >
             <p:commandButton id="searchButton" value="Suchen"  process="searchGrid" update="sharesTable,searchGrid" action="#{sharesController.page(sharesSearch)}" />

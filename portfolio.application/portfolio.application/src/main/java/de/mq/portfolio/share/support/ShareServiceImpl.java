@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import de.mq.portfolio.share.Share;
@@ -46,8 +47,8 @@ class ShareServiceImpl implements ShareService {
 	}
 
 	@Override
-	public Pageable pageable(final Share share, final Number size) {
-		return shareRepository.pageable(share, size);
+	public Pageable pageable(final Share share, final Sort sort, final Number size) {
+		return shareRepository.pageable(share,sort, size);
 	}
 	
 	@Override
