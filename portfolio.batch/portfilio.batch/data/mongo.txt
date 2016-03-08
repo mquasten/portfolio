@@ -1,1 +1,4 @@
 db.PortfolioOptimisation.find( { risk: {$lte:7.418500660452085E-5 } }  )
+
+git reset --hard HEAD
+git pull
