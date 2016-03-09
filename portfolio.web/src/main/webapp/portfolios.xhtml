@@ -7,12 +7,51 @@
 	xmlns:p="http://primefaces.org/ui">
 <ui:composition template="template.xhtml">
 	<ui:param name="headline" value="#{msg.profiles_headline}" />
+<ui:define name="meta">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<f:metadata>
+			
+			<f:viewAction action="#{portfolioController.init(portfolioSearch)}" />
 
+		</f:metadata>
+
+	</ui:define>
 <ui:define name="content">
 
 <h1>Portfolio suchen </h1>
 
+<h:form>
+<h:panelGrid style="margin-bottom: 25px;" columns="2">
+<h:panelGrid id="searchGrid"   columns="2"   >
+ <f:facet name="header">
+ 		Portfolio suchen
+ </f:facet>
+         	<h:outputLabel for="name" value="Name"/>
+            <p:inputText id="name"  style="width:100%" />
+            
+            <f:facet name="footer">
+         <h:panelGrid  columns="2" >
+            <p:commandButton id="searchButton" value="Suchen"  />
+          	
+           </h:panelGrid>
+        
+		</f:facet>	
+		
+</h:panelGrid>
 
+<h:panelGrid style="margin-left: 50px;"  >
+<f:facet name="header">
+ 		<h:outputText value="Portfolio"  />
+ </f:facet>
+
+<h:outputText  value="xxxx"/>
+
+</h:panelGrid>
+
+</h:panelGrid>	
+
+
+</h:form>
 
 	
 	

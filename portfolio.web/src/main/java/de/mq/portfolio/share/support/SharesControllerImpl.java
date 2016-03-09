@@ -1,11 +1,8 @@
 package de.mq.portfolio.share.support;
 
-import java.util.ArrayList;
-import java.util.Collection;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.faces.model.SelectItem;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -38,20 +35,13 @@ public class SharesControllerImpl {
 		
 		sharesSearchAO.setIndexes(shareService.indexes());
 	
-		/* orderBy.add(new SelectItem(new Sort("id") , "---"));
-		orderBy.add(new SelectItem(new Sort("name", "id") , "name"));
-		orderBy.add(new SelectItem(new Sort(Direction.DESC , "meanRate", "id") , "Performance Tag"));
-		orderBy.add(new SelectItem(new Sort(Direction.DESC , "totalRate", "id") , "Performance Gesamt"));
-		orderBy.add(new SelectItem(new Sort(Direction.DESC , "totalRateDividends", "id") , "Performance Dividenden"));
-		orderBy.add(new SelectItem(new Sort("standardDeviation", "id") , "Risiko"));*/
 		
 		page(sharesSearchAO);
 	
 	}
 	
 	public final void page(final SharesSearchAO sharesSearchAO) {
-		System.out.println(sharesSearchAO.getSelectedSort());
-		System.out.println(orderBy.get(sharesSearchAO.getSelectedSort()));
+		
 		sharesSearchAO.setPageable(shareService.pageable(sharesSearchAO.getSearch(),orderBy.get(sharesSearchAO.getSelectedSort()), 10));
 		
 		refreshTimeCourses(sharesSearchAO);
