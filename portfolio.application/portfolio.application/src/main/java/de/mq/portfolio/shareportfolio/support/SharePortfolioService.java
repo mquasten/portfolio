@@ -2,6 +2,9 @@ package de.mq.portfolio.shareportfolio.support;
 
 import java.util.Collection;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
@@ -29,5 +32,11 @@ interface SharePortfolioService {
 
 
 	PortfolioOptimisation minVariance(final String portfolioName);
+
+
+	Collection<SharePortfolio> portfolios(final Pageable pageable, final SharePortfolio share);
+
+
+	Pageable pageable(final SharePortfolio sharePortfolio, final Sort sort, final Number size);
 
 }

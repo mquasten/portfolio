@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -44,6 +46,22 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 		}
 		return sharePortfolio;
 
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#portfolios(org.springframework.data.domain.Pageable, de.mq.portfolio.shareportfolio.SharePortfolio)
+	 */
+	@Override
+	public final Collection<SharePortfolio> portfolios(final Pageable pageable, final SharePortfolio sharePortfolio) {
+		return sharePortfolioRepository.portfolios(pageable, sharePortfolio);
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#pageable(de.mq.portfolio.shareportfolio.SharePortfolio, org.springframework.data.domain.Sort, java.lang.Number)
+	 */
+	@Override
+	public Pageable pageable(final SharePortfolio sharePortfolio, final Sort sort, final Number size) {
+		return sharePortfolioRepository.pageable(sharePortfolio,sort, size);
 	}
 
 	/*

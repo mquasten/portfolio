@@ -2,11 +2,15 @@ package de.mq.portfolio.shareportfolio.support;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -14,7 +18,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
+import de.mq.portfolio.share.support.ClosedIntervalPageRequest;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
@@ -43,6 +49,49 @@ class SharePortfolioRepositoryImpl implements SharePortfolioRepository {
 	@Override
 	public final SharePortfolio portfolio(final String name) {
 		return DataAccessUtils.requiredSingleResult(mongoOperations.find(new Query(Criteria.where(NAME_FIELD).is(name)), SharePortfolioImpl.class));
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioRepository#portfolios(org.springframework.data.domain.Pageable, de.mq.portfolio.shareportfolio.SharePortfolio)
+	 */
+	@Override
+	public final  Collection<SharePortfolio> portfolios(final Pageable pageable, final SharePortfolio criteria) {
+		final Query query = query(criteria);
+		query.skip(pageable.getOffset());
+		query.limit(pageable.getPageSize());
+		if(pageable.getSort() != null ){
+			query.with(pageable.getSort());
+		}
+		return Collections.unmodifiableList(mongoOperations.find(query, SharePortfolioImpl.class));
+	}
+
+	private Query query(final SharePortfolio criteria) {
+		final Query query = new Query();
+		if( StringUtils.hasText(criteria.name())) {
+			query.addCriteria(Criteria.where("name").regex(pattern(criteria.name())));
+		}
+		if (criteria.timeCourses().isEmpty()){
+			return query;
+		}
+		if(criteria.timeCourses().get(0).share()==null){
+			return query;
+		}
+		if(StringUtils.hasText(criteria.timeCourses().get(0).share().name())) {
+			query.addCriteria(Criteria.where("timeCourses.share.name").regex(pattern(criteria.name())));
+		}
+		return query;
+	}
+	
+	private Pattern pattern(final String pattern) {
+		return Pattern.compile( pattern, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioRepository#pageable(de.mq.portfolio.shareportfolio.SharePortfolio, org.springframework.data.domain.Sort, java.lang.Number)
+	 */
+	@Override
+	public Pageable pageable(final SharePortfolio criteria,final Sort sort, final Number pageSize) {
+		return  new ClosedIntervalPageRequest(pageSize.intValue(),sort, mongoOperations.count(query(criteria), SharePortfolioImpl.class));
 	}
 
 	/*
