@@ -15,6 +15,7 @@ import de.mq.portfolio.share.TimeCourse;
 @Service("shareService")
 class ShareServiceImpl implements ShareService {
 
+	
 	private HistoryRepository historyRepository;
 
 	private ShareRepository shareRepository;

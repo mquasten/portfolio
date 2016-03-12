@@ -6,7 +6,6 @@ import java.util.List;
 
 public interface TimeCourse {
 
-	
 
 	public abstract Share share();
 

@@ -1,11 +1,15 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import de.mq.portfolio.share.support.TimeCourseCriteriaImpl;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @Component("portfolioSearch")
@@ -13,16 +17,91 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 public class PortfolioSearchAO {
 	
 	private final List<SharePortfolio> sharePortfolios = new ArrayList<>();
+	
+	private Pageable pageable; 
+	
+	private String share;
+	
+	
+	private String name;
+	
+	private SharePortfolio selectedPortfolio;
+	
+	
 
-	public List<SharePortfolio> getSharePortfolios() {
+
+
+
+	public SharePortfolio getSelectedPortfolio() {
+		return selectedPortfolio;
+	}
+	
+
+
+
+
+	public void setSelectedPortfolio(SharePortfolio selectedPortfolio) {
+		this.selectedPortfolio = selectedPortfolio;
+	}
+	
+
+
+
+
+	public String getName() {
+		return name;
+	}
+	
+
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+
+
+
+	public String getShare() {
+		return share;
+	}
+	
+
+
+
+	public void setShare(String share) {
+		this.share = share;
+	}
+	
+
+
+	
+
+	public Pageable getPageable() {
+		return pageable;
+	}
+	
+
+
+	public void setPageable(Pageable pageable) {
+		this.pageable = pageable;
+	}
+	
+
+
+	public Collection<SharePortfolio> getSharePortfolios() {
 		return sharePortfolios;
 	}
 	
 
-	public void setSharePortfolios(List<SharePortfolio> sharePortfolios) {
+	public void setSharePortfolios(Collection<SharePortfolio> sharePortfolios) {
 		this.sharePortfolios.clear();
 		this.sharePortfolios.addAll(sharePortfolios);
 	}
 	
+	
+	SharePortfolio criteria() {
+		return new SharePortfolioImpl(name, Arrays.asList(new TimeCourseCriteriaImpl(share)));	
+	}
 
 }

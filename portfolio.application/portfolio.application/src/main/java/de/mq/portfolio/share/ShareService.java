@@ -9,6 +9,8 @@ import org.springframework.data.domain.Sort;
 
 
 public interface ShareService{
+	
+	
 
 	TimeCourse timeCourse(final Share share);
 

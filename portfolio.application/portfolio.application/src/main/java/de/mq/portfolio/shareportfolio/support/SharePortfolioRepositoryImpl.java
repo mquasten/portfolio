@@ -27,6 +27,7 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 @Repository
 class SharePortfolioRepositoryImpl implements SharePortfolioRepository {
 
+	private static final String SHARE_NAME_FIELD = "timeCourses.share.name";
 	static final String SAMPLES_FIELD = "samples";
 	static final String VARIANCE_FIELD = "variance";
 	static final String PORTFOLIO_FIELD = "portfolio";
@@ -57,6 +58,7 @@ class SharePortfolioRepositoryImpl implements SharePortfolioRepository {
 	@Override
 	public final  Collection<SharePortfolio> portfolios(final Pageable pageable, final SharePortfolio criteria) {
 		final Query query = query(criteria);
+		System.out.println(query);
 		query.skip(pageable.getOffset());
 		query.limit(pageable.getPageSize());
 		if(pageable.getSort() != null ){
@@ -68,7 +70,7 @@ class SharePortfolioRepositoryImpl implements SharePortfolioRepository {
 	private Query query(final SharePortfolio criteria) {
 		final Query query = new Query();
 		if( StringUtils.hasText(criteria.name())) {
-			query.addCriteria(Criteria.where("name").regex(pattern(criteria.name())));
+			query.addCriteria(Criteria.where(NAME_FIELD).regex(pattern(criteria.name())));
 		}
 		if (criteria.timeCourses().isEmpty()){
 			return query;
@@ -77,7 +79,7 @@ class SharePortfolioRepositoryImpl implements SharePortfolioRepository {
 			return query;
 		}
 		if(StringUtils.hasText(criteria.timeCourses().get(0).share().name())) {
-			query.addCriteria(Criteria.where("timeCourses.share.name").regex(pattern(criteria.name())));
+			query.addCriteria(Criteria.where(SHARE_NAME_FIELD).regex(pattern(criteria.name())));
 		}
 		return query;
 	}
@@ -87,7 +89,7 @@ class SharePortfolioRepositoryImpl implements SharePortfolioRepository {
 	}
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioRepository#pageable(de.mq.portfolio.shareportfolio.SharePortfolio, org.springframework.data.domain.Sort, java.lang.Number)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioRepository#pageable(de.mq.portfolio.sharepo rtfolio.SharePortfolio, org.springframework.data.domain.Sort, java.lang.Number)
 	 */
 	@Override
 	public Pageable pageable(final SharePortfolio criteria,final Sort sort, final Number pageSize) {

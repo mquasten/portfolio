@@ -25,10 +25,6 @@ public class SharesSearchAO  implements Serializable{
 	
 	private final Collection<String> indexes = new ArrayList<>();
 	
-	
-
-	
-
 	private TimeCourse selectedTimeCourse;
 	
 	

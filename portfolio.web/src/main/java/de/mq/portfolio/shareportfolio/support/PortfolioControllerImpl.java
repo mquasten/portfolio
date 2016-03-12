@@ -2,6 +2,7 @@ package de.mq.portfolio.shareportfolio.support;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Component("portfolioController")
@@ -16,7 +17,14 @@ public class PortfolioControllerImpl {
 	}
 
 	public void init(final PortfolioSearchAO portfolioSearchAO) {
-		System.out.println(portfolioSearchAO);
+		page(portfolioSearchAO);
+		
+	}
+
+	public void page(final PortfolioSearchAO portfolioSearchAO) {
+		portfolioSearchAO.setPageable( sharePortfolioService.pageable(portfolioSearchAO.criteria(),new Sort("name"), 10));
+		
+		portfolioSearchAO.setSharePortfolios(sharePortfolioService.portfolios(portfolioSearchAO.getPageable(), portfolioSearchAO.criteria()));
 	}
 
 }

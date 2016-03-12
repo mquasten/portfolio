@@ -27,11 +27,11 @@
  		Portfolio suchen
  </f:facet>
          	<h:outputLabel for="name" value="Name"/>
-            <p:inputText id="name"  style="width:100%" />
+            <p:inputText id="name"  value="#{portfolioSearch.name}" style="width:100%" />
             
             <f:facet name="footer">
          <h:panelGrid  columns="2" >
-            <p:commandButton id="searchButton" value="Suchen"  />
+            <p:commandButton id="searchButton" value="Suchen"  process="searchGrid" update="searchGrid,portfolioTable" action="#{portfolioController.page(portfolioSearch)}" />
           	
            </h:panelGrid>
         
@@ -49,6 +49,23 @@
 </h:panelGrid>
 
 </h:panelGrid>	
+
+<p:dataTable id="portfolioTable" var="portfolio" value="#{portfolioSearch.sharePortfolios}" selection="#{portfolioSearch.selectedPortfolio}" rowKey="#{portfolio.name()}"  lazy="true"    resizableColumns="true"     >
+      
+        <p:column selectionMode="single" style="width:16px;text-align:center"/>
+        <p:column headerText="Name">
+            <h:outputText value="#{portfolio.name()}" />
+        </p:column>
+        
+         <p:column headerText="committed">
+            <h:outputText value="#{portfolio.committed}" />
+        </p:column>
+        
+         <p:column headerText="committed">
+            <h:outputText value="#{portfolio.standardDeviation()}" />
+        </p:column>
+       
+    </p:dataTable>
 
 
 </h:form>

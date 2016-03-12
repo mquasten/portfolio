@@ -150,6 +150,14 @@ class SharePortfolioImpl implements SharePortfolio {
 	public Optional<PortfolioOptimisation> minVariance() {
 		return Optional.ofNullable(minVariance);
 	}
+	
+	@Override
+	public final double standardDeviation() {
+		if( minVariance == null) {
+			return 0d;
+		}
+		return Math.sqrt(minVariance.variance());
+	}
 
 }
 
