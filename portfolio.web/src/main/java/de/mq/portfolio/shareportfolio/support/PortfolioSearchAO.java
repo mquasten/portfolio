@@ -23,6 +23,12 @@ public class PortfolioSearchAO {
 	private String share;
 	
 	
+	private String portfolioName;
+	
+
+	
+
+
 	private String name;
 	
 	private SharePortfolio selectedPortfolio;
@@ -102,6 +108,19 @@ public class PortfolioSearchAO {
 	
 	SharePortfolio criteria() {
 		return new SharePortfolioImpl(name, Arrays.asList(new TimeCourseCriteriaImpl(share)));	
+	}
+	
+	public String getPortfolioName() {
+		return portfolioName;
+	}
+	
+
+
+
+
+
+	public void setPortfolioName(String portfolioName) {
+		this.portfolioName = portfolioName;
 	}
 
 }

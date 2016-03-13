@@ -158,6 +158,11 @@ class SharePortfolioImpl implements SharePortfolio {
 		}
 		return Math.sqrt(minVariance.variance());
 	}
+	
+	@Override
+	public final String id() {
+		return id;
+	}
 
 }
 

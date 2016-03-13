@@ -17,12 +17,15 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.share.support.ClosedIntervalPageRequest;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
+
+
 
 @Repository
 class SharePortfolioRepositoryImpl implements SharePortfolioRepository {
@@ -58,13 +61,23 @@ class SharePortfolioRepositoryImpl implements SharePortfolioRepository {
 	@Override
 	public final  Collection<SharePortfolio> portfolios(final Pageable pageable, final SharePortfolio criteria) {
 		final Query query = query(criteria);
-		System.out.println(query);
 		query.skip(pageable.getOffset());
 		query.limit(pageable.getPageSize());
 		if(pageable.getSort() != null ){
 			query.with(pageable.getSort());
 		}
 		return Collections.unmodifiableList(mongoOperations.find(query, SharePortfolioImpl.class));
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioRepository#sharePortfolio(java.lang.String)
+	 */
+	@Override
+	public final SharePortfolio sharePortfolio(final String id){
+		SharePortfolio result = mongoOperations.findById(id, SharePortfolioImpl.class);
+		Assert.notNull(result, "Entity not found id :" +id);
+		return result;
 	}
 
 	private Query query(final SharePortfolio criteria) {

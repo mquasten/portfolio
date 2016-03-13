@@ -20,6 +20,8 @@ public interface SharePortfolio {
 	Optional<PortfolioOptimisation> minVariance();
 
 	double standardDeviation();
+
+	String id();
 	
 	
 

@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import de.mq.portfolio.support.UserModel;
+
 @Component("portfolioController")
 @Scope("singleton")
 public class PortfolioControllerImpl {
@@ -16,8 +18,11 @@ public class PortfolioControllerImpl {
 		this.sharePortfolioService = sharePortfolioService;
 	}
 
-	public void init(final PortfolioSearchAO portfolioSearchAO) {
+	public void init(final PortfolioSearchAO portfolioSearchAO, final UserModel userModel) {
 		page(portfolioSearchAO);
+		if( userModel.getPortfolioId() != null ){
+			portfolioSearchAO.setPortfolioName(sharePortfolioService.sharePortfolio(userModel.getPortfolioId()).name());
+		}
 		
 	}
 
@@ -27,4 +32,9 @@ public class PortfolioControllerImpl {
 		portfolioSearchAO.setSharePortfolios(sharePortfolioService.portfolios(portfolioSearchAO.getPageable(), portfolioSearchAO.criteria()));
 	}
 
+	
+	public void activate(final PortfolioSearchAO portfolioSearchAO, final UserModel userModel) {
+		userModel.setPortfolioId(portfolioSearchAO.getSelectedPortfolio().id());
+		portfolioSearchAO.setPortfolioName(portfolioSearchAO.getSelectedPortfolio().name());
+	}
 }

@@ -11,7 +11,7 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<f:metadata>
 			
-			<f:viewAction action="#{portfolioController.init(portfolioSearch)}" />
+			<f:viewAction action="#{portfolioController.init(portfolioSearch, userModel)}" />
 
 		</f:metadata>
 
@@ -39,20 +39,22 @@
 		
 </h:panelGrid>
 
-<h:panelGrid style="margin-left: 50px;"  >
+<h:panelGrid id="portfolioGrid"  style="margin-left: 50px;"  >
 <f:facet name="header">
- 		<h:outputText value="Portfolio"  />
+ 		<h:outputText value="Portfolio"   />
  </f:facet>
 
-<h:outputText  value="xxxx"/>
+<h:outputText  value="#{portfolioSearch.portfolioName}" rendered="#{userModel.portfolioId != null}" />
+<p:commandButton id="aktivateButtom"  value="aktivieren"  process="@this" update="portfolioGrid"  disabled="#{portfolioSearch.selectedPortfolio==null}" action="#{portfolioController.activate(portfolioSearch,userModel)}"/>
 
 </h:panelGrid>
 
 </h:panelGrid>	
 
-<p:dataTable id="portfolioTable" var="portfolio" value="#{portfolioSearch.sharePortfolios}" selection="#{portfolioSearch.selectedPortfolio}" rowKey="#{portfolio.name()}"  lazy="true"    resizableColumns="true"     >
+<p:dataTable id="portfolioTable" var="portfolio" value="#{portfolioSearch.sharePortfolios}" selection="#{portfolioSearch.selectedPortfolio}" rowKey="#{portfolio.id()}"  lazy="true"    resizableColumns="true"     >
       
         <p:column selectionMode="single" style="width:16px;text-align:center"/>
+        <p:ajax event="rowSelectRadio" process="@this" update="@form" />
         <p:column headerText="Name">
             <h:outputText value="#{portfolio.name()}" />
         </p:column>
@@ -61,8 +63,12 @@
             <h:outputText value="#{portfolio.committed}" />
         </p:column>
         
-         <p:column headerText="committed">
-            <h:outputText value="#{portfolio.standardDeviation()}" />
+         <p:column headerText="Standardabweichung[%]">
+            <h:outputText value="#{100*portfolio.standardDeviation()}" >
+            
+            <f:convertNumber pattern="#0.00" />
+          
+            </h:outputText>
         </p:column>
        
     </p:dataTable>

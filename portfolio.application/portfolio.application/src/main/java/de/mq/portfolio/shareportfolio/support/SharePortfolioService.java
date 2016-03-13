@@ -39,4 +39,7 @@ interface SharePortfolioService {
 
 	Pageable pageable(final SharePortfolio sharePortfolio, final Sort sort, final Number size);
 
+
+	SharePortfolio sharePortfolio(final String id);
+
 }

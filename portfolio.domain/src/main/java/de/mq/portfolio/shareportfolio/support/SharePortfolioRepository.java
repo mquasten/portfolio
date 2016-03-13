@@ -23,4 +23,6 @@ interface SharePortfolioRepository {
 
 	Pageable pageable(final SharePortfolio criteria, final Sort sort, final Number pageSize);
 
+	SharePortfolio sharePortfolio(final String id);
+
 }

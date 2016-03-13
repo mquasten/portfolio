@@ -49,6 +49,14 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 	}
 	/*
 	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#sharePortfolio(java.lang.String)
+	 */
+	@Override
+	public final SharePortfolio sharePortfolio(final String id) {
+		return sharePortfolioRepository.sharePortfolio(id);
+	}
+	/*
+	 * (non-Javadoc)
 	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#portfolios(org.springframework.data.domain.Pageable, de.mq.portfolio.shareportfolio.SharePortfolio)
 	 */
 	@Override

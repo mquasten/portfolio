@@ -1,4 +1,4 @@
-package de.mq.portfolio.util.support;
+package de.mq.portfolio.support;
 
 import java.util.Map;
 

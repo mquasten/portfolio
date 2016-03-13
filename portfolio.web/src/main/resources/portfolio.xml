@@ -12,17 +12,31 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
 
 	<import resource="classpath*:application.xml" />
-	<context:component-scan base-package="de.mq.portfolio.share.support,de.mq.portfolio.share.support" />
-	
+	<context:component-scan base-package="de.mq.portfolio.support"  />
+		
+
 
 	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
-        <property name="scopes">
-            <map>
-                <entry key="view">
-                    <bean class="de.mq.portfolio.util.support.SimpleViewScopeImpl"/>
-                </entry>
-            </map>
-        </property>
-    </bean>
+		<property name="scopes">
+			<map>
+				<entry key="view">
+					<bean class="de.mq.portfolio.support.SimpleViewScopeImpl" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+
+	<bean id="securityContextPersistenceFilter"
+		class="org.springframework.security.web.context.SecurityContextPersistenceFilter">
+		<constructor-arg>
+			<bean
+				class="org.springframework.security.web.context.HttpSessionSecurityContextRepository">
+				<property name="allowSessionCreation" value="false" />
+			</bean>
+		</constructor-arg>
+
+
+	</bean>
 
 </beans> 
