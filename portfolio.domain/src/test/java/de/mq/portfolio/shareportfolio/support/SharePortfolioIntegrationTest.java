@@ -3,8 +3,6 @@ package de.mq.portfolio.shareportfolio.support;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.junit.Ignore;
@@ -65,15 +63,23 @@ public class SharePortfolioIntegrationTest {
 	
 	
 	@Test
-	@Ignore
+	//@Ignore
 	public final void solve() {
 		final Query query = new Query(Criteria.where("name").is("mq-minRisk"));
 		final SharePortfolioImpl sharePortfolio =  mongoOperations.findOne(query, SharePortfolioImpl.class);
 		final double[] vector = new double[sharePortfolio.timeCourses().size()];
+		final double[] vector2 = new double[sharePortfolio.timeCourses().size()];
 		final List<Entry<Share, Double>> results = sharePortfolio.min();
 		results.forEach(e -> System.out.println(e.getKey().name() + "=" + e.getValue()));
-		IntStream.range(0, sharePortfolio.timeCourses().size()).forEach( i-> vector[i]=results.get(i).getValue() );
+		IntStream.range(0, sharePortfolio.timeCourses().size()).forEach( i->{
+		vector[i]=results.get(i).getValue() ;
+		vector2[i]=1d/sharePortfolio.timeCourses().size();
+		}
+		
+		);
+		
 		System.out.println("Risiko=" + Math.sqrt(sharePortfolio.risk(vector)));
+		System.out.println("Risiko(gleichverteilt)=" + Math.sqrt(sharePortfolio.risk(vector2)));
 		Assert.assertEquals(1d, results.stream().mapToDouble(e -> e.getValue()).reduce((a, b) -> a+b).getAsDouble());
 	}
 }
