@@ -1,9 +1,11 @@
 package de.mq.portfolio.shareportfolio.support;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -13,6 +15,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.Assert;
 
+import Jama.Matrix;
+import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -162,6 +166,37 @@ class SharePortfolioImpl implements SharePortfolio {
 	@Override
 	public final String id() {
 		return id;
+	}
+	
+	public List<Entry<Share, Double>>  min() {
+		variancesExistsGuard();
+		covariancesExistsGuard();
+		Assert.isTrue(covariances.length==timeCourses.size());
+		Assert.isTrue(variances.length==timeCourses.size());
+		final double[][] array = new double[timeCourses.size()+1] [timeCourses.size()+1];
+		IntStream.range(0, timeCourses.size()).forEach( i -> IntStream.range(0, timeCourses.size()).filter(j -> j!=i).forEach(j -> array[i][j]=covariances[i][j]));
+		
+		IntStream.range(0, timeCourses.size()).forEach(i -> {
+			array[i][i]=variances[i];
+			array[i][timeCourses.size()]=1;
+			array[timeCourses.size()][i]=1;
+		});
+		array[timeCourses.size()][timeCourses.size()]=0d;
+		/* seien ein Vektor und eine Matrix ...*/
+		final Matrix matrix = new Matrix(array);
+		final Matrix vectorAsMatrix = new Matrix(timeCourses.size()+1,1, 0d );
+		vectorAsMatrix.set(timeCourses.size(), 0, 1d);
+		final Matrix vector = vectorAsMatrix;
+		//matrix.print(15, 10);
+		
+		//vector.print(15,10);
+		final Matrix result = matrix.solve(vector);
+		//result.print(15, 10);
+		final List<Entry<Share, Double>> weights = new ArrayList<>();
+		IntStream.range(0, timeCourses.size()).forEach(i -> weights.add(new AbstractMap.SimpleImmutableEntry<>(timeCourses.get(i).share(), result.get(i,0))));
+		
+		return weights;
+		
 	}
 
 }

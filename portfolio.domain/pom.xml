@@ -18,6 +18,12 @@
 
 
   <dependencies>
+  
+  <dependency>
+        <groupId>gov.nist.math</groupId>
+        <artifactId>jama</artifactId>
+        <version>1.0.2</version>
+    </dependency>
    
   </dependencies>
   <build>

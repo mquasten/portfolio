@@ -2,6 +2,10 @@ package de.mq.portfolio.shareportfolio.support;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -13,17 +17,20 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
+import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/mongo.xml" })
-@Ignore
+//@Ignore
 public class SharePortfolioIntegrationTest {
 	
 	@Autowired
 	private MongoOperations mongoOperations;
 	
+	@Ignore
 	@Test
 	public final void persist() {
 		
@@ -32,5 +39,41 @@ public class SharePortfolioIntegrationTest {
 		final SharePortfolio sharePortfolio = new SharePortfolioImpl("mq-test", timeCourses);
 	
 		mongoOperations.save(sharePortfolio);
+	}
+	
+	@Test
+	@Ignore
+	public final void persist2() {
+		
+		final Query query = new Query(Criteria.where("share.code").in(Arrays.asList("ADS.DE",/*"BAYN.DE","BMW.DE",*/"SAP.DE","HEN3.DE",/*"BA"*/"PG","JNJ","KO"/*"GS"*/)));
+		final List<TimeCourse> timeCourses = mongoOperations.find(query, TimeCourse.class, "TimeCourse");
+		final SharePortfolio sharePortfolio = new SharePortfolioImpl("mq-test2", timeCourses);
+	
+		mongoOperations.save(sharePortfolio);
+	}
+	
+	@Test
+	@Ignore
+	public final void persistMinRisk() {
+		
+		final Query query = new Query(Criteria.where("share.code").in(Arrays.asList("KO", "VZ", "JNJ", /*"TRV" , */ /*"MCD" */   "SAP.DE" /*, "DB1.DE" */)));
+		final List<TimeCourse> timeCourses = mongoOperations.find(query, TimeCourse.class, "TimeCourse");
+		final SharePortfolio sharePortfolio = new SharePortfolioImpl("mq-minRisk", timeCourses);
+	
+		mongoOperations.save(sharePortfolio);
+	}
+	
+	
+	@Test
+	@Ignore
+	public final void solve() {
+		final Query query = new Query(Criteria.where("name").is("mq-minRisk"));
+		final SharePortfolioImpl sharePortfolio =  mongoOperations.findOne(query, SharePortfolioImpl.class);
+		final double[] vector = new double[sharePortfolio.timeCourses().size()];
+		final List<Entry<Share, Double>> results = sharePortfolio.min();
+		results.forEach(e -> System.out.println(e.getKey().name() + "=" + e.getValue()));
+		IntStream.range(0, sharePortfolio.timeCourses().size()).forEach( i-> vector[i]=results.get(i).getValue() );
+		System.out.println("Risiko=" + Math.sqrt(sharePortfolio.risk(vector)));
+		Assert.assertEquals(1d, results.stream().mapToDouble(e -> e.getValue()).reduce((a, b) -> a+b).getAsDouble());
 	}
 }
