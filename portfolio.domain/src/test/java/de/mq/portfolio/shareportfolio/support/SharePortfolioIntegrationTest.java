@@ -51,7 +51,7 @@ public class SharePortfolioIntegrationTest {
 	}
 	
 	@Test
-	@Ignore
+  @Ignore
 	public final void persistMinRisk() {
 		
 		final Query query = new Query(Criteria.where("share.code").in(Arrays.asList("KO", "VZ", "JNJ", /*"TRV" , */ /*"MCD" */   "SAP.DE" /*, "DB1.DE" */)));
@@ -63,7 +63,7 @@ public class SharePortfolioIntegrationTest {
 	
 	
 	@Test
-	//@Ignore
+	@Ignore
 	public final void solve() {
 		final Query query = new Query(Criteria.where("name").is("mq-minRisk"));
 		final SharePortfolioImpl sharePortfolio =  mongoOperations.findOne(query, SharePortfolioImpl.class);
