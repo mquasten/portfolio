@@ -23,6 +23,12 @@ public class SharesSearchAO  implements Serializable{
 	
 	private final Collection<Entry<Share,TimeCourse>> timeCourses = new ArrayList<>();
 	
+	private final   Collection<Entry<String,TimeCourse>> portfolio = new ArrayList<>();
+	
+	
+
+	
+
 	private final Collection<String> indexes = new ArrayList<>();
 	
 	private TimeCourse selectedTimeCourse;
@@ -127,5 +133,13 @@ public class SharesSearchAO  implements Serializable{
 	public void setSelectedSort(final String selectedSort) {
 		this.selectedSort=selectedSort;
 	}
+	
+	public Collection<Entry<String, TimeCourse>> getPortfolio() {
+		return portfolio;
+	}
 
+	public void setPortfolio(final Collection<Entry<String, TimeCourse>> portfolio) {
+		this.portfolio.clear();
+		this.portfolio.addAll(portfolio);
+	}
 }

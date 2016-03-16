@@ -1,8 +1,13 @@
 package de.mq.portfolio.share.support;
 
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -11,17 +16,22 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Component;
 
 import de.mq.portfolio.share.ShareService;
+import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.shareportfolio.support.SharePortfolioService;
+import de.mq.portfolio.support.UserModel;
 
 @Component("sharesController")
 @Scope("singleton")
 public class SharesControllerImpl {
 	
 	private final ShareService shareService;
+	private final SharePortfolioService sharePortfolioService;
 	private final Map<String,Sort> orderBy = new HashMap<>();
 	
 	@Autowired
-	SharesControllerImpl(final ShareService shareService) {
+	SharesControllerImpl(final ShareService shareService, final SharePortfolioService sharePortfolioService) {
 		this.shareService = shareService;
+		this.sharePortfolioService=sharePortfolioService;
 		orderBy.put("id", new Sort("id"));
 		orderBy.put("name", new Sort("share.name", "id"));
 		orderBy.put("meanRate", new Sort(Direction.DESC, "meanRate" ,"id"));
@@ -31,8 +41,15 @@ public class SharesControllerImpl {
 	}
 
 	
-	public final void init(final SharesSearchAO sharesSearchAO) {
+	public final void init(final SharesSearchAO sharesSearchAO, UserModel userModel) {
 		
+		System.out.println(userModel.getPortfolioId());
+		final Collection<Entry<String,TimeCourse>> portfolio = new ArrayList<>();
+		if( userModel.getPortfolioId() !=null){
+			portfolio.addAll(sharePortfolioService.sharePortfolio(userModel.getPortfolioId()).timeCourses().stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(tc.share().name(), tc)).collect(Collectors.toList()));
+		}
+		
+		sharesSearchAO.setPortfolio(portfolio);
 		sharesSearchAO.setIndexes(shareService.indexes());
 	
 		

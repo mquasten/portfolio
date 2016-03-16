@@ -8,7 +8,7 @@ import org.springframework.data.domain.Sort;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
-interface SharePortfolioService {
+public interface SharePortfolioService {
 
 	SharePortfolio committedPortfolio(String name);
 

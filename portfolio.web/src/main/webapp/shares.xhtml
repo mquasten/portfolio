@@ -12,7 +12,7 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<f:metadata>
 			
-			<f:viewAction action="#{sharesController.init(sharesSearch)}" />
+			<f:viewAction action="#{sharesController.init(sharesSearch, userModel)}" />
 
 		</f:metadata>
 
@@ -70,11 +70,22 @@
 
 <h:panelGrid style="margin-left: 50px;"  >
 <f:facet name="header">
- 		<h:outputText value="Portfolio"  />
+ 		<h:outputText value="Portfolio:"  /><h:outputText value="mq-test" />
  </f:facet>
 
-<h:outputText  value="xxxx"/>
 
+<p:selectOneListbox  scrollHeight="140" style="width:100%" >
+  <f:selectItems value="#{sharesSearch.portfolio}" var="timeCourse" itemLabel="#{timeCourse.key}" itemValue="#{timeCourse.value}" />         
+ 
+
+
+</p:selectOneListbox>
+
+ <f:facet name="footer">
+   <h:panelGrid>
+  <p:commandButton  value="hinzufügen"  />
+  </h:panelGrid>
+  </f:facet>
 </h:panelGrid>
 
 </h:panelGrid>	
