@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.shareportfolio.support.SharePortfolioService;
 import de.mq.portfolio.support.UserModel;
 
@@ -46,7 +47,9 @@ public class SharesControllerImpl {
 		System.out.println(userModel.getPortfolioId());
 		final Collection<Entry<String,TimeCourse>> portfolio = new ArrayList<>();
 		if( userModel.getPortfolioId() !=null){
-			portfolio.addAll(sharePortfolioService.sharePortfolio(userModel.getPortfolioId()).timeCourses().stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(tc.share().name(), tc)).collect(Collectors.toList()));
+			final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(userModel.getPortfolioId());
+			portfolio.addAll(sharePortfolio.timeCourses().stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(tc.share().name(), tc)).collect(Collectors.toList()));
+		   sharesSearchAO.setPortfolioName(sharePortfolio.name());
 		}
 		
 		sharesSearchAO.setPortfolio(portfolio);

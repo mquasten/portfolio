@@ -25,7 +25,8 @@ public class SharesSearchAO  implements Serializable{
 	
 	private final   Collection<Entry<String,TimeCourse>> portfolio = new ArrayList<>();
 	
-	
+	private String portfolioName;
+
 
 	
 
@@ -141,5 +142,14 @@ public class SharesSearchAO  implements Serializable{
 	public void setPortfolio(final Collection<Entry<String, TimeCourse>> portfolio) {
 		this.portfolio.clear();
 		this.portfolio.addAll(portfolio);
+	}
+	
+	public String getPortfolioName() {
+		return portfolioName;
+	}
+	
+
+	public void setPortfolioName(final String portfolioName) {
+		this.portfolioName = portfolioName;
 	}
 }

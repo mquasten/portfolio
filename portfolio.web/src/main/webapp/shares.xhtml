@@ -68,9 +68,9 @@
 		
 </h:panelGrid>
 
-<h:panelGrid style="margin-left: 50px;"  >
+<h:panelGrid style="margin-left: 50px;"  rendered="#{sharesSearch.portfolioName!=null}" >
 <f:facet name="header">
- 		<h:outputText value="Portfolio:"  /><h:outputText value="mq-test" />
+ 		<h:outputText value="Portfolio:"  /><h:outputText value="#{sharesSearch.portfolioName}" />
  </f:facet>
 
 
