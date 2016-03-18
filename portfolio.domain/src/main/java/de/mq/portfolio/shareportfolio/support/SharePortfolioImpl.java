@@ -41,10 +41,10 @@ class SharePortfolioImpl implements SharePortfolio {
 	private double[][] correlations;
 
 	private boolean committed;
-	
+
 	@SuppressWarnings("unused")
 	private SharePortfolioImpl() {
-		name=null;
+		name = null;
 	}
 
 	SharePortfolioImpl(final String name, final List<TimeCourse> timeCourses) {
@@ -154,49 +154,61 @@ class SharePortfolioImpl implements SharePortfolio {
 	public Optional<PortfolioOptimisation> minVariance() {
 		return Optional.ofNullable(minVariance);
 	}
-	
+
 	@Override
 	public final double standardDeviation() {
-		if( minVariance == null) {
+		if (minVariance == null) {
 			return 0d;
 		}
 		return Math.sqrt(minVariance.variance());
 	}
-	
+
 	@Override
 	public final String id() {
 		return id;
 	}
-	
-	public List<Entry<Share, Double>>  min() {
+
+	public List<Entry<Share, Double>> min() {
 		variancesExistsGuard();
 		covariancesExistsGuard();
-		Assert.isTrue(covariances.length==timeCourses.size());
-		Assert.isTrue(variances.length==timeCourses.size());
-		final double[][] array = new double[timeCourses.size()+1] [timeCourses.size()+1];
-		IntStream.range(0, timeCourses.size()).forEach( i -> IntStream.range(0, timeCourses.size()).filter(j -> j!=i).forEach(j -> array[i][j]=covariances[i][j]));
-		
+		Assert.isTrue(covariances.length == timeCourses.size());
+		Assert.isTrue(variances.length == timeCourses.size());
+		final double[][] array = new double[timeCourses.size() + 1][timeCourses.size() + 1];
+		IntStream.range(0, timeCourses.size()).forEach(i -> IntStream.range(0, timeCourses.size()).filter(j -> j != i).forEach(j -> array[i][j] = covariances[i][j]));
+
 		IntStream.range(0, timeCourses.size()).forEach(i -> {
-			array[i][i]=variances[i];
-			array[i][timeCourses.size()]=1;
-			array[timeCourses.size()][i]=1;
+			array[i][i] = variances[i];
+			array[i][timeCourses.size()] = 1;
+			array[timeCourses.size()][i] = 1;
 		});
-		array[timeCourses.size()][timeCourses.size()]=0d;
-		/* seien ein Vektor und eine Matrix ...*/
+		array[timeCourses.size()][timeCourses.size()] = 0d;
+		/* seien ein Vektor und eine Matrix ... */
 		final Matrix matrix = new Matrix(array);
-		final Matrix vectorAsMatrix = new Matrix(timeCourses.size()+1,1, 0d );
+		final Matrix vectorAsMatrix = new Matrix(timeCourses.size() + 1, 1, 0d);
 		vectorAsMatrix.set(timeCourses.size(), 0, 1d);
 		final Matrix vector = vectorAsMatrix;
-		//matrix.print(15, 10);
-		
-		//vector.print(15,10);
+		// matrix.print(15, 10);
+
+		// vector.print(15,10);
 		final Matrix result = matrix.solve(vector);
-		//result.print(15, 10);
+		// result.print(15, 10);
 		final List<Entry<Share, Double>> weights = new ArrayList<>();
-		IntStream.range(0, timeCourses.size()).forEach(i -> weights.add(new AbstractMap.SimpleImmutableEntry<>(timeCourses.get(i).share(), result.get(i,0))));
-		
+		IntStream.range(0, timeCourses.size()).forEach(i -> weights.add(new AbstractMap.SimpleImmutableEntry<>(timeCourses.get(i).share(), result.get(i, 0))));
+
 		return weights;
-		
+
+	}
+
+	@Override
+	public void assign(final TimeCourse timeCourse) {
+		Assert.notNull(timeCourse);
+		Assert.notNull(timeCourse.share());
+		Assert.notNull(timeCourse.share().name());
+		if (timeCourses.stream().map(tc -> tc.share().name()).filter(n -> n.equals(timeCourse.share().name())).findAny().isPresent()) {
+			return;
+		}
+		this.timeCourses.add(timeCourse);
+
 	}
 
 }

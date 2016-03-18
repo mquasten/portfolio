@@ -43,8 +43,17 @@ public class SharesControllerImpl {
 
 	
 	public final void init(final SharesSearchAO sharesSearchAO, UserModel userModel) {
+	
+		refreshPortfolioList(sharesSearchAO, userModel);
+		sharesSearchAO.setIndexes(shareService.indexes());
+	
 		
-		System.out.println(userModel.getPortfolioId());
+		page(sharesSearchAO);
+	
+	}
+
+
+	private void refreshPortfolioList(final SharesSearchAO sharesSearchAO, UserModel userModel) {
 		final Collection<Entry<String,TimeCourse>> portfolio = new ArrayList<>();
 		if( userModel.getPortfolioId() !=null){
 			final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(userModel.getPortfolioId());
@@ -53,11 +62,6 @@ public class SharesControllerImpl {
 		}
 		
 		sharesSearchAO.setPortfolio(portfolio);
-		sharesSearchAO.setIndexes(shareService.indexes());
-	
-		
-		page(sharesSearchAO);
-	
 	}
 	
 	public final void page(final SharesSearchAO sharesSearchAO) {
@@ -117,6 +121,12 @@ public class SharesControllerImpl {
 		
 	}
 	
+	public final void  add2Portfolio(final SharesSearchAO sharesSearchAO, final UserModel userModel) {
 	
+		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(userModel.getPortfolioId());
+		sharePortfolio.assign(sharesSearchAO.getSelectedTimeCourse().getValue());
+		sharePortfolioService.save(sharePortfolio);
+		refreshPortfolioList(sharesSearchAO, userModel);
+	}
 
 }

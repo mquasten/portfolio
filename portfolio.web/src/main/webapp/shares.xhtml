@@ -74,7 +74,7 @@
  </f:facet>
 
 
-<p:selectOneListbox  scrollHeight="140" style="width:100%" >
+<p:selectOneListbox  id="portfolio" scrollHeight="140" style="width:100%" >
   <f:selectItems value="#{sharesSearch.portfolio}" var="timeCourse" itemLabel="#{timeCourse.key}" itemValue="#{timeCourse.value}" />         
  
 
@@ -83,7 +83,7 @@
 
  <f:facet name="footer">
    <h:panelGrid>
-  <p:commandButton  value="hinzufügen"  />
+  <p:commandButton  value="hinzufügen"  action="#{sharesController.add2Portfolio(sharesSearch,userModel )}"   process="@form" update="@form" disabled="#{sharesSearch.selectedTimeCourse == null}"/>
   </h:panelGrid>
   </f:facet>
 </h:panelGrid>
@@ -93,6 +93,7 @@
  <p:dataTable id="sharesTable" var="entry" value="#{sharesSearch.timeCourses}" selection="#{sharesSearch.selectedTimeCourse}" rowKey="#{entry.key.code()}"  lazy="true"    resizableColumns="true"     >
       
         <p:column selectionMode="single" style="width:16px;text-align:center"/>
+         <p:ajax event="rowSelectRadio" process="@this" update="@form" />
         <p:column headerText="Name">
             <h:outputText value="#{entry.key.name()}" />
         </p:column>

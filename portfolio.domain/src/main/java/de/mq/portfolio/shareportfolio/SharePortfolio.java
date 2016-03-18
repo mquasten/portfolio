@@ -23,6 +23,6 @@ public interface SharePortfolio {
 
 	String id();
 	
-	
+	void assign(final TimeCourse timeCourse);
 
 }

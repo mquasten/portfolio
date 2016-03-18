@@ -32,9 +32,13 @@ public class SharesSearchAO  implements Serializable{
 
 	private final Collection<String> indexes = new ArrayList<>();
 	
-	private TimeCourse selectedTimeCourse;
+	private Entry<Share,TimeCourse> selectedTimeCourse;
 	
 	
+	
+	
+
+
 	private Pageable pageable; 
 
 	
@@ -83,13 +87,7 @@ public class SharesSearchAO  implements Serializable{
 		this.index = index;
 	}
 	
-	public TimeCourse getSelectedTimeCourse() {
-		return selectedTimeCourse;
-	}
-
-	public void setSelectedTimeCourse(TimeCourse selectedTimeCourse) {
-		this.selectedTimeCourse = selectedTimeCourse;
-	}
+	
 	
 	public Pageable getPageable() {
 		return pageable;
@@ -151,5 +149,14 @@ public class SharesSearchAO  implements Serializable{
 
 	public void setPortfolioName(final String portfolioName) {
 		this.portfolioName = portfolioName;
+	}
+	
+	public Entry<Share, TimeCourse> getSelectedTimeCourse() {
+		return selectedTimeCourse;
+	}
+	
+
+	public void setSelectedTimeCourse(Entry<Share, TimeCourse> selectedTimeCourse) {
+		this.selectedTimeCourse = selectedTimeCourse;
 	}
 }
