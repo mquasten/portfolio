@@ -61,7 +61,7 @@ public class SharesControllerImpl {
 			portfolio.addAll(sharePortfolio.timeCourses().stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(tc.share().name(), tc.id())).collect(Collectors.toList()));
 		   sharesSearchAO.setPortfolioName(sharePortfolio.name());
 		}
-		
+		sharesSearchAO.setSelectedPortfolioItem(null);
 		sharesSearchAO.setPortfolio(portfolio);
 	}
 	
@@ -139,7 +139,7 @@ public class SharesControllerImpl {
 		
 		sharePortfolio.remove(toBeRemoved.get());
 		sharePortfolioService.save(sharePortfolio);
-		sharesSearchAO.setSelectedPortfolioItem(null);
+	
 		refreshPortfolioList(sharesSearchAO, userModel);
 		
 	}

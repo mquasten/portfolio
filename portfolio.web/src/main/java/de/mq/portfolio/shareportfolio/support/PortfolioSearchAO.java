@@ -1,5 +1,6 @@
 package de.mq.portfolio.shareportfolio.support;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,8 +15,11 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @Component("portfolioSearch")
 @Scope("view")
-public class PortfolioSearchAO {
+public class PortfolioSearchAO  implements Serializable {
 	
+
+	private static final long serialVersionUID = 1L;
+
 	private final List<SharePortfolio> sharePortfolios = new ArrayList<>();
 	
 	private Pageable pageable; 
