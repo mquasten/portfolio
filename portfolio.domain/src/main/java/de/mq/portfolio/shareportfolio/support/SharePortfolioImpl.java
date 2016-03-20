@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.data.annotation.Id;
@@ -209,6 +210,12 @@ class SharePortfolioImpl implements SharePortfolio {
 		}
 		this.timeCourses.add(timeCourse);
 
+	}
+	
+	
+	@Override
+	public void remove(final TimeCourse timeCourse) {
+		this.timeCourses.removeAll(this.timeCourses.stream().filter(tc -> tc.id().equals(timeCourse.id())).collect(Collectors.toSet()));
 	}
 
 }

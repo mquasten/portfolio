@@ -195,6 +195,11 @@ class TimeCourseImpl implements TimeCourse {
  	public final double standardDeviation() {
 		return standardDeviation;
  	}
+
+	@Override
+	public String id() {
+		return id;
+	}
 	
 	
 	

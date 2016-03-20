@@ -27,7 +27,7 @@ public interface TimeCourse {
 
 	double totalRateDividends();
 
-	
+	String id();
 
 	
 

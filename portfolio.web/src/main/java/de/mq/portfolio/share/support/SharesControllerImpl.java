@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +55,10 @@ public class SharesControllerImpl {
 
 
 	private void refreshPortfolioList(final SharesSearchAO sharesSearchAO, UserModel userModel) {
-		final Collection<Entry<String,TimeCourse>> portfolio = new ArrayList<>();
+		final Collection<Entry<String,String>> portfolio = new ArrayList<>();
 		if( userModel.getPortfolioId() !=null){
 			final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(userModel.getPortfolioId());
-			portfolio.addAll(sharePortfolio.timeCourses().stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(tc.share().name(), tc)).collect(Collectors.toList()));
+			portfolio.addAll(sharePortfolio.timeCourses().stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(tc.share().name(), tc.id())).collect(Collectors.toList()));
 		   sharesSearchAO.setPortfolioName(sharePortfolio.name());
 		}
 		
@@ -127,6 +128,20 @@ public class SharesControllerImpl {
 		sharePortfolio.assign(sharesSearchAO.getSelectedTimeCourse().getValue());
 		sharePortfolioService.save(sharePortfolio);
 		refreshPortfolioList(sharesSearchAO, userModel);
+	}
+	
+	public final void removeFromPortfolio(final SharesSearchAO sharesSearchAO, final UserModel userModel) {
+		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(userModel.getPortfolioId());
+		final Optional<TimeCourse> toBeRemoved = sharePortfolio.timeCourses().stream().filter(tc -> tc.id().equals(sharesSearchAO.getSelectedPortfolioItem())).findFirst();
+		if ( !toBeRemoved.isPresent()) {
+			return;
+		}
+		
+		sharePortfolio.remove(toBeRemoved.get());
+		sharePortfolioService.save(sharePortfolio);
+		sharesSearchAO.setSelectedPortfolioItem(null);
+		refreshPortfolioList(sharesSearchAO, userModel);
+		
 	}
 
 }

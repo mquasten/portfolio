@@ -74,16 +74,17 @@
  </f:facet>
 
 
-<p:selectOneListbox  id="portfolio" scrollHeight="140" style="width:100%" >
+<p:selectOneListbox  id="portfolio" scrollHeight="140" style="width:100%"  value="#{sharesSearch.selectedPortfolioItem}">
   <f:selectItems value="#{sharesSearch.portfolio}" var="timeCourse" itemLabel="#{timeCourse.key}" itemValue="#{timeCourse.value}" />         
- 
+   <p:ajax process="@this" update="@form"  />  
 
 
 </p:selectOneListbox>
 
  <f:facet name="footer">
-   <h:panelGrid>
+   <h:panelGrid  columns="2" >
   <p:commandButton  value="hinzufügen"  action="#{sharesController.add2Portfolio(sharesSearch,userModel )}"   process="@form" update="@form" disabled="#{sharesSearch.selectedTimeCourse == null}"/>
+  <p:commandButton  value="entfernen"  action="#{sharesController.removeFromPortfolio(sharesSearch,userModel )}"   process="@form" update="@form" disabled="#{sharesSearch.selectedPortfolioItem == null}"/>
   </h:panelGrid>
   </f:facet>
 </h:panelGrid>

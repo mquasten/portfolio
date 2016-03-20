@@ -37,4 +37,6 @@ public class PortfolioControllerImpl {
 		userModel.setPortfolioId(portfolioSearchAO.getSelectedPortfolio().id());
 		portfolioSearchAO.setPortfolioName(portfolioSearchAO.getSelectedPortfolio().name());
 	}
+	
+	
 }

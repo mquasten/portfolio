@@ -25,4 +25,6 @@ public interface SharePortfolio {
 	
 	void assign(final TimeCourse timeCourse);
 
+	void remove(final TimeCourse timeCourse);
+
 }
