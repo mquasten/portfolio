@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.support.UserModel;
 
 @Component("portfolioController")
@@ -38,5 +39,10 @@ public class PortfolioControllerImpl {
 		portfolioSearchAO.setPortfolioName(portfolioSearchAO.getSelectedPortfolio().name());
 	}
 	
+	
+	public void save(final SharePortfolio sharePortfolio) {
+		System.out.println(sharePortfolio.name());
+		System.out.println("save");
+	}
 	
 }

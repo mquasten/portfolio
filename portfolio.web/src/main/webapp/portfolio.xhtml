@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>Portfolio</title>
+	
+	<h:outputStylesheet library="css" name="style.css"  />
+</h:head>
+<h:body>
+<h1>Portfolio anlegen </h1>
+
+<h:form>
+
+<h:panelGrid columns="2" style="margin-bottom: 25px;">
+	<p:outputLabel  for="name"  value="Name"   />
+	
+	<p:inputText id="name" value="#{sharePortfolio.name}" />
+	
+	
+
+</h:panelGrid >
+
+<h:panelGrid >
+<p:messages id="messages" showDetail="false" />
+<h:panelGrid columns="2" >
+ 	<p:button  value="abbrechen" outcome="portfolios"  />
+	<p:commandButton value="speichern"  process="@form" update="@form" action="#{portfolioController.save(sharePortfolio.sharePortfolio)}"/>
+</h:panelGrid >   
+</h:panelGrid >
+ 
+        
+</h:form>
+
+	
+	
+
+
+</h:body>
+
+</html>
