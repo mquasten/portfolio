@@ -16,9 +16,7 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 @Scope("view")
 public class PortfolioAO implements Serializable {
 	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 
 	private String name ;
@@ -38,7 +36,7 @@ public class PortfolioAO implements Serializable {
 	
 	public final SharePortfolio getSharePortfolio() {
 		final SharePortfolio result = new SharePortfolioImpl(name, timeCourses);
-		ReflectionUtils.doWithFields(result.getClass(), field -> {field.setAccessible(true); ReflectionUtils.setField(field, field.getName(), id); },field -> field.isAnnotationPresent(Id.class)); 
+		ReflectionUtils.doWithFields(result.getClass(), field -> { /*"...touched for the very first time."  mdna (like a virgin**/ field.setAccessible(true); ReflectionUtils.setField(field, result, id); },field -> field.isAnnotationPresent(Id.class)); 
 		return result;
 		
 	}

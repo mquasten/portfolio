@@ -1,7 +1,11 @@
 package de.mq.portfolio.shareportfolio.support;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +16,7 @@ import de.mq.portfolio.support.UserModel;
 @Scope("singleton")
 public class PortfolioControllerImpl {
 
+	private static final String REDIRECT_TO_PORTFOLIOS_PAGE = "portfolios?faces-redirect=true";
 	private final SharePortfolioService sharePortfolioService;
 
 	@Autowired
@@ -40,9 +45,14 @@ public class PortfolioControllerImpl {
 	}
 	
 	
-	public void save(final SharePortfolio sharePortfolio) {
-		System.out.println(sharePortfolio.name());
-		System.out.println("save");
+	public String save(final SharePortfolio sharePortfolio, final FacesContext facesContext, final String existsMessage) {
+		try {
+			sharePortfolioService.save(sharePortfolio);
+			return REDIRECT_TO_PORTFOLIOS_PAGE;
+		} catch(final DuplicateKeyException de){
+			facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, existsMessage, null));
+		   return null; 
+		}
 	}
 	
 }

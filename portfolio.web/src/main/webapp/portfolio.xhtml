@@ -18,17 +18,21 @@
 <h:panelGrid columns="2" style="margin-bottom: 25px;">
 	<p:outputLabel  for="name"  value="Name"   />
 	
-	<p:inputText id="name" value="#{sharePortfolio.name}" />
+	<h:panelGrid columns="2">
+	<p:inputText id="name" value="#{sharePortfolio.name}" required="true"  validatorMessage="5 bis 30 Zeichen [Buchstaben,Ziffern-_]" requiredMessage="Mußfeld"  >
 	
+	<f:validateRegex pattern="[a-z,A-Z,0-9-_]{5,30}"  />
 	
-
+	</p:inputText >
+	<p:message for="name"  /> 
+	</h:panelGrid>
 </h:panelGrid >
 
 <h:panelGrid >
-<p:messages id="messages" showDetail="false" />
+<p:messages id="messages" showDetail="false" globalOnly="true" />
 <h:panelGrid columns="2" >
  	<p:button  value="abbrechen" outcome="portfolios"  />
-	<p:commandButton value="speichern"  process="@form" update="@form" action="#{portfolioController.save(sharePortfolio.sharePortfolio)}"/>
+	<p:commandButton value="speichern"  process="@form" update="@form" action="#{portfolioController.save(sharePortfolio.sharePortfolio,facesContext,'Portfolio mit diesem Namen existiert bereits')}" />
 </h:panelGrid >   
 </h:panelGrid >
  
