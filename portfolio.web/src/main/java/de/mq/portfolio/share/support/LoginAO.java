@@ -5,12 +5,10 @@ package de.mq.portfolio.share.support;
 import java.io.Serializable;
 
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 @Component("login")
-@Scope("request")
+@Scope("view")
 public class LoginAO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -18,8 +16,20 @@ public class LoginAO implements Serializable {
 	private String name;
 	
 	private String password;
+	
+	private String message;
 
 	
+	public String getMessage() {
+		return message;
+	}
+	
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	
+
 	public String getName() {
 		return name;
 	}
@@ -36,8 +46,5 @@ public class LoginAO implements Serializable {
 		this.password = password;
 	}
 	
-	public Authentication getAuthentification() {
-		return new UsernamePasswordAuthenticationToken(name, password);
-		
-	}
+	
 }

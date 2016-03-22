@@ -75,7 +75,8 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
    <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>/*</url-pattern>
-        
+        <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
   
   
