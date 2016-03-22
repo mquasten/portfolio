@@ -12,6 +12,7 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
 
 	<import resource="classpath*:application.xml" />
+	<import resource="classpath*:security.xml" />
 	<context:component-scan base-package="de.mq.portfolio.support"  />
 		
 

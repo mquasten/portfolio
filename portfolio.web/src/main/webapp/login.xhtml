@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:my="http://www.XXXX.com/my/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:security="http://www.springframework.org/security/facelets/tags">
+
+
+
+      
+       <h:form id="loginForm" prependId="false">
+        
+            <h:panelGrid columns="2">  
+                <h:outputLabel for="username" value="User: " />  
+                <h:inputText id="username" value="#{login.name}" required="true" requiredMessage="Benutzer"/>  
+                <h:outputLabel for="password" value="Password" />  
+                <h:inputSecret id="password" value="#{login.password}" required="true" requiredMessage="Passwort !"/>  
+				
+					 
+					 <h:commandButton id="submitButton" value="anmelden" action="#{loginController.login(login.authentification, facesContext)}" />  
+                	 
+              		<h:messages   errorStyle="color:red"/>
+            </h:panelGrid>  
+        </h:form>  
+
+	
+</html>

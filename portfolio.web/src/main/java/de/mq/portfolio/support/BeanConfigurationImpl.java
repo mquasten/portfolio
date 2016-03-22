@@ -13,8 +13,13 @@ class BeanConfigurationImpl {
 	@Bean
 	@Scope("prototype")
 	UserModel userModel() {
-		
+	
+		if( securityContext().getAuthentication() == null){
+			return null;
+		}
 		return (UserModel) securityContext().getAuthentication().getPrincipal();
+	
+		
 	}
 	
 	
@@ -23,7 +28,7 @@ class BeanConfigurationImpl {
 		final SecurityContext securityConntext =  SecurityContextHolder.getContext();
 		
 		if( securityConntext.getAuthentication() == null){
-			securityConntext.setAuthentication(new UsernamePasswordAuthenticationToken(new UserModelImpl("kminogue"), "kinkykylie"));
+			securityConntext.setAuthentication(new UsernamePasswordAuthenticationToken(new UserModelImpl(""), ""));
 		}
 		return securityConntext;
 	}

@@ -8,7 +8,7 @@ public class UserModelImpl implements UserModel {
 	
 	
 
-	UserModelImpl(String name) {
+	public UserModelImpl(String name) {
 		this.name=name;
 	}
 	
