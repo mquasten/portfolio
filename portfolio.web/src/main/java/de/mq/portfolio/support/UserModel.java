@@ -1,6 +1,6 @@
 package de.mq.portfolio.support;
 
-
+import java.util.Locale;
 
 public interface UserModel {
 
@@ -10,5 +10,10 @@ public interface UserModel {
 
 	void setPortfolioId(final String portfolioId);
 
+	Locale getLocale();
+	
+	void setLocale(Locale locale);
+
+	
 	
 }

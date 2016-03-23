@@ -2,6 +2,9 @@ package de.mq.portfolio.share.support;
 
 import java.util.ArrayList;
 
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,11 +31,23 @@ public class LoginControllerImpl {
 			securityConntext.setAuthentication(new UsernamePasswordAuthenticationToken(new UserModelImpl((String) auth.getPrincipal()), "", new ArrayList<>()));
 		} catch (final AuthenticationException ex ) {
 			
-			return String.format("login?faces-redirect=true&name=%s&message=login_%s", login.getName() , StringUtils.uncapitalize(ex.getClass().getSimpleName()));
+			return String.format("login?faces-redirect=true&name=%s&message=login_%s", login.getName() , StringUtils.uncapitalize(ex.getClass().getSimpleName().replaceFirst("Exception", "")));
 		}
 	   
 		
 		return "shares?faces-redirect=true";
+	}
+	
+	public final String logout(final SecurityContext securityContext, final FacesContext facesContext) {
+	
+		securityContext.setAuthentication(null);
+		((HttpSession) facesContext.getExternalContext().getSession(false)).invalidate();
+		
+		return facesContext.getViewRoot().getViewId() + "?faces-redirect=true" ; 
+	}
+	
+	public final String language(final FacesContext facesContext, final String language) {
+		return facesContext.getViewRoot().getViewId() + "?faces-redirect=true&language=" + language.toLowerCase().trim() ;
 	}
 
 }

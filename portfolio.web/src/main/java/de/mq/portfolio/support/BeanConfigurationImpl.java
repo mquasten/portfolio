@@ -8,29 +8,33 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 @Configuration
-class BeanConfigurationImpl {
+public class BeanConfigurationImpl {
 
 	@Bean
 	@Scope("prototype")
-	UserModel userModel() {
+	public UserModel userModel(final SecurityContext securityContext) {
 	
-		if( securityContext().getAuthentication() == null){
+		if( securityContext.getAuthentication() == null){
 			return null;
 		}
+		
 		return (UserModel) securityContext().getAuthentication().getPrincipal();
 	
 		
 	}
 	
 	
-
-	private SecurityContext securityContext() {
-		final SecurityContext securityConntext =  SecurityContextHolder.getContext();
-		
-		if( securityConntext.getAuthentication() == null){
-			securityConntext.setAuthentication(new UsernamePasswordAuthenticationToken(new UserModelImpl(""), ""));
+	@Bean(name="securityContext")
+	@Scope("prototype")
+	public SecurityContext securityContext() {
+		final SecurityContext securityContext = SecurityContextHolder.getContext();
+		if (!( securityContext.getAuthentication().getPrincipal() instanceof UserModel)) {
+			securityContext.setAuthentication(new UsernamePasswordAuthenticationToken(new UserModelImpl(""), ""));
+			
+			
 		}
-		return securityConntext;
+		
+		return securityContext;
 	}
 	
 }

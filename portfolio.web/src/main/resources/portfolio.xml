@@ -13,8 +13,8 @@
 
 	<import resource="classpath*:application.xml" />
 	<import resource="classpath*:security.xml" />
-	<context:component-scan base-package="de.mq.portfolio.support"  />
-		
+	<context:component-scan base-package="de.mq.portfolio.support" />
+
 
 
 	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
@@ -28,16 +28,18 @@
 	</bean>
 
 
-	<bean id="securityContextPersistenceFilter"
-		class="org.springframework.security.web.context.SecurityContextPersistenceFilter">
-		<constructor-arg>
-			<bean
-				class="org.springframework.security.web.context.HttpSessionSecurityContextRepository">
-				<property name="allowSessionCreation" value="false" />
-			</bean>
-		</constructor-arg>
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+
+		<property name="defaultEncoding" value="UTF-8" />
+
+		<property name="basenames"
+			value="classpath:/messages/template" />
+		<property name="cacheSeconds" value="1000" />
+		<property name="fallbackToSystemLocale" value="false" />
 
 
 	</bean>
 
+	<bean name="localeChangeFilter" class="de.mq.portfolio.support.LocaleChangeFilter"/>
 </beans> 

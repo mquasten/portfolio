@@ -6,7 +6,7 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:p="http://primefaces.org/ui" >
 <h:head>
-	<title>Portfolio</title>
+	<title>#{message.template_title}</title>
 	<ui:insert name="meta" >
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />	
 	</ui:insert>
@@ -16,19 +16,29 @@
 <h:body>
 
 	<ui:insert name="menu" >
-	
+	<h:form>
 	<p:menubar>
-	<p:submenu label="Aktien" >
-		 <p:menuitem value="suchen" outcome="shares"  disabled="#{facesContext.viewRoot.viewId == '/shares.xhtml'}"/>
+	<p:submenu label="#{message.template_submenu_shares}" >
+		 <p:menuitem value="#{message.template_submenu_shares_search}" outcome="shares"  disabled="#{facesContext.viewRoot.viewId == '/shares.xhtml'}"/>
 		
 	</p:submenu>
-	<p:submenu label="Portfolio" >
+	<p:submenu label="#{message.template_submenu_portfolios}" >
 	
-		 <p:menuitem value="suchen" outcome="portfolios" disabled="#{facesContext.viewRoot.viewId == '/portfolios.xhtml'}" />
+		 <p:menuitem value="#{message.template_submenu_portfolios_search}" outcome="portfolios" disabled="#{facesContext.viewRoot.viewId == '/portfolios.xhtml'}" />
 		
 	</p:submenu>
+	
+	<p:submenu label="#{message.template_submenu_user}" >
+	
+	<p:menuitem value="#{message.template_submenu_user_logout}"  action="#{loginController.logout(securityContext,facesContext)}" />
+		<p:submenu label="#{message.template_submenu_languages}" >
+		 	<p:menuitem value="#{message.template_submenu_language_de}"  action="#{loginController.language(facesContext, 'de')}" disabled="#{userModel.locale =='de'}" />
+		 	<p:menuitem value="#{message.template_submenu_language_en}"  action="#{loginController.language(facesContext, 'en')}" disabled="#{userModel.locale =='en'}" />
+		</p:submenu>
+	</p:submenu>
+	
 	</p:menubar>
-	
+	</h:form>
 	</ui:insert>
 
 	<h:panelGroup layout="block" >
@@ -48,6 +58,7 @@
 			<h:outputText value="#{facesContext.viewRoot.viewId}"/>
 		</ui:insert> 
 	</h:panelGroup>
+	
 </h:body>
 
 </html>

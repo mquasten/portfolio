@@ -7,20 +7,19 @@
 	http://www.springframework.org/schema/security/spring-security-4.0.xsd">
 
 	
-<http auto-config="true" use-expressions="true"  authentication-manager-ref="authentificationManager"  >
-      
+<http auto-config="false" use-expressions="true" create-session="never" authentication-manager-ref="authentificationManager"  >
+     
        <intercept-url pattern="/login.jsf" access="permitAll" />
       
        <intercept-url pattern="/javax.faces.resource/**" access="permitAll"/>
        
           <intercept-url pattern="/**" access="isAuthenticated()"/>
         <form-login login-page="/login.jsf"  />
-        
+   
       
         
       <csrf disabled="true"/>
     </http>
- 
 
 
 

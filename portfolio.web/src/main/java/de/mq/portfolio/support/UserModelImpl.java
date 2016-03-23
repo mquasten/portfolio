@@ -1,12 +1,15 @@
 package de.mq.portfolio.support;
 
+import java.util.Locale;
+
 public class UserModelImpl implements UserModel {
 	
 	private String name;
 	
 	private String portfolioId;
 	
-	
+	private Locale locale = Locale.GERMAN;
+
 
 	public UserModelImpl(String name) {
 		this.name=name;
@@ -38,9 +41,23 @@ public class UserModelImpl implements UserModel {
 		this.portfolioId = portfolioId;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.support.UserModel#getLocale()
+	 */
+	@Override
+	public Locale getLocale() {
+		return locale;
+	}
 
-	
-
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.support.UserModel#setLocale(java.util.Locale)
+	 */
+	@Override
+	public void setLocale(final Locale locale) {
+		this.locale=locale;
+	}
 
 	
 

@@ -75,10 +75,27 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
    <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
-    <dispatcher>FORWARD</dispatcher>
+      
     </filter-mapping>
-  
+    
+   <filter>
+  <filter-name>localeChangeFilter</filter-name>
+  <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  <init-param>
+    <param-name>targetBeanName</param-name>
+    <param-value>localeChangeFilter</param-value>
+  </init-param>
+</filter>
+
+ <filter-mapping>
+        <filter-name>localeChangeFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+      
+    </filter-mapping>
+   
+ 
+ 
+   
   
 
 </web-app>
