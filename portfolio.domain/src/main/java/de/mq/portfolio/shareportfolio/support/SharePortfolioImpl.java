@@ -212,10 +212,31 @@ class SharePortfolioImpl implements SharePortfolio {
 
 	}
 	
-	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.SharePortfolio#remove(de.mq.portfolio.share.TimeCourse)
+	 */
 	@Override
 	public void remove(final TimeCourse timeCourse) {
 		this.timeCourses.removeAll(this.timeCourses.stream().filter(tc -> tc.id().equals(timeCourse.id())).collect(Collectors.toSet()));
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.SharePortfolio#standardDeviations()
+	 */
+	@Override
+	public  List<Entry<String,Double>> standardDeviations() {
+		 List<Entry<String,Double>> results = new ArrayList<>();
+		 
+		 if(variances==null){
+			 return Collections.unmodifiableList(results);
+		 }
+		
+		 if( timeCourses.size() != variances.length) {
+			 return Collections.unmodifiableList(results);
+		 }
+		 results.addAll(IntStream.range(0, timeCourses.size()).mapToObj(i -> new AbstractMap.SimpleImmutableEntry<>(timeCourses.get(i).share().name() , Math.sqrt(variances[i]))).collect(Collectors.toList()));
+		 return Collections.unmodifiableList(results);
 	}
 
 }

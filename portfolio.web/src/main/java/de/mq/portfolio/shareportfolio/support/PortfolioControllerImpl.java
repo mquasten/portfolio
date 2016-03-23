@@ -3,6 +3,7 @@ package de.mq.portfolio.shareportfolio.support;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DuplicateKeyException;
@@ -53,6 +54,16 @@ public class PortfolioControllerImpl {
 			facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, existsMessage, null));
 		   return null; 
 		}
+	}
+	
+	public void init(final PortfolioAO portfolioAO) {
+		if( portfolioAO.getId() == null){
+			portfolioAO.setSharePortfolio(BeanUtils.instantiateClass(SharePortfolioImpl.class));
+			return;
+		}
+		
+		portfolioAO.setSharePortfolio(sharePortfolioService.sharePortfolio(portfolioAO.getId()));
+		
 	}
 	
 }

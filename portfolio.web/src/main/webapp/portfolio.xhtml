@@ -8,6 +8,13 @@
 <h:head>
 	<title>Portfolio</title>
 	
+	
+<f:metadata>
+    <f:viewParam name="portfolioId" value="#{sharePortfolio.id}" />
+   <f:viewAction action="#{portfolioController.init(sharePortfolio)}" />
+    
+</f:metadata>
+	
 	<h:outputStylesheet library="css" name="style.css"  />
 </h:head>
 <h:body>
@@ -25,7 +32,25 @@
 	
 	</p:inputText >
 	<p:message for="name"  /> 
+	
+	
 	</h:panelGrid>
+	
+	<p:outputLabel  for="variances"  value="σ [%]"  rendered="#{sharePortfolio.standardDeviations.size() > 0}" />
+	
+	<p:dataTable id="variances"  emptyMessage=""    var="portfolio" value="#{sharePortfolio.standardDeviations}"  styleClass="hide-column-names"  rendered="#{sharePortfolio.standardDeviations.size() > 0}" >
+	 	<p:column>
+            <h:outputText value="#{portfolio.key}" />
+        </p:column>
+        
+        <p:column>
+            <h:outputText value="#{100*portfolio.value}" >
+             <f:convertNumber pattern="#0.00" />
+            </h:outputText>
+        </p:column>
+	
+	</p:dataTable>
+	
 </h:panelGrid >
 
 <h:panelGrid >

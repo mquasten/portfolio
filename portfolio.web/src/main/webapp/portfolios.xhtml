@@ -74,6 +74,10 @@
         
         <f:facet name="footer">
         <p:button  value="neu" outcome="portfolio" />
+        <p:button  value="ändern" outcome="portfolio"  disabled="#{portfolioSearch.selectedPortfolio==null}" >
+        	
+        	<f:param name="portfolioId" value="#{portfolioSearch.selectedPortfolio.id()}"/>
+        </p:button>
         
     	</f:facet>
        

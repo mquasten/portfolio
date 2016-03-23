@@ -3,6 +3,7 @@ package de.mq.portfolio.shareportfolio.support;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.annotation.Id;
@@ -23,16 +24,33 @@ public class PortfolioAO implements Serializable {
 	
 	private String id ; 
 
-	private final List<TimeCourse> timeCourses = new ArrayList<>();;
+
 	
+
+
+	private final List<TimeCourse> timeCourses = new ArrayList<>();
+	private final List<Entry<String,Double>> standardDeviations  = new ArrayList<>();;
+	
+	
+	
+
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	} 
 	
+	
+	public final void setSharePortfolio(final SharePortfolio sharePortfolio) {
+		this.name=sharePortfolio.name();
+		this.timeCourses.clear();
+		timeCourses.addAll(sharePortfolio.timeCourses());
+		this.standardDeviations.clear();
+		this.standardDeviations.addAll(sharePortfolio.standardDeviations());
+		
+	}
 	
 	public final SharePortfolio getSharePortfolio() {
 		final SharePortfolio result = new SharePortfolioImpl(name, timeCourses);
@@ -41,5 +59,18 @@ public class PortfolioAO implements Serializable {
 		
 	}
 	
+	
+	public String getId() {
+		return id;
+	}
+	
+
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	public List<Entry<String, Double>> getStandardDeviations() {
+		return standardDeviations;
+	}
 
 }
