@@ -23,11 +23,15 @@ import org.springframework.util.FileCopyUtils;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
 import com.lowagie.text.HeaderFooter;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
+import com.lowagie.text.Table;
 import com.lowagie.text.html.simpleparser.HTMLWorker;
+import com.lowagie.text.pdf.PdfTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -47,75 +51,85 @@ public class PortfolioControllerImpl {
 
 	public void init(final PortfolioSearchAO portfolioSearchAO, final UserModel userModel) {
 		page(portfolioSearchAO);
-		if( userModel.getPortfolioId() != null ){
+		if (userModel.getPortfolioId() != null) {
 			portfolioSearchAO.setPortfolioName(sharePortfolioService.sharePortfolio(userModel.getPortfolioId()).name());
 		}
-		
+
 	}
 
 	public void page(final PortfolioSearchAO portfolioSearchAO) {
-		portfolioSearchAO.setPageable( sharePortfolioService.pageable(portfolioSearchAO.criteria(),new Sort("name"), 10));
-		
+		portfolioSearchAO.setPageable(sharePortfolioService.pageable(portfolioSearchAO.criteria(), new Sort("name"), 10));
+
 		portfolioSearchAO.setSharePortfolios(sharePortfolioService.portfolios(portfolioSearchAO.getPageable(), portfolioSearchAO.criteria()));
 	}
 
-	
 	public void activate(final PortfolioSearchAO portfolioSearchAO, final UserModel userModel) {
 		userModel.setPortfolioId(portfolioSearchAO.getSelectedPortfolio().id());
 		portfolioSearchAO.setPortfolioName(portfolioSearchAO.getSelectedPortfolio().name());
 	}
-	
-	
+
 	public String save(final SharePortfolio sharePortfolio, final FacesContext facesContext, final String existsMessage) {
 		try {
 			sharePortfolioService.save(sharePortfolio);
 			return REDIRECT_TO_PORTFOLIOS_PAGE;
-		} catch(final DuplicateKeyException de){
+		} catch (final DuplicateKeyException de) {
 			facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, existsMessage, null));
-		   return null; 
+			return null;
 		}
 	}
-	
+
 	public void init(final PortfolioAO portfolioAO) {
-		if( portfolioAO.getId() == null){
+		if (portfolioAO.getId() == null) {
 			portfolioAO.setSharePortfolio(BeanUtils.instantiateClass(SharePortfolioImpl.class));
 			return;
 		}
-		
+
 		portfolioAO.setSharePortfolio(sharePortfolioService.sharePortfolio(portfolioAO.getId()));
-		
+
 	}
-	
-	public final void pdf(final PortfolioAO portfolioAO, final FacesContext facesContext ) throws DocumentException, IOException {
+
+	public final void pdf(final PortfolioAO portfolioAO, final FacesContext facesContext) throws DocumentException, IOException {
 		System.out.println("****");
 		FacesContext fc = FacesContext.getCurrentInstance();
-	    HttpServletResponse response = (HttpServletResponse) fc.getExternalContext().getResponse();
-	    response.reset(); 
-	    response.setContentType("application/pdf");
-	  //  response.setContentLength(contentLength);
-	    response.setHeader("Content-Disposition", "attachment; filename=\"" + portfolioAO.getName()+ ".pdf" + "\""); // The Save As popup magic is done here. You can give it any file name you want, this only won't work in MSIE, it will use current request URL as file name instead.
+		HttpServletResponse response = (HttpServletResponse) fc.getExternalContext().getResponse();
+		response.reset();
+		response.setContentType("application/pdf");
+		// response.setContentLength(contentLength);
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + portfolioAO.getName() + ".pdf" + "\""); // The
+																													
+																														// instead.
 
-	   
-	
-	    Document document = new Document();
-	 
-        // step 2
-        final ByteArrayOutputStream os = new ByteArrayOutputStream();
-        PdfWriter writer = PdfWriter.getInstance(document, os);
-        // step 3
-        document.open();
-        // step 4
-        document.add(new Paragraph("Hello World!"));
-        // step 5
-       document.close();
-         
-       
-       
-       
-        FileCopyUtils.copy(os.toByteArray(), response.getOutputStream());
-         
-	        
-	       facesContext.responseComplete();
+		final Document document = new Document();
+		
+		
+		try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+			PdfWriter.getInstance(document, os);
+			document.open();
+			
+				document.addTitle(portfolioAO.getName());
+				document.add(new Paragraph("Standardabweichungen der Aktien [%]"));
+				final Table table = new  Table(2);
+				table.setAlignment(Element.ALIGN_LEFT);
+				portfolioAO.getStandardDeviations().forEach(e -> { 
+					
+				try {
+				table.addCell(e.getKey());
+				table.addCell(String.valueOf(e.getValue()));
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} 
+				
+				});
+				; 
+			document.add(table);
+				
+				document.close();
+			
+			FileCopyUtils.copy(os.toByteArray(), response.getOutputStream());
+		}
+
+		facesContext.responseComplete();
 	}
-	
+
 }

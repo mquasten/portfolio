@@ -127,7 +127,7 @@
 <p:messages id="messages" showDetail="false" globalOnly="true" />
 <h:panelGrid columns="3" >
  	<p:button  value="abbrechen" outcome="portfolios"  />
- 	<h:commandButton value="pdf"  action="#{portfolioController.pdf(sharePortfolio,facesContext)}"  rendered="#{sharePortfolio.standardDeviations.size() >= 2 }" />
+ 	<p:commandButton value="pdf"  ajax="false"  action="#{portfolioController.pdf(sharePortfolio,facesContext)}"  rendered="#{sharePortfolio.standardDeviations.size() >= 2 }" />
 	<p:commandButton value="speichern"  process="@form" update="@form" action="#{portfolioController.save(sharePortfolio.sharePortfolio,facesContext,'Portfolio mit diesem Namen existiert bereits')}" />
 </h:panelGrid >   
 </h:panelGrid >
