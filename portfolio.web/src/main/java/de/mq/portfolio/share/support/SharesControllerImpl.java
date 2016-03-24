@@ -77,6 +77,7 @@ public class SharesControllerImpl {
 	
 
 	private void refreshTimeCourses(final SharesSearchAO sharesSearchAO) {
+		sharesSearchAO.setSelectedTimeCourse(null);
 		sharesSearchAO.setTimeCorses(shareService.timeCourses(sharesSearchAO.getPageable(), sharesSearchAO.getSearch()));
 	}
 	

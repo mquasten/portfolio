@@ -50,13 +50,84 @@
         </p:column>
 	
 	</p:dataTable>
+
+	<p:outputLabel  for="weights"  value="Gewichte [%]"  rendered="#{sharePortfolio.weights.size() > 0}" />
+	
+	<p:dataTable id="weights"  emptyMessage=""    var="weights" value="#{sharePortfolio.weights}"  styleClass="hide-column-names"  rendered="#{sharePortfolio.weights.size() > 0}" >
+		<p:column>
+            <h:outputText value="#{weights.key}" />
+        </p:column>
+        <p:column>
+            <h:outputText value="#{100*weights.value}" >
+             <f:convertNumber pattern="#0.00" />
+            </h:outputText>
+        </p:column>
+	</p:dataTable>
+	
 	
 </h:panelGrid >
 
+<ui:fragment rendered="#{sharePortfolio.minStandardDeviation != null || sharePortfolio.uniformlyDistributedStandardDeviation != null}">
+	<table style="border-collapse: collapse; margin-bottom: 25px;" >
+		<tr> <th colspan="2">Standardabweichungen Portfolio [‰] </th></tr>
+		<tr>
+			<td style="border: 1px solid black;">minimales Risiko</td> 
+			<td style="border: 1px solid black;"> 
+				<h:outputText value="#{1000*sharePortfolio.minStandardDeviation}" >
+				 	<f:convertNumber pattern="#0.0000" />
+				</h:outputText>
+			</td> 
+		</tr>
+		<tr>
+			<td style="border: 1px solid black;">gleichverteilt</td>
+			<td style="border: 1px solid black;">
+				<h:outputText value="#{1000*sharePortfolio.uniformlyDistributedStandardDeviation}">
+					<f:convertNumber pattern="#0.0000" />
+				</h:outputText>
+			</td>
+		</tr>
+	</table>
+</ui:fragment>
+
+<ui:fragment rendered="#{sharePortfolio.correlations.size() > 0}">
+<table style="border-collapse: collapse; width: 100%; margin-bottom: 25px;" >
+	<tr  >
+	<th style="border: 1px solid black;">Korrelationen [%]</th>
+	<ui:repeat value="#{sharePortfolio.shares}" var="share">
+		<td style="border: 1px solid black;">
+	 
+	   <h:outputText value="#{share}" />
+	   </td>
+	</ui:repeat>
+	</tr>
+	
+	<ui:repeat value="#{sharePortfolio.correlations}" var="correlation">
+		<tr>
+		<td style="border: 1px solid black;">
+	 
+	   <h:outputText value="#{correlation.key}" />
+	   </td >
+	
+	
+	<ui:repeat value="#{sharePortfolio.shares}" var="share">
+		<td style="border: 1px solid black;">
+		 <h:outputText value="#{100*correlation.value[share]}" >
+		  <f:convertNumber pattern="#0.00" />
+		 </h:outputText>
+		</td >
+	</ui:repeat>
+
+	</tr>
+	</ui:repeat>
+	
+	</table>
+</ui:fragment>
+
 <h:panelGrid >
 <p:messages id="messages" showDetail="false" globalOnly="true" />
-<h:panelGrid columns="2" >
+<h:panelGrid columns="3" >
  	<p:button  value="abbrechen" outcome="portfolios"  />
+ 	<h:commandButton value="pdf"  action="#{portfolioController.pdf(sharePortfolio,facesContext)}"  rendered="#{sharePortfolio.standardDeviations.size() >= 2 }" />
 	<p:commandButton value="speichern"  process="@form" update="@form" action="#{portfolioController.save(sharePortfolio.sharePortfolio,facesContext,'Portfolio mit diesem Namen existiert bereits')}" />
 </h:panelGrid >   
 </h:panelGrid >

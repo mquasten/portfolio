@@ -3,7 +3,10 @@ package de.mq.portfolio.shareportfolio.support;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.annotation.Id;
@@ -24,13 +27,18 @@ public class PortfolioAO implements Serializable {
 	
 	private String id ; 
 
-
-	
-
-
 	private final List<TimeCourse> timeCourses = new ArrayList<>();
-	private final List<Entry<String,Double>> standardDeviations  = new ArrayList<>();;
+	private final List<Entry<String,Double>> standardDeviations  = new ArrayList<>();
 	
+	private final List<Entry<String,Map<String,Double>>> correlations  = new ArrayList<>();;
+	
+	private final List<String> shares = new ArrayList<>();
+	
+	private final List<Entry<String, Double>> weights = new ArrayList<>();
+	
+	private Double 	minStandardDeviation;
+	
+	private Double uniformlyDistributedStandardDeviation; 
 	
 	
 
@@ -49,7 +57,21 @@ public class PortfolioAO implements Serializable {
 		timeCourses.addAll(sharePortfolio.timeCourses());
 		this.standardDeviations.clear();
 		this.standardDeviations.addAll(sharePortfolio.standardDeviations());
-		
+		this.correlations.clear();
+		this.correlations.addAll(sharePortfolio.correlationEntries());
+		this.shares.clear();
+		this.shares.addAll(sharePortfolio.timeCourses().stream().map(tc -> tc.share().name()).collect(Collectors.toList()));
+		this.weights.clear();
+		this.weights.addAll(sharePortfolio.min());
+		if (this.timeCourses.size() < 2) {
+			return;
+		}
+		final double[] weightingVector = new double[timeCourses.size()]; 
+		IntStream.range(0, weightingVector.length).forEach(i -> weightingVector[i] = weights.get(i).getValue());
+		this.minStandardDeviation = Math.sqrt(sharePortfolio.risk(weightingVector));
+
+		IntStream.range(0, weightingVector.length).forEach(i -> weightingVector[i] = 1d / timeCourses.size());
+		this.uniformlyDistributedStandardDeviation = Math.sqrt(sharePortfolio.risk(weightingVector));
 	}
 	
 	public final SharePortfolio getSharePortfolio() {
@@ -71,6 +93,27 @@ public class PortfolioAO implements Serializable {
 	
 	public List<Entry<String, Double>> getStandardDeviations() {
 		return standardDeviations;
+	}
+	
+	public List<Entry<String, Map<String, Double>>> getCorrelations() {
+		return correlations;
+	}
+	
+	public List<String> getShares() {
+		return shares;
+	}
+	
+	public List<Entry<String, Double>> getWeights() {
+		return weights;
+	}
+	
+	public Double getMinStandardDeviation() {
+		return minStandardDeviation;
+	}
+
+
+	public Double getUniformlyDistributedStandardDeviation() {
+		return uniformlyDistributedStandardDeviation;
 	}
 
 }

@@ -22,7 +22,7 @@
 <ui:define name="content">
 
 <h:form> 
-<h:panelGrid style="margin-bottom: 25px;" columns="2">
+<h:panelGrid  columns="2">
 <h:panelGrid id="searchGrid"   columns="2"   >
  <f:facet name="header">
  		Aktie suchen
@@ -51,15 +51,15 @@
             <p:message for="sorting"  />
             <f:facet name="footer">
          <h:panelGrid  columns="2" >
-            <p:commandButton id="searchButton" value="Suchen"  process="searchGrid" update="sharesTable,searchGrid" action="#{sharesController.page(sharesSearch)}" />
+            <p:commandButton id="searchButton" value="Suchen"  process="searchGrid" update="@form" action="#{sharesController.page(sharesSearch)}" />
           	<h:panelGrid columns="5" >
-            <p:commandButton icon="ui-icon-next"   action="#{sharesController.next(sharesSearch)}"  process="@this"  update="sharesTable,searchGrid"  disabled="#{!sharesSearch.pageable.hasNext()}" />
-            <p:commandButton icon="ui-icon-last" action="#{sharesController.last(sharesSearch)}"  process="@this"     update="sharesTable,searchGrid"  disabled="#{sharesSearch.pageable.isLast()}"  />
+            <p:commandButton icon="ui-icon-next"   action="#{sharesController.next(sharesSearch)}"  process="@this"  update="@form"  disabled="#{!sharesSearch.pageable.hasNext()}" />
+            <p:commandButton icon="ui-icon-last" action="#{sharesController.last(sharesSearch)}"  process="@this"     update="@form"  disabled="#{sharesSearch.pageable.isLast()}"  />
         
         	<h:outputText  value="#{sharesSearch.pageInfo}"/>
         
-           <p:commandButton icon="ui-icon-prev" action="#{sharesController.previous(sharesSearch)}" process="@this"  update="sharesTable,searchGrid"  disabled="#{!sharesSearch.pageable.hasPrevious()}"   />
-           <p:commandButton icon="ui-icon-first" action="#{sharesController.first(sharesSearch)}"   process="@this" update="sharesTable,searchGrid"  disabled="#{sharesSearch.pageable.isFirst()}"  />
+           <p:commandButton icon="ui-icon-prev" action="#{sharesController.previous(sharesSearch)}" process="@this"  update="@form"  disabled="#{!sharesSearch.pageable.hasPrevious()}"   />
+           <p:commandButton icon="ui-icon-first" action="#{sharesController.first(sharesSearch)}"   process="@this" update="@form"  disabled="#{sharesSearch.pageable.isFirst()}"  />
           </h:panelGrid>
            </h:panelGrid>
         

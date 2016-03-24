@@ -15,7 +15,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import junit.framework.Assert;
@@ -69,8 +68,8 @@ public class SharePortfolioIntegrationTest {
 		final SharePortfolioImpl sharePortfolio =  mongoOperations.findOne(query, SharePortfolioImpl.class);
 		final double[] vector = new double[sharePortfolio.timeCourses().size()];
 		final double[] vector2 = new double[sharePortfolio.timeCourses().size()];
-		final List<Entry<Share, Double>> results = sharePortfolio.min();
-		results.forEach(e -> System.out.println(e.getKey().name() + "=" + e.getValue()));
+		final List<Entry<String, Double>> results = sharePortfolio.min();
+		results.forEach(e -> System.out.println(e.getKey() + "=" + e.getValue()));
 		IntStream.range(0, sharePortfolio.timeCourses().size()).forEach( i->{
 		vector[i]=results.get(i).getValue() ;
 		vector2[i]=1d/sharePortfolio.timeCourses().size();

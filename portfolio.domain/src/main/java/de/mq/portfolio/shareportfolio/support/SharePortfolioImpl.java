@@ -4,7 +4,9 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,7 +19,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.Assert;
 
 import Jama.Matrix;
-import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -169,7 +170,19 @@ class SharePortfolioImpl implements SharePortfolio {
 		return id;
 	}
 
-	public List<Entry<Share, Double>> min() {
+	@Override
+	public List<Entry<String, Double>> min() {
+		final List<Entry<String, Double>> weights = new ArrayList<>();
+		if( timeCourses.isEmpty()) {
+			return Collections.unmodifiableList(weights);
+		}
+		if( variances == null) {
+			return Collections.unmodifiableList(weights);
+		}
+		
+		if( covariances == null) {
+			return Collections.unmodifiableList(weights);
+		}
 		variancesExistsGuard();
 		covariancesExistsGuard();
 		Assert.isTrue(covariances.length == timeCourses.size());
@@ -193,10 +206,10 @@ class SharePortfolioImpl implements SharePortfolio {
 		// vector.print(15,10);
 		final Matrix result = matrix.solve(vector);
 		// result.print(15, 10);
-		final List<Entry<Share, Double>> weights = new ArrayList<>();
-		IntStream.range(0, timeCourses.size()).forEach(i -> weights.add(new AbstractMap.SimpleImmutableEntry<>(timeCourses.get(i).share(), result.get(i, 0))));
+		
+		IntStream.range(0, timeCourses.size()).forEach(i -> weights.add(new AbstractMap.SimpleImmutableEntry<>(timeCourses.get(i).share().name(), result.get(i, 0))));
 
-		return weights;
+		return  Collections.unmodifiableList(weights);
 
 	}
 
@@ -236,6 +249,29 @@ class SharePortfolioImpl implements SharePortfolio {
 			 return Collections.unmodifiableList(results);
 		 }
 		 results.addAll(IntStream.range(0, timeCourses.size()).mapToObj(i -> new AbstractMap.SimpleImmutableEntry<>(timeCourses.get(i).share().name() , Math.sqrt(variances[i]))).collect(Collectors.toList()));
+		 return Collections.unmodifiableList(results);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.SharePortfolio#correlationEntries()
+	 */
+	@Override
+	public List<Entry<String,Map<String,Double>>> correlationEntries() {
+		final List<Entry<String,Map<String,Double>>> results = new ArrayList<>();
+		if( covariances==null){
+			return  Collections.unmodifiableList(results);
+		}
+		 if( timeCourses.size() != covariances.length) {
+			 return Collections.unmodifiableList(results);
+		 }
+		 IntStream.range(0, timeCourses.size()).forEach(line -> {
+			 final Map<String,Double> cols = new HashMap<>();
+			 IntStream.range(0, timeCourses.size()).forEach(col -> {
+				  cols.put(timeCourses.get(col).share().name(), correlations[line][col] );
+			 });
+			 results.add( new AbstractMap.SimpleImmutableEntry<>(timeCourses.get(line).share().name(), cols));
+		 });
 		 return Collections.unmodifiableList(results);
 	}
 

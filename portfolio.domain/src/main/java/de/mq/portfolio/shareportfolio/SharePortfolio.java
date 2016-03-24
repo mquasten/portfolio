@@ -1,6 +1,7 @@
 package de.mq.portfolio.shareportfolio;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -29,5 +30,9 @@ public interface SharePortfolio {
 	void remove(final TimeCourse timeCourse);
 
 	List<Entry<String, Double>> standardDeviations();
+
+	List<Entry<String, Map<String, Double>>> correlationEntries();
+
+	List<Entry<String, Double>> min();
 
 }
