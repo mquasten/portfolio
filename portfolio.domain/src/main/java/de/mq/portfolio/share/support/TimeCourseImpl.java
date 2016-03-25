@@ -201,6 +201,10 @@ class TimeCourseImpl implements TimeCourse {
 		return id;
 	}
 	
+	@Override
+	public String name() {
+		return share != null ? share.name(): null;
+	}
 	
 	
 }

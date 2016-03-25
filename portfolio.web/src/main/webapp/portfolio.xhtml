@@ -35,56 +35,50 @@
 	
 	
 	</h:panelGrid>
-	
-	<p:outputLabel  for="variances"  value="σ [%]"  rendered="#{sharePortfolio.standardDeviations.size() > 0}" />
-	
-	<p:dataTable id="variances"  emptyMessage=""    var="portfolio" value="#{sharePortfolio.standardDeviations}"  styleClass="hide-column-names"  rendered="#{sharePortfolio.standardDeviations.size() > 0}" >
-	 	<p:column>
-            <h:outputText value="#{portfolio.key}" />
-        </p:column>
-        
-        <p:column>
-            <h:outputText value="#{100*portfolio.value}" >
-             <f:convertNumber pattern="#0.00" />
-            </h:outputText>
-        </p:column>
-	
-	</p:dataTable>
-
-	<p:outputLabel  for="weights"  value="Gewichte [%]"  rendered="#{sharePortfolio.weights.size() > 0}" />
-	
-	<p:dataTable id="weights"  emptyMessage=""    var="weights" value="#{sharePortfolio.weights}"  styleClass="hide-column-names"  rendered="#{sharePortfolio.weights.size() > 0}" >
-		<p:column>
-            <h:outputText value="#{weights.key}" />
-        </p:column>
-        <p:column>
-            <h:outputText value="#{100*weights.value}" >
-             <f:convertNumber pattern="#0.00" />
-            </h:outputText>
-        </p:column>
-	</p:dataTable>
-	
-	
 </h:panelGrid >
 
-<ui:fragment rendered="#{sharePortfolio.minStandardDeviation != null || sharePortfolio.uniformlyDistributedStandardDeviation != null}">
+<ui:fragment rendered="#{sharePortfolio.timeCourses.size() >=  2 }">
 	<table style="border-collapse: collapse; margin-bottom: 25px;" >
-		<tr> <th colspan="2">Standardabweichungen Portfolio [‰] </th></tr>
 		<tr>
-			<td style="border: 1px solid black;">minimales Risiko</td> 
-			<td style="border: 1px solid black;"> 
-				<h:outputText value="#{1000*sharePortfolio.minStandardDeviation}" >
-				 	<f:convertNumber pattern="#0.0000" />
-				</h:outputText>
-			</td> 
+			<td style="border: 1px solid black;">Aktie</td> 
+			<td style="border: 1px solid black;">Standardabweichung [‰]</td> 
+			<td style="border: 1px solid black;">Anteil [%]</td> 
 		</tr>
+		<ui:repeat value="#{sharePortfolio.timeCourses}" var="timeCourse">
 		<tr>
-			<td style="border: 1px solid black;">gleichverteilt</td>
-			<td style="border: 1px solid black;">
-				<h:outputText value="#{1000*sharePortfolio.uniformlyDistributedStandardDeviation}">
-					<f:convertNumber pattern="#0.0000" />
-				</h:outputText>
-			</td>
+		<td style="border: 1px solid black;">
+			<h:outputText value="#{timeCourse.name()}" />
+		  		
+		 
+		</td> 
+		
+		<td style="border: 1px solid black;">
+			<h:outputText value="#{1000*timeCourse.standardDeviation()}" >
+		  		<f:convertNumber pattern="#0.00" />
+		 	</h:outputText>
+		</td> 
+		
+		<td style="border: 1px solid black;">
+			<h:outputText value="#{100*sharePortfolio.weights[timeCourse]}" >
+		  		<f:convertNumber pattern="#0.00" />
+		 	</h:outputText>
+		</td> 
+		</tr>
+		</ui:repeat>
+		<tr>
+		<td style="border: 1px solid black;">
+		
+		</td>
+		
+		<th style="border: 1px solid black;">
+			<h:outputText value="#{1000*sharePortfolio.minStandardDeviation}" >
+		  		<f:convertNumber pattern="#0.00" />
+		 	</h:outputText>
+		</th>
+		
+		<td style="border: 1px solid black;">
+			
+		</td>
 		</tr>
 	</table>
 </ui:fragment>
@@ -127,7 +121,7 @@
 <p:messages id="messages" showDetail="false" globalOnly="true" />
 <h:panelGrid columns="3" >
  	<p:button  value="abbrechen" outcome="portfolios"  />
- 	<p:commandButton value="pdf"  ajax="false"  action="#{portfolioController.pdf(sharePortfolio,facesContext)}"  rendered="#{sharePortfolio.standardDeviations.size() >= 2 }" />
+ 	<p:commandButton value="pdf"  ajax="false"  action="#{portfolioController.pdf(sharePortfolio,facesContext)}"  rendered="#{sharePortfolio.timeCourses.size() >= 2 }" />
 	<p:commandButton value="speichern"  process="@form" update="@form" action="#{portfolioController.save(sharePortfolio.sharePortfolio,facesContext,'Portfolio mit diesem Namen existiert bereits')}" />
 </h:panelGrid >   
 </h:panelGrid >

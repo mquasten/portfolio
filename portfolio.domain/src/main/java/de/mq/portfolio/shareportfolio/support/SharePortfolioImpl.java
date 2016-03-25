@@ -171,17 +171,17 @@ class SharePortfolioImpl implements SharePortfolio {
 	}
 
 	@Override
-	public List<Entry<String, Double>> min() {
-		final List<Entry<String, Double>> weights = new ArrayList<>();
+	public Map<TimeCourse, Double> min() {
+		final Map<TimeCourse, Double> weights = new HashMap<>();
 		if( timeCourses.isEmpty()) {
-			return Collections.unmodifiableList(weights);
+			return Collections.unmodifiableMap(weights);
 		}
 		if( variances == null) {
-			return Collections.unmodifiableList(weights);
+			return Collections.unmodifiableMap(weights);
 		}
 		
 		if( covariances == null) {
-			return Collections.unmodifiableList(weights);
+			return Collections.unmodifiableMap(weights);
 		}
 		variancesExistsGuard();
 		covariancesExistsGuard();
@@ -207,9 +207,9 @@ class SharePortfolioImpl implements SharePortfolio {
 		final Matrix result = matrix.solve(vector);
 		// result.print(15, 10);
 		
-		IntStream.range(0, timeCourses.size()).forEach(i -> weights.add(new AbstractMap.SimpleImmutableEntry<>(timeCourses.get(i).share().name(), result.get(i, 0))));
+		IntStream.range(0, timeCourses.size()).forEach(i -> weights.put(timeCourses.get(i), result.get(i, 0)));
 
-		return  Collections.unmodifiableList(weights);
+		return  Collections.unmodifiableMap(weights);
 
 	}
 
@@ -233,24 +233,7 @@ class SharePortfolioImpl implements SharePortfolio {
 	public void remove(final TimeCourse timeCourse) {
 		this.timeCourses.removeAll(this.timeCourses.stream().filter(tc -> tc.id().equals(timeCourse.id())).collect(Collectors.toSet()));
 	}
-	/*
-	 * (non-Javadoc)
-	 * @see de.mq.portfolio.shareportfolio.SharePortfolio#standardDeviations()
-	 */
-	@Override
-	public  List<Entry<String,Double>> standardDeviations() {
-		 List<Entry<String,Double>> results = new ArrayList<>();
-		 
-		 if(variances==null){
-			 return Collections.unmodifiableList(results);
-		 }
-		
-		 if( timeCourses.size() != variances.length) {
-			 return Collections.unmodifiableList(results);
-		 }
-		 results.addAll(IntStream.range(0, timeCourses.size()).mapToObj(i -> new AbstractMap.SimpleImmutableEntry<>(timeCourses.get(i).share().name() , Math.sqrt(variances[i]))).collect(Collectors.toList()));
-		 return Collections.unmodifiableList(results);
-	}
+	
 	
 	/*
 	 * (non-Javadoc)

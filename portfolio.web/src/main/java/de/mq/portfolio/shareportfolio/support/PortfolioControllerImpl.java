@@ -1,38 +1,21 @@
 package de.mq.portfolio.shareportfolio.support;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.io.Writer;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
-
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.HeaderFooter;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Table;
-import com.lowagie.text.html.simpleparser.HTMLWorker;
-import com.lowagie.text.pdf.PdfTable;
-import com.lowagie.text.pdf.PdfWriter;
+import org.springframework.web.client.ResourceAccessException;
 
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.support.UserModel;
@@ -43,10 +26,13 @@ public class PortfolioControllerImpl {
 
 	private static final String REDIRECT_TO_PORTFOLIOS_PAGE = "portfolios?faces-redirect=true";
 	private final SharePortfolioService sharePortfolioService;
+	
+	private final Converter<PortfolioAO, byte[]> pdfConverter;
 
 	@Autowired
-	PortfolioControllerImpl(final SharePortfolioService sharePortfolioService) {
+	PortfolioControllerImpl(final SharePortfolioService sharePortfolioService,  final @Qualifier("portfolio2PdfConverter") Converter<PortfolioAO, byte[]> pdfConverter) {
 		this.sharePortfolioService = sharePortfolioService;
+		this.pdfConverter=pdfConverter;
 	}
 
 	public void init(final PortfolioSearchAO portfolioSearchAO, final UserModel userModel) {
@@ -88,46 +74,23 @@ public class PortfolioControllerImpl {
 
 	}
 
-	public final void pdf(final PortfolioAO portfolioAO, final FacesContext facesContext) throws DocumentException, IOException {
-		System.out.println("****");
-		FacesContext fc = FacesContext.getCurrentInstance();
-		HttpServletResponse response = (HttpServletResponse) fc.getExternalContext().getResponse();
+	public final void pdf(final PortfolioAO portfolioAO, final FacesContext facesContext)  {
+		
+		
+		final HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
 		response.reset();
 		response.setContentType("application/pdf");
-		// response.setContentLength(contentLength);
+		
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + portfolioAO.getName() + ".pdf" + "\""); // The
-																													
-																														// instead.
-
-		final Document document = new Document();
 		
-		
-		try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-			PdfWriter.getInstance(document, os);
-			document.open();
-			
-				document.addTitle(portfolioAO.getName());
-				document.add(new Paragraph("Standardabweichungen der Aktien [%]"));
-				final Table table = new  Table(2);
-				table.setAlignment(Element.ALIGN_LEFT);
-				portfolioAO.getStandardDeviations().forEach(e -> { 
-					
-				try {
-				table.addCell(e.getKey());
-				table.addCell(String.valueOf(e.getValue()));
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} 
-				
-				});
-				; 
-			document.add(table);
-				
-				document.close();
-			
-			FileCopyUtils.copy(os.toByteArray(), response.getOutputStream());
-		}
+			try {
+				final byte[] content = pdfConverter.convert(portfolioAO);
+				response.setContentLength(content.length);
+				FileCopyUtils.copy(content, response.getOutputStream());
+			} catch (IOException ex) {
+			   throw new ResourceAccessException("Unable to create Pdf", ex);
+			}
+	
 
 		facesContext.responseComplete();
 	}

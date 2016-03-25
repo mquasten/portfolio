@@ -29,10 +29,10 @@ public interface SharePortfolio {
 
 	void remove(final TimeCourse timeCourse);
 
-	List<Entry<String, Double>> standardDeviations();
+
 
 	List<Entry<String, Map<String, Double>>> correlationEntries();
 
-	List<Entry<String, Double>> min();
+	Map<TimeCourse, Double> min();
 
 }

@@ -29,6 +29,8 @@ public interface TimeCourse {
 
 	String id();
 
+	String name();
+
 	
 
 }
