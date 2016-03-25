@@ -19,6 +19,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.Assert;
 
 import Jama.Matrix;
+
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -34,7 +35,7 @@ class SharePortfolioImpl implements SharePortfolio {
 	private PortfolioOptimisation minVariance;
 
 	@Reference
-	private List<TimeCourse> timeCourses = new ArrayList<>();
+	private final  List<TimeCourse> timeCourses = new ArrayList<>();
 
 	private double[] variances;
 
@@ -257,9 +258,26 @@ class SharePortfolioImpl implements SharePortfolio {
 		 });
 		 return Collections.unmodifiableList(results);
 	}
-
+	
+	@Override
+	public Double totalRate() {
+		
+		final double richtig = timeCourses.stream().mapToDouble(tc -> tc.rates().get(0).value()).reduce((a,b) -> a+b).orElse(0d);
+		final double falsch = timeCourses.stream().mapToDouble(tc -> tc.rates().get(tc.rates().size()-1).value()).reduce((a,b) -> a+b).orElse(0d);
+		return (falsch-richtig)/ richtig;
+	}
+	
+	@Override
+	public Double totalRateDividends() {
+		
+		final double falsch = timeCourses.stream().mapToDouble(tc -> tc.dividends().stream().mapToDouble(d -> d.value()).reduce((a,b) -> a+b).orElse(0d)).reduce((a,b)-> a+b).orElse(0d);
+		final double wahr = timeCourses.stream().mapToDouble(tc -> tc.rates().get(0).value()).reduce((a,b) -> a+b).orElse(0d);
+	   return falsch/wahr;
+	}
+	
 }
 
 interface MatixFunction {
 	double f(final List<TimeCourse> timeCourses, final int i, final int j);
 }
+

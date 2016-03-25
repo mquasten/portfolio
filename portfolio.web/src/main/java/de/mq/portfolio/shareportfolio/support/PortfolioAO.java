@@ -44,7 +44,15 @@ public class PortfolioAO implements Serializable {
 	private Double 	minStandardDeviation;
 	
 	
+	private Double totalRate; 
 	
+	
+	
+
+
+
+
+	private Double totalRateDividends; 
 	
 
 	public String getName() {
@@ -78,6 +86,8 @@ public class PortfolioAO implements Serializable {
 		
 		this.minStandardDeviation = Math.sqrt(sharePortfolio.risk(weightingVector));
 
+		this.totalRate=sharePortfolio.totalRate();
+		this.totalRateDividends=sharePortfolio.totalRateDividends();
 	
 	}
 	
@@ -121,6 +131,15 @@ public class PortfolioAO implements Serializable {
 	
 	public List<TimeCourse> getTimeCourses() {
 		return timeCourses;
+	}
+	
+	public Double getTotalRate() {
+		return totalRate;
+	}
+	
+
+	public Double getTotalRateDividends() {
+		return totalRateDividends;
 	}
 
 }

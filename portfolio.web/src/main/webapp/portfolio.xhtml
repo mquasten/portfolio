@@ -43,6 +43,8 @@
 			<td style="border: 1px solid black;">Aktie</td> 
 			<td style="border: 1px solid black;">Standardabweichung [‰]</td> 
 			<td style="border: 1px solid black;">Anteil [%]</td> 
+			<td style="border: 1px solid black;">Rendite [%]</td> 
+			<td style="border: 1px solid black;">Dividenden [%]</td> 
 		</tr>
 		<ui:repeat value="#{sharePortfolio.timeCourses}" var="timeCourse">
 		<tr>
@@ -63,6 +65,19 @@
 		  		<f:convertNumber pattern="#0.00" />
 		 	</h:outputText>
 		</td> 
+		
+		<td style="border: 1px solid black;">
+			<h:outputText value="#{100*timeCourse.totalRate()}" >
+		  		<f:convertNumber pattern="#0.00" />
+		 	</h:outputText>
+		</td> 
+		
+		<td style="border: 1px solid black;">
+			<h:outputText value="#{100*timeCourse.totalRateDividends()}" >
+		  		<f:convertNumber pattern="#0.00" />
+		 	</h:outputText>
+		</td> 
+		
 		</tr>
 		</ui:repeat>
 		<tr>
@@ -79,6 +94,18 @@
 		<td style="border: 1px solid black;">
 			
 		</td>
+		<th style="border: 1px solid black;">
+			<h:outputText value="#{100*sharePortfolio.totalRate}" >
+		  		<f:convertNumber pattern="#0.00" />
+		 	</h:outputText>
+		</th>
+		
+		<th style="border: 1px solid black;">
+			<h:outputText value="#{100*sharePortfolio.totalRateDividends}" >
+		  		<f:convertNumber pattern="#0.00" />
+		 	</h:outputText>
+		</th>
+		
 		</tr>
 	</table>
 </ui:fragment>

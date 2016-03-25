@@ -35,4 +35,8 @@ public interface SharePortfolio {
 
 	Map<TimeCourse, Double> min();
 
+	Double totalRate();
+
+	Double totalRateDividends();
+
 }
