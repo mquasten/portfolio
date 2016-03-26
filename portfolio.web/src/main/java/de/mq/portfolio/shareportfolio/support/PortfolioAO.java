@@ -86,8 +86,8 @@ public class PortfolioAO implements Serializable {
 		
 		this.minStandardDeviation = Math.sqrt(sharePortfolio.risk(weightingVector));
 
-		this.totalRate=sharePortfolio.totalRate();
-		this.totalRateDividends=sharePortfolio.totalRateDividends();
+		this.totalRate=sharePortfolio.totalRate(weightingVector);
+		this.totalRateDividends=sharePortfolio.totalRateDividends(weightingVector);
 	
 	}
 	

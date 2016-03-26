@@ -10,6 +10,7 @@ import com.lowagie.text.Document;
 import com.lowagie.text.Element;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
+
 import com.lowagie.text.Table;
 import com.lowagie.text.pdf.PdfWriter;
 
@@ -26,21 +27,29 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 			
 				document.addTitle(portfolioAO.getName());
 				document.add(new Paragraph("Aktien"));
-				final Table varianceSharesTable = new  Table(3);
+				final Table varianceSharesTable = new  Table(5);
+				varianceSharesTable.setWidth(100);
 				addCell(varianceSharesTable, "Aktie");
 				addCell(varianceSharesTable, "Standardabweichung [‰]");
 				addCell(varianceSharesTable, "Anteil [%]");
+				addCell(varianceSharesTable, "Rendite [%]");
+				addCell(varianceSharesTable, "Dividenden [%]");
 				varianceSharesTable.setAlignment(Element.ALIGN_LEFT);
 				portfolioAO.getTimeCourses().forEach(tc ->
 				{
 					addCell(varianceSharesTable, String.valueOf(tc.share().name()));
 					addCell(varianceSharesTable, String.valueOf(tc.standardDeviation()));
 					addCell(varianceSharesTable, String.valueOf(portfolioAO.getWeights().get(tc)));
+					addCell(varianceSharesTable, String.valueOf(tc.totalRate()));
+					addCell(varianceSharesTable, String.valueOf(tc.totalRateDividends()));
 					
 				});
+			
 				addCell(varianceSharesTable, "");
 				addCell(varianceSharesTable, String.valueOf(portfolioAO.getMinStandardDeviation()));
 				addCell(varianceSharesTable, "");
+				addCell(varianceSharesTable, String.valueOf(portfolioAO.getTotalRate()));
+				addCell(varianceSharesTable, String.valueOf(portfolioAO.getTotalRateDividends()));
 			   document.add(varianceSharesTable);
 			   
 				

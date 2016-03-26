@@ -260,18 +260,28 @@ class SharePortfolioImpl implements SharePortfolio {
 	}
 	
 	@Override
-	public Double totalRate() {
+	public Double totalRate(final double[] weights) {
 		
-		final double richtig = timeCourses.stream().mapToDouble(tc -> tc.rates().get(0).value()).reduce((a,b) -> a+b).orElse(0d);
-		final double falsch = timeCourses.stream().mapToDouble(tc -> tc.rates().get(tc.rates().size()-1).value()).reduce((a,b) -> a+b).orElse(0d);
+		weightsVectorGuard(weights);
+		final double richtig = IntStream.range(0, timeCourses.size()).mapToDouble(i -> weights[i]* timeCourses.get(i).rates().get(0).value()).reduce((a,b)-> a+b).orElse(0d);
+		
+	//	final double richtig = timeCourses.stream().mapToDouble(tc -> tc.rates().get(0).value()).reduce((a,b) -> a+b).orElse(0d);
+	//	final double falsch = timeCourses.stream().mapToDouble(tc -> tc.rates().get(tc.rates().size()-1).value()).reduce((a,b) -> a+b).orElse(0d);
+		final double falsch = IntStream.range(0, timeCourses.size()).mapToDouble(i -> weights[i]* timeCourses.get(i).rates().get(timeCourses.get(i).rates().size()-1).value()).reduce((a,b)-> a+b).orElse(0d);
 		return (falsch-richtig)/ richtig;
+	}
+
+	private void weightsVectorGuard(final double[] weights) {
+		Assert.isTrue(weights.length==timeCourses.size(), "Incorrects size of weightsvector");
 	}
 	
 	@Override
-	public Double totalRateDividends() {
-		
-		final double falsch = timeCourses.stream().mapToDouble(tc -> tc.dividends().stream().mapToDouble(d -> d.value()).reduce((a,b) -> a+b).orElse(0d)).reduce((a,b)-> a+b).orElse(0d);
-		final double wahr = timeCourses.stream().mapToDouble(tc -> tc.rates().get(0).value()).reduce((a,b) -> a+b).orElse(0d);
+	public Double totalRateDividends(final double[] weights) {
+		weightsVectorGuard(weights);
+		final double falsch = IntStream.range(0, timeCourses.size()).mapToDouble(i ->  timeCourses.get(i).dividends().stream().mapToDouble(d -> weights[i]* d.value()).reduce((a,b) -> a+b).orElse(0d)).reduce((a,b)-> a+b).orElse(0d);
+		//final double falsch = timeCourses.stream().mapToDouble(tc -> tc.dividends().stream().mapToDouble(d -> d.value()).reduce((a,b) -> a+b).orElse(0d)).reduce((a,b)-> a+b).orElse(0d);
+		//final double wahr = timeCourses.stream().mapToDouble(tc -> tc.rates().get(0).value()).reduce((a,b) -> a+b).orElse(0d);
+		final double wahr = IntStream.range(0, timeCourses.size()).mapToDouble(i -> weights[i]* timeCourses.get(i).rates().get(0).value()).reduce((a,b)-> a+b).orElse(0d);
 	   return falsch/wahr;
 	}
 	
