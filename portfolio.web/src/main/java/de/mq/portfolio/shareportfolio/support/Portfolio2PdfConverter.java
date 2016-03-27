@@ -1,6 +1,7 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.io.ByteArrayOutputStream;
+import java.text.NumberFormat;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
@@ -8,9 +9,11 @@ import org.springframework.stereotype.Component;
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Document;
 import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
-
+import com.lowagie.text.Phrase;
 import com.lowagie.text.Table;
 import com.lowagie.text.pdf.PdfWriter;
 
@@ -18,53 +21,62 @@ import com.lowagie.text.pdf.PdfWriter;
 
 public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 
+	final Font headline = FontFactory.getFont(FontFactory.TIMES_BOLD, 24);
+	
+	final Font tableHeadline = FontFactory.getFont(FontFactory.TIMES_BOLD, 10);
+	final Font tableCell = FontFactory.getFont(FontFactory.TIMES, 10);
+	
+	final NumberFormat numberFormat = NumberFormat.getInstance();
+	
 	@Override
 	public byte[] convert(final PortfolioAO portfolioAO) {
+		numberFormat.setMaximumFractionDigits(2);
+		
 		final Document document = new Document(PageSize.A4.rotate());
 		try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 			PdfWriter.getInstance(document, os);
 			document.open();
 			
 				document.addTitle(portfolioAO.getName());
-				document.add(new Paragraph("Aktien"));
+				document.add(new Paragraph("Aktien" , headline));
 				final Table varianceSharesTable = new  Table(5);
 				varianceSharesTable.setWidth(100);
-				addCell(varianceSharesTable, "Aktie");
-				addCell(varianceSharesTable, "Standardabweichung [‰]");
-				addCell(varianceSharesTable, "Anteil [%]");
-				addCell(varianceSharesTable, "Rendite [%]");
-				addCell(varianceSharesTable, "Dividenden [%]");
+				addCellHeader(varianceSharesTable,  "Aktie");
+				addCellHeader(varianceSharesTable, "Standardabweichung [‰]");
+				addCellHeader(varianceSharesTable, "Anteil [%]");
+				addCellHeader(varianceSharesTable, "Rendite [%]");
+				addCellHeader(varianceSharesTable, "Dividenden [%]");
 				varianceSharesTable.setAlignment(Element.ALIGN_LEFT);
 				portfolioAO.getTimeCourses().forEach(tc ->
 				{
-					addCell(varianceSharesTable, String.valueOf(tc.share().name()));
-					addCell(varianceSharesTable, String.valueOf(tc.standardDeviation()));
-					addCell(varianceSharesTable, String.valueOf(portfolioAO.getWeights().get(tc)));
-					addCell(varianceSharesTable, String.valueOf(tc.totalRate()));
-					addCell(varianceSharesTable, String.valueOf(tc.totalRateDividends()));
+					addCellHeader(varianceSharesTable, tc.share().name());
+					addCell(varianceSharesTable, tc.standardDeviation(), 1000d);
+					addCell(varianceSharesTable, portfolioAO.getWeights().get(tc), 100d);
+					addCell(varianceSharesTable, tc.totalRate(), 100d);
+					addCell(varianceSharesTable, tc.totalRateDividends(), 100d);
 					
 				});
 			
-				addCell(varianceSharesTable, "");
-				addCell(varianceSharesTable, String.valueOf(portfolioAO.getMinStandardDeviation()));
-				addCell(varianceSharesTable, "");
-				addCell(varianceSharesTable, String.valueOf(portfolioAO.getTotalRate()));
-				addCell(varianceSharesTable, String.valueOf(portfolioAO.getTotalRateDividends()));
+				addCell(varianceSharesTable,null, 0);
+				addCell(varianceSharesTable, portfolioAO.getMinStandardDeviation(), 1000d);
+				addCell(varianceSharesTable, null, 0);
+				addCell(varianceSharesTable, portfolioAO.getTotalRate(), 100d);
+				addCell(varianceSharesTable, portfolioAO.getTotalRateDividends(), 100d);
 			   document.add(varianceSharesTable);
 			   
 				
 				
-				document.add(new Paragraph("Korrelationen"));
+				document.add(new Paragraph("Korrelationen", headline));
 				
 				final Table corrlationTable = new  Table(portfolioAO.getShares().size()+1);
 				corrlationTable.setAlignment(Element.ALIGN_LEFT);
 				corrlationTable.setWidth(100);
-				addCell(corrlationTable, "Korrelationen [%]");
-				portfolioAO.getShares().forEach(share -> addCell(corrlationTable, share));
+				addCellHeader(corrlationTable, "Korrelationen [%]");
+				portfolioAO.getShares().forEach(share -> addCellHeader(corrlationTable, share));
 				portfolioAO.getCorrelations().forEach(e -> {
 					
-					addCell(corrlationTable, e.getKey());
-					portfolioAO.getShares().forEach(share -> addCell(corrlationTable, String.valueOf(e.getValue().get(share))));
+					addCellHeader(corrlationTable, e.getKey());
+					portfolioAO.getShares().forEach(share -> addCell(corrlationTable,e.getValue().get(share), 100d));
 					
 				});
 				
@@ -79,15 +91,28 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 
 	}
 
-	private void addCell(final Table table, String  text)  {
+	private void addCell(final Table table, final Double value, final double scale)  {
 		try {
-			table.addCell(text);
+			table.addCell(new Phrase(text(value, scale), tableCell));
 		} catch (BadElementException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
 
-	
+	private String text(final Double value, final double scale) {
+		if( value == null){
+			return "";
+		}
+		return numberFormat.format(value*scale);
+	}
+
+	private void addCellHeader(final Table table, String  text)  {
+		try {
+			table.addCell(new Phrase(text, tableHeadline ));
+		} catch (BadElementException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
 	
 	
 
