@@ -11,10 +11,14 @@ import com.lowagie.text.Document;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
+import com.lowagie.text.HeaderFooter;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.Table;
+import com.lowagie.text.pdf.ColumnText;
+import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
 
 @Component("portfolio2PdfConverter")
@@ -31,14 +35,16 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 	@Override
 	public byte[] convert(final PortfolioAO portfolioAO) {
 		numberFormat.setMaximumFractionDigits(2);
-		
+		numberFormat.setMinimumFractionDigits(2);
 		final Document document = new Document(PageSize.A4.rotate());
 		try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-			PdfWriter.getInstance(document, os);
-			document.open();
+		PdfWriter.getInstance(document, os);
 			
+			
+		
+	        document.open();
 				document.addTitle(portfolioAO.getName());
-				document.add(new Paragraph("Aktien" , headline));
+				document.add(new Paragraph(String.format("Aktien %s", portfolioAO.getName() ), headline));
 				final Table varianceSharesTable = new  Table(5);
 				varianceSharesTable.setWidth(100);
 				addCellHeader(varianceSharesTable,  "Aktie");
@@ -58,15 +64,15 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 				});
 			
 				addCell(varianceSharesTable,null, 0);
-				addCell(varianceSharesTable, portfolioAO.getMinStandardDeviation(), 1000d);
+				addCellHeader(varianceSharesTable, portfolioAO.getMinStandardDeviation(), 1000d);
 				addCell(varianceSharesTable, null, 0);
-				addCell(varianceSharesTable, portfolioAO.getTotalRate(), 100d);
-				addCell(varianceSharesTable, portfolioAO.getTotalRateDividends(), 100d);
+				addCellHeader(varianceSharesTable, portfolioAO.getTotalRate(), 100d);
+				addCellHeader(varianceSharesTable, portfolioAO.getTotalRateDividends(), 100d);
 			   document.add(varianceSharesTable);
 			   
 				
 				
-				document.add(new Paragraph("Korrelationen", headline));
+				document.add(new Paragraph(String.format("Korrelationen %s", portfolioAO.getName()), headline));
 				
 				final Table corrlationTable = new  Table(portfolioAO.getShares().size()+1);
 				corrlationTable.setAlignment(Element.ALIGN_LEFT);
@@ -114,6 +120,12 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 		}
 	}
 	
-	
+	private void addCellHeader(final Table table, final Double value, final double scale)  {
+		try {
+			table.addCell(new Phrase(text(value, scale), tableHeadline));
+		} catch (BadElementException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
 
 }
