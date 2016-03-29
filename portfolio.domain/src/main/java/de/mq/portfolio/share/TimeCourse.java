@@ -1,5 +1,6 @@
 package de.mq.portfolio.share;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -30,6 +31,10 @@ public interface TimeCourse {
 	String id();
 
 	String name();
+
+	Date start();
+
+	Date end();
 
 	
 

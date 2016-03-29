@@ -19,7 +19,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.Assert;
 
 import Jama.Matrix;
-
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -263,12 +262,19 @@ class SharePortfolioImpl implements SharePortfolio {
 	public Double totalRate(final double[] weights) {
 		
 		weightsVectorGuard(weights);
-		final double richtig = IntStream.range(0, timeCourses.size()).mapToDouble(i -> weights[i]* timeCourses.get(i).rates().get(0).value()).reduce((a,b)-> a+b).orElse(0d);
-		
-	//	final double richtig = timeCourses.stream().mapToDouble(tc -> tc.rates().get(0).value()).reduce((a,b) -> a+b).orElse(0d);
-	//	final double falsch = timeCourses.stream().mapToDouble(tc -> tc.rates().get(tc.rates().size()-1).value()).reduce((a,b) -> a+b).orElse(0d);
-		final double falsch = IntStream.range(0, timeCourses.size()).mapToDouble(i -> weights[i]* timeCourses.get(i).rates().get(timeCourses.get(i).rates().size()-1).value()).reduce((a,b)-> a+b).orElse(0d);
+		final double richtig = sum((tc, i) -> ratesReference(weights, tc, i));
+
+		final double falsch = sum((tc, i) -> weights[i]*tc.rates().get(timeCourses.get(i).rates().size()-1).value());
+	
 		return (falsch-richtig)/ richtig;
+	}
+
+	private double ratesReference(final double[] weights, TimeCourse tc, int i) {
+		return weights[i]* tc.rates().get(0).value();
+	}
+
+	private double sum(final Filter filter) {
+		return IntStream.range(0, timeCourses.size()).mapToDouble(i -> filter.filter(timeCourses.get(i), i)).reduce((a,b)-> a+b).orElse(0d);
 	}
 
 	private void weightsVectorGuard(final double[] weights) {
@@ -278,10 +284,8 @@ class SharePortfolioImpl implements SharePortfolio {
 	@Override
 	public Double totalRateDividends(final double[] weights) {
 		weightsVectorGuard(weights);
-		final double falsch = IntStream.range(0, timeCourses.size()).mapToDouble(i ->  timeCourses.get(i).dividends().stream().mapToDouble(d -> weights[i]* d.value()).reduce((a,b) -> a+b).orElse(0d)).reduce((a,b)-> a+b).orElse(0d);
-		//final double falsch = timeCourses.stream().mapToDouble(tc -> tc.dividends().stream().mapToDouble(d -> d.value()).reduce((a,b) -> a+b).orElse(0d)).reduce((a,b)-> a+b).orElse(0d);
-		//final double wahr = timeCourses.stream().mapToDouble(tc -> tc.rates().get(0).value()).reduce((a,b) -> a+b).orElse(0d);
-		final double wahr = IntStream.range(0, timeCourses.size()).mapToDouble(i -> weights[i]* timeCourses.get(i).rates().get(0).value()).reduce((a,b)-> a+b).orElse(0d);
+		final double falsch = sum((tc, i) -> weights[i]* tc.dividends().stream().mapToDouble(d ->  d.value()).reduce((a,b) -> a+b).orElse(0d));
+		final double wahr =   sum((tc, i) -> ratesReference(weights, tc, i));
 	   return falsch/wahr;
 	}
 	
@@ -291,3 +295,6 @@ interface MatixFunction {
 	double f(final List<TimeCourse> timeCourses, final int i, final int j);
 }
 
+interface Filter {
+	double filter(final TimeCourse timecourse, final int i);
+}

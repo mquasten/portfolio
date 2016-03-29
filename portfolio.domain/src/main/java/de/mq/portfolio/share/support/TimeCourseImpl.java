@@ -206,6 +206,26 @@ class TimeCourseImpl implements TimeCourse {
 		return share != null ? share.name(): null;
 	}
 	
+	@Override
+	public Date start() {
+		if( rates==null){
+			return null;
+		}
+		if( rates.isEmpty()){
+			return null;
+		}
+		return rates.get(0).date();
+	}
+	
+	@Override
+	public Date end() {
+		if( rates==null){
+			return null;
+		}
+		if( rates.isEmpty()){
+			return null;
+		}
+		return rates.get(rates.size()-1).date();
 	
 }
 
@@ -227,5 +247,5 @@ interface SampleFunction {
 	
 }
 
-
+}
 

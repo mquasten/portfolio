@@ -41,6 +41,7 @@
 	<table style="border-collapse: collapse; margin-bottom: 25px;" >
 		<tr>
 			<td style="border: 1px solid black;">Aktie</td> 
+			<td style="border: 1px solid black;">Zeitreihe</td> 
 			<td style="border: 1px solid black;">Standardabweichung [‰]</td> 
 			<td style="border: 1px solid black;">Anteil [%]</td> 
 			<td style="border: 1px solid black;">Rendite [%]</td> 
@@ -52,6 +53,14 @@
 			<h:outputText value="#{timeCourse.name()}" />
 		  		
 		 
+		</td> 
+		
+		<td style="border: 1px solid black;">
+			<h:outputText value="#{timeCourse.start()}" >
+				 <f:convertDateTime   type="date"  dateStyle="short" />
+			</h:outputText>-<h:outputText value="#{timeCourse.end()}" >
+		 	 <f:convertDateTime  type="date" dateStyle="short"  />
+		 </h:outputText>
 		</td> 
 		
 		<td style="border: 1px solid black;">
@@ -81,6 +90,9 @@
 		</tr>
 		</ui:repeat>
 		<tr>
+		<td style="border: 1px solid black;">
+		
+		</td>
 		<td style="border: 1px solid black;">
 		
 		</td>
