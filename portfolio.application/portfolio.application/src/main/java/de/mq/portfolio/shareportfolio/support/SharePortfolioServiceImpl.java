@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
+import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.share.support.ShareRepository;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
@@ -24,10 +26,12 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 	static final String STATUS_CONTINUE = "CONTINUE";
 	static final String STATUS_COMPLETED = "COMPLETED";
 	private final SharePortfolioRepository sharePortfolioRepository;
+	private final ShareRepository shareRepository;
 
 	@Autowired
-	SharePortfolioServiceImpl(SharePortfolioRepository sharePortfolioRepository) {
+	SharePortfolioServiceImpl(final SharePortfolioRepository sharePortfolioRepository, final ShareRepository shareRepository) {
 		this.sharePortfolioRepository = sharePortfolioRepository;
+		this.shareRepository=shareRepository;
 	}
 
 	/*
@@ -162,6 +166,18 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 		}, field -> field.getType().isAssignableFrom(PortfolioOptimisation.class));
 
 		return result;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#assign(de.mq.portfolio.shareportfolio.SharePortfolio, java.util.Collection)
+	 */
+	@Override
+	public final void assign(final SharePortfolio sharePortfolio, final Collection<TimeCourse> timeCourses){
+		Assert.notNull(sharePortfolio.id(), String.format("Shareportfolio not found, id: %s", sharePortfolio.id()));
+		final SharePortfolio existing = sharePortfolioRepository.sharePortfolio(sharePortfolio.id());
+	    existing.assign(shareRepository.timeCourses(existing.timeCourses().stream().map(tc -> tc.share().code()).collect(Collectors.toList())));
+	    sharePortfolioRepository.save(existing);
 	}
 
 	/*

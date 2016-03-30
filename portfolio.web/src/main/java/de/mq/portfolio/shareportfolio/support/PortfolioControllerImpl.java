@@ -47,6 +47,7 @@ public class PortfolioControllerImpl {
 		portfolioSearchAO.setPageable(sharePortfolioService.pageable(portfolioSearchAO.criteria(), new Sort("name"), 10));
 
 		portfolioSearchAO.setSharePortfolios(sharePortfolioService.portfolios(portfolioSearchAO.getPageable(), portfolioSearchAO.criteria()));
+		
 	}
 
 	public void activate(final PortfolioSearchAO portfolioSearchAO, final UserModel userModel) {
@@ -64,6 +65,11 @@ public class PortfolioControllerImpl {
 		}
 	}
 
+	public String assign(final PortfolioAO portfolioAO) {
+		sharePortfolioService.assign(portfolioAO.getSharePortfolio(), portfolioAO.getTimeCourses());
+		return String.format("portfolio?faces-redirect=true&portfolioId=%s", portfolioAO.getId());
+	}
+	
 	public void init(final PortfolioAO portfolioAO) {
 		if (portfolioAO.getId() == null) {
 			portfolioAO.setSharePortfolio(BeanUtils.instantiateClass(SharePortfolioImpl.class));

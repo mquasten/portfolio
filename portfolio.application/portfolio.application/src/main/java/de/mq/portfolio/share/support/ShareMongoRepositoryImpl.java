@@ -61,6 +61,16 @@ class ShareMongoRepositoryImpl implements ShareRepository {
 	
 	/*
 	 * (non-Javadoc)
+	 * @see de.mq.portfolio.share.support.ShareRepository#timeCourses(java.util.Collection)
+	 */
+	@Override
+	public final Collection<TimeCourse> timeCourses(final Collection<String> codes) {
+		final Query query = new Query(Criteria.where(SHARE_CODE_FIELD).in(codes));
+		return Collections.unmodifiableList(mongoOperations.find(query, TimeCourseImpl.class));
+	}
+	
+	/*
+	 * (non-Javadoc)
 	 * @see de.mq.portfolio.share.support.ShareRepository#distinctIndex()
 	 */
 	@Override

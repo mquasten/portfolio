@@ -8,7 +8,7 @@ import org.springframework.data.domain.Sort;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 
-interface ShareRepository {
+public interface ShareRepository {
 
 	Collection<Share> shares();
 
@@ -23,6 +23,8 @@ interface ShareRepository {
 	Pageable pageable(final Share criteria, final Sort sort, final Number pageSize);
 
 	Collection<String> distinctIndex();
+
+	Collection<TimeCourse> timeCourses(final Collection<String> codes);
 
 	
 

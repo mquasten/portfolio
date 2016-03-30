@@ -225,6 +225,17 @@ class SharePortfolioImpl implements SharePortfolio {
 
 	}
 	
+	@Override
+	public void assign(final Collection<TimeCourse> timeCourses) {
+		Assert.notNull(timeCourses);
+		timeCourses.stream().map(tc -> tc.share()).forEach(share -> {
+			Assert.notNull(share, "Timecourse should have a share");
+			Assert.hasText(share.code(), "Code is mandatory");
+		});
+		this.timeCourses.clear();
+		this.timeCourses.addAll(timeCourses);
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see de.mq.portfolio.shareportfolio.SharePortfolio#remove(de.mq.portfolio.share.TimeCourse)

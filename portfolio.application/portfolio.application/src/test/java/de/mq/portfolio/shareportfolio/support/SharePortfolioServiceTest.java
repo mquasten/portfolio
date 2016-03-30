@@ -14,6 +14,7 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.util.CollectionUtils;
 
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.share.support.ShareRepository;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
@@ -27,7 +28,8 @@ public class SharePortfolioServiceTest {
 	private static final int SAMPLES_SIZE = 100;
 	private static final String NAME = "mq-test";
 	private final SharePortfolioRepository sharePortfolioRepository = Mockito.mock(SharePortfolioRepository.class);
-	private final  SharePortfolioService sharePortfolioService = new SharePortfolioServiceImpl(sharePortfolioRepository);
+	private final ShareRepository shareRepository = Mockito.mock(ShareRepository.class);
+	private final  SharePortfolioService sharePortfolioService = new SharePortfolioServiceImpl(sharePortfolioRepository, shareRepository);
 	private final Collection<PortfolioOptimisation> portfolioOptimisations = new ArrayList<>();
 	private final SharePortfolio sharePortfolio = Mockito.mock(SharePortfolio.class);
 	

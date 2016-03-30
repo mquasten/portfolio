@@ -1,5 +1,6 @@
 package de.mq.portfolio.shareportfolio;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -40,5 +41,7 @@ public interface SharePortfolio {
 	
 
 	Double totalRateDividends(final double[] weights);
+
+	void assign(Collection<TimeCourse> timeCourses);
 
 }

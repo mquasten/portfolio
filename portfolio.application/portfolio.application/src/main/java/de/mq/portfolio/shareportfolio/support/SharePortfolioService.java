@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
@@ -41,5 +42,8 @@ public interface SharePortfolioService {
 
 
 	SharePortfolio sharePortfolio(final String id);
+
+
+	void assign(final SharePortfolio sharePortfolio, final Collection<TimeCourse> timeCourses);
 
 }

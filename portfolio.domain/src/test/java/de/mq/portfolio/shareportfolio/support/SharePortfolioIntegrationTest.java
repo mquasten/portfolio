@@ -22,7 +22,7 @@ import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/mongo.xml" })
-//@Ignore
+@Ignore
 public class SharePortfolioIntegrationTest {
 	
 	@Autowired
@@ -63,7 +63,7 @@ public class SharePortfolioIntegrationTest {
 	
 	
 	@Test
-
+	@Ignore
 	public final void solve() {
 		final Query query = new Query(Criteria.where("name").is("mq-minRisk"));
 		final SharePortfolioImpl sharePortfolio =  mongoOperations.findOne(query, SharePortfolioImpl.class);
