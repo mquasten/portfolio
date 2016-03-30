@@ -1,7 +1,9 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.io.ByteArrayOutputStream;
+import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
@@ -26,12 +28,15 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 	final Font tableHeadline = FontFactory.getFont(FontFactory.TIMES_BOLD, 10);
 	final Font tableCell = FontFactory.getFont(FontFactory.TIMES, 10);
 	
+	
 	final NumberFormat numberFormat = NumberFormat.getInstance();
+	final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yy");
 	
 	@Override
 	public byte[] convert(final PortfolioAO portfolioAO) {
 		numberFormat.setMaximumFractionDigits(2);
 		numberFormat.setMinimumFractionDigits(2);
+
 		final Document document = new Document(PageSize.A4.rotate());
 		try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 		PdfWriter.getInstance(document, os);
@@ -41,9 +46,10 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 	        document.open();
 				document.addTitle(portfolioAO.getName());
 				document.add(new Paragraph(String.format("Aktien %s", portfolioAO.getName() ), headline));
-				final Table varianceSharesTable = new  Table(5);
+				final Table varianceSharesTable = new  Table(6);
 				varianceSharesTable.setWidth(100);
 				addCellHeader(varianceSharesTable,  "Aktie");
+				addCellHeader(varianceSharesTable, "Zeitreihe");
 				addCellHeader(varianceSharesTable, "Standardabweichung [‰]");
 				addCellHeader(varianceSharesTable, "Anteil [%]");
 				addCellHeader(varianceSharesTable, "Rendite [%]");
@@ -52,6 +58,8 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 				portfolioAO.getTimeCourses().forEach(tc ->
 				{
 					addCellHeader(varianceSharesTable, tc.share().name());
+					
+					addCell(varianceSharesTable, "" +dateFormat.format( tc.start()) +" - "+ dateFormat.format( tc.end()) );
 					addCell(varianceSharesTable, tc.standardDeviation(), 1000d);
 					addCell(varianceSharesTable, portfolioAO.getWeights().get(tc), 100d);
 					addCell(varianceSharesTable, tc.totalRate(), 100d);
@@ -59,6 +67,7 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 					
 				});
 			
+				addCell(varianceSharesTable,null, 0);
 				addCell(varianceSharesTable,null, 0);
 				addCellHeader(varianceSharesTable, portfolioAO.getMinStandardDeviation(), 1000d);
 				addCell(varianceSharesTable, null, 0);
@@ -96,6 +105,13 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 	private void addCell(final Table table, final Double value, final double scale)  {
 		try {
 			table.addCell(new Phrase(text(value, scale), tableCell));
+		} catch (BadElementException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+	private void addCell(final Table table, final String value)  {
+		try {
+			table.addCell(new Phrase(value, tableCell));
 		} catch (BadElementException ex) {
 			throw new IllegalStateException(ex);
 		}

@@ -51,6 +51,7 @@ class HistoryRestRepositoryImpl implements HistoryRepository {
 			
 		final String requestUrl = String.format(url, share.code(), month, day, year);
 	
+		System.out.println(requestUrl);
 		final Collection<Data> rates = getValues(requestUrl, 4);
 		
 		
