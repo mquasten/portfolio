@@ -19,8 +19,7 @@
                 <h:inputText id="username" value="#{login.name}" required="true" requiredMessage="Mußfeld"/> <h:message for="username" errorStyle="color:red" />
                 <h:outputLabel for="password" value="Password" />  
                 <h:inputSecret id="password" value="#{login.password}" required="true" requiredMessage="Mußfelde"/>  <h:message for="password" errorStyle="color:red" />
-				
-					 
+								 
 					 <h:commandButton id="submitButton" value="anmelden" action="#{loginController.login(login)}" />  
                 	
               		<h:outputText value="#{login.message}" style="color:red" /> 
