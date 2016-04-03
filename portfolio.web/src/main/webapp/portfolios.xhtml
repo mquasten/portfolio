@@ -64,8 +64,24 @@
             <h:outputText value="#{portfolio.committed}" />
         </p:column>
         
-         <p:column headerText="Standardabweichung[%]">
-            <h:outputText value="#{100*portfolio.standardDeviation()}" >
+         <p:column headerText="Standardabweichung[‰]">
+            <h:outputText value="#{1000*portfolio.standardDeviation()}" >
+            
+            <f:convertNumber pattern="#0.00" />
+          
+            </h:outputText>
+        </p:column>
+        
+        <p:column headerText="Performance Kurse[%]">
+            <h:outputText value="#{100*portfolio.totalRate()}" >
+            
+            <f:convertNumber pattern="#0.00" />
+          
+            </h:outputText>
+        </p:column>
+        
+         <p:column headerText="Performance Dividenden[%]">
+            <h:outputText value="#{100*portfolio.totalRateDividends()}" >
             
             <f:convertNumber pattern="#0.00" />
           

@@ -113,6 +113,15 @@ class SharePortfolioImpl implements SharePortfolio {
 		return sum[0];
 
 	}
+	@Override
+	public final Double standardDeviation() {
+		
+		if( timeCourses.size()< 2){
+			return null;
+		}
+		
+		return Math.sqrt(risk(minWeights()));
+	}
 
 	private void weightingVectorExistsGuard(final double[] weightingVector) {
 		Assert.notNull(weightingVector, "WeightingVector should be given");
@@ -157,13 +166,7 @@ class SharePortfolioImpl implements SharePortfolio {
 		return Optional.ofNullable(minVariance);
 	}
 
-	@Override
-	public final double standardDeviation() {
-		if (minVariance == null) {
-			return 0d;
-		}
-		return Math.sqrt(minVariance.variance());
-	}
+	
 
 	@Override
 	public final String id() {
@@ -211,6 +214,18 @@ class SharePortfolioImpl implements SharePortfolio {
 
 		return  Collections.unmodifiableMap(weights);
 
+	}
+	
+	@Override
+	public double[] minWeights() {
+	
+		
+	final double[] weightingVector = new double[timeCourses.size()]; 
+     Map<TimeCourse, Double> weights = min();
+		
+		IntStream.range(0, weightingVector.length).forEach(i -> weightingVector[i] = weights.get(timeCourses.get(i)));
+		
+		return weightingVector;
 	}
 
 	@Override
@@ -279,6 +294,15 @@ class SharePortfolioImpl implements SharePortfolio {
 	
 		return (falsch-richtig)/ richtig;
 	}
+	
+	@Override
+	public Double totalRate() {
+		if( timeCourses.size() <2 ){
+			return null;
+		}
+		
+		return totalRate(minWeights()) ;
+	}
 
 	private double ratesReference(final double[] weights, TimeCourse tc, int i) {
 		return weights[i]* tc.rates().get(0).value();
@@ -299,6 +323,17 @@ class SharePortfolioImpl implements SharePortfolio {
 		final double wahr =   sum((tc, i) -> ratesReference(weights, tc, i));
 	   return falsch/wahr;
 	}
+	@Override
+	public Double totalRateDividends() {
+	
+		if( timeCourses.size() < 2) {
+			return  null;
+		}
+		
+		return totalRateDividends(minWeights());
+		
+	}
+	
 	
 }
 

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.annotation.Id;
@@ -30,8 +29,10 @@ public class PortfolioAO implements Serializable {
 
 	private final List<TimeCourse> timeCourses = new ArrayList<>();
 
-	
-	
+	private boolean editable; 
+
+
+
 	
 
 
@@ -75,19 +76,19 @@ public class PortfolioAO implements Serializable {
 		this.shares.addAll(sharePortfolio.timeCourses().stream().map(tc -> tc.share().name()).collect(Collectors.toList()));
 		this.weights.clear();
 		this.weights.putAll(sharePortfolio.min());
+		
+		this.editable=!sharePortfolio.isCommitted();
 		if (this.timeCourses.size() < 2) {
+			
 			return;
 		}
-		final double[] weightingVector = new double[timeCourses.size()]; 
-		
-		
-		IntStream.range(0, weightingVector.length).forEach(i -> weightingVector[i] = weights.get(timeCourses.get(i)));
-		
-		
-		this.minStandardDeviation = Math.sqrt(sharePortfolio.risk(weightingVector));
+	
+		this.minStandardDeviation = sharePortfolio.standardDeviation();
+				
 
-		this.totalRate=sharePortfolio.totalRate(weightingVector);
-		this.totalRateDividends=sharePortfolio.totalRateDividends(weightingVector);
+		this.totalRate=sharePortfolio.totalRate();
+			
+		this.totalRateDividends=sharePortfolio.totalRateDividends();
 	
 	}
 	
@@ -140,6 +141,10 @@ public class PortfolioAO implements Serializable {
 
 	public Double getTotalRateDividends() {
 		return totalRateDividends;
+	}
+	
+	public boolean getEditable() {
+		return editable;
 	}
 
 }

@@ -25,12 +25,11 @@ public class PortfolioSearchAO  implements Serializable {
 	private Pageable pageable; 
 	
 	private String share;
-	
-	
+
 	private String portfolioName;
 	
 
-	
+
 
 
 	private String name;
@@ -126,5 +125,7 @@ public class PortfolioSearchAO  implements Serializable {
 	public void setPortfolioName(String portfolioName) {
 		this.portfolioName = portfolioName;
 	}
+
+	
 
 }

@@ -2,6 +2,7 @@ package de.mq.portfolio.shareportfolio.support;
 
 import java.io.IOException;
 
+
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletResponse;
@@ -24,10 +25,13 @@ import de.mq.portfolio.support.UserModel;
 @Scope("singleton")
 public class PortfolioControllerImpl {
 
+	private static final String REDIRECT_PATTERN = "portfolio?faces-redirect=true&portfolioId=%s";
 	private static final String REDIRECT_TO_PORTFOLIOS_PAGE = "portfolios?faces-redirect=true";
 	private final SharePortfolioService sharePortfolioService;
 	
 	private final Converter<PortfolioAO, byte[]> pdfConverter;
+	
+
 
 	@Autowired
 	PortfolioControllerImpl(final SharePortfolioService sharePortfolioService,  final @Qualifier("portfolio2PdfConverter") Converter<PortfolioAO, byte[]> pdfConverter) {
@@ -67,7 +71,7 @@ public class PortfolioControllerImpl {
 
 	public String assign(final PortfolioAO portfolioAO) {
 		sharePortfolioService.assign(portfolioAO.getSharePortfolio(), portfolioAO.getTimeCourses());
-		return String.format("portfolio?faces-redirect=true&portfolioId=%s", portfolioAO.getId());
+		return String.format(REDIRECT_PATTERN, portfolioAO.getId());
 	}
 	
 	public void init(final PortfolioAO portfolioAO) {
@@ -100,5 +104,14 @@ public class PortfolioControllerImpl {
 
 		facesContext.responseComplete();
 	}
+	
+	public final String commit(final String portfolioName)  {
+		
+		final SharePortfolio sharePortfolio=   sharePortfolioService.committedPortfolio(portfolioName);
+		return String.format(REDIRECT_PATTERN, sharePortfolio.id());
+		
+	}
+	
+	
 
 }

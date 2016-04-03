@@ -26,7 +26,7 @@
 	<p:outputLabel  for="name"  value="Name"   />
 	
 	<h:panelGrid columns="2">
-	<p:inputText id="name" value="#{sharePortfolio.name}" required="true"  validatorMessage="5 bis 30 Zeichen [Buchstaben,Ziffern-_]" requiredMessage="Mußfeld"  >
+	<p:inputText id="name" value="#{sharePortfolio.name}" required="true"  validatorMessage="5 bis 30 Zeichen [Buchstaben,Ziffern-_]" requiredMessage="Mußfeld"  readonly="#{!sharePortfolio.editable}" >
 	
 	<f:validateRegex pattern="[a-z,A-Z,0-9-_]{5,30}"  />
 	
@@ -35,6 +35,11 @@
 	
 	
 	</h:panelGrid>
+	
+	<p:outputLabel  for="commited"  value="geschlossen"  />
+	<p:selectBooleanCheckbox id="commited" value="#{!sharePortfolio.editable}" disabled="true"  />
+         
+	
 </h:panelGrid >
 
 <ui:fragment rendered="#{sharePortfolio.timeCourses.size() >=  2 }">
@@ -158,11 +163,14 @@
 
 <h:panelGrid >
 <p:messages id="messages" showDetail="false" globalOnly="true" />
-<h:panelGrid columns="4" >
+<h:panelGrid columns="5" >
  	<p:button  value="abbrechen" outcome="portfolios"  />
  	<p:commandButton value="pdf"  ajax="false"  action="#{portfolioController.pdf(sharePortfolio,facesContext)}"  rendered="#{sharePortfolio.timeCourses.size() >= 2 }" />
- 	<p:commandButton value="aktualisieren"  process="@form" update="@form"  action="#{portfolioController.assign(sharePortfolio)}" rendered="#{sharePortfolio.timeCourses.size() >= 2 }"  />
-	<p:commandButton value="speichern"  process="@form" update="@form" action="#{portfolioController.save(sharePortfolio.sharePortfolio,facesContext,'Portfolio mit diesem Namen existiert bereits')}" />
+ 
+ 	<p:commandButton value="aktualisieren"  process="@form" update="@form"  action="#{portfolioController.assign(sharePortfolio)}" rendered="#{(sharePortfolio.timeCourses.size() >= 2) and sharePortfolio.editable }"  />
+	<p:commandButton value="abschließen"  process="@form" update="@form"  action="#{portfolioController.commit(sharePortfolio.name)}" rendered="#{(sharePortfolio.timeCourses.size() >= 2) and sharePortfolio.editable }"  />
+	<p:commandButton value="speichern"  process="@form" update="@form" action="#{portfolioController.save(sharePortfolio.sharePortfolio,facesContext,'Portfolio mit diesem Namen existiert bereits')}" rendered="#{sharePortfolio.editable}"  />
+
 </h:panelGrid >   
 </h:panelGrid >
  

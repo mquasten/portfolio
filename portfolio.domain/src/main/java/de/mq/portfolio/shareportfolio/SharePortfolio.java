@@ -22,7 +22,6 @@ public interface SharePortfolio {
 
 	Optional<PortfolioOptimisation> minVariance();
 
-	double standardDeviation();
 
 	String id();
 	
@@ -43,5 +42,15 @@ public interface SharePortfolio {
 	Double totalRateDividends(final double[] weights);
 
 	void assign(Collection<TimeCourse> timeCourses);
+
+	double[] minWeights();
+
+	Double standardDeviation();
+
+	Double totalRate();
+
+	Double totalRateDividends();
+
+	
 
 }
