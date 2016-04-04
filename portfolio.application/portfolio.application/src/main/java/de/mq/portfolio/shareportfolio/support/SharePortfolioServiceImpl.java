@@ -234,5 +234,13 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 		});
 		return Collections.unmodifiableList(results);
 	}
+	
+	@Override
+	public final void delete(final String sharePortfolioId) {
+		Assert.hasText(sharePortfolioId , "Id is mandatory");
+		final SharePortfolio existing = sharePortfolioRepository.sharePortfolio(sharePortfolioId);
+		Assert.isTrue(!existing.isCommitted(), "SharePortfolio should not be committed");
+		sharePortfolioRepository.delete(existing);
+	}
 
 }

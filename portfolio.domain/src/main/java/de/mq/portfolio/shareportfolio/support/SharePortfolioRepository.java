@@ -25,4 +25,6 @@ interface SharePortfolioRepository {
 
 	SharePortfolio sharePortfolio(final String id);
 
+	void delete(final SharePortfolio sharePortfolio);
+
 }

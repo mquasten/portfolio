@@ -106,12 +106,14 @@ public class PortfolioControllerImpl {
 	}
 	
 	public final String commit(final String portfolioName)  {
-		
 		final SharePortfolio sharePortfolio=   sharePortfolioService.committedPortfolio(portfolioName);
 		return String.format(REDIRECT_PATTERN, sharePortfolio.id());
 		
 	}
 	
-	
+	public final String delete(final String portfolioId)  {
+		sharePortfolioService.delete(portfolioId);
+		return REDIRECT_TO_PORTFOLIOS_PAGE;
+	}
 
 }

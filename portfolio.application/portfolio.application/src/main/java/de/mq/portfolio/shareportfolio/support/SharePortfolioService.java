@@ -46,4 +46,7 @@ public interface SharePortfolioService {
 
 	void assign(final SharePortfolio sharePortfolio, final Collection<TimeCourse> timeCourses);
 
+
+	void delete(final String sharePortfolioId);
+
 }

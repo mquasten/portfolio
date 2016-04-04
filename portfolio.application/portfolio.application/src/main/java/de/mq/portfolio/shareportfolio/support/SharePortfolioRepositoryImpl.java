@@ -162,5 +162,10 @@ class SharePortfolioRepositoryImpl implements SharePortfolioRepository {
 		return Optional.ofNullable(DataAccessUtils.singleResult(results));
 
 	}
+	
+	@Override
+	public final void delete(final SharePortfolio sharePortfolio) {
+		mongoOperations.remove(sharePortfolio);
+	}
 
 }
