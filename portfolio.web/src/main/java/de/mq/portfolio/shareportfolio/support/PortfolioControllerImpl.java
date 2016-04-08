@@ -15,11 +15,15 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.client.ResourceAccessException;
 
+import de.mq.portfolio.share.ShareService;
+
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.support.UserModel;
+
 
 @Component("portfolioController")
 @Scope("singleton")
@@ -32,10 +36,12 @@ public class PortfolioControllerImpl {
 	private final Converter<PortfolioAO, byte[]> pdfConverter;
 	
 
+	private final ShareService shareService;
 
 	@Autowired
-	PortfolioControllerImpl(final SharePortfolioService sharePortfolioService,  final @Qualifier("portfolio2PdfConverter") Converter<PortfolioAO, byte[]> pdfConverter) {
+	PortfolioControllerImpl(final SharePortfolioService sharePortfolioService, final ShareService shareService, final @Qualifier("portfolio2PdfConverter") Converter<PortfolioAO, byte[]> pdfConverter) {
 		this.sharePortfolioService = sharePortfolioService;
+		this.shareService=shareService;
 		this.pdfConverter=pdfConverter;
 	}
 
@@ -114,6 +120,15 @@ public class PortfolioControllerImpl {
 	public final String delete(final String portfolioId)  {
 		sharePortfolioService.delete(portfolioId);
 		return REDIRECT_TO_PORTFOLIOS_PAGE;
+	}
+	
+	public final String deleteTimeCourse(final String sharePortfolioId, final String timeCourseId) {
+		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(sharePortfolioId);
+		Assert.isTrue(! sharePortfolio.isCommitted() , "Portfolio should not be committed.");
+		
+		return String.format(REDIRECT_PATTERN, sharePortfolio.id());
+		
+		
 	}
 
 }

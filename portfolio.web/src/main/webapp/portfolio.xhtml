@@ -51,6 +51,7 @@
 			<td style="border: 1px solid black;">Anteil [%]</td> 
 			<td style="border: 1px solid black;">Rendite [%]</td> 
 			<td style="border: 1px solid black;">Dividenden [%]</td> 
+			<td style="border: 1px solid black;" />
 		</tr>
 		<ui:repeat value="#{sharePortfolio.timeCourses}" var="timeCourse">
 		<tr>
@@ -92,6 +93,11 @@
 		 	</h:outputText>
 		</td> 
 		
+		<td style="border: 1px solid black;">
+		 <p:commandButton icon="ui-icon-delete"  style="width:20px;height:20px"  process="@this"  update="@form"  disabled="#{!sharePortfolio.editable}"  action="#{portfolioController.deleteTimeCourse(sharePortfolio.id, timeCourse.id())}"    />
+		
+		</td> 
+		
 		</tr>
 		</ui:repeat>
 		<tr>
@@ -122,6 +128,7 @@
 		  		<f:convertNumber pattern="#0.00" />
 		 	</h:outputText>
 		</th>
+		<th style="border: 1px solid black;" />
 		
 		</tr>
 	</table>

@@ -30,3 +30,7 @@ input[type='file'] {
     background-image: url("#{resource['images/arrow_out.png']}") !important;
 }
 
+.ui-icon-delete{
+    background-image: url("#{resource['images/delete.png']}") !important;
+}
+
