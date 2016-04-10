@@ -1,62 +1,63 @@
-^GDAXI;Deutscher Aktien Index
-ADS.DE;Adidas AG;Deutscher Aktien Index
-ALV.DE;Allianz SE;Deutscher Aktien Index
-BAS.DE;BASF SE;Deutscher Aktien Index
-BAYN.DE;Bayer AG;Deutscher Aktien Index
-BEI.DE;Beiersdorf AG;Deutscher Aktien Index
-BMW.DE;Bayerische Motoren Werke Aktiengesellschaft;Deutscher Aktien Index
-CBK.DE;Commerzbank AG;Deutscher Aktien Index
-CON.DE;Continental Aktiengesellschaft;Deutscher Aktien Index
-DAI.DE;Daimler AG;Deutscher Aktien Index
-DB1.DE;Deutsche Boerse AG;Deutscher Aktien Index
-DBK.DE;Deutsche Bank AG;Deutscher Aktien Index
-DPW.DE;Deutsche Post AG;Deutscher Aktien Index
-DTE.DE;Deutsche Telekom AG;Deutscher Aktien Index
-EOAN.DE;E.ON SE;Deutscher Aktien Index
-FME.DE;Fresenius Medical Care AG & Co. KGAA;Deutscher Aktien Index
-FRE.DE;Fresenius SE & Co KGaA;Deutscher Aktien Index
-HEI.DE;HeidelbergCement AG;Deutscher Aktien Index
-HEN3.DE;Henkel AG & Co. KGaA;Deutscher Aktien Index
-IFX.DE;Infineon Technologies AG;Deutscher Aktien Index
-LHA.DE;Deutsche Lufthansa AG;Deutscher Aktien Index
-LIN.DE;Linde Aktiengesellschaft;Deutscher Aktien Index
-MRK.DE;Merck KGaA;Deutscher Aktien Index
-MUV2.DE;Münchener Rückversicherungs-Gesellschaft Aktiengesellschaft;Deutscher Aktien Index
-RWE.DE;RWE AG;Deutscher Aktien Index
-SAP.DE;SAP SE;Deutscher Aktien Index
-SDF.DE;K+S Aktiengesellschaft;Deutscher Aktien Index
-SIE.DE;Siemens Aktiengesellschaft;Deutscher Aktien Index
-TKA.DE;ThyssenKrupp AG;Deutscher Aktien Index
-VNA.DE;VONOVIA N;Deutscher Aktien Index
-VOW3.DE;Volkswagen AG;Deutscher Aktien Index
-^DJI;Dow Jones Industrial Average
-AAPL;Apple Inc.;Dow Jones Industrial Average
-AXP;American Express Company;Dow Jones Industrial Average
-BA;The Boeing Company;Dow Jones Industrial Average
-CAT;Caterpillar Inc.;Dow Jones Industrial Average
-CSCO;Cisco Systems, Inc.;Dow Jones Industrial Average
-CVX;Chevron Corporation;Dow Jones Industrial Average
-DD;E. I. du Pont de Nemours and Company;Dow Jones Industrial Average
-DIS;The Walt Disney Company;Dow Jones Industrial Average
-GE;General Electric Company;Dow Jones Industrial Average
-GS;The Goldman Sachs Group, Inc.;Dow Jones Industrial Average
-HD;The Home Depot, Inc.;Dow Jones Industrial Average
-IBM;International Business Machines Corporation;Dow Jones Industrial Average
-INTC;Intel Corporation;Dow Jones Industrial Average
-JNJ;Johnson & Johnson;Dow Jones Industrial Average
-JPM;JPMorgan Chase & Co.;Dow Jones Industrial Average
-KO;The Coca-Cola Company;Dow Jones Industrial Average
-MCD;McDonald's Corp.;Dow Jones Industrial Average
-MMM;3M Company;Dow Jones Industrial Average
-MRK;Merck & Co. Inc.;Dow Jones Industrial Average
-MSFT;Microsoft Corporation;Dow Jones Industrial Average
-NKE;NIKE, Inc.;Dow Jones Industrial Average
-PFE;Pfizer Inc;Dow Jones Industrial Average
-PG;The Procter & Gamble Company;Dow Jones Industrial Average
-TRV;The Travelers Companies, Inc.;Dow Jones Industrial Average
-UNH;UnitedHealth Group Incorporated;Dow Jones Industrial Average
-UTX;United Technologies Corporation;Dow Jones Industrial Average
-V;Visa Inc.;Dow Jones Industrial Average
-VZ;Verizon Communications Inc.;Dow Jones Industrial Average
-WMT;Wal-Mart Stores Inc.;Dow Jones Industrial Average
-XOM;Exxon Mobil Corporation;Dow Jones Industrial Average
+^GDAXI;846900;Deutscher Aktien Index
+ADS.DE;A1EWWW;Adidas AG;Deutscher Aktien Index
+ALV.DE;840400;Allianz SE;Deutscher Aktien Index
+BAS.DE;BASF11;BASF SE;Deutscher Aktien Index
+BAYN.DE;BAY001;Bayer AG;Deutscher Aktien Index
+BEI.DE;520000;Beiersdorf AG;Deutscher Aktien Index
+BMW.DE;519000;Bayerische Motoren Werke Aktiengesellschaft;Deutscher Aktien Index
+CBK.DE;CBK100;Commerzbank AG;Deutscher Aktien Index
+CON.DE;543900;Continental Aktiengesellschaft;Deutscher Aktien Index
+DAI.DE;710000;Daimler AG;Deutscher Aktien Index
+DB1.DE;581005;Deutsche Boerse AG;Deutscher Aktien Index
+DBK.DE;514000;Deutsche Bank AG;Deutscher Aktien Index
+DPW.DE;555200;Deutsche Post AG;Deutscher Aktien Index
+DTE.DE;555750;Deutsche Telekom AG;Deutscher Aktien Index
+EOAN.DE;ENAG99;E.ON SE;Deutscher Aktien Index
+FME.DE;578580;Fresenius Medical Care AG & Co. KGAA;Deutscher Aktien Index
+FRE.DE;578560;Fresenius SE & Co KGaA;Deutscher Aktien Index
+HEI.DE;604700;HeidelbergCement AG;Deutscher Aktien Index
+HEN3.DE;604843;Henkel AG & Co. KGaA;Deutscher Aktien Index
+IFX.DE;623100;Infineon Technologies AG;Deutscher Aktien Index
+LHA.DE;823212;Deutsche Lufthansa AG;Deutscher Aktien Index
+LIN.DE;648300;Linde Aktiengesellschaft;Deutscher Aktien Index
+MRK.DE;659990;Merck KGaA;Deutscher Aktien Index
+MUV2.DE;843002;Münchener Rückversicherungs-Gesellschaft Aktiengesellschaft;Deutscher Aktien Index
+RWE.DE;703712;RWE AG;Deutscher Aktien Index
+SAP.DE;723610;716460;SAP SE;Deutscher Aktien Index
+SDF.DE;KSAG88;K+S Aktiengesellschaft;Dax Future
+PSM.DE;PSM777;PROSIEBENSAT.1 MEDIA;Deutscher Aktien Index
+SIE.DE;723610;Siemens Aktiengesellschaft;Deutscher Aktien Index
+TKA.DE;750000;ThyssenKrupp AG;Deutscher Aktien Index
+VNA.DE;A1ML7J;VONOVIA N;Deutscher Aktien Index
+VOW3.DE;766403;Volkswagen AG;Deutscher Aktien Index
+^DJI;969420;Dow Jones Industrial Average
+AAPL;037833100;Apple Inc.;Dow Jones Industrial Average
+AXP;025816109;American Express Company;Dow Jones Industrial Average
+BA;097023105;The Boeing Company;Dow Jones Industrial Average
+CAT;149123101;Caterpillar Inc.;Dow Jones Industrial Average
+CSCO;17275R102;Cisco Systems, Inc.;Dow Jones Industrial Average
+CVX;166764100;Chevron Corporation;Dow Jones Industrial Average
+DD;263534109;E. I. du Pont de Nemours and Company;Dow Jones Industrial Average
+DIS;254687106;The Walt Disney Company;Dow Jones Industrial Average
+GE;369604103;General Electric Company;Dow Jones Industrial Average
+GS;38141G104;The Goldman Sachs Group, Inc.;Dow Jones Industrial Average
+HD;437076102;The Home Depot, Inc.;Dow Jones Industrial Average
+IBM;459200101;International Business Machines Corporation;Dow Jones Industrial Average
+INTC;458140100;Intel Corporation;Dow Jones Industrial Average
+JNJ;478160104;Johnson & Johnson;Dow Jones Industrial Average
+JPM;46625H100;JPMorgan Chase & Co.;Dow Jones Industrial Average
+KO;191216100;The Coca-Cola Company;Dow Jones Industrial Average
+MCD;580135101;McDonald's Corp.;Dow Jones Industrial Average
+MMM;88579Y101;3M Company;Dow Jones Industrial Average
+MRK;58933Y105;Merck & Co. Inc.;Dow Jones Industrial Average
+MSFT;594918104;Microsoft Corporation;Dow Jones Industrial Average
+NKE;654106103;NIKE, Inc.;Dow Jones Industrial Average
+PFE;717081103;Pfizer Inc;Dow Jones Industrial Average
+PG;742718109;The Procter & Gamble Company;Dow Jones Industrial Average
+TRV;89417E109;The Travelers Companies, Inc.;Dow Jones Industrial Average
+UNH;91324P102;UnitedHealth Group Incorporated;Dow Jones Industrial Average
+UTX;913017109;United Technologies Corporation;Dow Jones Industrial Average
+V;92826C839;Visa Inc.;Dow Jones Industrial Average
+VZ;92343V104;Verizon Communications Inc.;Dow Jones Industrial Average
+WMT;931142103;Wal-Mart Stores Inc.;Dow Jones Industrial Average
+XOM;30231G102;Exxon Mobil Corporation;Dow Jones Industrial Average
