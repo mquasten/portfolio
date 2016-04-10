@@ -31,6 +31,9 @@ public interface TimeCourse {
 	String id();
 
 	String name();
+	
+	String code();
+	
 
 	Date start();
 

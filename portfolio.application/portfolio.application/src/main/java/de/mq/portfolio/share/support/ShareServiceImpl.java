@@ -1,6 +1,8 @@
 package de.mq.portfolio.share.support;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +40,8 @@ class ShareServiceImpl implements ShareService {
 		return historyRepository.history(share);
 	}
 	
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * @see de.mq.portfolio.share.ShareService#timeCourses(org.springframework.data.domain.Pageable, de.mq.portfolio.share.Share)
@@ -45,6 +49,14 @@ class ShareServiceImpl implements ShareService {
 	@Override
 	public final Collection<TimeCourse> timeCourses(final Pageable pageable, final Share share) {
 		return shareRepository.timeCourses(pageable, share);
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.share.ShareService#timeCourse(java.lang.String)
+	 */
+	@Override
+	public final Optional<TimeCourse> timeCourse(final String code) {
+		return shareRepository.timeCourses(Arrays.asList(code)).stream().findFirst();
 	}
 
 	@Override

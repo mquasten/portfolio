@@ -46,6 +46,12 @@ public class PortfolioSearchAO  implements Serializable {
 	}
 	
 
+	public boolean isSelectedPortfolioReadonly() {
+		if( selectedPortfolio == null){
+			return true;
+		}
+		return selectedPortfolio.isCommitted();
+	}
 
 
 
@@ -101,6 +107,9 @@ public class PortfolioSearchAO  implements Serializable {
 	public Collection<SharePortfolio> getSharePortfolios() {
 		return sharePortfolios;
 	}
+	
+	
+	
 	
 
 	public void setSharePortfolios(Collection<SharePortfolio> sharePortfolios) {

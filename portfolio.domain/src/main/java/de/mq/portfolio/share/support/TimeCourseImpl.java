@@ -207,6 +207,11 @@ class TimeCourseImpl implements TimeCourse {
 	}
 	
 	@Override
+	public String code() {
+		return  share != null ? share.code(): null;
+	}
+	
+	@Override
 	public Date start() {
 		if( rates==null){
 			return null;
@@ -246,6 +251,8 @@ interface SampleFunction {
 	 double f(final Data[]  samples, int i);
 	
 }
+
+
 
 }
 

@@ -46,7 +46,7 @@
  </f:facet>
 
 <h:outputText  value="#{portfolioSearch.portfolioName}" rendered="#{userModel.portfolioId != null}" />
-<p:commandButton id="aktivateButtom"  value="aktivieren"  process="@this" update="portfolioGrid"  disabled="#{portfolioSearch.selectedPortfolio==null}" action="#{portfolioController.activate(portfolioSearch,userModel)}"/>
+<p:commandButton id="aktivateButtom"  value="aktivieren"  process="@this" update="portfolioGrid"  disabled="#{portfolioSearch.selectedPortfolioReadonly}" action="#{portfolioController.activate(portfolioSearch,userModel)}"/>
 
 </h:panelGrid>
 

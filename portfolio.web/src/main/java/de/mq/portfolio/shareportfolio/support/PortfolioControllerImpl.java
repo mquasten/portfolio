@@ -1,7 +1,7 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.io.IOException;
-
+import java.util.Optional;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -20,7 +20,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.client.ResourceAccessException;
 
 import de.mq.portfolio.share.ShareService;
-
+import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.support.UserModel;
 
@@ -122,10 +122,18 @@ public class PortfolioControllerImpl {
 		return REDIRECT_TO_PORTFOLIOS_PAGE;
 	}
 	
-	public final String deleteTimeCourse(final String sharePortfolioId, final String timeCourseId) {
+	public final String deleteTimeCourse(final String sharePortfolioId, final String timeCourseCode) {
+		
+		final Optional<TimeCourse> timeCourse= shareService.timeCourse(timeCourseCode);
+		if( ! timeCourse.isPresent()){
+			return String.format(REDIRECT_PATTERN, sharePortfolioId);
+		}
+		
 		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(sharePortfolioId);
 		Assert.isTrue(! sharePortfolio.isCommitted() , "Portfolio should not be committed.");
+		sharePortfolio.remove(timeCourse.get());
 		
+		sharePortfolioService.save(sharePortfolio);
 		return String.format(REDIRECT_PATTERN, sharePortfolio.id());
 		
 		

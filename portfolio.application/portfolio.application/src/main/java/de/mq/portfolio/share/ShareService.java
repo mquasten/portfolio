@@ -1,6 +1,7 @@
 package de.mq.portfolio.share;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,6 +26,8 @@ public interface ShareService{
 	Pageable pageable(final Share share, final Sort sort, final Number size);
 
 	Collection<String> indexes();
+
+	Optional<TimeCourse> timeCourse(String code);
 
 	
 
