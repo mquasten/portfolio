@@ -15,7 +15,7 @@ public class ShareCSVInputServiceTest {
 	@Test
 	public final void read() {
 		final Collection<Share> shares = service.shares("data/stocks.csv");
-		Assert.assertEquals(62, shares.size());
+		Assert.assertEquals(63, shares.size());
 		shares.stream().forEach( share -> {Assert.assertTrue(share.name().trim().length() > 0);Assert.assertTrue(share.code().trim().length() > 0);} ); 
 	}
 	

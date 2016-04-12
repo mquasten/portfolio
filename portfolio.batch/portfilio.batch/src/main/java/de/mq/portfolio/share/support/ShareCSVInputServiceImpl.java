@@ -35,7 +35,7 @@ class ShareCSVInputServiceImpl {
 		while ((line = br.readLine()) != null) {
 
 			final String[] cols = line.split(REGEX);
-			shares.add((cols.length == 3) ? new ShareImpl(cols[0], cols[1], cols[2]) : new ShareImpl(cols[0], cols[1]));
+			shares.add((cols.length == 4) ? new ShareImpl(cols[0], cols[2], cols[3], cols[1]) : new ShareImpl(cols[0], cols[2],null, cols[1]));
 		}
 
 		return shares;

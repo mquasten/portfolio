@@ -64,7 +64,7 @@ public class SharesSearchAO  implements Serializable{
 	
 	
 	public final Share getSearch() {
-		return new ShareImpl(code,name,index);
+		return new ShareImpl(code,name,index, null);
 		
 	}
 	

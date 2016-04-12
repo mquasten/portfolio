@@ -17,21 +17,22 @@ class ShareImpl implements Share {
 	private String code;
 
 	private String name;
+	
+	private String wkn;
 
 	private String index;
 
-	ShareImpl(final String code, final String name, final String index) {
+	ShareImpl(final String code, final String name, final String index, final String wkn) {
 		this.code = code;
 		this.name = name;
 		this.index = index;
+		this.wkn=wkn;
 	}
 
-	ShareImpl(final String code, final String name) {
-		this(code, name, null);
-	}
+	
 
 	ShareImpl(final String code) {
-		this(code, null, null);
+		this(code, null, null, null);
 	}
 
 	@SuppressWarnings("unused")
@@ -67,6 +68,10 @@ class ShareImpl implements Share {
 	@Override
 	public String code() {
 		return code;
+	}
+	
+	public  String wkn(){
+		return wkn;
 	}
 
 	/*

@@ -12,12 +12,13 @@ import de.mq.portfolio.share.Share;
 
 public class ShareTest {
 	
+	private static final String WKN = "wkn123456";
 	private static final String ID_FIELD = "id";
 	private static final String COLLECTION = "Share";
 	private static final String INDEX = "Dow";
 	private static final String NAME = "Coca Cola";
 	private static final String CODE = "KO";
-	private final Share share = new ShareImpl(CODE, NAME, INDEX);
+	private final Share share = new ShareImpl(CODE, NAME, INDEX, WKN);
 	
 	@Test
 	public final void name() {
@@ -42,7 +43,7 @@ public class ShareTest {
 	
 	@Test
 	public final void constructorCodeName() {
-		final Share share = new ShareImpl(CODE, NAME);
+		final Share share = new ShareImpl(CODE, NAME,null, WKN);
 		Assert.assertEquals(NAME, share.name());
 		Assert.assertEquals(CODE, share.code());
 		Assert.assertNull(share.index());
