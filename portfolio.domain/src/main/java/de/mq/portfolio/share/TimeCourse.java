@@ -39,6 +39,8 @@ public interface TimeCourse {
 
 	Date end();
 
+	String wkn();
+
 	
 
 }

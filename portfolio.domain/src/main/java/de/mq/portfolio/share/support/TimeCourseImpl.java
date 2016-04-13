@@ -212,6 +212,11 @@ class TimeCourseImpl implements TimeCourse {
 	}
 	
 	@Override
+	public String wkn() {
+		return  share != null ? share.wkn(): null;
+	}
+	
+	@Override
 	public Date start() {
 		if( rates==null){
 			return null;

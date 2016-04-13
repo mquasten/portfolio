@@ -69,7 +69,7 @@ class ShareImpl implements Share {
 	public String code() {
 		return code;
 	}
-	
+	@Override
 	public  String wkn(){
 		return wkn;
 	}

@@ -46,6 +46,7 @@
 	<table style="border-collapse: collapse; margin-bottom: 25px;" >
 		<tr>
 			<td style="border: 1px solid black;">Aktie</td> 
+			<td style="border: 1px solid black;">WKN</td> 
 			<td style="border: 1px solid black;">Zeitreihe</td> 
 			<td style="border: 1px solid black;">Standardabweichung [‰]</td> 
 			<td style="border: 1px solid black;">Anteil [%]</td> 
@@ -59,6 +60,10 @@
 			<h:outputText value="#{timeCourse.name()}" />
 		  		
 		 
+		</td> 
+		
+		<td style="border: 1px solid black;">
+			<h:outputText value="#{timeCourse.wkn()}" />
 		</td> 
 		
 		<td style="border: 1px solid black;">
@@ -101,6 +106,9 @@
 		</tr>
 		</ui:repeat>
 		<tr>
+		<td style="border: 1px solid black;">
+		
+		</td>
 		<td style="border: 1px solid black;">
 		
 		</td>

@@ -46,9 +46,10 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 	        document.open();
 				document.addTitle(portfolioAO.getName());
 				document.add(new Paragraph(String.format("Aktien %s", portfolioAO.getName() ), headline));
-				final Table varianceSharesTable = new  Table(6);
+				final Table varianceSharesTable = new  Table(7);
 				varianceSharesTable.setWidth(100);
 				addCellHeader(varianceSharesTable,  "Aktie");
+				addCellHeader(varianceSharesTable,  "WKN");
 				addCellHeader(varianceSharesTable, "Zeitreihe");
 				addCellHeader(varianceSharesTable, "Standardabweichung [‰]");
 				addCellHeader(varianceSharesTable, "Anteil [%]");
@@ -58,6 +59,7 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 				portfolioAO.getTimeCourses().forEach(tc ->
 				{
 					addCellHeader(varianceSharesTable, tc.share().name());
+					addCellHeader(varianceSharesTable, tc.wkn());
 					
 					addCell(varianceSharesTable, "" +dateFormat.format( tc.start()) +" - "+ dateFormat.format( tc.end()) );
 					addCell(varianceSharesTable, tc.standardDeviation(), 1000d);
@@ -67,6 +69,7 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 					
 				});
 			
+				addCell(varianceSharesTable,null, 0);
 				addCell(varianceSharesTable,null, 0);
 				addCell(varianceSharesTable,null, 0);
 				addCellHeader(varianceSharesTable, portfolioAO.getMinStandardDeviation(), 1000d);
