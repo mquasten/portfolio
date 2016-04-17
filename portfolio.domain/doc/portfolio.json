@@ -91,6 +91,7 @@
                 "_class" : "de.mq.portfolio.share.support.ShareImpl",
                 "_id" : ObjectId("56ebb25ec8fe9735fc866148"),
                 "code" : "SAP.DE",
+                "wkn"  : "716460", 
                 "name" : "SAP SE",
                 "index" : "Deutscher Aktien Index"
             },
@@ -1422,6 +1423,7 @@
                 "_class" : "de.mq.portfolio.share.support.ShareImpl",
                 "_id" : ObjectId("56ebb25ec8fe9735fc86615c"),
                 "code" : "JNJ",
+                "wkn"  : "478160104",
                 "name" : "Johnson & Johnson",
                 "index" : "Dow Jones Industrial Average"
             },
@@ -2718,6 +2720,7 @@
                 "_class" : "de.mq.portfolio.share.support.ShareImpl",
                 "_id" : ObjectId("56ebb25ec8fe9735fc86615e"),
                 "code" : "KO",
+                "wkn"  : "191216100",
                 "name" : "The Coca-Cola Company",
                 "index" : "Dow Jones Industrial Average"
             },
@@ -4014,6 +4017,7 @@
                 "_class" : "de.mq.portfolio.share.support.ShareImpl",
                 "_id" : ObjectId("56ebb25ec8fe9735fc866165"),
                 "code" : "PG",
+                "wkn"  : "742718109",
                 "name" : "The Procter & Gamble Company",
                 "index" : "Dow Jones Industrial Average"
             },
@@ -5310,6 +5314,7 @@
                 "_class" : "de.mq.portfolio.share.support.ShareImpl",
                 "_id" : ObjectId("56ebb25ec8fe9735fc86616a"),
                 "code" : "VZ",
+                "wkn"  : "92343V104",
                 "name" : "Verizon Communications Inc.",
                 "index" : "Dow Jones Industrial Average"
             },
