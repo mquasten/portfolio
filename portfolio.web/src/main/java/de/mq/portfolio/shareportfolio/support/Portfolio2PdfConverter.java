@@ -59,7 +59,7 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 				portfolioAO.getTimeCourses().forEach(tc ->
 				{
 					addCellHeader(varianceSharesTable, tc.share().name());
-					addCellHeader(varianceSharesTable, tc.wkn());
+					addCell(varianceSharesTable, tc.wkn());
 					
 					addCell(varianceSharesTable, "" +dateFormat.format( tc.start()) +" - "+ dateFormat.format( tc.end()) );
 					addCell(varianceSharesTable, tc.standardDeviation(), 1000d);
