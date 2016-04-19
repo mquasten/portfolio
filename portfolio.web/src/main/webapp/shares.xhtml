@@ -133,6 +133,13 @@
             <f:convertNumber pattern="#0.00" />
             </h:outputText>
         </p:column>
+        
+        <f:facet name="footer">
+        		<p:button  value="anzeigen"  disabled="#{sharesSearch.selectedTimeCourse==null}"  outcome="chart">
+        			<f:param name="shareCode" value="#{sharesSearch.selectedTimeCourse.key.code()}" /> 
+        		</p:button>
+        
+        </f:facet>
        
     </p:dataTable>
 
