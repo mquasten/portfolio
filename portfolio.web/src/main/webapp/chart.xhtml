@@ -6,12 +6,13 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
 <ui:composition template="template.xhtml">
-	<ui:param name="headline" value="Chart anzeigen" />
+	<ui:param name="headline" value="Chart #{chart.wkn}" />
 
 <ui:define name="meta">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 			<f:metadata>
 		 		<f:viewParam name="shareCode" value="#{chart.code}" />
+		 		 <f:viewAction action="#{chartController.init(chart)}" />
   	     	</f:metadata>
 
 	</ui:define>
@@ -24,8 +25,36 @@
  	<h:panelGrid style="margin: 0 auto;">
   
       <p:graphicImage value="#{chart.url}" />
+      
+      <f:facet name="footer">
+         <h:panelGroup style="display:block; text-align:center">
+            <p:button  value="zurück" outcome="shares"  />
+         </h:panelGroup>
+      </f:facet>
   </h:panelGrid>
-
+  
+  <h:panelGrid style="margin: 0 auto;"  rendered="#{chart.dividends.size() > 0 }" >
+  
+   <f:facet name="header">
+    <h:outputText value="Dividenden" />
+   		
+   </f:facet>
+  	<p:dataTable  var="dividends" value="#{chart.dividends}"  lazy="true"    resizableColumns="true"    >
+  		 <p:column headerText="Datum">
+            <h:outputText value="#{dividends.date()}" >
+            	 <f:convertDateTime  type="date" dateStyle="short"  />
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Wert">
+            <h:outputText value="#{dividends.value()}" >
+            	<f:convertNumber pattern="#0.00" />
+            </h:outputText>
+        </p:column>
+  	</p:dataTable>
+  
+  </h:panelGrid>
+  
+  
 </h:form>
 	
 	
