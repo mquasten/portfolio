@@ -1,0 +1,6 @@
+{
+    "_id" : ObjectId("571c9f05c02e2f0fd510ed62"),
+    "_class" : "de.mq.portfolio.user.support.UserImpl",
+    "login" : "kminogue",
+    "password" : "fever"
+}
