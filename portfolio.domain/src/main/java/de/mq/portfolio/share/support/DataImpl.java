@@ -10,7 +10,7 @@ import de.mq.portfolio.share.Data;
 
 
 
-class DataImpl implements Data {
+public class DataImpl implements Data {
 	
 	static final String DATE_PATTERN = "yyyy-MM-dd";
 
@@ -49,6 +49,11 @@ class DataImpl implements Data {
 	
 	DataImpl(String date, Double value) {
 		this.date = date;
+		this.value = value;
+	}
+	
+	public DataImpl(Date date, Double value) {
+		this.date = df.format(date);
 		this.value = value;
 	}
 	

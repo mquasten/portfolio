@@ -1,9 +1,13 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -15,7 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
+import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.share.support.DataImpl;
 import de.mq.portfolio.share.support.ShareRepository;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -241,6 +247,32 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 		final SharePortfolio existing = sharePortfolioRepository.sharePortfolio(sharePortfolioId);
 		Assert.isTrue(!existing.isCommitted(), "SharePortfolio should not be committed");
 		sharePortfolioRepository.delete(existing);
+	}
+	
+	public final Collection<Data> retrospective(final String id ) {
+		final SharePortfolio portfolio = sharePortfolioRepository.sharePortfolio(id);
+		final Map<Date,List<Double>> rates = new HashMap<>();	
+		final Map<TimeCourse, Double> min = portfolio.min();
+		min.entrySet().forEach(e -> {
+			
+			
+			
+			
+			shareRepository.timeCourses(Arrays.asList(e.getKey().code())).stream().findFirst().get().rates().forEach(r -> addRate(rates, r, e.getValue()));
+			
+			
+		});
+	
+		return rates.entrySet().stream().filter(e -> e.getValue().size()== rates.size()).map(e -> new DataImpl(e.getKey(), e.getValue().stream().reduce((a, b) ->  a+b).orElse(0d))).sorted((c1,c2) -> Long.valueOf(c1.date().getTime() - c2.date().getTime()).intValue()).collect(Collectors.toList());
+		
+		
+	}
+
+	private void addRate(final Map<Date, List<Double>> rates, final Data r, double k) {
+		if( ! rates.containsKey(r.date())) {
+			rates.put(r.date(), new ArrayList<>());
+		}
+		rates.get(r.date()).add(k*r.value());
 	}
 
 }
