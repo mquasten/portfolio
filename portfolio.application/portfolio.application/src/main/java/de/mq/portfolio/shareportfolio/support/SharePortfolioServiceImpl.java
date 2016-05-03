@@ -250,25 +250,15 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 	}
 	
 	@Override
+	//:TODO ExchangeRate US$ -> Euro
 	public final Collection<Data> retrospective(final String id ) {
 		final SharePortfolio portfolio = sharePortfolioRepository.sharePortfolio(id);
 		final Map<Date,List<Double>> rates = new HashMap<>();	
 		final Map<TimeCourse, Double> min = portfolio.min();
-		System.out.println(min);
-		min.entrySet().forEach(e -> {
-			
-			
-			
-			
-			shareRepository.timeCourses(Arrays.asList(e.getKey().code())).stream().findFirst().get().rates().forEach(r -> addRate(rates, r, e.getValue()));
-			
-			
-		});
 	
-		return rates.entrySet().stream().filter(e -> {
-			System.out.println(e.getValue().size() + ":" + min.size());
-			return e.getValue().size()== min.size();
-			}).map(e -> new DataImpl(e.getKey(), e.getValue().stream().reduce((a, b) ->  a+b).orElse(0d))).sorted((c1,c2) -> (int) Math.signum(c1.date().getTime() - c2.date().getTime())).collect(Collectors.toList());
+		min.entrySet().forEach(e -> shareRepository.timeCourses(Arrays.asList(e.getKey().code())).stream().findFirst().get().rates().forEach(r -> addRate(rates, r, e.getValue())));
+	
+		return rates.entrySet().stream().filter(e -> e.getValue().size()== min.size()).map(e -> new DataImpl(e.getKey(), e.getValue().stream().reduce((a, b) ->  a+b).orElse(0d))).sorted((c1,c2) -> (int) Math.signum(c1.date().getTime() - c2.date().getTime())).collect(Collectors.toList());
 		
 		
 	}
