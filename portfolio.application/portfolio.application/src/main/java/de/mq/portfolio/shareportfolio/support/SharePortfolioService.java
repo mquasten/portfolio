@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -48,5 +49,8 @@ public interface SharePortfolioService {
 
 
 	void delete(final String sharePortfolioId);
+
+
+	Collection<Data> retrospective(String id);
 
 }
