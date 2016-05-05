@@ -3,7 +3,6 @@ package de.mq.portfolio.share.support;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.Job;
@@ -22,28 +21,25 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/batch.xml" })
-@Ignore
-public class ImportSharesIntegrationTest {
+
+public class ExchangeImportIntegrationTest {
 	
 	@Autowired
 	private  JobLauncher jobLauncher;
 	@Autowired()
-	@Qualifier("importShares")
+	@Qualifier("importExchangeRates")
 	private Job job; 
-	
 	
 	@Test
 	public final void runJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		final Map<String,JobParameter> params = new HashMap<>();
-		params.put("filename", new JobParameter("data/stocks.csv"));
+		params.put("filename", new JobParameter("data/exchange.csv"));
 		final JobParameters jobParameters = new JobParameters(params);
-		
-		System.out.println(jobParameters.getString("filename").getClass());
 	
-		System.out.println("*** ShareImport stared ***");
+		System.out.println("*** ExchangeImport stared ***");
 		
 		JobExecution execution =  jobLauncher.run(job, jobParameters);
-		System.out.println("*** ShareImport finished ***");
+		System.out.println("*** ExchangeImport finished ***");
 		System.out.println(execution.getStatus());
 		
 		System.out.println(execution.getStepExecutions());
@@ -52,4 +48,3 @@ public class ImportSharesIntegrationTest {
 	}
 
 }
- 

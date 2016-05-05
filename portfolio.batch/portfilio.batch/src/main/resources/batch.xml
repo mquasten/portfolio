@@ -95,7 +95,15 @@
 			</batch:tasklet>
 		</batch:step>
 	</batch:job>
+	
+	
 
+	<bean name="shareCSVInputService"  class="de.mq.portfolio.share.support.SimpleCSVInputServiceImpl" >
+	
+	<constructor-arg>
+		<bean class="de.mq.portfolio.share.support.SharesCSVLineConverterImpl" />
+	</constructor-arg>
+	</bean>
 
 
 	<bean id="shareCsvReader"
@@ -105,7 +113,7 @@
 		<constructor-arg>
 			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
 				<constructor-arg ref="shareCSVInputService" />
-				<constructor-arg value="shares" />
+				<constructor-arg value="read" />
 				<constructor-arg>
 					<list>
 						<value>filename</value>
@@ -178,8 +186,69 @@
 
 
 
+<batch:job id="importExchangeRates">
 
 
+
+
+		<batch:step id="doImportExchangeRates">
+			<batch:tasklet>
+				<batch:chunk reader="exchangeRatesCsvReader"  writer="exchangeRatesWriter"
+					commit-interval="1" />
+
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+
+<bean name="exchangeRateCSVInputService"  class="de.mq.portfolio.share.support.SimpleCSVInputServiceImpl" >
+	
+	<constructor-arg>
+		<bean class="de.mq.portfolio.share.support.ExchangeRatesCSVLineConverterImpl" />
+	</constructor-arg>
+	</bean>
+	
+	
+	<bean id="exchangeRatesCsvReader"
+		class="de.mq.portfolio.batch.support.SimpleListItemReaderServiceAdapterImpl"
+		scope="job">
+
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+				<constructor-arg ref="exchangeRateCSVInputService" />
+				<constructor-arg value="read" />
+				<constructor-arg>
+					<list>
+						<value>filename</value>
+					</list>
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
+
+
+
+
+	</bean>
+	
+	
+	<bean id="exchangeRatesWriter"
+		class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl"
+		scope="job">
+
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+				<constructor-arg ref="shareService" />
+				<constructor-arg value="save" />
+
+				<constructor-arg>
+					<list>
+						<null />
+					</list>
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
+
+	</bean>
 
 
 	<bean id="samplesReader"

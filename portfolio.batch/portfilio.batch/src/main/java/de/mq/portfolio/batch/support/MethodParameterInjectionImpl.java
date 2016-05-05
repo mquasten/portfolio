@@ -11,6 +11,7 @@ import java.util.stream.IntStream;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.util.Assert;
+
 import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.batch.MethodParameterInjection;
@@ -45,7 +46,6 @@ class MethodParameterInjectionImpl<T> implements MethodParameterInjection<T> {
 	@Override
 	public final Object invokeMethod(final Map<T, Object> dependencies) {
 		method.setAccessible(true);
-
 		final List<Class<?>> classes = Arrays.asList(method.getParameterTypes()).stream().map(t -> t).collect(Collectors.toList());
 
 		return ReflectionUtils.invokeMethod(method, target, arguments(dependencies, classes));
