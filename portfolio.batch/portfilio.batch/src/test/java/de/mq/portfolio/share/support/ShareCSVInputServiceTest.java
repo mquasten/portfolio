@@ -17,7 +17,7 @@ public class ShareCSVInputServiceTest {
 	@SuppressWarnings("unchecked")
 	private final Converter<String[], Share>  converter = Mockito.mock(Converter.class);
 	
-	private final SimpleCSVInputServiceImpl service = new SimpleCSVInputServiceImpl(converter);
+	private final SimpleCSVInputServiceImpl<Share> service = new SimpleCSVInputServiceImpl<>(converter);
 	
 	@Before
 	public final void setup() {

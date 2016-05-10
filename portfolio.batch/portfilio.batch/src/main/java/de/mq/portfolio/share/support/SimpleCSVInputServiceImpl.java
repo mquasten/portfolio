@@ -12,21 +12,20 @@ import java.util.Collection;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.util.Assert;
 
-import de.mq.portfolio.share.Share;
 
 //@Service("shareCSVInputService")
-class SimpleCSVInputServiceImpl {
+class SimpleCSVInputServiceImpl<T> {
 
 	private final String delimiterRegex;
 	
-	private final Converter<String[], Share> converter; 
+	private final Converter<String[], T> converter; 
 	
-	SimpleCSVInputServiceImpl(final Converter<String[], Share> converter) {
+	SimpleCSVInputServiceImpl(final Converter<String[], T> converter) {
 		this.converter=converter;
 		this.delimiterRegex= "[;]";
 	}
 
-	final Collection<Share> read(final String filename) {
+	final  Collection<T> read(final String filename) {
 		Assert.notNull(filename , "Filename is mandatory.");
 		try (final InputStream in = new FileInputStream(filename); final InputStreamReader isr = new InputStreamReader(in, Charset.forName("UTF-8")); final BufferedReader br = new BufferedReader(isr)) {
 			return doRead(br);
@@ -36,16 +35,17 @@ class SimpleCSVInputServiceImpl {
 
 	}
 
-	private Collection<Share> doRead(final BufferedReader br) throws IOException {
+	
+	private Collection<T> doRead(final BufferedReader br) throws IOException {
 		String line;
-		final Collection<Share> shares = new ArrayList<>();
+		final Collection<T> results = new ArrayList<>();
 		while ((line = br.readLine()) != null) {
 
 			final String[] cols = line.split(delimiterRegex);
-			shares.add(converter.convert(cols));
+			results.add((T) converter.convert(cols));
 		}
 
-		return shares;
+		return results;
 
 	}
 

@@ -148,6 +148,25 @@
 	</bean>
 
 
+<bean id="exchangeRateWriter"
+		class="de.mq.portfolio.batch.support.SimpleItemWriterServiceAdapterImpl"
+		scope="job">
+
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+				<constructor-arg ref="exchangeRateService" />
+				<constructor-arg value="save" />
+
+				<constructor-arg>
+					<list>
+						<null />
+					</list>
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
+
+	</bean>
+
 
 	<batch:job id="calculatePortfolio">
 
@@ -237,7 +256,7 @@
 
 		<constructor-arg>
 			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
-				<constructor-arg ref="shareService" />
+				<constructor-arg ref="exchangeRateService" />
 				<constructor-arg value="save" />
 
 				<constructor-arg>

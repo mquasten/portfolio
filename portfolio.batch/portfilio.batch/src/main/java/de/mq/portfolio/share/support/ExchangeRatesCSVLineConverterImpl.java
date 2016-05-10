@@ -1,13 +1,20 @@
 package de.mq.portfolio.share.support;
 
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.util.Assert;
 
-public class ExchangeRatesCSVLineConverterImpl implements Converter<String[], Object>{
+import de.mq.portfolio.exchangerate.ExchangeRate;
+import de.mq.portfolio.exchangerate.ExchangeRateImpl;
+
+
+public class ExchangeRatesCSVLineConverterImpl implements Converter<String[], ExchangeRate>{
 
 	@Override
-	public Object  convert(final String[] source) {
-		// TODO Auto-generated method stub
-		return null;
+	public ExchangeRate  convert(final String[] source) {
+		
+		Assert.notNull(source);
+		Assert.isTrue(source.length==3);
+		return new ExchangeRateImpl(source[0], source[1], source[2]);
 	}
 
 }

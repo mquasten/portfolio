@@ -14,7 +14,7 @@
 	<mongo:mongo host="127.0.0.1" port="27017" />
 	<mongo:db-factory dbname="portfolio" />
 
-<context:component-scan base-package="de.mq.portfolio.share.support,de.mq.portfolio.shareportfolio.support,de.mq.portfolio.user.support" />
+<context:component-scan base-package="de.mq.portfolio.share.support,de.mq.portfolio.shareportfolio.support,de.mq.portfolio.user.support,de.mq.portfolio.exchangerate.support" />
 
 
 	<bean id="defaultMongoTypeMapper"
