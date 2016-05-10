@@ -1,4 +1,4 @@
-package de.mq.portfolio.exchangerate;
+package de.mq.portfolio.exchangerate.support;
 
 import java.util.UUID;
 
@@ -6,8 +6,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.StringUtils;
 
+import de.mq.portfolio.exchangerate.ExchangeRate;
+
 @Document(collection="ExchangeRate")
-public class ExchangeRateImpl  implements ExchangeRate {
+class ExchangeRateImpl  implements ExchangeRate {
 	
 	@Id
 	private final String id;
@@ -18,7 +20,7 @@ public class ExchangeRateImpl  implements ExchangeRate {
 	
 	private final String link;
 	
-	public ExchangeRateImpl(final String source, final String target, final String link) {
+	ExchangeRateImpl(final String source, final String target, final String link) {
 		this.source = source;
 		this.target = target;
 		this.link = link;

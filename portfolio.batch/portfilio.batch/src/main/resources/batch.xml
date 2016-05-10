@@ -223,7 +223,7 @@
 <bean name="exchangeRateCSVInputService"  class="de.mq.portfolio.share.support.SimpleCSVInputServiceImpl" >
 	
 	<constructor-arg>
-		<bean class="de.mq.portfolio.share.support.ExchangeRatesCSVLineConverterImpl" />
+		<bean class="de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl" />
 	</constructor-arg>
 	</bean>
 	

@@ -1,10 +1,9 @@
-package de.mq.portfolio.share.support;
+package de.mq.portfolio.exchangerate.support;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.util.Assert;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
-import de.mq.portfolio.exchangerate.ExchangeRateImpl;
 
 
 public class ExchangeRatesCSVLineConverterImpl implements Converter<String[], ExchangeRate>{
