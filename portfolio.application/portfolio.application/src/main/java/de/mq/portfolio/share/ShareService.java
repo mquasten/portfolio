@@ -29,7 +29,6 @@ public interface ShareService{
 
 	Optional<TimeCourse> timeCourse(String code);
 
-	
 
 	
 

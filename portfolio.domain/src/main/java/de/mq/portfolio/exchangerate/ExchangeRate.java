@@ -8,5 +8,4 @@ public interface ExchangeRate {
 
 	String link();
 
-	
 }
