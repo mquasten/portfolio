@@ -166,6 +166,24 @@
 		</constructor-arg>
 
 	</bean>
+	
+<bean id="exchangeRateProcessor"
+		class="de.mq.portfolio.batch.support.SimpleItemProcessorServiceAdapterImpl"
+		scope="job">
+
+		<constructor-arg>
+			<bean class="de.mq.portfolio.batch.support.MethodParameterInjectionImpl">
+				<constructor-arg ref="exchangeRateService" />
+				<constructor-arg value="exchangeRate" />
+				<constructor-arg>
+					<list>
+						<null />
+					</list>
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
+
+	</bean>
 
 
 	<batch:job id="calculatePortfolio">
@@ -212,7 +230,7 @@
 
 		<batch:step id="doImportExchangeRates">
 			<batch:tasklet>
-				<batch:chunk reader="exchangeRatesCsvReader"  writer="exchangeRatesWriter"
+				<batch:chunk reader="exchangeRatesCsvReader"  writer="exchangeRatesWriter" processor="exchangeRateProcessor"
 					commit-interval="1" />
 
 			</batch:tasklet>

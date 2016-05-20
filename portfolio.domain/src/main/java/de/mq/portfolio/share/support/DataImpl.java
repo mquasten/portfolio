@@ -47,7 +47,7 @@ public class DataImpl implements Data {
 	
 	private Double value;
 	
-	DataImpl(String date, Double value) {
+	public DataImpl(String date, Double value) {
 		this.date = date;
 		this.value = value;
 	}

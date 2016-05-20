@@ -3,6 +3,7 @@ package de.mq.portfolio.share.support;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.Job;
@@ -21,7 +22,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/batch.xml" })
-
+@Ignore
 public class ExchangeImportIntegrationTest {
 	
 	@Autowired

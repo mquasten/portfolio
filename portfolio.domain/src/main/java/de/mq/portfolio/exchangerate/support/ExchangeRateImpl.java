@@ -1,5 +1,8 @@
 package de.mq.portfolio.exchangerate.support;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
@@ -7,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
+import de.mq.portfolio.share.Data;
 
 @Document(collection="ExchangeRate")
 class ExchangeRateImpl  implements ExchangeRate {
@@ -19,6 +23,9 @@ class ExchangeRateImpl  implements ExchangeRate {
 	private final String target;
 	
 	private final String link;
+	
+	
+	private final Collection<Data> rates = new ArrayList<>();
 	
 	ExchangeRateImpl(final String source, final String target, final String link) {
 		this.source = source;
@@ -41,7 +48,7 @@ class ExchangeRateImpl  implements ExchangeRate {
 		return link;
 	}
 
-
+	
 
 
 	@Override
@@ -87,6 +94,15 @@ class ExchangeRateImpl  implements ExchangeRate {
 		return "source=" + source + ", target=" + target;
 	}
 	
+	@Override
+	public final Collection<Data> rates() {
+		return Collections.unmodifiableCollection(rates);
+	}
 	
+	@Override
+	public final void  assign(final Collection<Data> rates){
+		this.rates.clear();
+		this.rates.addAll(rates);
+	}
 	
 }
