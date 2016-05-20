@@ -3,7 +3,6 @@ package de.mq.portfolio.exchangerate.support;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.stereotype.Service;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
@@ -12,13 +11,13 @@ import de.mq.portfolio.share.Data;
 @Service("exchangeRateService")
 public class ExchangeRateServiceImpl {
 	
-	private final MongoOperations mongoOperations;
+	private final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository;
 	
 	private final ExchangeRateRepository exchangeRateRepository;
 	
 	@Autowired
-	public ExchangeRateServiceImpl(final MongoOperations mongoOperations, final ExchangeRateRepository exchangeRateRepository) {
-		this.mongoOperations = mongoOperations;
+	public ExchangeRateServiceImpl(final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository, final ExchangeRateRepository exchangeRateRepository) {
+		this.exchangeRateDatebaseRepository = exchangeRateDatebaseRepository;
 		this.exchangeRateRepository=exchangeRateRepository;
 	}
 	
@@ -29,7 +28,7 @@ public class ExchangeRateServiceImpl {
 	}
 
 	public final void save(final ExchangeRate exchangeRate) {
-		mongoOperations.save(exchangeRate);
+		exchangeRateDatebaseRepository.save(exchangeRate);
 	}
 
 }
