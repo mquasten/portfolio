@@ -19,6 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
+import de.mq.portfolio.exchangerate.support.ExchangeRateDatebaseRepository;
+import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
+import de.mq.portfolio.exchangerate.support.ExchangerateAggregate;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.share.support.DataImpl;
@@ -33,11 +36,14 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 	static final String STATUS_COMPLETED = "COMPLETED";
 	private final SharePortfolioRepository sharePortfolioRepository;
 	private final ShareRepository shareRepository;
+	
+	private final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository;
 
 	@Autowired
-	SharePortfolioServiceImpl(final SharePortfolioRepository sharePortfolioRepository, final ShareRepository shareRepository) {
+	SharePortfolioServiceImpl(final SharePortfolioRepository sharePortfolioRepository, final ShareRepository shareRepository, final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository) {
 		this.sharePortfolioRepository = sharePortfolioRepository;
 		this.shareRepository=shareRepository;
+		this.exchangeRateDatebaseRepository=exchangeRateDatebaseRepository;
 	}
 
 	/*
@@ -256,18 +262,21 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 		final Map<Date,List<Double>> rates = new HashMap<>();	
 		final Map<TimeCourse, Double> min = portfolio.min();
 	
-		min.entrySet().forEach(e -> shareRepository.timeCourses(Arrays.asList(e.getKey().code())).stream().findFirst().get().rates().forEach(r -> addRate(rates, r, e.getValue())));
+		final ExchangerateAggregate exchangerateAggregate =  exchangeRateDatebaseRepository.exchangerates(new ExchangeRateImpl("EUR", "USD"));
+		min.entrySet().forEach(e -> shareRepository.timeCourses(Arrays.asList(e.getKey().code())).stream().findFirst().get().rates().forEach(r -> addRate(rates, r, e.getValue(), exchangerateAggregate.factor(portfolio.exchangeRate( e.getKey()), r.date()))));
 	
 		return rates.entrySet().stream().filter(e -> e.getValue().size()== min.size()).map(e -> new DataImpl(e.getKey(), e.getValue().stream().reduce((a, b) ->  a+b).orElse(0d))).sorted((c1,c2) -> (int) Math.signum(c1.date().getTime() - c2.date().getTime())).collect(Collectors.toList());
 		
 		
 	}
 
-	private void addRate(final Map<Date, List<Double>> rates, final Data r, double k) {
+	private void addRate(final Map<Date, List<Double>> rates, final Data r, double k, final double exchangeRate) {
+	
+		
 		if( ! rates.containsKey(r.date())) {
 			rates.put(r.date(), new ArrayList<>());
 		}
-		rates.get(r.date()).add(k*r.value());
+		rates.get(r.date()).add(exchangeRate*k*r.value());
 	}
 
 }

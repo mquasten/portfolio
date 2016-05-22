@@ -13,7 +13,7 @@ import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.share.Data;
 
 @Document(collection="ExchangeRate")
-class ExchangeRateImpl  implements ExchangeRate {
+public class ExchangeRateImpl  implements ExchangeRate {
 	
 	@Id
 	private final String id;
@@ -27,11 +27,23 @@ class ExchangeRateImpl  implements ExchangeRate {
 	
 	private final Collection<Data> rates = new ArrayList<>();
 	
+	@SuppressWarnings("unused")
+	private ExchangeRateImpl() {
+		this.source = null;
+		this.target = null;
+		this.link = null;
+		this.id=null;
+	}
+	
 	ExchangeRateImpl(final String source, final String target, final String link) {
 		this.source = source;
 		this.target = target;
 		this.link = link;
 		this.id= new UUID(source.hashCode(), target.hashCode()).toString();
+	}
+	
+	public ExchangeRateImpl(final String source, final String target) {
+		this(source,target,"");
 	}
 
 

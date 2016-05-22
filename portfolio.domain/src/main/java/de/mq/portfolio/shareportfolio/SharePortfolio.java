@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.share.TimeCourse;
 
 public interface SharePortfolio {
@@ -50,6 +51,8 @@ public interface SharePortfolio {
 	Double totalRate();
 
 	Double totalRateDividends();
+
+	ExchangeRate exchangeRate(final  TimeCourse timeCourse);
 
 	
 

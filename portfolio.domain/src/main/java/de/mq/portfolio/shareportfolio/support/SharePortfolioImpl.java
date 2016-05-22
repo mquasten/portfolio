@@ -19,6 +19,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.Assert;
 
 import Jama.Matrix;
+import de.mq.portfolio.exchangerate.ExchangeRate;
+import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -333,6 +335,16 @@ class SharePortfolioImpl implements SharePortfolio {
 		return totalRateDividends(minWeights());
 		
 	}
+	
+	@Override
+	public final ExchangeRate exchangeRate(final TimeCourse timeCourse) {
+		if( timeCourse.share().index().startsWith("Dow")){
+			return new ExchangeRateImpl("EUR", "USD");
+		}
+		return new ExchangeRateImpl("EUR", "EUR");
+	}
+	
+	
 	
 	
 }
