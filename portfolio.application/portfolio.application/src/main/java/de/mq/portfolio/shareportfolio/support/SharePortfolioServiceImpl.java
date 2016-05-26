@@ -20,7 +20,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.exchangerate.support.ExchangeRateDatebaseRepository;
-import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
+
 import de.mq.portfolio.exchangerate.support.ExchangerateAggregate;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
@@ -262,8 +262,8 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 		final Map<Date,List<Double>> rates = new HashMap<>();	
 		final Map<TimeCourse, Double> min = portfolio.min();
 	
-		final ExchangerateAggregate exchangerateAggregate =  exchangeRateDatebaseRepository.exchangerates(new ExchangeRateImpl("EUR", "USD"));
-		min.entrySet().forEach(e -> shareRepository.timeCourses(Arrays.asList(e.getKey().code())).stream().findFirst().get().rates().forEach(r -> addRate(rates, r, e.getValue(), exchangerateAggregate.factor(portfolio.exchangeRate( e.getKey()), r.date()))));
+		final ExchangerateAggregate exchangerateAggregate =  exchangeRateDatebaseRepository.exchangerates(portfolio.exchangeRateTranslations());
+		min.entrySet().forEach(e -> shareRepository.timeCourses(Arrays.asList(e.getKey().code())).stream().findFirst().get().rates().forEach(r -> addRate(rates, r, e.getValue(), exchangerateAggregate.factor(portfolio.exchangeRate(e.getKey()), r.date()))));
 	
 		return rates.entrySet().stream().filter(e -> e.getValue().size()== min.size()).map(e -> new DataImpl(e.getKey(), e.getValue().stream().reduce((a, b) ->  a+b).orElse(0d))).sorted((c1,c2) -> (int) Math.signum(c1.date().getTime() - c2.date().getTime())).collect(Collectors.toList());
 		

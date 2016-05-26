@@ -11,6 +11,8 @@ public interface Share {
 	public abstract boolean isIndex();
 
 	String wkn();
+
+	String currency();
 	
 	
 

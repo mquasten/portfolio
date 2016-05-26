@@ -21,18 +21,21 @@ class ShareImpl implements Share {
 	private String wkn;
 
 	private String index;
+	
+	private String currency;
 
-	ShareImpl(final String code, final String name, final String index, final String wkn) {
+	ShareImpl(final String code, final String name, final String index, final String wkn, final String currency) {
 		this.code = code;
 		this.name = name;
 		this.index = index;
 		this.wkn=wkn;
+		this.currency=currency;
 	}
 
 	
 
 	ShareImpl(final String code) {
-		this(code, null, null, null);
+		this(code, null, null, null,null);
 	}
 
 	@SuppressWarnings("unused")
@@ -82,6 +85,21 @@ class ShareImpl implements Share {
 	@Override
 	public boolean isIndex() {
 		return !StringUtils.hasText(index);
+	}
+	
+
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.mq.portfolio.share.support.support.Share#currency()
+	 */
+	@Override
+	public String currency() {
+		if( currency==null){
+			return currency;
+		}
+		return currency.trim().toUpperCase();
 	}
 
 }

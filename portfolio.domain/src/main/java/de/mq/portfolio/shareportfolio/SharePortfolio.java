@@ -52,7 +52,13 @@ public interface SharePortfolio {
 
 	Double totalRateDividends();
 
-	ExchangeRate exchangeRate(final  TimeCourse timeCourse);
+	String currency();
+
+	ExchangeRate exchangeRate(TimeCourse timeCourse);
+
+	Collection<ExchangeRate> exchangeRateTranslations();
+
+	
 
 	
 

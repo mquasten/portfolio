@@ -299,6 +299,7 @@ class SharePortfolioImpl implements SharePortfolio {
 	
 	@Override
 	public Double totalRate() {
+		
 		if( timeCourses.size() <2 ){
 			return null;
 		}
@@ -338,13 +339,19 @@ class SharePortfolioImpl implements SharePortfolio {
 	
 	@Override
 	public final ExchangeRate exchangeRate(final TimeCourse timeCourse) {
-		if( timeCourse.share().index().startsWith("Dow")){
-			return new ExchangeRateImpl("EUR", "USD");
-		}
-		return new ExchangeRateImpl("EUR", "EUR");
+		
+		return new ExchangeRateImpl(currency(), timeCourse.share().currency());
+	} 
+	
+	@Override
+	public final String currency() {
+		return "EUR";
 	}
 	
-	
+	@Override
+	public final Collection<ExchangeRate> exchangeRateTranslations() {
+		return timeCourses.stream().filter(tc ->  ! currency().equals(tc.share().currency())).map(tc -> new ExchangeRateImpl(currency(), tc.share().currency())).collect(Collectors.toSet());
+	}
 	
 	
 }

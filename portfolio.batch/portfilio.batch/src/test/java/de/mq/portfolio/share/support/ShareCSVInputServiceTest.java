@@ -23,7 +23,7 @@ public class ShareCSVInputServiceTest {
 	public final void setup() {
 		Mockito.doAnswer(i -> {
 			final String[] cols = (String[]) i.getArguments()[0];
-			return (cols.length == 4) ? new ShareImpl(cols[0], cols[2], cols[3], cols[1]) : new ShareImpl(cols[0], cols[2],null, cols[1]);
+			return (cols.length == 5) ? new ShareImpl(cols[0], cols[3], cols[4], cols[1], cols[2]) : new ShareImpl(cols[0], cols[3],null, cols[1], cols[2]);
 			
 		}).when(converter).convert(Mockito.any(String[].class));
 	}

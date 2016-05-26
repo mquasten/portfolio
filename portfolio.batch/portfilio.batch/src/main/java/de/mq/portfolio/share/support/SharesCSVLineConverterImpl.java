@@ -13,8 +13,8 @@ public class SharesCSVLineConverterImpl implements Converter<String[], Share>{
 	@Override
 	public final Share  convert(final String[] cols) {
 		Assert.notNull(cols, "Columns is mandatory.");
-		Assert.isTrue(cols.length >= 3 , "At least 3 Columns must exists.");
-		return (cols.length == 4) ? new ShareImpl(cols[0], cols[2], cols[3], cols[1]) : new ShareImpl(cols[0], cols[2],null, cols[1]);
+		Assert.isTrue(cols.length >= 4 , "At least 4 Columns must exists.");
+		return (cols.length == 5) ? new ShareImpl(cols[0], cols[3], cols[4], cols[1], cols[2]) : new ShareImpl(cols[0], cols[3],null, cols[1],cols[2]);
 	}
 
 }

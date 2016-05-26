@@ -36,13 +36,13 @@
             6.51174606630311e-005, 
             5.89209402404543e-005, 
             0.000105994423783042, 
-            6.4472900431612e-005
+            6.447290043161201e-005
         ], 
         [ 
             4.25957651395385e-005, 
             6.49893951119301e-005, 
             5.21786883674853e-005, 
-            6.4472900431612e-005, 
+            6.447290043161201e-005, 
             0.000105543632076845
         ]
     ],
@@ -65,13 +65,13 @@
             0.321316474944168, 
             0.576119799052082, 
             1, 
-            0.661060569816675, 
+            0.6610605698166751, 
             0.586665074378885
         ], 
         [ 
             0.238120221151556, 
             0.604981762152401, 
-            0.661060569816675, 
+            0.6610605698166751, 
             1, 
             0.609564520800871
         ], 
@@ -91,9 +91,10 @@
                 "_class" : "de.mq.portfolio.share.support.ShareImpl",
                 "_id" : ObjectId("56ebb25ec8fe9735fc866148"),
                 "code" : "SAP.DE",
-                "wkn"  : "716460", 
+                "wkn" : "716460",
                 "name" : "SAP SE",
-                "index" : "Deutscher Aktien Index"
+                "index" : "Deutscher Aktien Index",
+                "currency" : "EUR"
             },
             "code" : "SAP.DE",
             "meanRate" : 0.000295136315258957,
@@ -109,22 +110,22 @@
                 }, 
                 {
                     "date" : "2015-04-01",
-                    "value" : 67.4,
+                    "value" : 67.40000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-04-02",
-                    "value" : 67.07,
+                    "value" : 67.06999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-04-03",
-                    "value" : 67.07,
+                    "value" : 67.06999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-04-06",
-                    "value" : 67.07,
+                    "value" : 67.06999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -134,12 +135,12 @@
                 }, 
                 {
                     "date" : "2015-04-08",
-                    "value" : 67.35,
+                    "value" : 67.34999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-04-09",
-                    "value" : 68.1,
+                    "value" : 68.09999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -154,12 +155,12 @@
                 }, 
                 {
                     "date" : "2015-04-14",
-                    "value" : 68.79,
+                    "value" : 68.79000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-04-15",
-                    "value" : 68.76,
+                    "value" : 68.76000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -194,7 +195,7 @@
                 }, 
                 {
                     "date" : "2015-04-24",
-                    "value" : 69.12,
+                    "value" : 69.12000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -209,22 +210,22 @@
                 }, 
                 {
                     "date" : "2015-04-29",
-                    "value" : 68.62,
+                    "value" : 68.62000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-04-30",
-                    "value" : 67.93,
+                    "value" : 67.93000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-05-01",
-                    "value" : 67.93,
+                    "value" : 67.93000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-05-04",
-                    "value" : 68.46,
+                    "value" : 68.45999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -234,12 +235,12 @@
                 }, 
                 {
                     "date" : "2015-05-06",
-                    "value" : 66.29,
+                    "value" : 66.29000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-05-07",
-                    "value" : 67.18,
+                    "value" : 67.18000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -259,7 +260,7 @@
                 }, 
                 {
                     "date" : "2015-05-13",
-                    "value" : 66.82,
+                    "value" : 66.81999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -309,12 +310,12 @@
                 }, 
                 {
                     "date" : "2015-05-27",
-                    "value" : 68.15,
+                    "value" : 68.15000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-05-28",
-                    "value" : 68.12,
+                    "value" : 68.12000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -324,7 +325,7 @@
                 }, 
                 {
                     "date" : "2015-06-01",
-                    "value" : 67.6,
+                    "value" : 67.59999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -339,7 +340,7 @@
                 }, 
                 {
                     "date" : "2015-06-04",
-                    "value" : 66.82,
+                    "value" : 66.81999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -349,7 +350,7 @@
                 }, 
                 {
                     "date" : "2015-06-08",
-                    "value" : 65.65,
+                    "value" : 65.65000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -374,7 +375,7 @@
                 }, 
                 {
                     "date" : "2015-06-15",
-                    "value" : 64.26,
+                    "value" : 64.26000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -384,12 +385,12 @@
                 }, 
                 {
                     "date" : "2015-06-17",
-                    "value" : 64.51,
+                    "value" : 64.51000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-06-18",
-                    "value" : 64.1,
+                    "value" : 64.09999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -399,7 +400,7 @@
                 }, 
                 {
                     "date" : "2015-06-22",
-                    "value" : 66.29,
+                    "value" : 66.29000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -474,12 +475,12 @@
                 }, 
                 {
                     "date" : "2015-07-13",
-                    "value" : 66.21,
+                    "value" : 66.20999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-07-14",
-                    "value" : 66.65,
+                    "value" : 66.65000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -494,7 +495,7 @@
                 }, 
                 {
                     "date" : "2015-07-17",
-                    "value" : 68.4,
+                    "value" : 68.40000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -514,7 +515,7 @@
                 }, 
                 {
                     "date" : "2015-07-23",
-                    "value" : 67.07,
+                    "value" : 67.06999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -529,7 +530,7 @@
                 }, 
                 {
                     "date" : "2015-07-28",
-                    "value" : 65.12,
+                    "value" : 65.12000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -544,7 +545,7 @@
                 }, 
                 {
                     "date" : "2015-07-31",
-                    "value" : 65.26,
+                    "value" : 65.26000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -559,17 +560,17 @@
                 }, 
                 {
                     "date" : "2015-08-05",
-                    "value" : 66.79,
+                    "value" : 66.79000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-08-06",
-                    "value" : 66.54,
+                    "value" : 66.54000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-08-07",
-                    "value" : 65.54,
+                    "value" : 65.54000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -819,12 +820,12 @@
                 }, 
                 {
                     "date" : "2015-10-16",
-                    "value" : 66.12,
+                    "value" : 66.12000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-10-19",
-                    "value" : 66.15,
+                    "value" : 66.15000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -854,17 +855,17 @@
                 }, 
                 {
                     "date" : "2015-10-27",
-                    "value" : 69.93,
+                    "value" : 69.93000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-10-28",
-                    "value" : 70.85,
+                    "value" : 70.84999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-10-29",
-                    "value" : 71.15,
+                    "value" : 71.15000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -899,7 +900,7 @@
                 }, 
                 {
                     "date" : "2015-11-09",
-                    "value" : 72.93,
+                    "value" : 72.93000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -914,7 +915,7 @@
                 }, 
                 {
                     "date" : "2015-11-12",
-                    "value" : 73.54,
+                    "value" : 73.54000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -924,7 +925,7 @@
                 }, 
                 {
                     "date" : "2015-11-16",
-                    "value" : 72.46,
+                    "value" : 72.45999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -934,7 +935,7 @@
                 }, 
                 {
                     "date" : "2015-11-18",
-                    "value" : 73.96,
+                    "value" : 73.95999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -944,12 +945,12 @@
                 }, 
                 {
                     "date" : "2015-11-20",
-                    "value" : 74.85,
+                    "value" : 74.84999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-11-23",
-                    "value" : 74.32,
+                    "value" : 74.31999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -969,7 +970,7 @@
                 }, 
                 {
                     "date" : "2015-11-27",
-                    "value" : 74.54,
+                    "value" : 74.54000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -994,22 +995,22 @@
                 }, 
                 {
                     "date" : "2015-12-04",
-                    "value" : 71.76,
+                    "value" : 71.76000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-12-07",
-                    "value" : 72.85,
+                    "value" : 72.84999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-12-08",
-                    "value" : 72.4,
+                    "value" : 72.40000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-12-09",
-                    "value" : 71.71,
+                    "value" : 71.70999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1024,7 +1025,7 @@
                 }, 
                 {
                     "date" : "2015-12-14",
-                    "value" : 69.4,
+                    "value" : 69.40000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1034,12 +1035,12 @@
                 }, 
                 {
                     "date" : "2015-12-16",
-                    "value" : 71.18,
+                    "value" : 71.18000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-12-17",
-                    "value" : 72.93,
+                    "value" : 72.93000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1049,7 +1050,7 @@
                 }, 
                 {
                     "date" : "2015-12-21",
-                    "value" : 71.82,
+                    "value" : 71.81999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1079,7 +1080,7 @@
                 }, 
                 {
                     "date" : "2015-12-29",
-                    "value" : 74.12,
+                    "value" : 74.12000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1104,7 +1105,7 @@
                 }, 
                 {
                     "date" : "2016-01-05",
-                    "value" : 71.43,
+                    "value" : 71.43000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1124,7 +1125,7 @@
                 }, 
                 {
                     "date" : "2016-01-11",
-                    "value" : 71.6,
+                    "value" : 71.59999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1144,7 +1145,7 @@
                 }, 
                 {
                     "date" : "2016-01-15",
-                    "value" : 70.68,
+                    "value" : 70.68000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1154,17 +1155,17 @@
                 }, 
                 {
                     "date" : "2016-01-19",
-                    "value" : 72.29,
+                    "value" : 72.29000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2016-01-20",
-                    "value" : 70.96,
+                    "value" : 70.95999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2016-01-21",
-                    "value" : 71.71,
+                    "value" : 71.70999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1174,7 +1175,7 @@
                 }, 
                 {
                     "date" : "2016-01-25",
-                    "value" : 72.68,
+                    "value" : 72.68000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1189,7 +1190,7 @@
                 }, 
                 {
                     "date" : "2016-01-28",
-                    "value" : 71.01,
+                    "value" : 71.01000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1204,22 +1205,22 @@
                 }, 
                 {
                     "date" : "2016-02-02",
-                    "value" : 71.79,
+                    "value" : 71.79000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2016-02-03",
-                    "value" : 70.85,
+                    "value" : 70.84999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2016-02-04",
-                    "value" : 69.9,
+                    "value" : 69.90000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2016-02-05",
-                    "value" : 67.96,
+                    "value" : 67.95999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1239,12 +1240,12 @@
                 }, 
                 {
                     "date" : "2016-02-11",
-                    "value" : 64.9,
+                    "value" : 64.90000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2016-02-12",
-                    "value" : 65.29,
+                    "value" : 65.29000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1259,7 +1260,7 @@
                 }, 
                 {
                     "date" : "2016-02-17",
-                    "value" : 68.6,
+                    "value" : 68.59999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1324,7 +1325,7 @@
                 }, 
                 {
                     "date" : "2016-03-07",
-                    "value" : 69.57,
+                    "value" : 69.56999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1339,7 +1340,7 @@
                 }, 
                 {
                     "date" : "2016-03-10",
-                    "value" : 68.62,
+                    "value" : 68.62000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1349,7 +1350,7 @@
                 }, 
                 {
                     "date" : "2016-03-14",
-                    "value" : 71.07,
+                    "value" : 71.06999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1379,7 +1380,7 @@
                 }, 
                 {
                     "date" : "2016-03-22",
-                    "value" : 71.07,
+                    "value" : 71.06999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1423,9 +1424,10 @@
                 "_class" : "de.mq.portfolio.share.support.ShareImpl",
                 "_id" : ObjectId("56ebb25ec8fe9735fc86615c"),
                 "code" : "JNJ",
-                "wkn"  : "478160104",
+                "wkn" : "478160104",
                 "name" : "Johnson & Johnson",
-                "index" : "Dow Jones Industrial Average"
+                "index" : "Dow Jones Industrial Average",
+                "currency" : "EUR"
             },
             "code" : "JNJ",
             "meanRate" : 0.000380412523452637,
@@ -1496,7 +1498,7 @@
                 }, 
                 {
                     "date" : "2015-04-17",
-                    "value" : 99.580002,
+                    "value" : 99.58000199999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1561,7 +1563,7 @@
                 }, 
                 {
                     "date" : "2015-05-06",
-                    "value" : 99.169998,
+                    "value" : 99.16999800000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1731,7 +1733,7 @@
                 }, 
                 {
                     "date" : "2015-06-24",
-                    "value" : 99.330002,
+                    "value" : 99.33000199999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1746,7 +1748,7 @@
                 }, 
                 {
                     "date" : "2015-06-29",
-                    "value" : 97.68,
+                    "value" : 97.68000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1761,7 +1763,7 @@
                 }, 
                 {
                     "date" : "2015-07-02",
-                    "value" : 98.440002,
+                    "value" : 98.44000200000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1771,7 +1773,7 @@
                 }, 
                 {
                     "date" : "2015-07-07",
-                    "value" : 98.919998,
+                    "value" : 98.91999800000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1881,7 +1883,7 @@
                 }, 
                 {
                     "date" : "2015-08-06",
-                    "value" : 99.07,
+                    "value" : 99.06999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1911,7 +1913,7 @@
                 }, 
                 {
                     "date" : "2015-08-14",
-                    "value" : 98.809998,
+                    "value" : 98.80999799999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1926,7 +1928,7 @@
                 }, 
                 {
                     "date" : "2015-08-19",
-                    "value" : 99.309998,
+                    "value" : 99.30999799999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1936,12 +1938,12 @@
                 }, 
                 {
                     "date" : "2015-08-21",
-                    "value" : 95.559998,
+                    "value" : 95.55999799999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-08-24",
-                    "value" : 92.82,
+                    "value" : 92.81999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1961,7 +1963,7 @@
                 }, 
                 {
                     "date" : "2015-08-28",
-                    "value" : 95.169998,
+                    "value" : 95.16999800000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -1986,12 +1988,12 @@
                 }, 
                 {
                     "date" : "2015-09-04",
-                    "value" : 91.309998,
+                    "value" : 91.30999799999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-09-08",
-                    "value" : 93.940002,
+                    "value" : 93.94000200000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -2006,12 +2008,12 @@
                 }, 
                 {
                     "date" : "2015-09-11",
-                    "value" : 92.93,
+                    "value" : 92.93000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-09-14",
-                    "value" : 93.32,
+                    "value" : 93.31999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -2076,12 +2078,12 @@
                 }, 
                 {
                     "date" : "2015-10-01",
-                    "value" : 93.169998,
+                    "value" : 93.16999800000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-10-02",
-                    "value" : 93.93,
+                    "value" : 93.93000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -2091,7 +2093,7 @@
                 }, 
                 {
                     "date" : "2015-10-06",
-                    "value" : 93.419998,
+                    "value" : 93.41999800000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -2101,7 +2103,7 @@
                 }, 
                 {
                     "date" : "2015-10-08",
-                    "value" : 95.080002,
+                    "value" : 95.08000199999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -2136,7 +2138,7 @@
                 }, 
                 {
                     "date" : "2015-10-19",
-                    "value" : 97.940002,
+                    "value" : 97.94000200000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -2161,7 +2163,7 @@
                 }, 
                 {
                     "date" : "2015-10-26",
-                    "value" : 99.940002,
+                    "value" : 99.94000200000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -2421,7 +2423,7 @@
                 }, 
                 {
                     "date" : "2016-01-11",
-                    "value" : 97.57,
+                    "value" : 97.56999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -2456,7 +2458,7 @@
                 }, 
                 {
                     "date" : "2016-01-21",
-                    "value" : 95.940002,
+                    "value" : 95.94000200000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -2720,9 +2722,10 @@
                 "_class" : "de.mq.portfolio.share.support.ShareImpl",
                 "_id" : ObjectId("56ebb25ec8fe9735fc86615e"),
                 "code" : "KO",
-                "wkn"  : "191216100",
+                "wkn" : "191216100",
                 "name" : "The Coca-Cola Company",
-                "index" : "Dow Jones Industrial Average"
+                "index" : "Dow Jones Industrial Average",
+                "currency" : "USD"
             },
             "code" : "KO",
             "meanRate" : 0.000583575293726446,
@@ -4017,9 +4020,10 @@
                 "_class" : "de.mq.portfolio.share.support.ShareImpl",
                 "_id" : ObjectId("56ebb25ec8fe9735fc866165"),
                 "code" : "PG",
-                "wkn"  : "742718109",
+                "wkn" : "742718109",
                 "name" : "The Procter & Gamble Company",
-                "index" : "Dow Jones Industrial Average"
+                "index" : "Dow Jones Industrial Average",
+                "currency" : "USD"
             },
             "code" : "PG",
             "meanRate" : 9.48021207009124e-005,
@@ -4030,17 +4034,17 @@
             "rates" : [ 
                 {
                     "date" : "2015-03-31",
-                    "value" : 81.940002,
+                    "value" : 81.94000200000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-04-01",
-                    "value" : 82.32,
+                    "value" : 82.31999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-04-02",
-                    "value" : 82.43,
+                    "value" : 82.43000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4070,7 +4074,7 @@
                 }, 
                 {
                     "date" : "2015-04-13",
-                    "value" : 83.43,
+                    "value" : 83.43000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4100,7 +4104,7 @@
                 }, 
                 {
                     "date" : "2015-04-21",
-                    "value" : 83.080002,
+                    "value" : 83.08000199999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4125,7 +4129,7 @@
                 }, 
                 {
                     "date" : "2015-04-28",
-                    "value" : 80.419998,
+                    "value" : 80.41999800000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4150,7 +4154,7 @@
                 }, 
                 {
                     "date" : "2015-05-05",
-                    "value" : 80.07,
+                    "value" : 80.06999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4185,7 +4189,7 @@
                 }, 
                 {
                     "date" : "2015-05-14",
-                    "value" : 80.57,
+                    "value" : 80.56999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4200,7 +4204,7 @@
                 }, 
                 {
                     "date" : "2015-05-19",
-                    "value" : 80.830002,
+                    "value" : 80.83000199999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4230,7 +4234,7 @@
                 }, 
                 {
                     "date" : "2015-05-28",
-                    "value" : 79.330002,
+                    "value" : 79.33000199999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4250,7 +4254,7 @@
                 }, 
                 {
                     "date" : "2015-06-03",
-                    "value" : 78.559998,
+                    "value" : 78.55999799999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4260,7 +4264,7 @@
                 }, 
                 {
                     "date" : "2015-06-05",
-                    "value" : 77.43,
+                    "value" : 77.43000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4300,12 +4304,12 @@
                 }, 
                 {
                     "date" : "2015-06-17",
-                    "value" : 80.080002,
+                    "value" : 80.08000199999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-06-18",
-                    "value" : 80.82,
+                    "value" : 80.81999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4340,7 +4344,7 @@
                 }, 
                 {
                     "date" : "2015-06-29",
-                    "value" : 78.32,
+                    "value" : 78.31999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4355,7 +4359,7 @@
                 }, 
                 {
                     "date" : "2015-07-02",
-                    "value" : 79.93,
+                    "value" : 79.93000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4410,7 +4414,7 @@
                 }, 
                 {
                     "date" : "2015-07-20",
-                    "value" : 82.190002,
+                    "value" : 82.19000200000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4420,7 +4424,7 @@
                 }, 
                 {
                     "date" : "2015-07-22",
-                    "value" : 80.830002,
+                    "value" : 80.83000199999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4540,7 +4544,7 @@
                 }, 
                 {
                     "date" : "2015-08-25",
-                    "value" : 68.419998,
+                    "value" : 68.41999800000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4560,7 +4564,7 @@
                 }, 
                 {
                     "date" : "2015-08-31",
-                    "value" : 70.669998,
+                    "value" : 70.66999800000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4570,12 +4574,12 @@
                 }, 
                 {
                     "date" : "2015-09-02",
-                    "value" : 69.809998,
+                    "value" : 69.80999799999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-09-03",
-                    "value" : 69.93,
+                    "value" : 69.93000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4595,17 +4599,17 @@
                 }, 
                 {
                     "date" : "2015-09-10",
-                    "value" : 68.32,
+                    "value" : 68.31999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-09-11",
-                    "value" : 68.419998,
+                    "value" : 68.41999800000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2015-09-14",
-                    "value" : 68.059998,
+                    "value" : 68.05999799999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4625,7 +4629,7 @@
                 }, 
                 {
                     "date" : "2015-09-18",
-                    "value" : 69.940002,
+                    "value" : 69.94000200000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4635,7 +4639,7 @@
                 }, 
                 {
                     "date" : "2015-09-22",
-                    "value" : 70.190002,
+                    "value" : 70.19000200000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4650,7 +4654,7 @@
                 }, 
                 {
                     "date" : "2015-09-25",
-                    "value" : 72.669998,
+                    "value" : 72.66999800000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4665,7 +4669,7 @@
                 }, 
                 {
                     "date" : "2015-09-30",
-                    "value" : 71.940002,
+                    "value" : 71.94000200000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4675,7 +4679,7 @@
                 }, 
                 {
                     "date" : "2015-10-02",
-                    "value" : 72.419998,
+                    "value" : 72.41999800000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4705,7 +4709,7 @@
                 }, 
                 {
                     "date" : "2015-10-12",
-                    "value" : 74.330002,
+                    "value" : 74.33000199999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4735,7 +4739,7 @@
                 }, 
                 {
                     "date" : "2015-10-20",
-                    "value" : 74.43,
+                    "value" : 74.43000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4790,7 +4794,7 @@
                 }, 
                 {
                     "date" : "2015-11-04",
-                    "value" : 77.059998,
+                    "value" : 77.05999799999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4800,7 +4804,7 @@
                 }, 
                 {
                     "date" : "2015-11-06",
-                    "value" : 75.57,
+                    "value" : 75.56999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4835,7 +4839,7 @@
                 }, 
                 {
                     "date" : "2015-11-17",
-                    "value" : 75.07,
+                    "value" : 75.06999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4850,7 +4854,7 @@
                 }, 
                 {
                     "date" : "2015-11-20",
-                    "value" : 75.82,
+                    "value" : 75.81999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4880,7 +4884,7 @@
                 }, 
                 {
                     "date" : "2015-12-01",
-                    "value" : 75.940002,
+                    "value" : 75.94000200000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4895,7 +4899,7 @@
                 }, 
                 {
                     "date" : "2015-12-04",
-                    "value" : 77.830002,
+                    "value" : 77.83000199999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4930,7 +4934,7 @@
                 }, 
                 {
                     "date" : "2015-12-15",
-                    "value" : 79.68,
+                    "value" : 79.68000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4960,7 +4964,7 @@
                 }, 
                 {
                     "date" : "2015-12-23",
-                    "value" : 79.919998,
+                    "value" : 79.91999800000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4970,7 +4974,7 @@
                 }, 
                 {
                     "date" : "2015-12-28",
-                    "value" : 79.919998,
+                    "value" : 79.91999800000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -4980,7 +4984,7 @@
                 }, 
                 {
                     "date" : "2015-12-30",
-                    "value" : 80.07,
+                    "value" : 80.06999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -5005,7 +5009,7 @@
                 }, 
                 {
                     "date" : "2016-01-07",
-                    "value" : 77.18,
+                    "value" : 77.18000000000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -5015,7 +5019,7 @@
                 }, 
                 {
                     "date" : "2016-01-11",
-                    "value" : 76.669998,
+                    "value" : 76.66999800000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -5045,7 +5049,7 @@
                 }, 
                 {
                     "date" : "2016-01-20",
-                    "value" : 75.830002,
+                    "value" : 75.83000199999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -5065,7 +5069,7 @@
                 }, 
                 {
                     "date" : "2016-01-26",
-                    "value" : 78.809998,
+                    "value" : 78.80999799999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -5075,12 +5079,12 @@
                 }, 
                 {
                     "date" : "2016-01-28",
-                    "value" : 79.82,
+                    "value" : 79.81999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2016-01-29",
-                    "value" : 81.690002,
+                    "value" : 81.69000200000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -5160,12 +5164,12 @@
                 }, 
                 {
                     "date" : "2016-02-23",
-                    "value" : 81.809998,
+                    "value" : 81.80999799999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2016-02-24",
-                    "value" : 81.559998,
+                    "value" : 81.55999799999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -5210,7 +5214,7 @@
                 }, 
                 {
                     "date" : "2016-03-08",
-                    "value" : 83.059998,
+                    "value" : 83.05999799999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -5230,12 +5234,12 @@
                 }, 
                 {
                     "date" : "2016-03-14",
-                    "value" : 81.169998,
+                    "value" : 81.16999800000001,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
                     "date" : "2016-03-15",
-                    "value" : 81.309998,
+                    "value" : 81.30999799999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -5255,7 +5259,7 @@
                 }, 
                 {
                     "date" : "2016-03-21",
-                    "value" : 83.32,
+                    "value" : 83.31999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -5265,7 +5269,7 @@
                 }, 
                 {
                     "date" : "2016-03-23",
-                    "value" : 82.82,
+                    "value" : 82.81999999999999,
                     "_class" : "de.mq.portfolio.share.support.DataImpl"
                 }, 
                 {
@@ -5314,9 +5318,10 @@
                 "_class" : "de.mq.portfolio.share.support.ShareImpl",
                 "_id" : ObjectId("56ebb25ec8fe9735fc86616a"),
                 "code" : "VZ",
-                "wkn"  : "92343V104",
+                "wkn" : "92343V104",
                 "name" : "Verizon Communications Inc.",
-                "index" : "Dow Jones Industrial Average"
+                "index" : "Dow Jones Industrial Average",
+                "currency" : "USD"
             },
             "code" : "VZ",
             "meanRate" : 0.000475407959471856,
