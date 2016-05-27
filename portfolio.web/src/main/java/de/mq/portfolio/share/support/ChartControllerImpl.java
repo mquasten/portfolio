@@ -31,7 +31,7 @@ public class ChartControllerImpl {
 		
 		chartAO.setDividends(timeCourse.get().dividends());
 		chartAO.setWkn(timeCourse.get().share().wkn());
-	
+		chartAO.setCurrency(timeCourse.get().share().currency());
 	}
 
 }

@@ -23,10 +23,8 @@ public class ChartAO implements Serializable {
 	private String code ;
 	
 	private String wkn;
-	
-	
-	
-
+		
+	private String currency;
 
 	private  List<Data> dividends = new ArrayList<>();
 
@@ -72,12 +70,17 @@ public class ChartAO implements Serializable {
 		return wkn;
 	}
 	
-
-
-
-
 	public void setWkn(String wkn) {
 		this.wkn = wkn;
+	}
+	
+	public String getCurrency() {
+		return currency;
+	}
+
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
 	}
 	 
 

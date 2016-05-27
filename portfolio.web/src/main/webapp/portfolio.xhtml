@@ -36,9 +36,13 @@
 	
 	</h:panelGrid>
 	
+	<p:outputLabel  for="currency"  value="Währung"  />
+         
+	<p:inputText id="currency" readonly="true"  value="#{currencyConverter.convert(sharePortfolio.currency)}" />
+	
 	<p:outputLabel  for="commited"  value="geschlossen"  />
 	<p:selectBooleanCheckbox id="commited" value="#{!sharePortfolio.editable}" disabled="true"  />
-         
+	
 	
 </h:panelGrid >
 

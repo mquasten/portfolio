@@ -5,6 +5,8 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +21,7 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.Table;
 import com.lowagie.text.pdf.PdfWriter;
 
+
 @Component("portfolio2PdfConverter")
 
 public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
@@ -32,6 +35,14 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 	final NumberFormat numberFormat = NumberFormat.getInstance();
 	final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yy");
 	
+	
+	private final Converter<String,String> currencyConverter;
+	
+	@Autowired
+	Portfolio2PdfConverter(@Qualifier("currencyConverter") final Converter<String, String> currencyConverter) {
+		this.currencyConverter = currencyConverter;
+	}
+
 	@Override
 	public byte[] convert(final PortfolioAO portfolioAO) {
 		numberFormat.setMaximumFractionDigits(2);
@@ -45,7 +56,7 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 		
 	        document.open();
 				document.addTitle(portfolioAO.getName());
-				document.add(new Paragraph(String.format("Aktien %s", portfolioAO.getName() ), headline));
+				document.add(new Paragraph(String.format("Aktien %s [Währung: %s]", portfolioAO.getName() , currencyConverter.convert(portfolioAO.getCurrency()) ), headline));
 				final Table varianceSharesTable = new  Table(7);
 				varianceSharesTable.setWidth(100);
 				addCellHeader(varianceSharesTable,  "Aktie");

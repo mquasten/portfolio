@@ -60,6 +60,10 @@
             <h:outputText value="#{portfolio.name()}" />
         </p:column>
         
+        <p:column headerText="Währung">
+            <h:outputText value="#{currencyConverter.convert(portfolio.currency())}" />
+        </p:column>
+        
          <p:column headerText="committed">
             <h:outputText value="#{portfolio.committed}" />
         </p:column>

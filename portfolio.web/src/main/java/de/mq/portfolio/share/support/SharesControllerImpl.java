@@ -144,5 +144,7 @@ public class SharesControllerImpl {
 		refreshPortfolioList(sharesSearchAO, userModel);
 		
 	}
+	
+	
 
 }

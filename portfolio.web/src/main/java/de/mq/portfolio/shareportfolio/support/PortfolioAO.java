@@ -48,8 +48,7 @@ public class PortfolioAO implements Serializable {
 	private Double totalRate; 
 	
 	
-	
-
+	private String currency;
 
 
 
@@ -67,6 +66,7 @@ public class PortfolioAO implements Serializable {
 	
 	public final void setSharePortfolio(final SharePortfolio sharePortfolio) {
 		this.name=sharePortfolio.name();
+		this.currency=sharePortfolio.currency();
 		this.timeCourses.clear();
 		timeCourses.addAll(sharePortfolio.timeCourses());
 		
@@ -145,6 +145,10 @@ public class PortfolioAO implements Serializable {
 	
 	public boolean getEditable() {
 		return editable;
+	}
+	
+	public String getCurrency() {
+		return currency;
 	}
 
 }
