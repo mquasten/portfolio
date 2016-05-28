@@ -54,7 +54,17 @@ public class PortfolioSearchAO  implements Serializable {
 	}
 
 
-
+	public boolean isRetrospectiveAware() {
+		if( selectedPortfolio == null){
+			return false;
+		}
+		if ( !selectedPortfolio.isCommitted() ) {
+			return false;
+		}
+		return true;
+	}
+	
+	
 	public void setSelectedPortfolio(SharePortfolio selectedPortfolio) {
 		this.selectedPortfolio = selectedPortfolio;
 	}

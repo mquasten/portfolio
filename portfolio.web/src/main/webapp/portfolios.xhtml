@@ -99,6 +99,10 @@
         	<f:param name="portfolioId" value="#{portfolioSearch.selectedPortfolio.id()}"/>
         </p:button>
         
+        
+         <p:button  value="Retrospective" outcome="retrospective"  disabled="#{!portfolioSearch.retrospectiveAware}" >
+         	<f:param name="portfolioId" value="#{portfolioSearch.selectedPortfolio.id()}"/>
+         </p:button>
     	</f:facet>
        
     </p:dataTable>
