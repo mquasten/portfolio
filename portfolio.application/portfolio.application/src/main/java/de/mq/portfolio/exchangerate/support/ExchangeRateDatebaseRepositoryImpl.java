@@ -1,6 +1,7 @@
 package de.mq.portfolio.exchangerate.support;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
@@ -36,16 +37,19 @@ class ExchangeRateDatebaseRepositoryImpl implements ExchangeRateDatebaseReposito
 	}
 	
 	@Override
-	public final ExchangerateAggregate exchangerates(final Collection<ExchangeRate> exchangerates) {
+	public final Collection<ExchangeRate> exchangerates(final Collection<ExchangeRate> exchangerates) {
 		Assert.notNull(exchangerates);
 		final Collection<ExchangeRate> rates = new HashSet<>();
 		rates.addAll(exchangerates);
 	
 		rates.addAll(exchangerates.stream().map(er -> new ExchangeRateImpl(er.target(), er.source())).collect(Collectors.toSet()));
-		final ExchangerateAggregateBuilder exchangerateAggregateBuilder = new ExchangerateAggregateBuilderImpl();
-		rates.forEach(er -> mongoOperations.find(Query.query(Criteria.where(SOURCE_FIELD_NAME).is(er.source()).and(TARGET_FIELD_NAME).is(er.target())), ExchangeRateImpl.class).forEach(ex -> exchangerateAggregateBuilder.withExchangeRate(ex)));
+	//	final ExchangerateAggregateBuilder exchangerateAggregateBuilder = new ExchangerateAggregateBuilderImpl();
+	//	rates.forEach(er -> mongoOperations.find(Query.query(Criteria.where(SOURCE_FIELD_NAME).is(er.source()).and(TARGET_FIELD_NAME).is(er.target())), ExchangeRateImpl.class).forEach(ex -> exchangerateAggregateBuilder.withExchangeRate(ex)));
 		
-		return exchangerateAggregateBuilder.build();
+	//	return exchangerateAggregateBuilder.build();
+		final  Collection<ExchangeRate> results = new HashSet<>();
+		rates.forEach(rate -> results.addAll(mongoOperations.find(Query.query(Criteria.where(SOURCE_FIELD_NAME).is(rate.source()).and(TARGET_FIELD_NAME).is(rate.target())), ExchangeRateImpl.class)));
+		return Collections.unmodifiableCollection(results);
 	}
 
 	

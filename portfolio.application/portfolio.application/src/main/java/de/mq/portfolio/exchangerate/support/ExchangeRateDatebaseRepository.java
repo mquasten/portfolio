@@ -8,6 +8,6 @@ public interface ExchangeRateDatebaseRepository {
 
 	void save(ExchangeRate exchangeRate);
 
-	ExchangerateAggregate exchangerates(final Collection<ExchangeRate>   exchangerates);
+	Collection<ExchangeRate> exchangerates(final Collection<ExchangeRate>   exchangerates);
 
 }

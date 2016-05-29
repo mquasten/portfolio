@@ -354,6 +354,8 @@ class SharePortfolioImpl implements SharePortfolio {
 	}
 	
 	
+	
+	
 }
 
 interface MatixFunction {

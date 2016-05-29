@@ -1,17 +1,14 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,11 +17,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.exchangerate.support.ExchangeRateDatebaseRepository;
-
-import de.mq.portfolio.exchangerate.support.ExchangerateAggregate;
-import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
-import de.mq.portfolio.share.support.DataImpl;
 import de.mq.portfolio.share.support.ShareRepository;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -38,6 +31,10 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 	private final ShareRepository shareRepository;
 	
 	private final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository;
+	
+	private final  Class<? extends SharePortfolioRetrospectiveBuilder> builderClass = SharePortfolioRetrospectiveBuilderImpl.class;
+	
+	
 
 	@Autowired
 	SharePortfolioServiceImpl(final SharePortfolioRepository sharePortfolioRepository, final ShareRepository shareRepository, final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository) {
@@ -256,27 +253,16 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 	}
 	
 	@Override
-	//:TODO ExchangeRate US$ -> Euro
-	public final Collection<Data> retrospective(final String id ) {
-		final SharePortfolio portfolio = sharePortfolioRepository.sharePortfolio(id);
-		final Map<Date,List<Double>> rates = new HashMap<>();	
-		final Map<TimeCourse, Double> min = portfolio.min();
-	
-		final ExchangerateAggregate exchangerateAggregate =  exchangeRateDatebaseRepository.exchangerates(portfolio.exchangeRateTranslations());
-		min.entrySet().forEach(e -> shareRepository.timeCourses(Arrays.asList(e.getKey().code())).stream().findFirst().get().rates().forEach(r -> addRate(rates, r, e.getValue(), exchangerateAggregate.factor(portfolio.exchangeRate(e.getKey()), r.date()))));
-	
-		return rates.entrySet().stream().filter(e -> e.getValue().size()== min.size()).map(e -> new DataImpl(e.getKey(), e.getValue().stream().reduce((a, b) ->  a+b).orElse(0d))).sorted((c1,c2) -> (int) Math.signum(c1.date().getTime() - c2.date().getTime())).collect(Collectors.toList());
+	public final  SharePortfolioRetrospective retrospective(final String sharePortfolioId ) {
+		Assert.hasText(sharePortfolioId , "Id is mandatory");
 		
+	
+		final SharePortfolio portfolio = sharePortfolioRepository.sharePortfolio(sharePortfolioId);
+	
+		return  BeanUtils.instantiateClass(builderClass).withCommitedSharePortfolio(portfolio).withExchangeRates(exchangeRateDatebaseRepository.exchangerates(portfolio.exchangeRateTranslations())).withTimeCourses(shareRepository.timeCourses(portfolio.timeCourses().stream().map(tc -> tc.code()).collect(Collectors.toSet()))).build();
 		
 	}
 
-	private void addRate(final Map<Date, List<Double>> rates, final Data r, double k, final double exchangeRate) {
 	
-		
-		if( ! rates.containsKey(r.date())) {
-			rates.put(r.date(), new ArrayList<>());
-		}
-		rates.get(r.date()).add(exchangeRate*k*r.value());
-	}
 
 }

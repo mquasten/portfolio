@@ -1,10 +1,12 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.ChartModel;
 import org.primefaces.model.chart.DateAxis;
+import org.primefaces.model.chart.LegendPlacement;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
 import org.springframework.context.annotation.Scope;
@@ -25,6 +27,8 @@ public class RetrospectiveAO implements Serializable {
 	public RetrospectiveAO() {
 		axis.setTickFormat("%b %#d, %y");
 		chartModel.getAxes().put(AxisType.X, axis);
+		chartModel.setLegendPosition("e");
+		chartModel.setLegendPlacement(LegendPlacement.OUTSIDEGRID);
 		
 	}
 	
@@ -40,9 +44,9 @@ public class RetrospectiveAO implements Serializable {
 		this.portfolioId = portfolioId;
 	}
 	
-	public void assign(final LineChartSeries lineChartSeries) {
+	public void assign(final Collection<LineChartSeries> ratesSeries) {
 		chartModel.clear();
-		chartModel.addSeries(lineChartSeries);
+		ratesSeries.forEach(rs -> chartModel.addSeries(rs));
 		
 	}
 	
