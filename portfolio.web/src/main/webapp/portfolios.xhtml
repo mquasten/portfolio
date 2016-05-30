@@ -102,6 +102,7 @@
         
          <p:button  value="Retrospective" outcome="retrospective"  disabled="#{!portfolioSearch.retrospectiveAware}" >
          	<f:param name="portfolioId" value="#{portfolioSearch.selectedPortfolio.id()}"/>
+         	<f:param name="filter" value=".*"/>
          </p:button>
     	</f:facet>
        

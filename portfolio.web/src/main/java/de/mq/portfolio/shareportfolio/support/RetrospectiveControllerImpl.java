@@ -35,6 +35,7 @@ public class RetrospectiveControllerImpl {
 
 	public void init(final RetrospectiveAO retrospectiveAO) {
 		
+		
 		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(retrospectiveAO.getPortfolioId());
 		final SharePortfolioRetrospective sharePortfolioRetrospective = sharePortfolioService.retrospective(retrospectiveAO.getPortfolioId());
 		
@@ -43,7 +44,7 @@ public class RetrospectiveControllerImpl {
 		retrospectiveAO.setOrdinateTitle(String.format("Wert Anteil / %s" , currencyConverter.convert(sharePortfolio.currency())));
 		retrospectiveAO.setTitle(sharePortfolio.name());
 		final Collection<LineChartSeries> ratesSeries = new ArrayList<>();
-		sharePortfolioRetrospective.timeCoursesWithExchangeRate().forEach(tc -> {
+		sharePortfolioRetrospective.timeCoursesWithExchangeRate().stream().forEach(tc -> {
 			final LineChartSeries series = new LineChartSeries();
 			series.setShowMarker(false);
 			tc.rates().forEach(data -> series.set( df.format(data.date()), Double.valueOf(data.value()) ));
@@ -57,9 +58,13 @@ public class RetrospectiveControllerImpl {
         startLine.setShowMarker(false);
         startLine.setLabel("Start");
       
-        LongStream.rangeClosed(1, ChronoUnit.DAYS.between(start,sharePortfolioRetrospective.endRateWithExchangeRate().date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())).forEach(i ->  startLine.set(df.format(Date.from(start.plusDays(i).atStartOfDay(ZoneId.systemDefault()).toInstant())), sharePortfolioRetrospective.initialRateWithExchangeRate().value() ));
+        LongStream.rangeClosed(0, ChronoUnit.DAYS.between(start,sharePortfolioRetrospective.endRateWithExchangeRate().date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())).forEach(i ->  startLine.set(df.format(Date.from(start.plusDays(i).atStartOfDay(ZoneId.systemDefault()).toInstant())), sharePortfolioRetrospective.initialRateWithExchangeRate().value() ));
         ratesSeries.add(startLine);
         retrospectiveAO.assign(ratesSeries);
 	}
 
+	public String show(final RetrospectiveAO retrospectiveAO) {
+		
+		return String.format(String.format("retrospective?portfolioId=%s&filter=%s&faces-redirect=true", retrospectiveAO.getPortfolioId(), retrospectiveAO.getFilter()));
+	}
 }

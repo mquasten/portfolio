@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
@@ -116,12 +117,23 @@ private final Map<String,TimeCourse> timeCourses = new HashMap<>();
 		final Data initialRateWithExchangeRate = committedSharePortfolio.timeCourses().stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(tc, factor(committedSharePortfolio.exchangeRate(tc), tc.end())* min.get(tc) *tc.rates().get(tc.rates().size() -1).value())).map(e -> new DataImpl(e.getKey().end(), e.getValue())).reduce((a,b) -> new DataImpl(a.date(), a.value() + b.value())).orElse(new DataImpl(new Date(), 0d));
 
 		min.entrySet().forEach(e -> timeCourses.get(e.getKey().code()).rates().forEach(r -> addRate(rates, r, e.getValue(), factor(committedSharePortfolio.exchangeRate(e.getKey()), r.date()))));
-		final List<Data> portfolioRatesWithExchangeRates = rates.entrySet().stream().filter(e -> e.getValue().size()== min.size()).map(e -> new DataImpl(e.getKey(), e.getValue().stream().reduce((a, b) ->  a+b).orElse(0d))).filter(d -> d.date().after(initialRateWithExchangeRate.date())).sorted(sortdataByTime()).collect(Collectors.toList());
+		final List<Data> portfolioRatesWithExchangeRates = rates.entrySet().stream().filter(e -> e.getValue().size()== min.size()).map(e -> new DataImpl(e.getKey(), e.getValue().stream().reduce((a, b) ->  a+b).orElse(0d))).filter(isNewSample(initialRateWithExchangeRate)).sorted(sortdataByTime()).collect(Collectors.toList());
 		final List<TimeCourse> timeCoursesWithExchangeRate = new ArrayList<>();
-	
 		timeCoursesWithExchangeRate.add(newTimeCourse( newShare(committedSharePortfolio.name(), committedSharePortfolio.currency()), portfolioRatesWithExchangeRates, new ArrayList<>() ));
+		
+		committedSharePortfolio.timeCourses().forEach(tc -> {
+			final Collection<Data> shareRatesWithExchangeRate = timeCourses.get(tc.code()).rates().stream().filter(isNewSample(initialRateWithExchangeRate) ).map(data -> new DataImpl(data.date(), factor(committedSharePortfolio.exchangeRate(tc), data.date())  *  min.get(tc) * data.value())).collect(Collectors.toList());
+			timeCoursesWithExchangeRate.add(newTimeCourse(  newShare(tc.share().name(), committedSharePortfolio.currency()), shareRatesWithExchangeRate, new ArrayList<>())); 
+		});
+		
+		
+		
 		return new SharePortfolioRetrospectiveImpl(committedSharePortfolio, null, timeCoursesWithExchangeRate , initialRateWithExchangeRate, portfolioRatesWithExchangeRates.get(portfolioRatesWithExchangeRates.size()-1));
 		
+	}
+
+	private Predicate<? super Data> isNewSample(final Data initialRateWithExchangeRate) {
+		return d -> ! d.date().before(initialRateWithExchangeRate.date());
 	}
 
 	private Comparator<? super Data> sortdataByTime() {

@@ -1,7 +1,10 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+
+import javax.faces.model.SelectItem;
 
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.ChartModel;
@@ -24,6 +27,13 @@ public class RetrospectiveAO implements Serializable {
 	private final  LineChartModel chartModel =  new LineChartModel();
 	private final   DateAxis axis = new DateAxis("t");
 	
+	private final Collection<SelectItem> curves = new ArrayList<>();
+	
+	private String filter=".*"; 
+	
+
+	
+
 	public RetrospectiveAO() {
 		axis.setTickFormat("%b %#d, %y");
 		chartModel.getAxes().put(AxisType.X, axis);
@@ -46,7 +56,14 @@ public class RetrospectiveAO implements Serializable {
 	
 	public void assign(final Collection<LineChartSeries> ratesSeries) {
 		chartModel.clear();
-		ratesSeries.forEach(rs -> chartModel.addSeries(rs));
+		curves.clear();
+		ratesSeries.forEach(rs -> {
+			if( rs.getLabel().matches(filter)){
+				chartModel.addSeries(rs);
+			}
+			curves.add(new SelectItem(rs.getLabel().replaceAll("[&?=]", "."), rs.getLabel()));
+		    
+		});
 		
 	}
 	
@@ -58,5 +75,17 @@ public class RetrospectiveAO implements Serializable {
 	
 	public final void setTitle(final String title) {
 		chartModel.setTitle(title);
+	}
+	
+	public Collection<SelectItem> getCurves() {
+		return curves;
+	}
+	
+	public final String getFilter() {
+		return filter;
+	}
+
+	public void setFilter(final String filter) {
+		this.filter = filter;
 	}
 }

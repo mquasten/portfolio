@@ -12,6 +12,7 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 			<f:metadata>
 		 		<f:viewParam name="portfolioId" value="#{retrospective.portfolioId}" />
+		 		<f:viewParam name="filter" value="#{retrospective.filter}" />
 		 		<f:viewAction action="#{retrospectiveController.init(retrospective)}" />
   	     	</f:metadata>
 
@@ -23,10 +24,21 @@
 
 
 
-<p:chart type="line" model="#{retrospective.chartModel}"  />
+<p:chart type="line" model="#{retrospective.chartModel}"  style="height:700px" />
 
 
+<h:panelGrid columns="3" >
+	
+<p:outputLabel value="Zeifunktion fiktiver Anteil" />
 
+<p:selectOneMenu value="#{retrospective.filter}"  style="width: 300px;" >
+ <f:selectItem itemLabel="Alle" itemValue=".*"  />
+  <f:selectItems value="#{retrospective.curves}"  />
+</p:selectOneMenu>
+<p:commandButton value="anzeigen" process="@form" update="@form" action="#{retrospectiveController.show(retrospective)}">
+	
+</p:commandButton >
+</h:panelGrid>
   
   
 </h:form>
