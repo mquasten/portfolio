@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 import de.mq.portfolio.share.Data;
-import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 class SharePortfolioRetrospectiveImpl implements SharePortfolioRetrospective {
@@ -14,10 +13,10 @@ class SharePortfolioRetrospectiveImpl implements SharePortfolioRetrospective {
 	private final SharePortfolio currentSharePortfolio;
 	private final Data initialRateWithExchangeRate;
 	private final Data endRateWithExchangeRate;
-	private final Collection<TimeCourse> timeCoursesWithExchangeRate=new ArrayList<>();;
+	private final Collection<TimeCourseRetrospective> timeCoursesWithExchangeRate=new ArrayList<>();;
 
 	
-	SharePortfolioRetrospectiveImpl(final SharePortfolio committedSharePortfolio, final SharePortfolio currentSharePortfolio, final Collection<TimeCourse> timeCoursesWithExchangeRate, final Data initialRateWithExchangeRate, final Data endRateWithExchangeRate) {
+	SharePortfolioRetrospectiveImpl(final SharePortfolio committedSharePortfolio, final SharePortfolio currentSharePortfolio, final Collection<TimeCourseRetrospective> timeCoursesWithExchangeRate, final Data initialRateWithExchangeRate, final Data endRateWithExchangeRate) {
 		this.committedSharePortfolio = committedSharePortfolio;
 		this.currentSharePortfolio = currentSharePortfolio;
 		this.timeCoursesWithExchangeRate.clear();
@@ -55,7 +54,7 @@ class SharePortfolioRetrospectiveImpl implements SharePortfolioRetrospective {
 	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioRetrospective#timeCoursesWithExchangeRate()
 	 */
 	@Override
-	public final Collection<TimeCourse> timeCoursesWithExchangeRate() {
+	public final Collection<TimeCourseRetrospective> timeCoursesWithExchangeRate() {
 		return Collections.unmodifiableCollection(timeCoursesWithExchangeRate);
 	}
 

@@ -118,12 +118,18 @@ private final Map<String,TimeCourse> timeCourses = new HashMap<>();
 
 		min.entrySet().forEach(e -> timeCourses.get(e.getKey().code()).rates().forEach(r -> addRate(rates, r, e.getValue(), factor(committedSharePortfolio.exchangeRate(e.getKey()), r.date()))));
 		final List<Data> portfolioRatesWithExchangeRates = rates.entrySet().stream().filter(e -> e.getValue().size()== min.size()).map(e -> new DataImpl(e.getKey(), e.getValue().stream().reduce((a, b) ->  a+b).orElse(0d))).filter(isNewSample(initialRateWithExchangeRate)).sorted(sortdataByTime()).collect(Collectors.toList());
-		final List<TimeCourse> timeCoursesWithExchangeRate = new ArrayList<>();
-		timeCoursesWithExchangeRate.add(newTimeCourse( newShare(committedSharePortfolio.name(), committedSharePortfolio.currency()), portfolioRatesWithExchangeRates, new ArrayList<>() ));
+		final List<TimeCourseRetrospective> timeCoursesWithExchangeRate = new ArrayList<>();
+	
+		timeCoursesWithExchangeRate.add(new TimeCourseRetrospectiveImpl( newTimeCourse(newShare(committedSharePortfolio.name(), committedSharePortfolio.currency()), portfolioRatesWithExchangeRates, new ArrayList<>() ), initialRateWithExchangeRate.value(), portfolioRatesWithExchangeRates.get(portfolioRatesWithExchangeRates.size()-1).value()));
 		
 		committedSharePortfolio.timeCourses().forEach(tc -> {
-			final Collection<Data> shareRatesWithExchangeRate = timeCourses.get(tc.code()).rates().stream().filter(isNewSample(initialRateWithExchangeRate) ).map(data -> new DataImpl(data.date(), factor(committedSharePortfolio.exchangeRate(tc), data.date())  *  min.get(tc) * data.value())).collect(Collectors.toList());
-			timeCoursesWithExchangeRate.add(newTimeCourse(  newShare(tc.share().name(), committedSharePortfolio.currency()), shareRatesWithExchangeRate, new ArrayList<>())); 
+			
+			final Data  start = tc.rates().get(tc.rates().size()-1);
+			final double startValue = start.value()*factor(committedSharePortfolio.exchangeRate(tc), start.date())  *  min.get(tc);
+			final List<Data> shareRatesWithExchangeRate = timeCourses.get(tc.code()).rates().stream().filter(isNewSample(initialRateWithExchangeRate) ).map(data -> new DataImpl(data.date(), factor(committedSharePortfolio.exchangeRate(tc), data.date())  *  min.get(tc) * data.value())).collect(Collectors.toList());
+			final double endValue = shareRatesWithExchangeRate.get(shareRatesWithExchangeRate.size()-1).value();
+			
+			timeCoursesWithExchangeRate.add(new TimeCourseRetrospectiveImpl(newTimeCourse(  newShare(tc.share().name(), committedSharePortfolio.currency()), shareRatesWithExchangeRate, new ArrayList<>()), startValue,endValue)); 
 		});
 		
 		

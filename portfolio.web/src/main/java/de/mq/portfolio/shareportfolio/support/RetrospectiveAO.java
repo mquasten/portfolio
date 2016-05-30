@@ -3,6 +3,7 @@ package de.mq.portfolio.shareportfolio.support;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import javax.faces.model.SelectItem;
 
@@ -28,6 +29,16 @@ public class RetrospectiveAO implements Serializable {
 	private final   DateAxis axis = new DateAxis("t");
 	
 	private final Collection<SelectItem> curves = new ArrayList<>();
+	
+	private  final Collection<TimeCourseRetrospective> timeCourseRetrospectives = new ArrayList<>();
+	
+	private String currency = "EUR";
+
+	
+
+	private Date startDate;
+
+	private Date endDate;
 	
 	private String filter=".*"; 
 	
@@ -88,4 +99,38 @@ public class RetrospectiveAO implements Serializable {
 	public void setFilter(final String filter) {
 		this.filter = filter;
 	}
+	
+	public Collection<TimeCourseRetrospective> getTimeCourseRetrospectives() {
+		return timeCourseRetrospectives;
+	}
+
+	public void setTimeCourseRetrospectives(Collection<TimeCourseRetrospective> timeCourseRetrospectives) {
+		this.timeCourseRetrospectives.clear();
+		this.timeCourseRetrospectives.addAll(timeCourseRetrospectives);
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+	
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
 }

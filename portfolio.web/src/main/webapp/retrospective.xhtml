@@ -35,12 +35,63 @@
  <f:selectItem itemLabel="Alle" itemValue=".*"  />
   <f:selectItems value="#{retrospective.curves}"  />
 </p:selectOneMenu>
-<p:commandButton value="anzeigen" process="@form" update="@form" action="#{retrospectiveController.show(retrospective)}">
+<p:commandButton value="anzeigen" process="@form" update="@form" action="#{retrospectiveController.show(retrospective)}" />
 	
-</p:commandButton >
+
 </h:panelGrid>
-  
-  
+ 
+
+ <h3> <h:outputText value="Wert der fiktiven Anteile in&nbsp;#{currencyConverter.convert(retrospective.currency)}" /></h3>
+ <h:panelGrid columns="2" >
+ 
+ 	
+ 	<p:dataTable var="tcr" value="#{retrospective.timeCourseRetrospectives}"   lazy="true"    resizableColumns="true" >
+ 	
+ 	<p:column >
+ 	<f:facet name="header">
+ 	 <h:outputText value="Anteil" />
+ 	</f:facet> 
+ 	 
+            <h:outputText value="#{tcr.name()}" />
+        </p:column>
+ 	
+ 	
+ 	<p:column >
+ 	<f:facet name="header">
+ 		 <h:outputText value="#{retrospective.startDate}" >
+ 		  <f:convertDateTime  type="date" dateStyle="short"  />
+ 		 </h:outputText>
+ 	</f:facet>
+            <h:outputText value="#{tcr.start()}" >
+            	<f:convertNumber pattern="#0.00" />
+            </h:outputText>
+        </p:column>
+ 	
+ 	
+ 	<p:column>
+ 	<f:facet name="header">
+ 		<h:outputText value="#{retrospective.endDate}" >
+ 		  <f:convertDateTime  type="date" dateStyle="short"  />
+ 		 </h:outputText>
+ 	</f:facet>
+            <h:outputText value="#{tcr.end()}" >
+            	<f:convertNumber pattern="#0.00" />
+            </h:outputText>
+        </p:column>
+      <p:column>
+        <f:facet name="header">
+ 		<h:outputText value="Änderung [%]" />
+ 		 
+ 		
+ 		</f:facet>
+            <h:outputText value="#{tcr.rate()*100}" >
+            	<f:convertNumber pattern="#0.00" />
+            </h:outputText>
+        </p:column>
+ 	</p:dataTable>
+ 
+ </h:panelGrid>
+
 </h:form>
 	
 	

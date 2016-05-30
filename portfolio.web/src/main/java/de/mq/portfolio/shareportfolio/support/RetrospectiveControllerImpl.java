@@ -39,16 +39,19 @@ public class RetrospectiveControllerImpl {
 		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(retrospectiveAO.getPortfolioId());
 		final SharePortfolioRetrospective sharePortfolioRetrospective = sharePortfolioService.retrospective(retrospectiveAO.getPortfolioId());
 		
-		
+		retrospectiveAO.setCurrency(sharePortfolioRetrospective.committedSharePortfolio().currency());
 		
 		retrospectiveAO.setOrdinateTitle(String.format("Wert Anteil / %s" , currencyConverter.convert(sharePortfolio.currency())));
 		retrospectiveAO.setTitle(sharePortfolio.name());
+		retrospectiveAO.setStartDate(sharePortfolioRetrospective.initialRateWithExchangeRate().date());
+		retrospectiveAO.setEndDate(sharePortfolioRetrospective.endRateWithExchangeRate().date());
 		final Collection<LineChartSeries> ratesSeries = new ArrayList<>();
-		sharePortfolioRetrospective.timeCoursesWithExchangeRate().stream().forEach(tc -> {
+		retrospectiveAO.setTimeCourseRetrospectives(sharePortfolioRetrospective.timeCoursesWithExchangeRate());
+		sharePortfolioRetrospective.timeCoursesWithExchangeRate().stream().forEach(tcr -> {
 			final LineChartSeries series = new LineChartSeries();
 			series.setShowMarker(false);
-			tc.rates().forEach(data -> series.set( df.format(data.date()), Double.valueOf(data.value()) ));
-			series.setLabel(tc.share().name());
+			tcr.timeCourse().rates().forEach(data -> series.set( df.format(data.date()), Double.valueOf(data.value()) ));
+			series.setLabel(tcr.timeCourse().share().name());
 			ratesSeries.add(series);
 		});
 		
