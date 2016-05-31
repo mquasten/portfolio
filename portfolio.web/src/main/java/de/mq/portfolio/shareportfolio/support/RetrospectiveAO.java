@@ -43,6 +43,12 @@ public class RetrospectiveAO implements Serializable {
 	private String filter=".*"; 
 	
 
+	private final PortfolioAO committedPortfolio = new PortfolioAO(); 
+	
+	
+
+	private final PortfolioAO currentPortfolio = new PortfolioAO(); 
+
 	
 
 	public RetrospectiveAO() {
@@ -131,6 +137,14 @@ public class RetrospectiveAO implements Serializable {
 
 	public void setCurrency(String currency) {
 		this.currency = currency;
+	}
+	
+	public final PortfolioAO getCommittedPortfolio() {
+		return committedPortfolio;
+	}
+	
+	public PortfolioAO getCurrentPortfolio() {
+		return currentPortfolio;
 	}
 
 }

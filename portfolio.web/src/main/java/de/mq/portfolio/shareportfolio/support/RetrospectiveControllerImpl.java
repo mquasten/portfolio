@@ -45,6 +45,9 @@ public class RetrospectiveControllerImpl {
 		retrospectiveAO.setTitle(sharePortfolio.name());
 		retrospectiveAO.setStartDate(sharePortfolioRetrospective.initialRateWithExchangeRate().date());
 		retrospectiveAO.setEndDate(sharePortfolioRetrospective.endRateWithExchangeRate().date());
+		
+		retrospectiveAO.getCommittedPortfolio().setSharePortfolio(sharePortfolioRetrospective.committedSharePortfolio());
+		retrospectiveAO.getCurrentPortfolio().setSharePortfolio(sharePortfolioRetrospective.currentSharePortfolio());
 		final Collection<LineChartSeries> ratesSeries = new ArrayList<>();
 		retrospectiveAO.setTimeCourseRetrospectives(sharePortfolioRetrospective.timeCoursesWithExchangeRate());
 		sharePortfolioRetrospective.timeCoursesWithExchangeRate().stream().forEach(tcr -> {

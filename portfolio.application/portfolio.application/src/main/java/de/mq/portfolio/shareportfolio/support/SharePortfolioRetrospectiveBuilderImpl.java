@@ -132,9 +132,11 @@ private final Map<String,TimeCourse> timeCourses = new HashMap<>();
 			timeCoursesWithExchangeRate.add(new TimeCourseRetrospectiveImpl(newTimeCourse(  newShare(tc.share().name(), committedSharePortfolio.currency()), shareRatesWithExchangeRate, new ArrayList<>()), startValue,endValue)); 
 		});
 		
-		
-		
-		return new SharePortfolioRetrospectiveImpl(committedSharePortfolio, null, timeCoursesWithExchangeRate , initialRateWithExchangeRate, portfolioRatesWithExchangeRates.get(portfolioRatesWithExchangeRates.size()-1));
+		final List<TimeCourse> newTimeCourses = new ArrayList<>();
+		committedSharePortfolio.timeCourses().stream().map(tc -> tc.code()).forEach(code -> newTimeCourses.add(timeCourses.get(code)));
+		final SharePortfolio currentSharePortfolio = new SharePortfolioImpl(committedSharePortfolio.name(), newTimeCourses);
+		((SharePortfolioImpl)currentSharePortfolio).onBeforeSave();
+		return new SharePortfolioRetrospectiveImpl(committedSharePortfolio, currentSharePortfolio, timeCoursesWithExchangeRate , initialRateWithExchangeRate, portfolioRatesWithExchangeRates.get(portfolioRatesWithExchangeRates.size()-1));
 		
 	}
 
