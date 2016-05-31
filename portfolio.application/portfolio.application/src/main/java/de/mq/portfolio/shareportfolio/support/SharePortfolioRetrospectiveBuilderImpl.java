@@ -1,5 +1,6 @@
 package de.mq.portfolio.shareportfolio.support;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.AbstractMap;
@@ -14,8 +15,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
+
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
@@ -30,6 +33,8 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 class SharePortfolioRetrospectiveBuilderImpl  implements SharePortfolioRetrospectiveBuilder {
 	
 	
+private static final String ON_BEFORE_SAVE_METHOD_NAME = "onBeforeSave";
+
 private final Map<ExchangeRate,Map<Date,Double>>  exchangeRates = new HashMap<>();
 
 private  SharePortfolio committedSharePortfolio;
@@ -136,8 +141,19 @@ private final Map<String,TimeCourse> timeCourses = new HashMap<>();
 		committedSharePortfolio.timeCourses().stream().map(tc -> tc.code()).forEach(code -> newTimeCourses.add(timeCourses.get(code)));
 		final SharePortfolio currentSharePortfolio = new SharePortfolioImpl(committedSharePortfolio.name(), newTimeCourses);
 		((SharePortfolioImpl)currentSharePortfolio).onBeforeSave();
+		
+		ReflectionUtils.doWithMethods(currentSharePortfolio.getClass(), m -> invokeBeforePersist(currentSharePortfolio, m), m -> m.getName().equals(ON_BEFORE_SAVE_METHOD_NAME)&&m.getParameterTypes().length==0);
 		return new SharePortfolioRetrospectiveImpl(committedSharePortfolio, currentSharePortfolio, timeCoursesWithExchangeRate , initialRateWithExchangeRate, portfolioRatesWithExchangeRates.get(portfolioRatesWithExchangeRates.size()-1));
 		
+	}
+
+	private Object invokeBeforePersist(final SharePortfolio currentSharePortfolio, final Method method) {
+		try {
+			return  method.invoke(currentSharePortfolio);
+		} catch (Exception ex) {
+
+            throw new IllegalStateException("Unable to invoke Methode " + method.getName() , ex );
+		}
 	}
 
 	private Predicate<? super Data> isNewSample(final Data initialRateWithExchangeRate) {
