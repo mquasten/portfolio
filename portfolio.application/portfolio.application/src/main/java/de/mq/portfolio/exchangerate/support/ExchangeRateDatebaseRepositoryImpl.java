@@ -36,6 +36,10 @@ class ExchangeRateDatebaseRepositoryImpl implements ExchangeRateDatebaseReposito
 		mongoOperations.save(exchangeRate);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.exchangerate.support.ExchangeRateDatebaseRepository#exchangerates(java.util.Collection)
+	 */
 	@Override
 	public final Collection<ExchangeRate> exchangerates(final Collection<ExchangeRate> exchangerates) {
 		Assert.notNull(exchangerates);
@@ -43,13 +47,19 @@ class ExchangeRateDatebaseRepositoryImpl implements ExchangeRateDatebaseReposito
 		rates.addAll(exchangerates);
 	
 		rates.addAll(exchangerates.stream().map(er -> new ExchangeRateImpl(er.target(), er.source())).collect(Collectors.toSet()));
-	//	final ExchangerateAggregateBuilder exchangerateAggregateBuilder = new ExchangerateAggregateBuilderImpl();
-	//	rates.forEach(er -> mongoOperations.find(Query.query(Criteria.where(SOURCE_FIELD_NAME).is(er.source()).and(TARGET_FIELD_NAME).is(er.target())), ExchangeRateImpl.class).forEach(ex -> exchangerateAggregateBuilder.withExchangeRate(ex)));
-		
-	//	return exchangerateAggregateBuilder.build();
+	
 		final  Collection<ExchangeRate> results = new HashSet<>();
 		rates.forEach(rate -> results.addAll(mongoOperations.find(Query.query(Criteria.where(SOURCE_FIELD_NAME).is(rate.source()).and(TARGET_FIELD_NAME).is(rate.target())), ExchangeRateImpl.class)));
 		return Collections.unmodifiableCollection(results);
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.exchangerate.support.ExchangeRateDatebaseRepository#exchangerates()
+	 */
+	@Override
+	public final Collection<ExchangeRate> exchangerates() {
+		return Collections.unmodifiableCollection(mongoOperations.findAll(ExchangeRateImpl.class));
+		
 	}
 
 	

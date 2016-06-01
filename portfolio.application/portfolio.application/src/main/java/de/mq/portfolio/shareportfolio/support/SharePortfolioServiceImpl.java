@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
-import de.mq.portfolio.exchangerate.support.ExchangeRateDatebaseRepository;
+import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.share.support.ShareRepository;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
@@ -30,17 +30,17 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 	private final SharePortfolioRepository sharePortfolioRepository;
 	private final ShareRepository shareRepository;
 	
-	private final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository;
+	private final ExchangeRateService exchangeRateService;
 	
 	private final  Class<? extends SharePortfolioRetrospectiveBuilder> builderClass = SharePortfolioRetrospectiveBuilderImpl.class;
 	
 	
 
 	@Autowired
-	SharePortfolioServiceImpl(final SharePortfolioRepository sharePortfolioRepository, final ShareRepository shareRepository, final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository) {
+	SharePortfolioServiceImpl(final SharePortfolioRepository sharePortfolioRepository, final ShareRepository shareRepository, final  ExchangeRateService exchangeRateService) {
 		this.sharePortfolioRepository = sharePortfolioRepository;
 		this.shareRepository=shareRepository;
-		this.exchangeRateDatebaseRepository=exchangeRateDatebaseRepository;
+		this.exchangeRateService=exchangeRateService;
 	}
 
 	/*
@@ -244,6 +244,10 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 		return Collections.unmodifiableList(results);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#delete(java.lang.String)
+	 */
 	@Override
 	public final void delete(final String sharePortfolioId) {
 		Assert.hasText(sharePortfolioId , "Id is mandatory");
@@ -251,15 +255,15 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 		Assert.isTrue(!existing.isCommitted(), "SharePortfolio should not be committed");
 		sharePortfolioRepository.delete(existing);
 	}
-	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#retrospective(java.lang.String)
+	 */
 	@Override
 	public final  SharePortfolioRetrospective retrospective(final String sharePortfolioId ) {
 		Assert.hasText(sharePortfolioId , "Id is mandatory");
-		
-	
 		final SharePortfolio portfolio = sharePortfolioRepository.sharePortfolio(sharePortfolioId);
-	
-		return  BeanUtils.instantiateClass(builderClass).withCommitedSharePortfolio(portfolio).withExchangeRates(exchangeRateDatebaseRepository.exchangerates(portfolio.exchangeRateTranslations())).withTimeCourses(shareRepository.timeCourses(portfolio.timeCourses().stream().map(tc -> tc.code()).collect(Collectors.toSet()))).build();
+		return  BeanUtils.instantiateClass(builderClass).withCommitedSharePortfolio(portfolio).withExchangeRateCalculator(exchangeRateService.exchangeRateCalculator(portfolio.exchangeRateTranslations())).withTimeCourses(shareRepository.timeCourses(portfolio.timeCourses().stream().map(tc -> tc.code()).collect(Collectors.toSet()))).build();
 		
 	}
 

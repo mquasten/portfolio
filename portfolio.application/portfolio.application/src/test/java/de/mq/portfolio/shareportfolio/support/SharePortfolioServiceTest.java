@@ -13,7 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.util.CollectionUtils;
 
-import de.mq.portfolio.exchangerate.support.ExchangeRateDatebaseRepository;
+import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.share.support.ShareRepository;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
@@ -30,8 +30,8 @@ public class SharePortfolioServiceTest {
 	private static final String NAME = "mq-test";
 	private final SharePortfolioRepository sharePortfolioRepository = Mockito.mock(SharePortfolioRepository.class);
 	private final ShareRepository shareRepository = Mockito.mock(ShareRepository.class);
-	private final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository = Mockito.mock(ExchangeRateDatebaseRepository.class);
-	private final  SharePortfolioService sharePortfolioService = new SharePortfolioServiceImpl(sharePortfolioRepository, shareRepository, exchangeRateDatebaseRepository);
+	private final ExchangeRateService exchangeRateService = Mockito.mock(ExchangeRateService.class);
+	private final  SharePortfolioService sharePortfolioService = new SharePortfolioServiceImpl(sharePortfolioRepository, shareRepository, exchangeRateService);
 	
 	private final Collection<PortfolioOptimisation> portfolioOptimisations = new ArrayList<>();
 	private final SharePortfolio sharePortfolio = Mockito.mock(SharePortfolio.class);
