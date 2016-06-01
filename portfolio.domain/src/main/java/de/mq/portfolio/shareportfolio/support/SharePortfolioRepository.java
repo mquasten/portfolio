@@ -11,7 +11,7 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 interface SharePortfolioRepository {
 
-	SharePortfolio portfolio(String name);
+	SharePortfolio portfolio(final String name);
 
 	void save(final SharePortfolio sharePortfolio);
 	
