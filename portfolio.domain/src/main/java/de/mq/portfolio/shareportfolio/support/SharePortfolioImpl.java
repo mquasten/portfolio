@@ -20,6 +20,7 @@ import org.springframework.util.Assert;
 
 import Jama.Matrix;
 import de.mq.portfolio.exchangerate.ExchangeRate;
+import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
@@ -296,6 +297,19 @@ class SharePortfolioImpl implements SharePortfolio {
 	
 		return (falsch-richtig)/ richtig;
 	}
+	@Override
+	public Double totalRate(final double[] weights, final ExchangeRateCalculator exchangeRateCalculator) {
+		weightsVectorGuard(weights);
+		final double richtig = sum((tc, i) -> ratesReference(weights, tc, i, exchangeRateCalculator));
+
+		final double falsch = sum((tc, i) ->  exchangeRateFactor(exchangeRateCalculator, tc, i)* weights[i]*tc.rates().get(timeCourses.get(i).rates().size()-1).value());
+	
+		return (falsch-richtig)/ richtig;
+	}
+
+	private double exchangeRateFactor(final ExchangeRateCalculator exchangeRateCalculator, TimeCourse tc, int i) {
+		return exchangeRateCalculator.factor(exchangeRate(tc), tc.rates().get(timeCourses.get(i).rates().size()-1).date());
+	}
 	
 	@Override
 	public Double totalRate() {
@@ -307,8 +321,13 @@ class SharePortfolioImpl implements SharePortfolio {
 		return totalRate(minWeights()) ;
 	}
 
+	@Deprecated
 	private double ratesReference(final double[] weights, TimeCourse tc, int i) {
 		return weights[i]* tc.rates().get(0).value();
+	}
+	
+	private double ratesReference(final double[] weights, TimeCourse tc, int i, ExchangeRateCalculator exchangeRateCalculator) {
+		return  exchangeRateFactor(exchangeRateCalculator, tc, i)* weights[i]* tc.rates().get(0).value();
 	}
 
 	private double sum(final Filter filter) {
@@ -326,6 +345,15 @@ class SharePortfolioImpl implements SharePortfolio {
 		final double wahr =   sum((tc, i) -> ratesReference(weights, tc, i));
 	   return falsch/wahr;
 	}
+	
+	@Override
+	public Double totalRateDividends(final double[] weights, final ExchangeRateCalculator exchangeRateCalculator) {
+		weightsVectorGuard(weights);
+		final double falsch = sum((tc, i) ->   exchangeRateFactor(exchangeRateCalculator, tc, i)*weights[i]* tc.dividends().stream().mapToDouble(d ->  d.value()).reduce((a,b) -> a+b).orElse(0d));
+		final double wahr =   sum((tc, i) -> ratesReference(weights, tc, i, exchangeRateCalculator));
+	   return falsch/wahr;
+	}
+	
 	@Override
 	public Double totalRateDividends() {
 	

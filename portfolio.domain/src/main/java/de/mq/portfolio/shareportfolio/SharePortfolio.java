@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
+import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.share.TimeCourse;
 
 public interface SharePortfolio {
@@ -36,10 +37,11 @@ public interface SharePortfolio {
 
 	Map<TimeCourse, Double> min();
 
+	@Deprecated
 	Double totalRate(final double[] weights);
 
 	
-
+	@Deprecated
 	Double totalRateDividends(final double[] weights);
 
 	void assign(Collection<TimeCourse> timeCourses);
@@ -48,8 +50,10 @@ public interface SharePortfolio {
 
 	Double standardDeviation();
 
+	@Deprecated
 	Double totalRate();
 
+	@Deprecated
 	Double totalRateDividends();
 
 	String currency();
@@ -57,6 +61,10 @@ public interface SharePortfolio {
 	ExchangeRate exchangeRate(TimeCourse timeCourse);
 
 	Collection<ExchangeRate> exchangeRateTranslations();
+
+	Double totalRateDividends(double[] weights, ExchangeRateCalculator exchangeRateCalculator);
+
+	Double totalRate(double[] weights, ExchangeRateCalculator exchangeRateCalculator);
 
 	
 
