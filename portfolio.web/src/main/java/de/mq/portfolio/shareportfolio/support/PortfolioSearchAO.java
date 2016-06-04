@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
+import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.share.support.TimeCourseCriteriaImpl;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
@@ -28,6 +31,14 @@ public class PortfolioSearchAO  implements Serializable {
 
 	private String portfolioName;
 	
+
+
+	private Optional<ExchangeRateCalculator> exchangeRateCalculator = Optional.empty();
+
+
+	
+
+
 
 
 
@@ -145,6 +156,16 @@ public class PortfolioSearchAO  implements Serializable {
 		this.portfolioName = portfolioName;
 	}
 
+	
+	public ExchangeRateCalculator getExchangeRateCalculator() {
+		Assert.isTrue(exchangeRateCalculator.isPresent(), "ExchangeRateCalculator is missing.");
+		return exchangeRateCalculator.get();
+	}
+
+
+	public void setExchangeRateCalculator(ExchangeRateCalculator exchangeRateCalculator) {
+		this.exchangeRateCalculator = Optional.of(exchangeRateCalculator);
+	}
 	
 
 }

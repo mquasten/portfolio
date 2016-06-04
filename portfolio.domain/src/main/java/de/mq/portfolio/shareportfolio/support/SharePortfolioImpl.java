@@ -37,7 +37,7 @@ class SharePortfolioImpl implements SharePortfolio {
 	private PortfolioOptimisation minVariance;
 
 	@Reference
-	private final  List<TimeCourse> timeCourses = new ArrayList<>();
+	private final List<TimeCourse> timeCourses = new ArrayList<>();
 
 	private double[] variances;
 
@@ -109,20 +109,26 @@ class SharePortfolioImpl implements SharePortfolio {
 		variancesExistsGuard();
 		covariancesExistsGuard();
 		weightingVectorExistsGuard(weightingVector);
-		Assert.isTrue(variances.length == covariances.length, "Variances and covariances Vector should have the same size.");
-		Assert.isTrue(weightingVector.length == variances.length, "Variances and weighting Vector should have the same size.");
-		final double[] sum = { IntStream.range(0, variances.length).mapToDouble(i -> Math.pow(weightingVector[i], 2) * variances[i]).reduce((result, yi) -> result + yi).orElse(0) };
-		IntStream.range(0, variances.length).forEach(i -> IntStream.range(i + 1, variances.length).forEach(j -> sum[0] += 2 * weightingVector[i] * weightingVector[j] * covariances[i][j]));
+		Assert.isTrue(variances.length == covariances.length,
+				"Variances and covariances Vector should have the same size.");
+		Assert.isTrue(weightingVector.length == variances.length,
+				"Variances and weighting Vector should have the same size.");
+		final double[] sum = {
+				IntStream.range(0, variances.length).mapToDouble(i -> Math.pow(weightingVector[i], 2) * variances[i])
+						.reduce((result, yi) -> result + yi).orElse(0) };
+		IntStream.range(0, variances.length).forEach(i -> IntStream.range(i + 1, variances.length)
+				.forEach(j -> sum[0] += 2 * weightingVector[i] * weightingVector[j] * covariances[i][j]));
 		return sum[0];
 
 	}
+
 	@Override
 	public final Double standardDeviation() {
-		
-		if( timeCourses.size()< 2){
+
+		if (timeCourses.size() < 2) {
 			return null;
 		}
-		
+
 		return Math.sqrt(risk(minWeights()));
 	}
 
@@ -136,13 +142,15 @@ class SharePortfolioImpl implements SharePortfolio {
 		}
 		variances = toVarianceArray(timeCourses);
 		covariances = toMatrix(timeCourses, (timeCourses, i, j) -> timeCourses.get(i).covariance(timeCourses.get(j)));
-		correlations = toMatrix(timeCourses, (timeCourses, i, j) -> timeCourses.get(i).covariance(timeCourses.get(j)) / (Math.sqrt(variances[i]) * Math.sqrt(variances[j])));
+		correlations = toMatrix(timeCourses, (timeCourses, i, j) -> timeCourses.get(i).covariance(timeCourses.get(j))
+				/ (Math.sqrt(variances[i]) * Math.sqrt(variances[j])));
 		return true;
 	}
 
 	private double[][] toMatrix(final List<TimeCourse> timeCourses, final MatixFunction function) {
 		double[][] results = new double[timeCourses.size()][timeCourses.size()];
-		IntStream.range(0, timeCourses.size()).forEach(i -> IntStream.range(0, timeCourses.size()).forEach(j -> results[i][j] = function.f(timeCourses, i, j)));
+		IntStream.range(0, timeCourses.size()).forEach(i -> IntStream.range(0, timeCourses.size())
+				.forEach(j -> results[i][j] = function.f(timeCourses, i, j)));
 		return results;
 	}
 
@@ -169,8 +177,6 @@ class SharePortfolioImpl implements SharePortfolio {
 		return Optional.ofNullable(minVariance);
 	}
 
-	
-
 	@Override
 	public final String id() {
 		return id;
@@ -179,14 +185,14 @@ class SharePortfolioImpl implements SharePortfolio {
 	@Override
 	public Map<TimeCourse, Double> min() {
 		final Map<TimeCourse, Double> weights = new HashMap<>();
-		if( timeCourses.isEmpty()) {
+		if (timeCourses.isEmpty()) {
 			return Collections.unmodifiableMap(weights);
 		}
-		if( variances == null) {
+		if (variances == null) {
 			return Collections.unmodifiableMap(weights);
 		}
-		
-		if( covariances == null) {
+
+		if (covariances == null) {
 			return Collections.unmodifiableMap(weights);
 		}
 		variancesExistsGuard();
@@ -194,7 +200,8 @@ class SharePortfolioImpl implements SharePortfolio {
 		Assert.isTrue(covariances.length == timeCourses.size());
 		Assert.isTrue(variances.length == timeCourses.size());
 		final double[][] array = new double[timeCourses.size() + 1][timeCourses.size() + 1];
-		IntStream.range(0, timeCourses.size()).forEach(i -> IntStream.range(0, timeCourses.size()).filter(j -> j != i).forEach(j -> array[i][j] = covariances[i][j]));
+		IntStream.range(0, timeCourses.size()).forEach(i -> IntStream.range(0, timeCourses.size()).filter(j -> j != i)
+				.forEach(j -> array[i][j] = covariances[i][j]));
 
 		IntStream.range(0, timeCourses.size()).forEach(i -> {
 			array[i][i] = variances[i];
@@ -212,22 +219,21 @@ class SharePortfolioImpl implements SharePortfolio {
 		// vector.print(15,10);
 		final Matrix result = matrix.solve(vector);
 		// result.print(15, 10);
-		
+
 		IntStream.range(0, timeCourses.size()).forEach(i -> weights.put(timeCourses.get(i), result.get(i, 0)));
 
-		return  Collections.unmodifiableMap(weights);
+		return Collections.unmodifiableMap(weights);
 
 	}
-	
+
 	@Override
 	public double[] minWeights() {
-	
-		
-	final double[] weightingVector = new double[timeCourses.size()]; 
-     Map<TimeCourse, Double> weights = min();
-		
+
+		final double[] weightingVector = new double[timeCourses.size()];
+		Map<TimeCourse, Double> weights = min();
+
 		IntStream.range(0, weightingVector.length).forEach(i -> weightingVector[i] = weights.get(timeCourses.get(i)));
-		
+
 		return weightingVector;
 	}
 
@@ -236,13 +242,14 @@ class SharePortfolioImpl implements SharePortfolio {
 		Assert.notNull(timeCourse);
 		Assert.notNull(timeCourse.share());
 		Assert.notNull(timeCourse.share().name());
-		if (timeCourses.stream().map(tc -> tc.share().name()).filter(n -> n.equals(timeCourse.share().name())).findAny().isPresent()) {
+		if (timeCourses.stream().map(tc -> tc.share().name()).filter(n -> n.equals(timeCourse.share().name())).findAny()
+				.isPresent()) {
 			return;
 		}
 		this.timeCourses.add(timeCourse);
 
 	}
-	
+
 	@Override
 	public void assign(final Collection<TimeCourse> timeCourses) {
 		Assert.notNull(timeCourses);
@@ -253,137 +260,164 @@ class SharePortfolioImpl implements SharePortfolio {
 		this.timeCourses.clear();
 		this.timeCourses.addAll(timeCourses);
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.shareportfolio.SharePortfolio#remove(de.mq.portfolio.share.TimeCourse)
+	 * 
+	 * @see
+	 * de.mq.portfolio.shareportfolio.SharePortfolio#remove(de.mq.portfolio.
+	 * share.TimeCourse)
 	 */
 	@Override
 	public void remove(final TimeCourse timeCourse) {
-		this.timeCourses.removeAll(this.timeCourses.stream().filter(tc -> tc.id().equals(timeCourse.id())).collect(Collectors.toSet()));
+		this.timeCourses.removeAll(
+				this.timeCourses.stream().filter(tc -> tc.id().equals(timeCourse.id())).collect(Collectors.toSet()));
 	}
-	
-	
+
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see de.mq.portfolio.shareportfolio.SharePortfolio#correlationEntries()
 	 */
 	@Override
-	public List<Entry<String,Map<String,Double>>> correlationEntries() {
-		final List<Entry<String,Map<String,Double>>> results = new ArrayList<>();
-		if( covariances==null){
-			return  Collections.unmodifiableList(results);
+	public List<Entry<String, Map<String, Double>>> correlationEntries() {
+		final List<Entry<String, Map<String, Double>>> results = new ArrayList<>();
+		if (covariances == null) {
+			return Collections.unmodifiableList(results);
 		}
-		 if( timeCourses.size() != covariances.length) {
-			 return Collections.unmodifiableList(results);
-		 }
-		 IntStream.range(0, timeCourses.size()).forEach(line -> {
-			 final Map<String,Double> cols = new HashMap<>();
-			 IntStream.range(0, timeCourses.size()).forEach(col -> {
-				  cols.put(timeCourses.get(col).share().name(), correlations[line][col] );
-			 });
-			 results.add( new AbstractMap.SimpleImmutableEntry<>(timeCourses.get(line).share().name(), cols));
-		 });
-		 return Collections.unmodifiableList(results);
+		if (timeCourses.size() != covariances.length) {
+			return Collections.unmodifiableList(results);
+		}
+		IntStream.range(0, timeCourses.size()).forEach(line -> {
+			final Map<String, Double> cols = new HashMap<>();
+			IntStream.range(0, timeCourses.size()).forEach(col -> {
+				cols.put(timeCourses.get(col).share().name(), correlations[line][col]);
+			});
+			results.add(new AbstractMap.SimpleImmutableEntry<>(timeCourses.get(line).share().name(), cols));
+		});
+		return Collections.unmodifiableList(results);
 	}
-	
+
 	@Override
 	public Double totalRate(final double[] weights) {
-		
+
 		weightsVectorGuard(weights);
 		final double richtig = sum((tc, i) -> ratesReference(weights, tc, i));
 
-		final double falsch = sum((tc, i) -> weights[i]*tc.rates().get(timeCourses.get(i).rates().size()-1).value());
-	
-		return (falsch-richtig)/ richtig;
+		final double falsch = sum(
+				(tc, i) -> weights[i] * tc.rates().get(timeCourses.get(i).rates().size() - 1).value());
+
+		return (falsch - richtig) / richtig;
 	}
+
 	@Override
 	public Double totalRate(final double[] weights, final ExchangeRateCalculator exchangeRateCalculator) {
 		weightsVectorGuard(weights);
 		final double richtig = sum((tc, i) -> ratesReference(weights, tc, i, exchangeRateCalculator));
 
-		final double falsch = sum((tc, i) ->  exchangeRateFactor(exchangeRateCalculator, tc, i)* weights[i]*tc.rates().get(timeCourses.get(i).rates().size()-1).value());
-	
-		return (falsch-richtig)/ richtig;
+		final double falsch = sum((tc, i) -> exchangeRateFactor(exchangeRateCalculator, tc, i) * weights[i]
+				* tc.rates().get(timeCourses.get(i).rates().size() - 1).value());
+
+		return (falsch - richtig) / richtig;
+	}
+
+	@Override
+	public Double totalRate(final ExchangeRateCalculator exchangeRateCalculator) {
+		if (timeCourses.size() < 2) {
+			return null;
+		}
+
+		return totalRate(minWeights(), exchangeRateCalculator);
 	}
 
 	private double exchangeRateFactor(final ExchangeRateCalculator exchangeRateCalculator, TimeCourse tc, int i) {
-		return exchangeRateCalculator.factor(exchangeRate(tc), tc.rates().get(timeCourses.get(i).rates().size()-1).date());
+		return exchangeRateCalculator.factor(exchangeRate(tc),
+				tc.rates().get(timeCourses.get(i).rates().size() - 1).date());
 	}
-	
+
 	@Override
 	public Double totalRate() {
-		
-		if( timeCourses.size() <2 ){
+
+		if (timeCourses.size() < 2) {
 			return null;
 		}
-		
-		return totalRate(minWeights()) ;
+
+		return totalRate(minWeights());
 	}
 
 	@Deprecated
 	private double ratesReference(final double[] weights, TimeCourse tc, int i) {
-		return weights[i]* tc.rates().get(0).value();
+		return weights[i] * tc.rates().get(0).value();
 	}
-	
-	private double ratesReference(final double[] weights, TimeCourse tc, int i, ExchangeRateCalculator exchangeRateCalculator) {
-		return  exchangeRateFactor(exchangeRateCalculator, tc, i)* weights[i]* tc.rates().get(0).value();
+
+	private double ratesReference(final double[] weights, TimeCourse tc, int i,
+			ExchangeRateCalculator exchangeRateCalculator) {
+		return exchangeRateFactor(exchangeRateCalculator, tc, i) * weights[i] * tc.rates().get(0).value();
 	}
 
 	private double sum(final Filter filter) {
-		return IntStream.range(0, timeCourses.size()).mapToDouble(i -> filter.filter(timeCourses.get(i), i)).reduce((a,b)-> a+b).orElse(0d);
+		return IntStream.range(0, timeCourses.size()).mapToDouble(i -> filter.filter(timeCourses.get(i), i))
+				.reduce((a, b) -> a + b).orElse(0d);
 	}
 
 	private void weightsVectorGuard(final double[] weights) {
-		Assert.isTrue(weights.length==timeCourses.size(), "Incorrects size of weightsvector");
+		Assert.isTrue(weights.length == timeCourses.size(), "Incorrects size of weightsvector");
 	}
-	
+
 	@Override
 	public Double totalRateDividends(final double[] weights) {
 		weightsVectorGuard(weights);
-		final double falsch = sum((tc, i) -> weights[i]* tc.dividends().stream().mapToDouble(d ->  d.value()).reduce((a,b) -> a+b).orElse(0d));
-		final double wahr =   sum((tc, i) -> ratesReference(weights, tc, i));
-	   return falsch/wahr;
+		final double falsch = sum((tc, i) -> weights[i]
+				* tc.dividends().stream().mapToDouble(d -> d.value()).reduce((a, b) -> a + b).orElse(0d));
+		final double wahr = sum((tc, i) -> ratesReference(weights, tc, i));
+		return falsch / wahr;
 	}
-	
+
+	@Override
+	public Double totalRateDividends(final ExchangeRateCalculator exchangeRateCalculator) {
+		if (timeCourses.size() < 2) {
+			return null;
+		}
+		return totalRateDividends(minWeights(), exchangeRateCalculator);
+	}
+
 	@Override
 	public Double totalRateDividends(final double[] weights, final ExchangeRateCalculator exchangeRateCalculator) {
 		weightsVectorGuard(weights);
-		final double falsch = sum((tc, i) ->   exchangeRateFactor(exchangeRateCalculator, tc, i)*weights[i]* tc.dividends().stream().mapToDouble(d ->  d.value()).reduce((a,b) -> a+b).orElse(0d));
-		final double wahr =   sum((tc, i) -> ratesReference(weights, tc, i, exchangeRateCalculator));
-	   return falsch/wahr;
+		final double falsch = sum((tc, i) -> exchangeRateFactor(exchangeRateCalculator, tc, i) * weights[i]
+				* tc.dividends().stream().mapToDouble(d -> d.value()).reduce((a, b) -> a + b).orElse(0d));
+		final double wahr = sum((tc, i) -> ratesReference(weights, tc, i, exchangeRateCalculator));
+		return falsch / wahr;
 	}
-	
+
 	@Override
 	public Double totalRateDividends() {
-	
-		if( timeCourses.size() < 2) {
-			return  null;
+
+		if (timeCourses.size() < 2) {
+			return null;
 		}
-		
+
 		return totalRateDividends(minWeights());
-		
+
 	}
-	
+
 	@Override
 	public final ExchangeRate exchangeRate(final TimeCourse timeCourse) {
-		
+
 		return new ExchangeRateImpl(currency(), timeCourse.share().currency());
-	} 
-	
+	}
+
 	@Override
 	public final String currency() {
 		return "EUR";
 	}
-	
+
 	@Override
 	public final Collection<ExchangeRate> exchangeRateTranslations() {
-		return timeCourses.stream().filter(tc ->  ! currency().equals(tc.share().currency())).map(tc -> new ExchangeRateImpl(currency(), tc.share().currency())).collect(Collectors.toSet());
+		return timeCourses.stream().filter(tc -> !currency().equals(tc.share().currency()))
+				.map(tc -> new ExchangeRateImpl(currency(), tc.share().currency())).collect(Collectors.toSet());
 	}
-	
-	
-	
-	
+
 }
 
 interface MatixFunction {

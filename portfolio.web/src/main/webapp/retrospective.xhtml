@@ -5,21 +5,19 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
-<ui:composition template="template.xhtml">
-	<ui:param name="headline" value="Retrospektive" />
-
-	<ui:define name="meta">
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<f:metadata>
+<h:head>
+	<title>Portfolio</title>
+	
+	<f:metadata>
 			<f:viewParam name="portfolioId" value="#{retrospective.portfolioId}" />
 			<f:viewParam name="filter" value="#{retrospective.filter}" />
 			<f:viewAction action="#{retrospectiveController.init(retrospective)}" />
-		</f:metadata>
+	</f:metadata>
 
-	</ui:define>
+</h:head>	
 
+<h:body>
 
-	<ui:define name="content">
 		<h:form>
 
 
@@ -227,8 +225,6 @@
 
 		</h:form>
 
-
-	</ui:define>
-
-</ui:composition>
+</h:body>
+	
 </html>

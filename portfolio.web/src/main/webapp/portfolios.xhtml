@@ -7,113 +7,132 @@
 	xmlns:p="http://primefaces.org/ui">
 <ui:composition template="template.xhtml">
 	<ui:param name="headline" value="#{msg.profiles_headline}" />
-<ui:define name="meta">
+	<ui:define name="meta">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<f:metadata>
-			
-			<f:viewAction action="#{portfolioController.init(portfolioSearch, userModel)}" />
+
+			<f:viewAction
+				action="#{portfolioController.init(portfolioSearch, userModel)}" />
 
 		</f:metadata>
 
 	</ui:define>
-<ui:define name="content">
+	<ui:define name="content">
 
-<h1>Portfolio suchen </h1>
+		<h1>Portfolio suchen</h1>
 
-<h:form>
+		<h:form>
 
-<h:panelGrid style="margin-bottom: 25px;" columns="2">
-<h:panelGrid id="searchGrid"   columns="2"   >
- <f:facet name="header">
+			<h:panelGrid style="margin-bottom: 25px;" columns="2">
+				<h:panelGrid id="searchGrid" columns="2">
+					<f:facet name="header">
  		Portfolio suchen
  </f:facet>
-         	<h:outputLabel for="name" value="Name"/>
-            <p:inputText id="name"  value="#{portfolioSearch.name}" style="width:100%" />
-            
-            <f:facet name="footer">
-         <h:panelGrid  columns="2" >
-            <p:commandButton id="searchButton" value="Suchen"  process="searchGrid" update="searchGrid,portfolioTable" action="#{portfolioController.page(portfolioSearch)}" />
-          	
-           </h:panelGrid>
-        
-		</f:facet>	
-		
-</h:panelGrid>
+					<h:outputLabel for="name" value="Name" />
+					<p:inputText id="name" value="#{portfolioSearch.name}"
+						style="width:100%" />
 
-<h:panelGrid id="portfolioGrid"  style="margin-left: 50px;"  >
-<f:facet name="header">
- 		<h:outputText value="Portfolio"   />
- </f:facet>
+					<f:facet name="footer">
+						<h:panelGrid columns="2">
+							<p:commandButton id="searchButton" value="Suchen"
+								process="searchGrid" update="searchGrid,portfolioTable"
+								action="#{portfolioController.page(portfolioSearch)}" />
 
-<h:outputText  value="#{portfolioSearch.portfolioName}" rendered="#{userModel.portfolioId != null}" />
-<p:commandButton id="aktivateButtom"  value="aktivieren"  process="@this" update="portfolioGrid"  disabled="#{portfolioSearch.selectedPortfolioReadonly}" action="#{portfolioController.activate(portfolioSearch,userModel)}"/>
+						</h:panelGrid>
 
-</h:panelGrid>
+					</f:facet>
 
-</h:panelGrid>	
+				</h:panelGrid>
 
-<p:dataTable id="portfolioTable" var="portfolio" value="#{portfolioSearch.sharePortfolios}" selection="#{portfolioSearch.selectedPortfolio}" rowKey="#{portfolio.id()}"  lazy="true"    resizableColumns="true"     >
-      
-        <p:column selectionMode="single" style="width:16px;text-align:center"/>
-        <p:ajax event="rowSelectRadio" process="@this" update="@form" />
-        <p:column headerText="Name">
-            <h:outputText value="#{portfolio.name()}" />
-        </p:column>
-        
-        <p:column headerText="Währung">
-            <h:outputText value="#{currencyConverter.convert(portfolio.currency())}" />
-        </p:column>
-        
-         <p:column headerText="committed">
-            <h:outputText value="#{portfolio.committed}" />
-        </p:column>
-        
-         <p:column headerText="Standardabweichung[‰]">
-            <h:outputText value="#{1000*portfolio.standardDeviation()}" >
-            
-            <f:convertNumber pattern="#0.00" />
-          
-            </h:outputText>
-        </p:column>
-        
-        <p:column headerText="Performance Kurse[%]">
-            <h:outputText value="#{100*portfolio.totalRate()}" >
-            
-            <f:convertNumber pattern="#0.00" />
-          
-            </h:outputText>
-        </p:column>
-        
-         <p:column headerText="Performance Dividenden[%]">
-            <h:outputText value="#{100*portfolio.totalRateDividends()}" >
-            
-            <f:convertNumber pattern="#0.00" />
-          
-            </h:outputText>
-        </p:column>
-        
-        <f:facet name="footer">
-        <p:button  value="neu" outcome="portfolio" />
-        <p:button  value="ändern" outcome="portfolio"  disabled="#{portfolioSearch.selectedPortfolio==null}" >
-        	
-        	<f:param name="portfolioId" value="#{portfolioSearch.selectedPortfolio.id()}"/>
-        </p:button>
-        
-        
-         <p:button  value="Retrospective" outcome="retrospective"  disabled="#{!portfolioSearch.retrospectiveAware}" >
-         	<f:param name="portfolioId" value="#{portfolioSearch.selectedPortfolio.id()}"/>
-         	<f:param name="filter" value=".*"/>
-         </p:button>
-    	</f:facet>
-       
-    </p:dataTable>
+				<h:panelGrid id="portfolioGrid" style="margin-left: 50px;">
+					<f:facet name="header">
+						<h:outputText value="Portfolio" />
+					</f:facet>
+
+					<h:outputText value="#{portfolioSearch.portfolioName}"
+						rendered="#{userModel.portfolioId != null}" />
+					<p:commandButton id="aktivateButtom" value="aktivieren"
+						process="@this" update="portfolioGrid"
+						disabled="#{portfolioSearch.selectedPortfolioReadonly}"
+						action="#{portfolioController.activate(portfolioSearch,userModel)}" />
+
+				</h:panelGrid>
+
+			</h:panelGrid>
+
+			<p:dataTable id="portfolioTable" var="portfolio"
+				value="#{portfolioSearch.sharePortfolios}"
+				selection="#{portfolioSearch.selectedPortfolio}"
+				rowKey="#{portfolio.id()}" lazy="true" resizableColumns="true">
+
+				<p:column selectionMode="single"
+					style="width:16px;text-align:center" />
+				<p:ajax event="rowSelectRadio" process="@this" update="@form" />
+				<p:column headerText="Name">
+					<h:outputText value="#{portfolio.name()}" />
+				</p:column>
+
+				<p:column headerText="Währung">
+					<h:outputText
+						value="#{currencyConverter.convert(portfolio.currency())}" />
+				</p:column>
+
+				<p:column headerText="committed">
+					<h:outputText value="#{portfolio.committed}" />
+				</p:column>
+
+				<p:column headerText="Standardabweichung[‰]">
+					<h:outputText value="#{1000*portfolio.standardDeviation()}">
+
+						<f:convertNumber pattern="#0.00" />
+
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Performance Kurse[%]">
+					<h:outputText
+						value="#{100*portfolio.totalRate(portfolioSearch.exchangeRateCalculator) }">
+						<f:convertNumber pattern="#0.00" />
+					</h:outputText>
+
+				</p:column>
+
+				<p:column headerText="Performance Dividenden[%]">
+
+					<h:outputText
+						value="#{100*portfolio.totalRateDividends(portfolioSearch.exchangeRateCalculator)}">
+
+						<f:convertNumber pattern="#0.00" />
+
+					</h:outputText>
+				</p:column>
+
+				<f:facet name="footer">
+					<p:button value="neu" outcome="portfolio" />
+					<p:button value="ändern" outcome="portfolio"
+						disabled="#{portfolioSearch.selectedPortfolio==null}">
+
+						<f:param name="portfolioId"
+							value="#{portfolioSearch.selectedPortfolio.id()}" />
+					</p:button>
 
 
-</h:form>
+					<p:button value="Retrospective" outcome="retrospective"
+						disabled="#{!portfolioSearch.retrospectiveAware}">
+						<f:param name="portfolioId"
+							value="#{portfolioSearch.selectedPortfolio.id()}" />
+						<f:param name="filter" value=".*" />
+					</p:button>
+				</f:facet>
 
-	
-	
-</ui:define>
+			</p:dataTable>
+
+
+		</h:form>
+
+
+
+	</ui:define>
 
 </ui:composition>
 </html>

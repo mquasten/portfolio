@@ -19,6 +19,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.client.ResourceAccessException;
 
+import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -33,15 +34,19 @@ public class PortfolioControllerImpl {
 	private static final String REDIRECT_TO_PORTFOLIOS_PAGE = "portfolios?faces-redirect=true";
 	private final SharePortfolioService sharePortfolioService;
 	
+	private final ExchangeRateService exchangeRateService;
+	
 	private final Converter<PortfolioAO, byte[]> pdfConverter;
+	
 	
 
 	private final ShareService shareService;
 
 	@Autowired
-	PortfolioControllerImpl(final SharePortfolioService sharePortfolioService, final ShareService shareService, final @Qualifier("portfolio2PdfConverter") Converter<PortfolioAO, byte[]> pdfConverter) {
+	PortfolioControllerImpl(final SharePortfolioService sharePortfolioService, final ShareService shareService, final ExchangeRateService exchangeRateService, final @Qualifier("portfolio2PdfConverter") Converter<PortfolioAO, byte[]> pdfConverter) {
 		this.sharePortfolioService = sharePortfolioService;
 		this.shareService=shareService;
+		this.exchangeRateService=exchangeRateService;
 		this.pdfConverter=pdfConverter;
 	}
 
@@ -50,7 +55,7 @@ public class PortfolioControllerImpl {
 		if (userModel.getPortfolioId() != null) {
 			portfolioSearchAO.setPortfolioName(sharePortfolioService.sharePortfolio(userModel.getPortfolioId()).name());
 		}
-
+		portfolioSearchAO.setExchangeRateCalculator(exchangeRateService.exchangeRateCalculator());
 	}
 
 	public void page(final PortfolioSearchAO portfolioSearchAO) {
