@@ -298,17 +298,7 @@ class SharePortfolioImpl implements SharePortfolio {
 		return Collections.unmodifiableList(results);
 	}
 
-	@Override
-	public Double totalRate(final double[] weights) {
-
-		weightsVectorGuard(weights);
-		final double richtig = sum((tc, i) -> ratesReference(weights, tc, i));
-
-		final double falsch = sum(
-				(tc, i) -> weights[i] * tc.rates().get(timeCourses.get(i).rates().size() - 1).value());
-
-		return (falsch - richtig) / richtig;
-	}
+	
 
 	@Override
 	public Double totalRate(final double[] weights, final ExchangeRateCalculator exchangeRateCalculator) {
@@ -335,20 +325,6 @@ class SharePortfolioImpl implements SharePortfolio {
 				tc.rates().get(timeCourses.get(i).rates().size() - 1).date());
 	}
 
-	@Override
-	public Double totalRate() {
-
-		if (timeCourses.size() < 2) {
-			return null;
-		}
-
-		return totalRate(minWeights());
-	}
-
-	@Deprecated
-	private double ratesReference(final double[] weights, TimeCourse tc, int i) {
-		return weights[i] * tc.rates().get(0).value();
-	}
 
 	private double ratesReference(final double[] weights, TimeCourse tc, int i,
 			ExchangeRateCalculator exchangeRateCalculator) {
@@ -364,14 +340,7 @@ class SharePortfolioImpl implements SharePortfolio {
 		Assert.isTrue(weights.length == timeCourses.size(), "Incorrects size of weightsvector");
 	}
 
-	@Override
-	public Double totalRateDividends(final double[] weights) {
-		weightsVectorGuard(weights);
-		final double falsch = sum((tc, i) -> weights[i]
-				* tc.dividends().stream().mapToDouble(d -> d.value()).reduce((a, b) -> a + b).orElse(0d));
-		final double wahr = sum((tc, i) -> ratesReference(weights, tc, i));
-		return falsch / wahr;
-	}
+	
 
 	@Override
 	public Double totalRateDividends(final ExchangeRateCalculator exchangeRateCalculator) {
@@ -390,17 +359,7 @@ class SharePortfolioImpl implements SharePortfolio {
 		return falsch / wahr;
 	}
 
-	@Override
-	public Double totalRateDividends() {
-
-		if (timeCourses.size() < 2) {
-			return null;
-		}
-
-		return totalRateDividends(minWeights());
-
-	}
-
+	
 	@Override
 	public final ExchangeRate exchangeRate(final TimeCourse timeCourse) {
 

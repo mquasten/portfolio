@@ -38,7 +38,7 @@ public class PortfolioControllerImpl {
 	
 	private final Converter<PortfolioAO, byte[]> pdfConverter;
 	
-	
+
 
 	private final ShareService shareService;
 
@@ -87,11 +87,13 @@ public class PortfolioControllerImpl {
 	
 	public void init(final PortfolioAO portfolioAO) {
 		if (portfolioAO.getId() == null) {
-			portfolioAO.setSharePortfolio(BeanUtils.instantiateClass(SharePortfolioImpl.class));
+			portfolioAO.setSharePortfolio(BeanUtils.instantiateClass(SharePortfolioImpl.class), Optional.empty());
 			return;
 		}
 
-		portfolioAO.setSharePortfolio(sharePortfolioService.sharePortfolio(portfolioAO.getId()));
+		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(portfolioAO.getId());
+		
+		portfolioAO.setSharePortfolio(sharePortfolio, Optional.of(exchangeRateService.exchangeRateCalculator(sharePortfolio.exchangeRateTranslations())));
 
 	}
 

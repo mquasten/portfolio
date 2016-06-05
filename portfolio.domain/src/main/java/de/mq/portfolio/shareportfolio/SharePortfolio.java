@@ -37,24 +37,12 @@ public interface SharePortfolio {
 
 	Map<TimeCourse, Double> min();
 
-	@Deprecated
-	Double totalRate(final double[] weights);
-
-	
-	@Deprecated
-	Double totalRateDividends(final double[] weights);
-
 	void assign(Collection<TimeCourse> timeCourses);
 
 	double[] minWeights();
 
 	Double standardDeviation();
 
-	@Deprecated
-	Double totalRate();
-
-	@Deprecated
-	Double totalRateDividends();
 
 	String currency();
 

@@ -7,18 +7,22 @@
   xmlns:p="http://primefaces.org/ui" >
   
 <h:head>
-	<!--  f:view renderKitId="PRIMEFACES_MOBILE" /-->
+	<!-- f:view renderKitId="PRIMEFACES_MOBILE" /-->
 	<title>#{message.template_title}</title>
 	<ui:insert name="meta" >
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />	
 	</ui:insert>
 	
 	<h:outputStylesheet library="css" name="style.css"  />
+	
 </h:head>
 <h:body>
 
 	<ui:insert name="menu" >
 	<h:form>
+	
+	
+	
 	<p:menubar>
 	<p:submenu label="#{message.template_submenu_shares}" >
 		 <p:menuitem value="#{message.template_submenu_shares_search}" outcome="shares"  disabled="#{facesContext.viewRoot.viewId == '/shares.xhtml'}"/>
@@ -40,6 +44,8 @@
 	</p:submenu>
 	
 	</p:menubar>
+	
+	
 	</h:form>
 	</ui:insert>
 

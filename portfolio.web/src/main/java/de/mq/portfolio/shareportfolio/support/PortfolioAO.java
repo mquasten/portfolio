@@ -6,15 +6,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.annotation.Id;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
+import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
+
 
 @Component("sharePortfolio")
 @Scope("view")
@@ -64,7 +68,9 @@ public class PortfolioAO implements Serializable {
 	} 
 	
 	
-	public final void setSharePortfolio(final SharePortfolio sharePortfolio) {
+	
+	
+	public final void setSharePortfolio(final SharePortfolio sharePortfolio, final Optional<ExchangeRateCalculator> exchangeRateCalculator) {
 		this.name=sharePortfolio.name();
 		this.currency=sharePortfolio.currency();
 		this.timeCourses.clear();
@@ -84,11 +90,12 @@ public class PortfolioAO implements Serializable {
 		}
 	
 		this.minStandardDeviation = sharePortfolio.standardDeviation();
-				
+		
+		Assert.isTrue(exchangeRateCalculator.isPresent(), "ExchangeRateCalculator is mandatory.");
 
-		this.totalRate=sharePortfolio.totalRate();
+		this.totalRate=sharePortfolio.totalRate(exchangeRateCalculator.get());
 			
-		this.totalRateDividends=sharePortfolio.totalRateDividends();
+		this.totalRateDividends=sharePortfolio.totalRateDividends(exchangeRateCalculator.get());
 	
 	}
 	

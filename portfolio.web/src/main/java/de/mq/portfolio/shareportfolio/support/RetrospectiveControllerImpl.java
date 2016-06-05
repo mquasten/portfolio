@@ -8,6 +8,7 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.LongStream;
 
 import org.primefaces.model.chart.LineChartSeries;
@@ -17,6 +18,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
+import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
+import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @Component("retrospectiveController")
@@ -26,10 +29,12 @@ public class RetrospectiveControllerImpl {
 	private final SharePortfolioService sharePortfolioService;
 	private final Converter<String, String> currencyConverter;
 	private final  DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	private final ExchangeRateService exchangeRateService;
 	
 	@Autowired
-	RetrospectiveControllerImpl(final SharePortfolioService sharePortfolioService, @Qualifier("currencyConverter") final Converter<String, String> currencyConverter) {
+	RetrospectiveControllerImpl(final SharePortfolioService sharePortfolioService,final ExchangeRateService exchangeRateService, @Qualifier("currencyConverter") final Converter<String, String> currencyConverter) {
 		this.sharePortfolioService = sharePortfolioService;
+		this.exchangeRateService = exchangeRateService;
 	    this.currencyConverter=currencyConverter;
 	}
 
@@ -45,9 +50,9 @@ public class RetrospectiveControllerImpl {
 		retrospectiveAO.setTitle(sharePortfolio.name());
 		retrospectiveAO.setStartDate(sharePortfolioRetrospective.initialRateWithExchangeRate().date());
 		retrospectiveAO.setEndDate(sharePortfolioRetrospective.endRateWithExchangeRate().date());
-		
-		retrospectiveAO.getCommittedPortfolio().setSharePortfolio(sharePortfolioRetrospective.committedSharePortfolio());
-		retrospectiveAO.getCurrentPortfolio().setSharePortfolio(sharePortfolioRetrospective.currentSharePortfolio());
+		final Optional<ExchangeRateCalculator> exchangeRateCalculator = Optional.of(exchangeRateService.exchangeRateCalculator(sharePortfolio.exchangeRateTranslations()));
+		retrospectiveAO.getCommittedPortfolio().setSharePortfolio(sharePortfolioRetrospective.committedSharePortfolio(), exchangeRateCalculator);
+		retrospectiveAO.getCurrentPortfolio().setSharePortfolio(sharePortfolioRetrospective.currentSharePortfolio(), exchangeRateCalculator);
 		final Collection<LineChartSeries> ratesSeries = new ArrayList<>();
 		retrospectiveAO.setTimeCourseRetrospectives(sharePortfolioRetrospective.timeCoursesWithExchangeRate());
 		sharePortfolioRetrospective.timeCoursesWithExchangeRate().stream().forEach(tcr -> {
