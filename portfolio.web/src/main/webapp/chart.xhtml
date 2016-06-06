@@ -5,35 +5,44 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
-<ui:composition template="template.xhtml">
-	<ui:param name="headline" value="Chart #{chart.wkn} [#{currencyConverter.convert(chart.currency)}]" />
 
-<ui:define name="meta">
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-			<f:metadata>
-		 		<f:viewParam name="shareCode" value="#{chart.code}" />
-		 		 <f:viewAction action="#{chartController.init(chart)}" />
-  	     	</f:metadata>
+<h:head>
+	<title>Portfolio</title>
+	
+	
+<f:metadata>
+  <f:viewParam name="shareCode" value="#{chart.code}" />
+  <f:viewAction action="#{chartController.init(chart)}" />
+    
+</f:metadata>
+	
+	<h:outputStylesheet library="css" name="style.css"  />
+</h:head>
 
-	</ui:define>
+<h:body>
 
 
-<ui:define name="content">
+
 <h:form>
+<h3 style="text-align:center;"> <h:outputText value="Chart #{chart.name} #{chart.wkn} [#{currencyConverter.convert(chart.currency)}]" /> </h3>
 
 
- 	<h:panelGrid style="margin: 0 auto;">
+<p:chart type="line" model="#{chart.chartModel}"
+				style="height:700px" />
+
+
+ 	<h:panelGrid style="width: 100%;">
   
-      <p:graphicImage value="#{chart.url}" />
+    
       
-      <f:facet name="footer">
+      
          <h:panelGroup style="display:block; text-align:center">
             <p:button  value="zurück" outcome="shares"  />
          </h:panelGroup>
-      </f:facet>
+     
   </h:panelGrid>
   
-  <h:panelGrid style="margin: 0 auto;"  rendered="#{chart.dividends.size() > 0 }" >
+  <h:panelGrid style="width:100%"  rendered="#{chart.dividends.size() > 0 }" >
   
    <f:facet name="header">
     <h:outputText value="Dividenden" />
@@ -57,8 +66,6 @@
   
 </h:form>
 	
-	
-</ui:define>
+</h:body>	
 
-</ui:composition>
 </html>

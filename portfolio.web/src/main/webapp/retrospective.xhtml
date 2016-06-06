@@ -25,7 +25,9 @@
 			<p:chart type="line" model="#{retrospective.chartModel}"
 				style="height:700px" />
 
-
+			<h:panelGrid columns="2">
+			
+			<p:button value="zurück" outcome="portfolios" />
 			<h:panelGrid columns="3">
 
 				<p:outputLabel value="Zeifunktion fiktiver Anteil" />
@@ -38,9 +40,12 @@
 				<p:commandButton value="anzeigen" process="@form" update="@form"
 					action="#{retrospectiveController.show(retrospective)}" />
 
+				
+
 
 			</h:panelGrid>
-
+			
+			</h:panelGrid>
 
 			<h3>
 				<h:outputText

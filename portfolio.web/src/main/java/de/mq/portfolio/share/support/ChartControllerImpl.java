@@ -1,7 +1,12 @@
 package de.mq.portfolio.share.support;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 
+import org.primefaces.model.chart.LineChartSeries;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,6 +21,8 @@ public class ChartControllerImpl {
 	
 	private final ShareService shareService;
 	
+	private final  DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	
 	@Autowired
 	ChartControllerImpl(final ShareService shareService) {
 		this.shareService=shareService;
@@ -28,10 +35,25 @@ public class ChartControllerImpl {
 		if(!timeCourse.isPresent()){
 			return;
 		}
-		
+		chartAO.setName(timeCourse.get().share().name());
 		chartAO.setDividends(timeCourse.get().dividends());
 		chartAO.setWkn(timeCourse.get().share().wkn());
 		chartAO.setCurrency(timeCourse.get().share().currency());
+		
+		final Collection<LineChartSeries> ratesSeries = new ArrayList<>();
+	
+	
+		final LineChartSeries series = new LineChartSeries();
+		timeCourse.get().rates().forEach(data -> series.set( df.format(data.date()), Double.valueOf(data.value()) ));
+		ratesSeries.add(series);
+			series.setShowMarker(false);
+			
+			series.setLabel(timeCourse.get().share().name());
+			 chartAO.assign(ratesSeries);		
+	
 	}
+	
+	
+
 
 }
