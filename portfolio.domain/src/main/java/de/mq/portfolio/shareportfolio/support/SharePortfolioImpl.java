@@ -131,6 +131,16 @@ class SharePortfolioImpl implements SharePortfolio {
 
 		return Math.sqrt(risk(minWeights()));
 	}
+	
+	@Override
+	public final Double standardDeviation(double[] weights) {
+
+		if (timeCourses.size() < 2) {
+			return null;
+		}
+
+		return Math.sqrt(risk(weights));
+	}
 
 	private void weightingVectorExistsGuard(final double[] weightingVector) {
 		Assert.notNull(weightingVector, "WeightingVector should be given");

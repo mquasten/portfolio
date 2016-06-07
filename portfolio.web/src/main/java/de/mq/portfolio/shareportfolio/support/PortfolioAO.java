@@ -35,10 +35,7 @@ public class PortfolioAO implements Serializable {
 
 	private boolean editable; 
 
-
-
 	
-
 
 	private final List<Entry<String,Map<String,Double>>> correlations  = new ArrayList<>();;
 	
@@ -82,7 +79,6 @@ public class PortfolioAO implements Serializable {
 		this.shares.addAll(sharePortfolio.timeCourses().stream().map(tc -> tc.share().name()).collect(Collectors.toList()));
 		this.weights.clear();
 		this.weights.putAll(sharePortfolio.min());
-		
 		this.editable=!sharePortfolio.isCommitted();
 		if (this.timeCourses.size() < 2) {
 			
@@ -99,9 +95,13 @@ public class PortfolioAO implements Serializable {
 	
 	}
 	
+
+
 	public final SharePortfolio getSharePortfolio() {
 		final SharePortfolio result = new SharePortfolioImpl(name, timeCourses);
 		ReflectionUtils.doWithFields(result.getClass(), field -> { /*"...touched for the very first time."  mdna (like a virgin**/ field.setAccessible(true); ReflectionUtils.setField(field, result, id); },field -> field.isAnnotationPresent(Id.class)); 
+		
+		((SharePortfolioImpl)result).onBeforeSave();
 		return result;
 		
 	}
@@ -157,5 +157,7 @@ public class PortfolioAO implements Serializable {
 	public String getCurrency() {
 		return currency;
 	}
+	
+	
 
 }

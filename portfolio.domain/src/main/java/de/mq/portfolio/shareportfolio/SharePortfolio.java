@@ -58,6 +58,8 @@ public interface SharePortfolio {
 	Double totalRate(final ExchangeRateCalculator exchangeRateCalculator);
 
 	Double totalRateDividends(final ExchangeRateCalculator exchangeRateCalculator);
+
+	Double standardDeviation(double[] weights);
 	
 
 }
