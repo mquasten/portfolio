@@ -34,6 +34,10 @@ public class RetrospectiveAO implements Serializable {
 	
 	private String currency = "EUR";
 
+	private double standardDeviation= 0d;
+
+	private Double totalRate = 0d;
+
 	
 
 	private Date startDate;
@@ -146,5 +150,21 @@ public class RetrospectiveAO implements Serializable {
 	public PortfolioAO getCurrentPortfolio() {
 		return currentPortfolio;
 	}
+	
+	public double getStandardDeviation() {
+		return standardDeviation;
+	}
 
+	public void setStandardDeviation(final double standardDeviation) {
+		this.standardDeviation = standardDeviation;
+	}
+
+	public Double getTotalRate() {
+		return totalRate;
+	}
+
+	public void setTotalRate(final Double totalrate) {
+		this.totalRate = totalrate;
+	}
+	
 }

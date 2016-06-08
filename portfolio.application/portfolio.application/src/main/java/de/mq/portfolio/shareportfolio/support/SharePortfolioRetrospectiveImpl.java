@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.springframework.util.Assert;
+
+import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
@@ -58,8 +61,33 @@ class SharePortfolioRetrospectiveImpl implements SharePortfolioRetrospective {
 		return Collections.unmodifiableCollection(timeCoursesWithExchangeRate);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioRetrospective#endRateWithExchangeRate()
+	 */
 	@Override
 	public Data endRateWithExchangeRate() {
 		return endRateWithExchangeRate;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioRetrospective#standardDeviation()
+	 */
+	@Override
+	public Double standardDeviation() {
+		portfoliosExistsGuard();
+		return currentSharePortfolio.standardDeviation(committedSharePortfolio.minWeights());
+	}
+
+	private void portfoliosExistsGuard() {
+		Assert.notNull(currentSharePortfolio, "CurrentSharePortfolio is mandatory.");
+		Assert.notNull(currentSharePortfolio, "committedSharePortfolio is mandatory.");
+	}
+	
+	@Override
+	public final Double totalRate(final ExchangeRateCalculator exchangeRateCalculator) {
+		portfoliosExistsGuard();
+		return currentSharePortfolio.totalRate(committedSharePortfolio.minWeights(), exchangeRateCalculator);
 	}
 }

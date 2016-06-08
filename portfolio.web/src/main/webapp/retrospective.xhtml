@@ -202,6 +202,9 @@
 							value="#{100*retrospective.committedPortfolio.totalRate}">
 							<f:convertNumber pattern="#0.00" />
 						</h:outputText></th>
+						
+						
+					
 
 					<th style="border: 1px solid black;"><h:outputText
 							value="#{100*retrospective.committedPortfolio.totalRateDividends}">
@@ -216,7 +219,7 @@
 							<f:convertNumber pattern="#0.00" />
 						</h:outputText>
 						/
-						<h:outputText value="#{1000*retrospective.currentPortfolio.sharePortfolio.standardDeviation(retrospective.committedPortfolio.sharePortfolio.minWeights())}">
+						<h:outputText value="#{1000*retrospective.standardDeviation}">
 							<f:convertNumber pattern="#0.00" />
 						</h:outputText>
 						
@@ -228,7 +231,13 @@
 					<th style="border: 1px solid black;"><h:outputText
 							value="#{100*retrospective.currentPortfolio.totalRate}">
 							<f:convertNumber pattern="#0.00" />
-						</h:outputText></th>
+						</h:outputText>
+						/
+						<h:outputText
+							value="#{100*retrospective.totalRate}">
+							<f:convertNumber pattern="#0.00" />
+						</h:outputText>
+						</th>
 					<th style="border: 1px solid black;"><h:outputText
 							value="#{100*retrospective.currentPortfolio.totalRateDividends}">
 							<f:convertNumber pattern="#0.00" />

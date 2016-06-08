@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
@@ -51,8 +52,13 @@ public class RetrospectiveControllerImpl {
 		retrospectiveAO.setStartDate(sharePortfolioRetrospective.initialRateWithExchangeRate().date());
 		retrospectiveAO.setEndDate(sharePortfolioRetrospective.endRateWithExchangeRate().date());
 		final Optional<ExchangeRateCalculator> exchangeRateCalculator = Optional.of(exchangeRateService.exchangeRateCalculator(sharePortfolio.exchangeRateTranslations()));
+		Assert.isTrue(exchangeRateCalculator.isPresent(), "ExchangeRateCalculator is mandatory.");
 		retrospectiveAO.getCommittedPortfolio().setSharePortfolio(sharePortfolioRetrospective.committedSharePortfolio(), exchangeRateCalculator);
 		retrospectiveAO.getCurrentPortfolio().setSharePortfolio(sharePortfolioRetrospective.currentSharePortfolio(), exchangeRateCalculator);
+		retrospectiveAO.setStandardDeviation(sharePortfolioRetrospective.standardDeviation());
+		
+		retrospectiveAO.setTotalRate(sharePortfolioRetrospective.totalRate(exchangeRateCalculator.get()));
+		
 		final Collection<LineChartSeries> ratesSeries = new ArrayList<>();
 		retrospectiveAO.setTimeCourseRetrospectives(sharePortfolioRetrospective.timeCoursesWithExchangeRate());
 		sharePortfolioRetrospective.timeCoursesWithExchangeRate().stream().forEach(tcr -> {
@@ -71,6 +77,7 @@ public class RetrospectiveControllerImpl {
       
         LongStream.rangeClosed(0, ChronoUnit.DAYS.between(start,sharePortfolioRetrospective.endRateWithExchangeRate().date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())).forEach(i ->  startLine.set(df.format(Date.from(start.plusDays(i).atStartOfDay(ZoneId.systemDefault()).toInstant())), sharePortfolioRetrospective.initialRateWithExchangeRate().value() ));
         ratesSeries.add(startLine);
+      
         retrospectiveAO.assign(ratesSeries);
 	}
 
