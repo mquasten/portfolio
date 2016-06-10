@@ -21,4 +21,6 @@ interface SharePortfolioRetrospective {
 
 	Double totalRate(final ExchangeRateCalculator exchangeRateCalculator);
 
+	Double totalRateDividends(final ExchangeRateCalculator exchangeRateCalculator);
+
 }

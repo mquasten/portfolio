@@ -241,7 +241,15 @@
 					<th style="border: 1px solid black;"><h:outputText
 							value="#{100*retrospective.currentPortfolio.totalRateDividends}">
 							<f:convertNumber pattern="#0.00" />
-						</h:outputText></th>
+						</h:outputText>
+					/
+					
+					<h:outputText
+							value="#{100*retrospective.totalRateDividends}">
+							<f:convertNumber pattern="#0.00" />
+					</h:outputText>	
+					</th>
+						
 
 				</tr>
 			</table>

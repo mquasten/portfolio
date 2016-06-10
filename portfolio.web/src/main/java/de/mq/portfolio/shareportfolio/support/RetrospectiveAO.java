@@ -38,7 +38,7 @@ public class RetrospectiveAO implements Serializable {
 
 	private Double totalRate = 0d;
 
-	
+	private Double totalRateDividends = 0d;
 
 	private Date startDate;
 
@@ -51,7 +51,9 @@ public class RetrospectiveAO implements Serializable {
 	
 	
 
-	private final PortfolioAO currentPortfolio = new PortfolioAO(); 
+	private final PortfolioAO currentPortfolio = new PortfolioAO();
+
+	
 
 	
 
@@ -165,6 +167,14 @@ public class RetrospectiveAO implements Serializable {
 
 	public void setTotalRate(final Double totalrate) {
 		this.totalRate = totalrate;
+	}
+	
+	public void setTotalRateDividends(final Double totalRateDividends) {
+		this.totalRateDividends = totalRateDividends;
+	}
+
+	public Double getTotalRateDividends() {
+		return totalRateDividends;
 	}
 	
 }

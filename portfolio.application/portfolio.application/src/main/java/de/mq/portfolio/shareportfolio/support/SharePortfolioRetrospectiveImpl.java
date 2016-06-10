@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.springframework.util.Assert;
-
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -16,16 +14,26 @@ class SharePortfolioRetrospectiveImpl implements SharePortfolioRetrospective {
 	private final SharePortfolio currentSharePortfolio;
 	private final Data initialRateWithExchangeRate;
 	private final Data endRateWithExchangeRate;
+	
+	private final Double standardDeviation;
+	
+	private final Double totalRate;
+	
+	private final Double totalRateDividends;
+	
 	private final Collection<TimeCourseRetrospective> timeCoursesWithExchangeRate=new ArrayList<>();;
 
 	
-	SharePortfolioRetrospectiveImpl(final SharePortfolio committedSharePortfolio, final SharePortfolio currentSharePortfolio, final Collection<TimeCourseRetrospective> timeCoursesWithExchangeRate, final Data initialRateWithExchangeRate, final Data endRateWithExchangeRate) {
+	SharePortfolioRetrospectiveImpl(final SharePortfolio committedSharePortfolio, final SharePortfolio currentSharePortfolio, final Collection<TimeCourseRetrospective> timeCoursesWithExchangeRate, final Data initialRateWithExchangeRate, final Data endRateWithExchangeRate, final Double standardDeviation, final Double totalRate, final Double totalRateDividends) {
 		this.committedSharePortfolio = committedSharePortfolio;
 		this.currentSharePortfolio = currentSharePortfolio;
 		this.timeCoursesWithExchangeRate.clear();
 		this.timeCoursesWithExchangeRate.addAll(timeCoursesWithExchangeRate);
 		this.initialRateWithExchangeRate=initialRateWithExchangeRate;
 		this.endRateWithExchangeRate=endRateWithExchangeRate;
+		this.standardDeviation=standardDeviation;
+		this.totalRate=totalRate;
+		this.totalRateDividends=totalRateDividends;
 	}
 	
 	/* (non-Javadoc)
@@ -76,18 +84,26 @@ class SharePortfolioRetrospectiveImpl implements SharePortfolioRetrospective {
 	 */
 	@Override
 	public Double standardDeviation() {
-		portfoliosExistsGuard();
-		return currentSharePortfolio.standardDeviation(committedSharePortfolio.minWeights());
-	}
-
-	private void portfoliosExistsGuard() {
-		Assert.notNull(currentSharePortfolio, "CurrentSharePortfolio is mandatory.");
-		Assert.notNull(currentSharePortfolio, "committedSharePortfolio is mandatory.");
+		return standardDeviation;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioRetrospective#totalRate(de.mq.portfolio.exchangerate.ExchangeRateCalculator)
+	 */
 	@Override
 	public final Double totalRate(final ExchangeRateCalculator exchangeRateCalculator) {
-		portfoliosExistsGuard();
-		return currentSharePortfolio.totalRate(committedSharePortfolio.minWeights(), exchangeRateCalculator);
+		return totalRate;
+	}
+	
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioRetrospective#totalRateDividends(de.mq.portfolio.exchangerate.ExchangeRateCalculator)
+	 */
+	@Override
+	public final Double totalRateDividends(final ExchangeRateCalculator exchangeRateCalculator) {
+		return totalRateDividends;
 	}
 }

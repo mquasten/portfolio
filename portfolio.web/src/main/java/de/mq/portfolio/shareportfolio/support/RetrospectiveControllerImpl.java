@@ -59,6 +59,8 @@ public class RetrospectiveControllerImpl {
 		
 		retrospectiveAO.setTotalRate(sharePortfolioRetrospective.totalRate(exchangeRateCalculator.get()));
 		
+		retrospectiveAO.setTotalRateDividends(sharePortfolioRetrospective.totalRateDividends(exchangeRateCalculator.get()));
+		
 		final Collection<LineChartSeries> ratesSeries = new ArrayList<>();
 		retrospectiveAO.setTimeCourseRetrospectives(sharePortfolioRetrospective.timeCoursesWithExchangeRate());
 		sharePortfolioRetrospective.timeCoursesWithExchangeRate().stream().forEach(tcr -> {
