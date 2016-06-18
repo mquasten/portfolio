@@ -1,0 +1,12 @@
+http://finance.yahoo.com/etf/
+
+
+etf-finder
+http://finance.yahoo.com/etf/lists/?mod_id=mediaquotesetf&tab=tab5&rcnt=50
+
+Beispiel:
+http://real-chart.finance.yahoo.com/table.csv?s=BUNT&a=5&b=19&c=2015
+
+
+
+
