@@ -97,7 +97,7 @@ class ShareImpl implements Share {
 	@Override
 	public String currency() {
 		if( currency==null){
-			return currency;
+			return null;
 		}
 		return currency.trim().toUpperCase();
 	}

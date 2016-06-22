@@ -40,5 +40,12 @@ public class DataTest {
 	public final void dateNull() {
 		BeanUtils.instantiateClass(DataImpl.class).date();
 	}
+	
+	@Test
+	public final void createWithDate() throws ParseException{
+		final SimpleDateFormat df = new SimpleDateFormat(DataImpl.DATE_PATTERN);
+		final Data data = new DataImpl(df.parse(DATE), VALUE);
+		Assert.assertEquals(DATE, df.format(data.date()));
+	}
 
 }

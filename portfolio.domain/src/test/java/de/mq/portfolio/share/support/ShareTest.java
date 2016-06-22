@@ -6,12 +6,14 @@ import org.junit.Test;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.share.Share;
 
 public class ShareTest {
 	
+	private static final String CURRENCY_FIELD = "currency";
 	private static final String CURRENCY = "EUR";
 	private static final String WKN = "wkn123456";
 	private static final String ID_FIELD = "id";
@@ -78,7 +80,17 @@ public class ShareTest {
 		
 	}
 	
+	@Test
+	public final void wkn() {
+		Assert.assertEquals(WKN, share.wkn());
+	}
 	
+	@Test
+	public final void currency() {
+		Assert.assertEquals(CURRENCY, share.currency());
+		ReflectionTestUtils.setField(share, CURRENCY_FIELD, null);
+		Assert.assertNull(share.currency());
+	}
 	
 	
 
