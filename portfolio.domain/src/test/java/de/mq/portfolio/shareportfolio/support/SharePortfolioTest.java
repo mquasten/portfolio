@@ -1,12 +1,9 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
-
-import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,12 +11,24 @@ import org.mockito.Mockito;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
+import junit.framework.Assert;
 
 public class SharePortfolioTest {
 	
+	
+
+	private static final String CODE = "CODE";
+
+	private static final String SHARE_NAME_02 = "Share02";
+
+	private static final String SHARE_NAME_01 = "Share01";
+
+	private static final String NEW_SHARE_NAME = "Coca Cola";
+
 	private static final String MIN_VARIANCE_FIELD = "minVariance";
 
 	static final String VARIANCES_FIELD = "variances";
@@ -45,12 +54,28 @@ public class SharePortfolioTest {
 	private final TimeCourse timeCourse1 = Mockito.mock(TimeCourse.class);
 	private final TimeCourse timeCourse2 = Mockito.mock(TimeCourse.class);
 	private final double[] weights = new double[] { 1d/3d , 2d/3d};
-   
+	
+	private final Share share = Mockito.mock(Share.class);
+	private final TimeCourse timeCourse = Mockito.mock(TimeCourse.class);
+	private final Share share1 = Mockito.mock(Share.class);
+	private final Share share2 = Mockito.mock(Share.class);
 	private final PortfolioOptimisation portfolioOptimisation = Mockito.mock(PortfolioOptimisation.class);
    
 	@Before
 	public void setup() {
 		
+		Mockito.when(share.name()).thenReturn(NEW_SHARE_NAME);
+		Mockito.when(share.code()).thenReturn(CODE);
+		Mockito.when(timeCourse.share()).thenReturn(share);
+		
+		Mockito.when(share1.name()).thenReturn(SHARE_NAME_01);
+		Mockito.when(share1.code()).thenReturn(CODE);
+		
+		Mockito.when(share2.name()).thenReturn(SHARE_NAME_02);
+		Mockito.when(share2.code()).thenReturn(CODE);
+		
+		Mockito.when(timeCourse1.share()).thenReturn(share1);
+		Mockito.when(timeCourse2.share()).thenReturn(share2);
 		timeCourses.add(timeCourse1);
 		timeCourses.add(timeCourse2);
 		sharePortfolio = new SharePortfolioImpl(NAME, timeCourses);
@@ -181,5 +206,26 @@ public class SharePortfolioTest {
 	public final void annotations() {
 		Assert.assertTrue(SharePortfolioImpl.class.isAnnotationPresent(Document.class));
 		Assert.assertEquals(COLLECTION, SharePortfolioImpl.class.getAnnotation(Document.class).collection());
+	}
+	
+	@Test
+	public final void assignTimeCourse() {
+		
+		Assert.assertEquals(timeCourses, sharePortfolio.timeCourses());
+		sharePortfolio.assign(timeCourse);
+		Assert.assertEquals(timeCourses.size()+1, sharePortfolio.timeCourses().size());
+	
+		final Optional<TimeCourse> result = sharePortfolio.timeCourses().stream().filter(tc -> tc.share().name()==share.name()).findFirst();
+		Assert.assertTrue(result.isPresent());
+		Assert.assertEquals(timeCourse, result.get());
+	}
+	
+	@Test
+	public final void assignTimeCourseExists() {
+		Assert.assertEquals(timeCourses, sharePortfolio.timeCourses());
+		Mockito.when(share.name()).thenReturn(SHARE_NAME_01);	
+		sharePortfolio.assign(timeCourse);
+		Assert.assertEquals(timeCourses.size(), sharePortfolio.timeCourses().size());
+		Assert.assertEquals(timeCourses.size(), sharePortfolio.timeCourses().stream().filter(tc -> tc.share().equals(share1)||tc.share().equals(share2)).count());
 	}
 }

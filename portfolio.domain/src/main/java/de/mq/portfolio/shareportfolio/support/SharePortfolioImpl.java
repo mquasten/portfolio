@@ -252,6 +252,7 @@ class SharePortfolioImpl implements SharePortfolio {
 		Assert.notNull(timeCourse);
 		Assert.notNull(timeCourse.share());
 		Assert.notNull(timeCourse.share().name());
+		Assert.notNull(timeCourse.share().code());
 		if (timeCourses.stream().map(tc -> tc.share().name()).filter(n -> n.equals(timeCourse.share().name())).findAny()
 				.isPresent()) {
 			return;
