@@ -17,6 +17,7 @@ import org.springframework.data.annotation.Reference;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import Jama.Matrix;
 import de.mq.portfolio.exchangerate.ExchangeRate;
@@ -28,6 +29,9 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @Document(collection = "Portfolio")
 class SharePortfolioImpl implements SharePortfolio {
+	
+	static final String DEFAULT_CURRENCY = "EUR";
+
 	@Id
 	private String id;
 
@@ -109,15 +113,10 @@ class SharePortfolioImpl implements SharePortfolio {
 		variancesExistsGuard();
 		covariancesExistsGuard();
 		weightingVectorExistsGuard(weightingVector);
-		Assert.isTrue(variances.length == covariances.length,
-				"Variances and covariances Vector should have the same size.");
-		Assert.isTrue(weightingVector.length == variances.length,
-				"Variances and weighting Vector should have the same size.");
-		final double[] sum = {
-				IntStream.range(0, variances.length).mapToDouble(i -> Math.pow(weightingVector[i], 2) * variances[i])
-						.reduce((result, yi) -> result + yi).orElse(0) };
-		IntStream.range(0, variances.length).forEach(i -> IntStream.range(i + 1, variances.length)
-				.forEach(j -> sum[0] += 2 * weightingVector[i] * weightingVector[j] * covariances[i][j]));
+		Assert.isTrue(variances.length == covariances.length, "Variances and covariances Vector should have the same size.");
+		Assert.isTrue(weightingVector.length == variances.length, "Variances and weighting Vector should have the same size.");
+		final double[] sum = { IntStream.range(0, variances.length).mapToDouble(i -> Math.pow(weightingVector[i], 2) * variances[i]).reduce((result, yi) -> result + yi).orElse(0) };
+		IntStream.range(0, variances.length).forEach(i -> IntStream.range(i + 1, variances.length).forEach(j -> sum[0] += 2 * weightingVector[i] * weightingVector[j] * covariances[i][j]));
 		return sum[0];
 
 	}
@@ -131,7 +130,7 @@ class SharePortfolioImpl implements SharePortfolio {
 
 		return Math.sqrt(risk(minWeights()));
 	}
-	
+
 	@Override
 	public final Double standardDeviation(double[] weights) {
 
@@ -152,15 +151,13 @@ class SharePortfolioImpl implements SharePortfolio {
 		}
 		variances = toVarianceArray(timeCourses);
 		covariances = toMatrix(timeCourses, (timeCourses, i, j) -> timeCourses.get(i).covariance(timeCourses.get(j)));
-		correlations = toMatrix(timeCourses, (timeCourses, i, j) -> timeCourses.get(i).covariance(timeCourses.get(j))
-				/ (Math.sqrt(variances[i]) * Math.sqrt(variances[j])));
+		correlations = toMatrix(timeCourses, (timeCourses, i, j) -> timeCourses.get(i).covariance(timeCourses.get(j)) / (Math.sqrt(variances[i]) * Math.sqrt(variances[j])));
 		return true;
 	}
 
 	private double[][] toMatrix(final List<TimeCourse> timeCourses, final MatixFunction function) {
 		double[][] results = new double[timeCourses.size()][timeCourses.size()];
-		IntStream.range(0, timeCourses.size()).forEach(i -> IntStream.range(0, timeCourses.size())
-				.forEach(j -> results[i][j] = function.f(timeCourses, i, j)));
+		IntStream.range(0, timeCourses.size()).forEach(i -> IntStream.range(0, timeCourses.size()).forEach(j -> results[i][j] = function.f(timeCourses, i, j)));
 		return results;
 	}
 
@@ -207,11 +204,12 @@ class SharePortfolioImpl implements SharePortfolio {
 		}
 		variancesExistsGuard();
 		covariancesExistsGuard();
-		Assert.isTrue(covariances.length == timeCourses.size());
-		Assert.isTrue(variances.length == timeCourses.size());
+		Assert.isTrue(covariances.length == timeCourses.size(), "Covariances and timecourses didn't match.");
+		Assert.isTrue(variances.length == timeCourses.size() , "Variances and timecourses didn't match.");
+		IntStream.range(0, timeCourses.size()).mapToLong(i -> CollectionUtils.arrayToList( covariances[i]).size()).forEach(length -> Assert.isTrue(length == timeCourses.size(), "Covariances and timecourses didn't match." ));
+		
 		final double[][] array = new double[timeCourses.size() + 1][timeCourses.size() + 1];
-		IntStream.range(0, timeCourses.size()).forEach(i -> IntStream.range(0, timeCourses.size()).filter(j -> j != i)
-				.forEach(j -> array[i][j] = covariances[i][j]));
+		IntStream.range(0, timeCourses.size()).forEach(i -> IntStream.range(0, timeCourses.size()).filter(j -> j != i).forEach(j -> array[i][j] = covariances[i][j]));
 
 		IntStream.range(0, timeCourses.size()).forEach(i -> {
 			array[i][i] = variances[i];
@@ -240,7 +238,7 @@ class SharePortfolioImpl implements SharePortfolio {
 	public double[] minWeights() {
 
 		final double[] weightingVector = new double[timeCourses.size()];
-		Map<TimeCourse, Double> weights = min();
+		final Map<TimeCourse, Double> weights = min();
 
 		IntStream.range(0, weightingVector.length).forEach(i -> weightingVector[i] = weights.get(timeCourses.get(i)));
 
@@ -253,8 +251,8 @@ class SharePortfolioImpl implements SharePortfolio {
 		Assert.notNull(timeCourse.share());
 		Assert.notNull(timeCourse.share().name());
 		Assert.notNull(timeCourse.share().code());
-		if (timeCourses.stream().map(tc -> tc.share().name()).filter(n -> n.equals(timeCourse.share().name())).findAny()
-				.isPresent()) {
+		Assert.notNull(timeCourse.id());
+		if (timeCourses.stream().map(tc -> tc.share().name()).filter(n -> n.equals(timeCourse.share().name())).findAny().isPresent()) {
 			return;
 		}
 		this.timeCourses.add(timeCourse);
@@ -264,9 +262,12 @@ class SharePortfolioImpl implements SharePortfolio {
 	@Override
 	public void assign(final Collection<TimeCourse> timeCourses) {
 		Assert.notNull(timeCourses);
+		timeCourses.stream().map(tc -> tc.id()).forEach(id -> Assert.hasText(id, "Id is mandatory"));
 		timeCourses.stream().map(tc -> tc.share()).forEach(share -> {
 			Assert.notNull(share, "Timecourse should have a share");
 			Assert.hasText(share.code(), "Code is mandatory");
+			Assert.hasText(share.name(), "Name is mandatory");
+
 		});
 		this.timeCourses.clear();
 		this.timeCourses.addAll(timeCourses);
@@ -281,8 +282,9 @@ class SharePortfolioImpl implements SharePortfolio {
 	 */
 	@Override
 	public void remove(final TimeCourse timeCourse) {
-		this.timeCourses.removeAll(
-				this.timeCourses.stream().filter(tc -> tc.id().equals(timeCourse.id())).collect(Collectors.toSet()));
+		Assert.notNull(timeCourses);
+		Assert.notNull(timeCourse.id());
+		this.timeCourses.removeAll(this.timeCourses.stream().filter(tc -> tc.id().equals(timeCourse.id())).collect(Collectors.toSet()));
 	}
 
 	/*
@@ -293,12 +295,14 @@ class SharePortfolioImpl implements SharePortfolio {
 	@Override
 	public List<Entry<String, Map<String, Double>>> correlationEntries() {
 		final List<Entry<String, Map<String, Double>>> results = new ArrayList<>();
-		if (covariances == null) {
+		if (correlations == null) {
 			return Collections.unmodifiableList(results);
 		}
-		if (timeCourses.size() != covariances.length) {
+		if (timeCourses.size() != correlations.length) {
 			return Collections.unmodifiableList(results);
 		}
+		
+		IntStream.range(0, timeCourses.size()).mapToLong(i-> CollectionUtils.arrayToList(correlations[i]).size()).forEach(length -> Assert.isTrue(length== timeCourses.size(), "Corelations and timecourses didn't match."));
 		IntStream.range(0, timeCourses.size()).forEach(line -> {
 			final Map<String, Double> cols = new HashMap<>();
 			IntStream.range(0, timeCourses.size()).forEach(col -> {
@@ -309,15 +313,12 @@ class SharePortfolioImpl implements SharePortfolio {
 		return Collections.unmodifiableList(results);
 	}
 
-	
-
 	@Override
 	public Double totalRate(final double[] weights, final ExchangeRateCalculator exchangeRateCalculator) {
 		weightsVectorGuard(weights);
 		final double richtig = sum((tc, i) -> ratesReference(weights, tc, i, exchangeRateCalculator));
 
-		final double falsch = sum((tc, i) -> exchangeRateFactor(exchangeRateCalculator, tc, i) * weights[i]
-				* tc.rates().get(timeCourses.get(i).rates().size() - 1).value());
+		final double falsch = sum((tc, i) -> exchangeRateFactor(exchangeRateCalculator, tc, i) * weights[i] * tc.rates().get(timeCourses.get(i).rates().size() - 1).value());
 
 		return (falsch - richtig) / richtig;
 	}
@@ -332,26 +333,20 @@ class SharePortfolioImpl implements SharePortfolio {
 	}
 
 	private double exchangeRateFactor(final ExchangeRateCalculator exchangeRateCalculator, TimeCourse tc, int i) {
-		return exchangeRateCalculator.factor(exchangeRate(tc),
-				tc.rates().get(timeCourses.get(i).rates().size() - 1).date());
+		return exchangeRateCalculator.factor(exchangeRate(tc), tc.rates().get(timeCourses.get(i).rates().size() - 1).date());
 	}
 
-
-	private double ratesReference(final double[] weights, TimeCourse tc, int i,
-			ExchangeRateCalculator exchangeRateCalculator) {
+	private double ratesReference(final double[] weights, TimeCourse tc, int i, ExchangeRateCalculator exchangeRateCalculator) {
 		return exchangeRateFactor(exchangeRateCalculator, tc, i) * weights[i] * tc.rates().get(0).value();
 	}
 
 	private double sum(final Filter filter) {
-		return IntStream.range(0, timeCourses.size()).mapToDouble(i -> filter.filter(timeCourses.get(i), i))
-				.reduce((a, b) -> a + b).orElse(0d);
+		return IntStream.range(0, timeCourses.size()).mapToDouble(i -> filter.filter(timeCourses.get(i), i)).reduce((a, b) -> a + b).orElse(0d);
 	}
 
 	private void weightsVectorGuard(final double[] weights) {
 		Assert.isTrue(weights.length == timeCourses.size(), "Incorrects size of weightsvector");
 	}
-
-	
 
 	@Override
 	public Double totalRateDividends(final ExchangeRateCalculator exchangeRateCalculator) {
@@ -364,13 +359,11 @@ class SharePortfolioImpl implements SharePortfolio {
 	@Override
 	public Double totalRateDividends(final double[] weights, final ExchangeRateCalculator exchangeRateCalculator) {
 		weightsVectorGuard(weights);
-		final double falsch = sum((tc, i) -> exchangeRateFactor(exchangeRateCalculator, tc, i) * weights[i]
-				* tc.dividends().stream().mapToDouble(d -> d.value()).reduce((a, b) -> a + b).orElse(0d));
+		final double falsch = sum((tc, i) -> exchangeRateFactor(exchangeRateCalculator, tc, i) * weights[i] * tc.dividends().stream().mapToDouble(d -> d.value()).reduce((a, b) -> a + b).orElse(0d));
 		final double wahr = sum((tc, i) -> ratesReference(weights, tc, i, exchangeRateCalculator));
 		return falsch / wahr;
 	}
 
-	
 	@Override
 	public final ExchangeRate exchangeRate(final TimeCourse timeCourse) {
 
@@ -379,13 +372,12 @@ class SharePortfolioImpl implements SharePortfolio {
 
 	@Override
 	public final String currency() {
-		return "EUR";
+		return DEFAULT_CURRENCY;
 	}
 
 	@Override
 	public final Collection<ExchangeRate> exchangeRateTranslations() {
-		return timeCourses.stream().filter(tc -> !currency().equals(tc.share().currency()))
-				.map(tc -> new ExchangeRateImpl(currency(), tc.share().currency())).collect(Collectors.toSet());
+		return timeCourses.stream().filter(tc -> !currency().equals(tc.share().currency())).map(tc -> new ExchangeRateImpl(currency(), tc.share().currency())).collect(Collectors.toSet());
 	}
 
 }

@@ -1,15 +1,23 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
@@ -53,13 +61,19 @@ public class SharePortfolioTest {
    
 	private final TimeCourse timeCourse1 = Mockito.mock(TimeCourse.class);
 	private final TimeCourse timeCourse2 = Mockito.mock(TimeCourse.class);
+	
 	private final double[] weights = new double[] { 1d/3d , 2d/3d};
 	
 	private final Share share = Mockito.mock(Share.class);
 	private final TimeCourse timeCourse = Mockito.mock(TimeCourse.class);
 	private final Share share1 = Mockito.mock(Share.class);
 	private final Share share2 = Mockito.mock(Share.class);
+	private final Map<TimeCourse,Double> minWeights = new HashMap<>();
+
 	private final PortfolioOptimisation portfolioOptimisation = Mockito.mock(PortfolioOptimisation.class);
+	
+	// page 38 Performancemessung example results
+	private final  double standardDerivation = Math.round(100*10.81/Math.sqrt(12))/100d;
    
 	@Before
 	public void setup() {
@@ -68,14 +82,23 @@ public class SharePortfolioTest {
 		Mockito.when(share.code()).thenReturn(CODE);
 		Mockito.when(timeCourse.share()).thenReturn(share);
 		
+		randomId(timeCourse);
+		randomId(timeCourse1);
+		randomId(timeCourse2);
+		
+		
+		
 		Mockito.when(share1.name()).thenReturn(SHARE_NAME_01);
 		Mockito.when(share1.code()).thenReturn(CODE);
 		
 		Mockito.when(share2.name()).thenReturn(SHARE_NAME_02);
 		Mockito.when(share2.code()).thenReturn(CODE);
 		
+		
+		
 		Mockito.when(timeCourse1.share()).thenReturn(share1);
 		Mockito.when(timeCourse2.share()).thenReturn(share2);
+		
 		timeCourses.add(timeCourse1);
 		timeCourses.add(timeCourse2);
 		sharePortfolio = new SharePortfolioImpl(NAME, timeCourses);
@@ -93,6 +116,16 @@ public class SharePortfolioTest {
 	   ReflectionTestUtils.setField(sharePortfolio, CORRELATIONS_FIELD, correlations);
 	   
 	   ReflectionTestUtils.setField(sharePortfolio, MIN_VARIANCE_FIELD, portfolioOptimisation);
+	   
+	   // page 38 Performancemessung example results
+	   minWeights.put(timeCourse1, 54.50d);
+	   minWeights.put(timeCourse2, 44.29d);
+	   minWeights.put(timeCourse, 1.21d);
+	}
+
+
+	private void randomId(TimeCourse timeCourse) {
+		Mockito.when(timeCourse.id()).thenReturn(""+ Math.random()*1e16);
 	}
 	
 	
@@ -227,5 +260,235 @@ public class SharePortfolioTest {
 		sharePortfolio.assign(timeCourse);
 		Assert.assertEquals(timeCourses.size(), sharePortfolio.timeCourses().size());
 		Assert.assertEquals(timeCourses.size(), sharePortfolio.timeCourses().stream().filter(tc -> tc.share().equals(share1)||tc.share().equals(share2)).count());
+	}
+	
+	@Test
+	public final void assignTimeCourseCollection() {
+		Assert.assertEquals(timeCourses, sharePortfolio.timeCourses());
+		final Collection<TimeCourse> tcs = Arrays.asList(timeCourse);
+		sharePortfolio.assign(tcs);
+		Assert.assertEquals(1, sharePortfolio.timeCourses().size());
+		Assert.assertTrue(sharePortfolio.timeCourses().stream().findAny().isPresent());
+		Assert.assertEquals(timeCourse, sharePortfolio.timeCourses().stream().findAny().get());
+		
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void assignTimeCourseCollectionNameGuard() {
+		Mockito.when(share.name()).thenReturn(null);
+		sharePortfolio.assign(Arrays.asList(timeCourse));
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void assignTimeCourseCollectionCodeGuard() {
+		Mockito.when(share.code()).thenReturn(null);
+		sharePortfolio.assign(Arrays.asList(timeCourse));
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void assignTimeCourseCollectionIdGuard() {
+		Mockito.when(timeCourse.id()).thenReturn(null);
+		sharePortfolio.assign(Arrays.asList(timeCourse));
+	}
+	
+	@Test
+	public final void removeTimeCourse() {
+		Assert.assertEquals(timeCourses, sharePortfolio.timeCourses());
+		sharePortfolio.remove(timeCourse1);
+		Assert.assertEquals(1, sharePortfolio.timeCourses().size());
+		Assert.assertTrue(sharePortfolio.timeCourses().stream().findAny().isPresent());
+		Assert.assertEquals(timeCourse2, sharePortfolio.timeCourses().stream().findAny().get());
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void removeTimeCourseIdMissing() {
+		Mockito.when(timeCourse.id()).thenReturn(null);
+		sharePortfolio.remove(timeCourse);
+	}
+	
+	@Test
+	public final void id() {
+		Assert.assertNull(sharePortfolio.id());
+		final String id = "" + Math.random()*1e16;
+		ReflectionUtils.doWithFields(SharePortfolioImpl.class, field -> ReflectionTestUtils.setField(sharePortfolio,field.getName(), id ) , field -> field.isAnnotationPresent(Id.class));
+	    Assert.assertEquals(id, sharePortfolio.id()); 
+	}
+	
+	@Test
+	public final void min() {
+		
+		preparePortfolioForMinWeightTest();
+		
+		final Map<TimeCourse, Double> results= sharePortfolio.min();
+		
+		Assert.assertEquals(timeCourses.size()+1, results.size());
+		
+		timeCourses.forEach(tc -> results.containsKey(tc));
+		Assert.assertTrue(results.containsKey(timeCourse));
+		
+		Assert.assertEquals(minWeights.get(timeCourse1), percentRound(results.get(timeCourse1)));
+		Assert.assertEquals(minWeights.get(timeCourse2), percentRound(results.get(timeCourse2)));
+		Assert.assertEquals(minWeights.get(timeCourse), percentRound(results.get(timeCourse)));
+		
+	}
+	
+	@Test
+	public final void minNoTimeCourses() {
+		resetTimeCourses(); 
+	    Assert.assertTrue(sharePortfolio.timeCourses().isEmpty());
+	    Assert.assertTrue(sharePortfolio.min().isEmpty());
+	}
+	
+	@Test
+	public final void minVariancesNull() {
+		Assert.assertFalse(sharePortfolio.timeCourses().isEmpty());
+		ReflectionTestUtils.setField(sharePortfolio, VARIANCES_FIELD, null);
+	    Assert.assertTrue(sharePortfolio.min().isEmpty());
+	}
+	
+	@Test
+	public final void minCovariancesNull() {
+		Assert.assertFalse(sharePortfolio.timeCourses().isEmpty());
+		ReflectionTestUtils.setField(sharePortfolio, COVARIANCES_FIELD, null);
+	    Assert.assertTrue(sharePortfolio.min().isEmpty());
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void minVariancesSize() {
+		Assert.assertFalse(sharePortfolio.timeCourses().isEmpty());
+		ReflectionTestUtils.setField(sharePortfolio, VARIANCES_FIELD, new double[]{0});
+		sharePortfolio.min();
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void minCovariancesSize() {
+		Assert.assertFalse(sharePortfolio.timeCourses().isEmpty());
+		ReflectionTestUtils.setField(sharePortfolio, COVARIANCES_FIELD, new double[][]{new double[]{0}});
+		sharePortfolio.min();
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void minCovariancesLineSize() {
+		preparePortfolioForMinWeightTest();
+		final double[][] covariances = (double[][]) ReflectionTestUtils.getField(sharePortfolio, COVARIANCES_FIELD);
+		covariances[covariances.length-1]=new double[]{0};
+		sharePortfolio.min();
+	}
+	
+	@Test
+	public final void minWeights() {
+		preparePortfolioForMinWeightTest();
+		final double[] results = sharePortfolio.minWeights();
+		Assert.assertEquals(sharePortfolio.timeCourses().size(), results.length);
+		IntStream.range(0, sharePortfolio.timeCourses().size()).forEach(i -> Assert.assertEquals(minWeights.get(sharePortfolio.timeCourses().get(i)), percentRound(results[i])));
+	}
+	
+	@Test
+	public final void standardDeviation() {
+		preparePortfolioForMinWeightTest();
+		Assert.assertEquals(standardDerivation, percentRound(sharePortfolio.standardDeviation()));
+	}
+	
+	@Test
+	public final void standardDeviationNull() {
+		resetTimeCourses(); 
+		Assert.assertNull(sharePortfolio.standardDeviation());
+	}
+
+
+	private void resetTimeCourses() {
+		ReflectionUtils.doWithFields(sharePortfolio.getClass(), field -> ReflectionTestUtils.setField(sharePortfolio, field.getName(), new ArrayList<>()), field -> field.getType().equals(List.class));
+	}
+	
+	@Test
+	public final void  standardDeviationWithWeights() {
+		preparePortfolioForMinWeightTest();
+		Assert.assertEquals(standardDerivation, percentRound(sharePortfolio.standardDeviation(new double[] { minWeights.get(timeCourse1)/100d, minWeights.get(timeCourse2)/100d, minWeights.get(timeCourse)/100d})));
+	}
+	
+	@Test
+	public final void  standardDeviationWithWeightsNull() {
+		resetTimeCourses(); 
+		sharePortfolio.standardDeviation(new double[] {0.5, 0.5});
+		Assert.assertNull(sharePortfolio.standardDeviation());
+	}
+	
+	@Test
+	public final void currency() {
+		Assert.assertEquals(SharePortfolioImpl.DEFAULT_CURRENCY, sharePortfolio.currency());
+	}
+	
+	@Test
+	public final void defaultConstructor() {
+		Assert.assertNotNull(BeanUtils.instantiateClass(SharePortfolioImpl.class));
+	}
+
+
+	private void preparePortfolioForMinWeightTest() {
+		Mockito.when(timeCourse1.name()).thenReturn("All REITs");
+		Mockito.when(timeCourse2.name()).thenReturn("S&P 500");
+		Mockito.when(timeCourse.name()).thenReturn("Euro Stoxx 50");
+		
+		// page 37, 38 Performancemessung
+		sharePortfolio.assign(timeCourse);
+		final double[][] covariances = new double[3][3];
+		final double[] variances = new double[] {0.0014023, 0.0015854, 0.0028889};
+		IntStream.range(0, 3).forEach(i -> covariances[i][i]=variances[i]);
+		covariances[0][1]=0.0004629;
+		covariances[0][2]=0.0004031;
+		
+		covariances[1][0]=0.0004629;
+		covariances[1][2]=0.0016245;
+		
+		covariances[2][0]=0.0004031;
+		covariances[2][1]=0.0016245;
+		
+		
+		ReflectionTestUtils.setField(sharePortfolio, VARIANCES_FIELD,  variances);
+		ReflectionTestUtils.setField(sharePortfolio, COVARIANCES_FIELD,  covariances);
+	}
+	
+	
+	private double percentRound(double value) {
+		return Math.round(10000 * value)/100d;
+	}
+	
+	@Test
+	public final void  correlationEntries() {
+	
+		final double correlation = 0.25d;
+		ReflectionTestUtils.setField(sharePortfolio, CORRELATIONS_FIELD, new double[][]{new double[] {1, correlation}, new double[] {1, correlation}});
+		
+		final List<Entry<String,Map<String,Double>>> results = sharePortfolio.correlationEntries();
+		
+		Assert.assertEquals(1d, filterEntry(results, share1.name()).get(share1.name()));
+		Assert.assertEquals(correlation, filterEntry(results, share1.name()).get(share2.name()));
+		Assert.assertEquals( filterEntry(results, share1.name()),  filterEntry(results, share2.name()));
+		
+	}
+	
+	@Test
+	public final void correlationEntriesArrayNull() {
+		ReflectionTestUtils.setField(sharePortfolio, CORRELATIONS_FIELD, null);
+		Assert.assertTrue(sharePortfolio.correlationEntries().isEmpty());
+	}
+	
+	@Test
+	public final void correlationEntriesWrongSize() {
+		resetTimeCourses();
+		Assert.assertTrue(sharePortfolio.correlationEntries().isEmpty());
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void correlationEntriesWrongLineSize() {
+		
+		ReflectionTestUtils.setField(sharePortfolio, CORRELATIONS_FIELD, new double[][]{new double[] {1, 1}, new double[] {1}});
+		sharePortfolio.correlationEntries();
+		
+	}
+
+
+	private Map<String, Double> filterEntry(final List<Entry<String, Map<String, Double>>> results, final String name) {
+		return results.stream().filter(e -> e.getKey().equals(name)).map(e -> e.getValue()).findAny().get();
 	}
 }
