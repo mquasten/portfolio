@@ -1,5 +1,6 @@
 package de.mq.portfolio.shareportfolio.support;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,6 +20,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
+import de.mq.portfolio.exchangerate.ExchangeRate;
+import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
+import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
+import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
@@ -72,6 +77,9 @@ public class SharePortfolioTest {
 
 	private final PortfolioOptimisation portfolioOptimisation = Mockito.mock(PortfolioOptimisation.class);
 	
+	private Date startDate = Mockito.mock(Date.class);
+	private Date endDate = Mockito.mock(Date.class);
+	
 	// page 38 Performancemessung example results
 	private final  double standardDerivation = Math.round(100*10.81/Math.sqrt(12))/100d;
    
@@ -122,6 +130,8 @@ public class SharePortfolioTest {
 	   minWeights.put(timeCourse2, 44.29d);
 	   minWeights.put(timeCourse, 1.21d);
 	}
+	
+	
 
 
 	private void randomId(TimeCourse timeCourse) {
@@ -490,5 +500,44 @@ public class SharePortfolioTest {
 
 	private Map<String, Double> filterEntry(final List<Entry<String, Map<String, Double>>> results, final String name) {
 		return results.stream().filter(e -> e.getKey().equals(name)).map(e -> e.getValue()).findAny().get();
+	}
+	
+	
+	@Test
+	public final void totalRate() {
+		final List<Data> ratesShare1 = prepareRate(20,25);
+		Mockito.when(timeCourse1.rates()).thenReturn(ratesShare1);
+		Mockito.when(share1.currency()).thenReturn("EUR");
+		List<Data> ratesShare2 = prepareRate(30,40);
+		Mockito.when(timeCourse2.rates()).thenReturn(ratesShare2);
+		Mockito.when(share2.currency()).thenReturn("USD");
+		
+		final ExchangeRateCalculator exchangeRateCalculator = Mockito.mock(ExchangeRateCalculator.class);
+		final ExchangeRate exchangeRate = new ExchangeRateImpl("USD", "EUR");
+		final ExchangeRate exchangeRate2 = new ExchangeRateImpl("EUR", "EUR");
+	
+		Mockito.when(exchangeRateCalculator.factor(exchangeRate, startDate)).thenReturn(1/1.2d);
+		Mockito.when(exchangeRateCalculator.factor(exchangeRate2, startDate)).thenReturn(1d);
+		
+		
+		
+		Mockito.when(exchangeRateCalculator.factor(exchangeRate, endDate)).thenReturn(1/1.125d);
+		Mockito.when(exchangeRateCalculator.factor(exchangeRate2, endDate)).thenReturn(1d);
+	
+		
+		Assert.assertEquals(percentRound(47d/14d/9d), percentRound(sharePortfolio.totalRate(weights, exchangeRateCalculator)));
+		
+		
+	}
+
+	private List<Data> prepareRate(final double start, final double end) {
+		final Data dataStart = Mockito.mock(Data.class);
+		Mockito.when(dataStart.value()).thenReturn(start);
+		Mockito.when(dataStart.date()).thenReturn(startDate);
+		final Data dataEnd = Mockito.mock(Data.class);
+		Mockito.when(dataEnd.value()).thenReturn(end);
+		Mockito.when(dataEnd.date()).thenReturn(endDate);
+		return Arrays.asList(dataStart,dataEnd);
+		
 	}
 }

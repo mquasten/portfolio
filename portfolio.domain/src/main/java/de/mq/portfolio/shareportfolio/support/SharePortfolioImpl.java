@@ -23,6 +23,7 @@ import Jama.Matrix;
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
+import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -317,9 +318,8 @@ class SharePortfolioImpl implements SharePortfolio {
 	public Double totalRate(final double[] weights, final ExchangeRateCalculator exchangeRateCalculator) {
 		weightsVectorGuard(weights);
 		final double richtig = sum((tc, i) -> ratesReference(weights, tc, i, exchangeRateCalculator));
-
-		final double falsch = sum((tc, i) -> exchangeRateFactor(exchangeRateCalculator, tc, i) * weights[i] * tc.rates().get(timeCourses.get(i).rates().size() - 1).value());
-
+		final double falsch = sum((tc, i) -> exchangeRateFactor(exchangeRateCalculator, tc, i, t-> t.rates().get(t.rates().size()-1)) * weights[i] * tc.rates().get(timeCourses.get(i).rates().size() - 1).value());
+	
 		return (falsch - richtig) / richtig;
 	}
 
@@ -332,12 +332,12 @@ class SharePortfolioImpl implements SharePortfolio {
 		return totalRate(minWeights(), exchangeRateCalculator);
 	}
 
-	private double exchangeRateFactor(final ExchangeRateCalculator exchangeRateCalculator, TimeCourse tc, int i) {
-		return exchangeRateCalculator.factor(exchangeRate(tc), tc.rates().get(timeCourses.get(i).rates().size() - 1).date());
+	private double exchangeRateFactor(final ExchangeRateCalculator exchangeRateCalculator, TimeCourse tc, int i, DataFilter dataFilter) {
+		return exchangeRateCalculator.factor(exchangeRate(tc), dataFilter.filter(tc).date() );
 	}
 
-	private double ratesReference(final double[] weights, TimeCourse tc, int i, ExchangeRateCalculator exchangeRateCalculator) {
-		return exchangeRateFactor(exchangeRateCalculator, tc, i) * weights[i] * tc.rates().get(0).value();
+	private double ratesReference(final double[] weights, final TimeCourse tc, int i, ExchangeRateCalculator exchangeRateCalculator) {
+		return  exchangeRateFactor(exchangeRateCalculator, tc, i, t -> tc.rates().get(0) ) * weights[i] * tc.rates().get(0).value();
 	}
 
 	private double sum(final Filter filter) {
@@ -359,15 +359,15 @@ class SharePortfolioImpl implements SharePortfolio {
 	@Override
 	public Double totalRateDividends(final double[] weights, final ExchangeRateCalculator exchangeRateCalculator) {
 		weightsVectorGuard(weights);
-		final double falsch = sum((tc, i) -> exchangeRateFactor(exchangeRateCalculator, tc, i) * weights[i] * tc.dividends().stream().mapToDouble(d -> d.value()).reduce((a, b) -> a + b).orElse(0d));
+		final double falsch = sum((tc, i) -> exchangeRateFactor(exchangeRateCalculator, tc, i, t -> t.dividends().get( t.dividends().size()-1)) * weights[i] * tc.dividends().stream().mapToDouble(d -> d.value()).reduce((a, b) -> a + b).orElse(0d));
 		final double wahr = sum((tc, i) -> ratesReference(weights, tc, i, exchangeRateCalculator));
 		return falsch / wahr;
 	}
 
 	@Override
-	public final ExchangeRate exchangeRate(final TimeCourse timeCourse) {
+	public ExchangeRate exchangeRate(final TimeCourse timeCourse) {
 
-		return new ExchangeRateImpl(currency(), timeCourse.share().currency());
+		return new ExchangeRateImpl(timeCourse.share().currency(), currency());
 	}
 
 	@Override
@@ -388,4 +388,8 @@ interface MatixFunction {
 
 interface Filter {
 	double filter(final TimeCourse timecourse, final int i);
+}
+
+interface DataFilter {
+	Data filter(final TimeCourse timecourse);
 }

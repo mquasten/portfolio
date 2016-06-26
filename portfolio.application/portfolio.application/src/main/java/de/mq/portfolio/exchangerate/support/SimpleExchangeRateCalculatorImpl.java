@@ -31,13 +31,16 @@ class SimpleExchangeRateCalculatorImpl implements ExchangeRateCalculator {
 			 return 1d;
 		 }
 		 if( exchangeRates.containsKey(exchangeRate)){
+			 
 			 Assert.isTrue(exchangeRates.get(exchangeRate).containsKey(date), String.format("Exchangerate not found %s for date %s.", exchangeRate , date));
-			 return  BigDecimal.ONE.divide(BigDecimal.valueOf(exchangeRates.get(exchangeRate).get(date)),MathContext.DECIMAL64).doubleValue();
+			 return exchangeRates.get(exchangeRate).get(date).doubleValue();
 		 }
 		 
-		 if( exchangeRates.containsKey(new ExchangeRateImpl(exchangeRate.target(), exchangeRate.source()))){
-			 Assert.isTrue(exchangeRates.get(new ExchangeRateImpl(exchangeRate.target(), exchangeRate.source())).containsKey(date), String.format("Exchangerate (inverse) not found %s for date %s.", exchangeRate , date));
-			 return exchangeRates.get(new ExchangeRateImpl(exchangeRate.target(), exchangeRate.source())).get(date).doubleValue();
+		final ExchangeRateImpl inverseExchangeRate = new ExchangeRateImpl(exchangeRate.target(), exchangeRate.source());
+		if( exchangeRates.containsKey(inverseExchangeRate)){
+			 Assert.isTrue(exchangeRates.get(inverseExchangeRate).containsKey(date), String.format("Exchangerate (inverse) not found %s for date %s.", exchangeRate , date));
+			 
+			 return  BigDecimal.ONE.divide(BigDecimal.valueOf(exchangeRates.get(inverseExchangeRate).get(date)),MathContext.DECIMAL64).doubleValue();
 		 }
 		
 		 throw new IllegalArgumentException(String.format("ExchangeRate not found %s." , exchangeRate));
