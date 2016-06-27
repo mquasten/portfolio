@@ -2,6 +2,7 @@ package de.mq.portfolio.shareportfolio.support;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -316,11 +318,17 @@ class SharePortfolioImpl implements SharePortfolio {
 
 	@Override
 	public Double totalRate(final double[] weights, final ExchangeRateCalculator exchangeRateCalculator) {
-		weightsVectorGuard(weights);
-		final double richtig = sum((tc, i) -> ratesReference(weights, tc, i, exchangeRateCalculator));
-		final double falsch = sum((tc, i) -> exchangeRateFactor(exchangeRateCalculator, tc, i, t-> t.rates().get(t.rates().size()-1)) * weights[i] * tc.rates().get(timeCourses.get(i).rates().size() - 1).value());
-	
+		final double richtig = sumRates(exchangeRateCalculator, timeCourses, weights, tc -> Arrays.asList(tc.rates().get(0)));
+		final double falsch =  sumRates(exchangeRateCalculator, timeCourses, weights, tc -> Arrays.asList(tc.rates().get(tc.rates().size()-1)));
 		return (falsch - richtig) / richtig;
+	}
+	
+	
+	private double sumRates(final ExchangeRateCalculator exchangeRateCalculator, final List<TimeCourse> timeCourses, final double[] weights,  final Function<TimeCourse, Collection<Data>>  filterStrategy) {
+		weightsVectorGuard(weights);
+		final Collection<Double> results =new ArrayList<>();
+		IntStream.range(0, timeCourses.size()).forEach(i -> results.addAll(filterStrategy.apply(timeCourses.get(i)).stream().map(rate ->   weights[i]* rate.value()* exchangeRateCalculator.factor(exchangeRate(timeCourses.get(i)), rate.date())).collect(Collectors.toList())));
+		return results.stream().reduce((a, b) -> a + b).orElse(0d);
 	}
 
 	@Override
@@ -332,17 +340,8 @@ class SharePortfolioImpl implements SharePortfolio {
 		return totalRate(minWeights(), exchangeRateCalculator);
 	}
 
-	private double exchangeRateFactor(final ExchangeRateCalculator exchangeRateCalculator, TimeCourse tc, int i, DataFilter dataFilter) {
-		return exchangeRateCalculator.factor(exchangeRate(tc), dataFilter.filter(tc).date() );
-	}
+	
 
-	private double ratesReference(final double[] weights, final TimeCourse tc, int i, ExchangeRateCalculator exchangeRateCalculator) {
-		return  exchangeRateFactor(exchangeRateCalculator, tc, i, t -> tc.rates().get(0) ) * weights[i] * tc.rates().get(0).value();
-	}
-
-	private double sum(final Filter filter) {
-		return IntStream.range(0, timeCourses.size()).mapToDouble(i -> filter.filter(timeCourses.get(i), i)).reduce((a, b) -> a + b).orElse(0d);
-	}
 
 	private void weightsVectorGuard(final double[] weights) {
 		Assert.isTrue(weights.length == timeCourses.size(), "Incorrects size of weightsvector");
@@ -358,15 +357,13 @@ class SharePortfolioImpl implements SharePortfolio {
 
 	@Override
 	public Double totalRateDividends(final double[] weights, final ExchangeRateCalculator exchangeRateCalculator) {
-		weightsVectorGuard(weights);
-		final double falsch = sum((tc, i) -> exchangeRateFactor(exchangeRateCalculator, tc, i, t -> t.dividends().get( t.dividends().size()-1)) * weights[i] * tc.dividends().stream().mapToDouble(d -> d.value()).reduce((a, b) -> a + b).orElse(0d));
-		final double wahr = sum((tc, i) -> ratesReference(weights, tc, i, exchangeRateCalculator));
+		final double falsch =  sumRates(exchangeRateCalculator, timeCourses, weights, tc -> tc.dividends());
+		final double wahr = sumRates(exchangeRateCalculator, timeCourses, weights, tc -> Arrays.asList(tc.rates().get(0)));
 		return falsch / wahr;
 	}
 
 	@Override
 	public ExchangeRate exchangeRate(final TimeCourse timeCourse) {
-
 		return new ExchangeRateImpl(timeCourse.share().currency(), currency());
 	}
 
@@ -382,14 +379,9 @@ class SharePortfolioImpl implements SharePortfolio {
 
 }
 
+@FunctionalInterface
 interface MatixFunction {
 	double f(final List<TimeCourse> timeCourses, final int i, final int j);
 }
 
-interface Filter {
-	double filter(final TimeCourse timecourse, final int i);
-}
 
-interface DataFilter {
-	Data filter(final TimeCourse timecourse);
-}

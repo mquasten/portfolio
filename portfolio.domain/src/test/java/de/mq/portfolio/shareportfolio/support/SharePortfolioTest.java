@@ -505,6 +505,7 @@ public class SharePortfolioTest {
 	
 	@Test
 	public final void totalRate() {
+		// example markowitz.pdf
 		final List<Data> ratesShare1 = prepareRate(20,25);
 		Mockito.when(timeCourse1.rates()).thenReturn(ratesShare1);
 		Mockito.when(share1.currency()).thenReturn("EUR");
