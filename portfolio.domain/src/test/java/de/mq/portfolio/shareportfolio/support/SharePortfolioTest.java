@@ -506,6 +506,33 @@ public class SharePortfolioTest {
 	@Test
 	public final void totalRate() {
 		// example markowitz.pdf
+		final ExchangeRateCalculator exchangeRateCalculator = prepareForMinWeights();
+	
+		
+		Assert.assertEquals(percentRound(47d/14d/9d), percentRound(sharePortfolio.totalRate(weights, exchangeRateCalculator)));
+		
+		
+	}
+	
+	@Test
+	public final void totalRateNoTimeCourses() {
+		// example markowitz.pdf
+		final ExchangeRateCalculator exchangeRateCalculator = prepareForMinWeights();
+		resetTimeCourses();
+		
+		sharePortfolio.totalRate(weights, exchangeRateCalculator);
+		
+		
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void totalRateWeightsGuard() {
+		final ExchangeRateCalculator exchangeRateCalculator = prepareForMinWeights();
+		sharePortfolio.totalRate(new double[]{1/3d, 1/1/3d, 1/3d}, exchangeRateCalculator);
+	}
+	
+	
+	private ExchangeRateCalculator prepareForMinWeights() {
 		final List<Data> ratesShare1 = prepareRate(20,25);
 		Mockito.when(timeCourse1.rates()).thenReturn(ratesShare1);
 		Mockito.when(share1.currency()).thenReturn("EUR");
@@ -524,13 +551,9 @@ public class SharePortfolioTest {
 		
 		Mockito.when(exchangeRateCalculator.factor(exchangeRate, endDate)).thenReturn(1/1.125d);
 		Mockito.when(exchangeRateCalculator.factor(exchangeRate2, endDate)).thenReturn(1d);
-	
-		
-		Assert.assertEquals(percentRound(47d/14d/9d), percentRound(sharePortfolio.totalRate(weights, exchangeRateCalculator)));
-		
-		
+		return exchangeRateCalculator;
 	}
-
+	
 	private List<Data> prepareRate(final double start, final double end) {
 		final Data dataStart = Mockito.mock(Data.class);
 		Mockito.when(dataStart.value()).thenReturn(start);
@@ -541,4 +564,20 @@ public class SharePortfolioTest {
 		return Arrays.asList(dataStart,dataEnd);
 		
 	}
+	
+	
+	@Test
+	public final void totalRateDefaultWeights() {
+		final ExchangeRateCalculator exchangeRateCalculator = prepareForMinWeights();
+		//ugly, nasty, dirrrrrrrrty  ...
+		final SharePortfolio mock = Mockito.spy(sharePortfolio);
+		
+		Mockito.when(mock.minWeights()).thenReturn(weights);
+		
+		Assert.assertEquals(percentRound(47d/14d/9d), percentRound(mock.totalRate(exchangeRateCalculator)));
+	}
+	
+	
+
+	
 }

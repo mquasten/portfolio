@@ -238,7 +238,7 @@ class SharePortfolioImpl implements SharePortfolio {
 	}
 
 	@Override
-	public double[] minWeights() {
+	public  double[] minWeights() {
 
 		final double[] weightingVector = new double[timeCourses.size()];
 		final Map<TimeCourse, Double> weights = min();
@@ -246,6 +246,7 @@ class SharePortfolioImpl implements SharePortfolio {
 		IntStream.range(0, weightingVector.length).forEach(i -> weightingVector[i] = weights.get(timeCourses.get(i)));
 
 		return weightingVector;
+		
 	}
 
 	@Override
@@ -318,6 +319,9 @@ class SharePortfolioImpl implements SharePortfolio {
 
 	@Override
 	public Double totalRate(final double[] weights, final ExchangeRateCalculator exchangeRateCalculator) {
+		if (timeCourses.size() < 2) {
+			return null;
+		}
 		final double richtig = sumRates(exchangeRateCalculator, timeCourses, weights, tc -> Arrays.asList(tc.rates().get(0)));
 		final double falsch =  sumRates(exchangeRateCalculator, timeCourses, weights, tc -> Arrays.asList(tc.rates().get(tc.rates().size()-1)));
 		return (falsch - richtig) / richtig;
@@ -333,14 +337,8 @@ class SharePortfolioImpl implements SharePortfolio {
 
 	@Override
 	public Double totalRate(final ExchangeRateCalculator exchangeRateCalculator) {
-		if (timeCourses.size() < 2) {
-			return null;
-		}
-
 		return totalRate(minWeights(), exchangeRateCalculator);
 	}
-
-	
 
 
 	private void weightsVectorGuard(final double[] weights) {
@@ -349,14 +347,14 @@ class SharePortfolioImpl implements SharePortfolio {
 
 	@Override
 	public Double totalRateDividends(final ExchangeRateCalculator exchangeRateCalculator) {
-		if (timeCourses.size() < 2) {
-			return null;
-		}
 		return totalRateDividends(minWeights(), exchangeRateCalculator);
 	}
 
 	@Override
 	public Double totalRateDividends(final double[] weights, final ExchangeRateCalculator exchangeRateCalculator) {
+		if (timeCourses.size() < 2) {
+			return null;
+		}
 		final double falsch =  sumRates(exchangeRateCalculator, timeCourses, weights, tc -> tc.dividends());
 		final double wahr = sumRates(exchangeRateCalculator, timeCourses, weights, tc -> Arrays.asList(tc.rates().get(0)));
 		return falsch / wahr;
