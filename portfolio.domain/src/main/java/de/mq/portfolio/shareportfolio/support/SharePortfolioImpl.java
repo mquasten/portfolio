@@ -323,6 +323,7 @@ class SharePortfolioImpl implements SharePortfolio {
 			return null;
 		}
 		final double richtig = sumRates(exchangeRateCalculator, timeCourses, weights, tc -> Arrays.asList(tc.rates().get(0)));
+		
 		final double falsch =  sumRates(exchangeRateCalculator, timeCourses, weights, tc -> Arrays.asList(tc.rates().get(tc.rates().size()-1)));
 		return (falsch - richtig) / richtig;
 	}
@@ -331,8 +332,9 @@ class SharePortfolioImpl implements SharePortfolio {
 	private double sumRates(final ExchangeRateCalculator exchangeRateCalculator, final List<TimeCourse> timeCourses, final double[] weights,  final Function<TimeCourse, Collection<Data>>  filterStrategy) {
 		weightsVectorGuard(weights);
 		final Collection<Double> results =new ArrayList<>();
-		IntStream.range(0, timeCourses.size()).forEach(i -> results.addAll(filterStrategy.apply(timeCourses.get(i)).stream().map(rate ->   weights[i]* rate.value()* exchangeRateCalculator.factor(exchangeRate(timeCourses.get(i)), rate.date())).collect(Collectors.toList())));
-		return results.stream().reduce((a, b) -> a + b).orElse(0d);
+		IntStream.range(0, timeCourses.size()).forEach(i -> results.addAll(filterStrategy.apply(timeCourses.get(i)).stream().map( rate ->  weights[i]* rate.value()* exchangeRateCalculator.factor(exchangeRate(timeCourses.get(i)), rate.date())).collect(Collectors.toList())));
+		return  results.stream().reduce((a, b) -> a + b).orElse(0d);
+		
 	}
 
 	@Override
@@ -357,6 +359,7 @@ class SharePortfolioImpl implements SharePortfolio {
 		}
 		final double falsch =  sumRates(exchangeRateCalculator, timeCourses, weights, tc -> tc.dividends());
 		final double wahr = sumRates(exchangeRateCalculator, timeCourses, weights, tc -> Arrays.asList(tc.rates().get(0)));
+		
 		return falsch / wahr;
 	}
 

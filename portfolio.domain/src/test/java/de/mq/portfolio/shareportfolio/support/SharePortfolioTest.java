@@ -1,6 +1,7 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.sql.Date;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -74,6 +75,9 @@ public class SharePortfolioTest {
 	private final Share share1 = Mockito.mock(Share.class);
 	private final Share share2 = Mockito.mock(Share.class);
 	private final Map<TimeCourse,Double> minWeights = new HashMap<>();
+	
+	final ExchangeRate exchangeRateUSDEuro = new ExchangeRateImpl("USD", "EUR");
+	final ExchangeRate exchangeRateEuroEuro = new ExchangeRateImpl("EUR", "EUR");
 
 	private final PortfolioOptimisation portfolioOptimisation = Mockito.mock(PortfolioOptimisation.class);
 	
@@ -577,6 +581,63 @@ public class SharePortfolioTest {
 		Assert.assertEquals(percentRound(47d/14d/9d), percentRound(mock.totalRate(exchangeRateCalculator)));
 	}
 	
+	@Test
+	public final void totalRateDividends() {
+		// example markowitz.pdf
+		final ExchangeRateCalculator exchangeRateCalculator = prepareForMinWeights();
+		
+		prepareDividends(exchangeRateCalculator);
+		
+		
+		Assert.assertEquals(percentRound(11d/70d), percentRound(sharePortfolio.totalRateDividends(weights, exchangeRateCalculator)));
+	}
+	
+	@Test
+	public final void totalRateDividendsTimeCourseMissing() {
+		final ExchangeRateCalculator exchangeRateCalculator = prepareForMinWeights();
+		
+		prepareDividends(exchangeRateCalculator);
+		
+		resetTimeCourses();
+		
+		Assert.assertNull(sharePortfolio.totalRateDividends(weights, exchangeRateCalculator));
+	}
+
+
+
+
+	private void prepareDividends(final ExchangeRateCalculator exchangeRateCalculator) {
+		final Date firstDividendDate = Mockito.mock(Date.class);
+		final Date secondDividendDate = Mockito.mock(Date.class);
+		
+		Mockito.when(exchangeRateCalculator.factor(exchangeRateEuroEuro, firstDividendDate)).thenReturn(1.0d);
+		
+		Mockito.when(exchangeRateCalculator.factor(exchangeRateUSDEuro, firstDividendDate)).thenReturn(1/1.2d);
+		Mockito.when(exchangeRateCalculator.factor(exchangeRateUSDEuro, secondDividendDate)).thenReturn(1/1.125);
+		
+		final List<Data> dividends1 = prepareDividends( Arrays.asList(new AbstractMap.SimpleImmutableEntry<>(firstDividendDate, 5d)));
+		Mockito.when(timeCourse1.dividends()).thenReturn(dividends1);
+		
+		final List<Data> dividends2 = prepareDividends( Arrays.asList(new AbstractMap.SimpleImmutableEntry<>(firstDividendDate, 2d), new AbstractMap.SimpleImmutableEntry<>(secondDividendDate, 1.5d)));
+		Mockito.when(timeCourse2.dividends()).thenReturn(dividends2);
+	}
+
+
+
+
+	
+	
+	private List<Data> prepareDividends(final Collection<Entry<Date,Double>> entries) {
+		final List<Data> dividends = new ArrayList<>();
+		
+		entries.forEach( entry -> {
+		final Data dataStart = Mockito.mock(Data.class);
+		Mockito.when(dataStart.value()).thenReturn(entry.getValue());
+		Mockito.when(dataStart.date()).thenReturn(entry.getKey());
+		dividends.add(dataStart);
+		});
+		return dividends;
+	}
 	
 
 	
