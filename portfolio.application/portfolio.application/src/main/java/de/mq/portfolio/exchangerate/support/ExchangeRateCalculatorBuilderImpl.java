@@ -39,7 +39,7 @@ class ExchangeRateCalculatorBuilderImpl implements ExchangeRateCalculatorBuilder
 	 */
 	@Override
 	public ExchangeRateCalculatorBuilder withExchangeRates(final Collection<ExchangeRate> exchangeRates) {
-		Assert.isTrue( !CollectionUtils.isEmpty(exchangeRates), "At least one ExchangeRate should be given.");
+		//Assert.isTrue( !CollectionUtils.isEmpty(exchangeRates), "At least one ExchangeRate should be given.");
 		exchangeRates.forEach(er -> withExchangeRate(er));
 		return this;
 	}

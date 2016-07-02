@@ -3,9 +3,11 @@ package de.mq.portfolio.share;
 import java.util.Date;
 import java.util.List;
 
+import de.mq.portfolio.IdentifierAware;
 
 
-public interface TimeCourse {
+
+public interface TimeCourse  extends IdentifierAware<String>{
 
 
 	public abstract Share share();
@@ -28,7 +30,6 @@ public interface TimeCourse {
 
 	double totalRateDividends();
 
-	String id();
 
 	String name();
 	

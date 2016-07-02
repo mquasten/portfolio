@@ -36,7 +36,7 @@ class SharePortfolioImpl implements SharePortfolio {
 	static final String DEFAULT_CURRENCY = "EUR";
 
 	@Id
-	private String id;
+	private String id1;
 
 	@Indexed(unique = true)
 	private final String name;
@@ -187,10 +187,6 @@ class SharePortfolioImpl implements SharePortfolio {
 		return Optional.ofNullable(minVariance);
 	}
 
-	@Override
-	public final String id() {
-		return id;
-	}
 
 	@Override
 	public Map<TimeCourse, Double> min() {
@@ -266,7 +262,7 @@ class SharePortfolioImpl implements SharePortfolio {
 	@Override
 	public void assign(final Collection<TimeCourse> timeCourses) {
 		Assert.notNull(timeCourses);
-		timeCourses.stream().map(tc -> tc.id()).forEach(id -> Assert.hasText(id, "Id is mandatory"));
+		timeCourses.stream().forEach(tc -> Assert.notNull(tc.id(), "Id is mandatory"));
 		timeCourses.stream().map(tc -> tc.share()).forEach(share -> {
 			Assert.notNull(share, "Timecourse should have a share");
 			Assert.hasText(share.code(), "Code is mandatory");

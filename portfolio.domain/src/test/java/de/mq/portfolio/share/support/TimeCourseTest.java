@@ -96,9 +96,8 @@ public class TimeCourseTest {
 
 		doubleEquals(5d / 12d, timeCourse.meanRate());
 		doubleEquals(1d / 144d, timeCourse.variance());
-		
-		doubleEquals(1d/12, timeCourse.standardDeviation());
-		
+
+		doubleEquals(1d / 12, timeCourse.standardDeviation());
 
 	}
 
@@ -190,8 +189,7 @@ public class TimeCourseTest {
 
 		Assert.assertTrue(ReflectionUtils.findField(TimeCourseImpl.class, "id").isAnnotationPresent(Id.class));
 
-		final Collection<Field> fields = Arrays.asList(TimeCourseImpl.class.getDeclaredFields()).stream()
-				.filter(field -> field.getType().isAssignableFrom(List.class)).collect(Collectors.toList());
+		final Collection<Field> fields = Arrays.asList(TimeCourseImpl.class.getDeclaredFields()).stream().filter(field -> field.getType().isAssignableFrom(List.class)).collect(Collectors.toList());
 		Assert.assertEquals(2, fields.size());
 
 		fields.stream().forEach(field -> Assert.assertTrue(field.isAnnotationPresent(Reference.class)));
@@ -201,9 +199,7 @@ public class TimeCourseTest {
 	@Test
 	public final void id() {
 		Assert.assertNull(timeCourse.id());
-		ReflectionUtils.doWithFields(TimeCourseImpl.class,
-				field -> ReflectionTestUtils.setField(timeCourse, field.getName(), ID),
-				field -> field.isAnnotationPresent(Id.class));
+		ReflectionUtils.doWithFields(TimeCourseImpl.class, field -> ReflectionTestUtils.setField(timeCourse, field.getName(), ID), field -> field.isAnnotationPresent(Id.class));
 		Assert.assertEquals(ID, timeCourse.id());
 	}
 
@@ -215,9 +211,7 @@ public class TimeCourseTest {
 	}
 
 	private void setShareNull() {
-		ReflectionUtils.doWithFields(TimeCourseImpl.class,
-				field -> ReflectionTestUtils.setField(timeCourse, field.getName(), null),
-				field -> field.getType().equals(Share.class));
+		ReflectionUtils.doWithFields(TimeCourseImpl.class, field -> ReflectionTestUtils.setField(timeCourse, field.getName(), null), field -> field.getType().equals(Share.class));
 	}
 
 	@Test
@@ -253,15 +247,11 @@ public class TimeCourseTest {
 	}
 
 	private void setListToEmptyList() {
-		ReflectionUtils.doWithFields(TimeCourseImpl.class,
-				field -> ReflectionTestUtils.setField(timeCourse, field.getName(), new ArrayList<>()),
-				field -> field.getType().equals(List.class));
+		ReflectionUtils.doWithFields(TimeCourseImpl.class, field -> ReflectionTestUtils.setField(timeCourse, field.getName(), new ArrayList<>()), field -> field.getType().equals(List.class));
 	}
 
 	private void setListToNull() {
-		ReflectionUtils.doWithFields(TimeCourseImpl.class,
-				field -> ReflectionTestUtils.setField(timeCourse, field.getName(), null),
-				field -> field.getType().equals(List.class));
+		ReflectionUtils.doWithFields(TimeCourseImpl.class, field -> ReflectionTestUtils.setField(timeCourse, field.getName(), null), field -> field.getType().equals(List.class));
 	}
 
 }

@@ -6,11 +6,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+import de.mq.portfolio.IdentifierAware;
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.share.TimeCourse;
 
-public interface SharePortfolio {
+public interface SharePortfolio  extends IdentifierAware<String>{
 
 	List<TimeCourse> timeCourses();
 
@@ -25,7 +26,6 @@ public interface SharePortfolio {
 	Optional<PortfolioOptimisation> minVariance();
 
 
-	String id();
 	
 	void assign(final TimeCourse timeCourse);
 

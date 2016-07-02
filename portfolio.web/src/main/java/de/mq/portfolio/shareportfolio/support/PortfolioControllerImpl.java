@@ -66,6 +66,7 @@ public class PortfolioControllerImpl {
 	}
 
 	public void activate(final PortfolioSearchAO portfolioSearchAO, final UserModel userModel) {
+		Assert.notNull(portfolioSearchAO.getSelectedPortfolio().id(), "Portfolio should be persistent");
 		userModel.setPortfolioId(portfolioSearchAO.getSelectedPortfolio().id());
 		portfolioSearchAO.setPortfolioName(portfolioSearchAO.getSelectedPortfolio().name());
 	}
@@ -92,7 +93,7 @@ public class PortfolioControllerImpl {
 		}
 
 		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(portfolioAO.getId());
-		
+	
 		portfolioAO.setSharePortfolio(sharePortfolio, Optional.of(exchangeRateService.exchangeRateCalculator(sharePortfolio.exchangeRateTranslations())));
 
 	}

@@ -15,12 +15,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.shareportfolio.support.SharePortfolioService;
 import de.mq.portfolio.support.UserModel;
+
 
 @Component("sharesController")
 @Scope("singleton")
@@ -58,6 +60,8 @@ public class SharesControllerImpl {
 		final Collection<Entry<String,String>> portfolio = new ArrayList<>();
 		if( userModel.getPortfolioId() !=null){
 			final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(userModel.getPortfolioId());
+		
+			sharePortfolio.timeCourses().stream().forEach(tc -> Assert.notNull(tc.id(), "TimeCourses must be persistent"));
 			portfolio.addAll(sharePortfolio.timeCourses().stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(tc.share().name(), tc.id())).collect(Collectors.toList()));
 		   sharesSearchAO.setPortfolioName(sharePortfolio.name());
 		}
