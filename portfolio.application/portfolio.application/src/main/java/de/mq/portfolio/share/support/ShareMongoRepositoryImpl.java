@@ -22,9 +22,13 @@ import de.mq.portfolio.share.TimeCourse;
 @Repository("shareRepository")
 class ShareMongoRepositoryImpl implements ShareRepository {
 	
-	private static final String INDEX_FIELD = "index";
+	
+	static final String SHARE_NAME_FIELD = "share.name";
+	static final String INDEX_FIELD = "index";
 	static final String CODE_FIELD = "code";
-	static final String SHARE_CODE_FIELD = "share.code";
+	static final String SHARE_CODE_FIELD = String.format("share.%s", CODE_FIELD);;
+	
+	static final String SHARE_INDEX_FIELD = String.format("share.%s", INDEX_FIELD);
 	private final MongoOperations mongoOperations;
 
 	@Autowired
@@ -85,15 +89,15 @@ class ShareMongoRepositoryImpl implements ShareRepository {
 		
 		if( StringUtils.hasText(criteria.name())) {
 			
-			query.addCriteria(Criteria.where("share.name").regex(pattern(criteria.name())));
+			query.addCriteria(Criteria.where(SHARE_NAME_FIELD).regex(pattern(criteria.name())));
 		}
 		
 		if( StringUtils.hasText(criteria.code())) {
-			query.addCriteria(Criteria.where("share.code").regex(pattern(criteria.code())));
+			query.addCriteria(Criteria.where(SHARE_CODE_FIELD).regex(pattern(criteria.code())));
 		}
 		
 		if( StringUtils.hasText(criteria.index())) {
-			query.addCriteria(Criteria.where("share.index").is(criteria.index()));
+			query.addCriteria(Criteria.where(SHARE_INDEX_FIELD).is(criteria.index()));
 		}
 		
 		return query;
