@@ -1,13 +1,13 @@
 package de.mq.portfolio.share.support;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +21,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import org.springframework.util.StringUtils;
 
 import com.mongodb.BasicDBObject;
@@ -30,9 +29,14 @@ import com.mongodb.DBObject;
 
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
+import junit.framework.Assert;
 
 public class ShareRepositoryTest {
 	
+	private static final long COUNT = 42L;
+
+	private static final String INDEX = "Index";
+
 	private static final int PAGE_SIZE = 20;
 
 	private static final int PAGE_OFFSET = 50;
@@ -59,7 +63,7 @@ public class ShareRepositoryTest {
 	
 	private final Pageable pageable = Mockito.mock(Pageable.class);
 	
-	private final Sort sort = new Sort(Direction.ASC, "share.name");
+	private final Sort sort = new Sort(Direction.ASC, ShareMongoRepositoryImpl.SHARE_NAME_FIELD);
 	
 	@SuppressWarnings("unchecked")
 	@Before
@@ -155,14 +159,7 @@ public class ShareRepositoryTest {
 	public final void  timeCourses() {
 		
 		
-		Mockito.when(pageable.getOffset()).thenReturn(PAGE_OFFSET);
-		Mockito.when(pageable.getPageSize()).thenReturn(PAGE_SIZE);
-		Mockito.when(pageable.getSort()).thenReturn(sort);
-		Mockito.when(timeCourse.share()).thenReturn(share);
-		Mockito.when(share.name()).thenReturn(SHARE_NAME);
-		Mockito.when(share.code()).thenReturn(CODE);
-		
-		Mockito.when(share.index()).thenReturn("Index");
+		prepareTimeCoursesPageableTest();
 		
 		Assert.assertEquals(1, timeCourses.size());
 		Assert.assertEquals(timeCourses, shareepository.timeCourses(pageable, share));
@@ -173,21 +170,81 @@ public class ShareRepositoryTest {
 		assertPattern(SHARE_NAME, (Pattern) dbObject.get(ShareMongoRepositoryImpl.SHARE_NAME_FIELD));
 		assertPattern(CODE, (Pattern) dbObject.get(ShareMongoRepositoryImpl.SHARE_CODE_FIELD));
 		
-		Assert.assertEquals("Index", (String) dbObject.get(ShareMongoRepositoryImpl.SHARE_INDEX_FIELD));
+		Assert.assertEquals(INDEX, (String) dbObject.get(ShareMongoRepositoryImpl.SHARE_INDEX_FIELD));
 		
 		Assert.assertEquals(1, queryCaptor.getValue().getSortObject().keySet().size());
-		Assert.assertEquals("share.name",  queryCaptor.getValue().getSortObject().keySet().stream().findAny().get());
-		Assert.assertEquals(1, queryCaptor.getValue().getSortObject().get("share.name"));
+		Assert.assertEquals(ShareMongoRepositoryImpl.SHARE_NAME_FIELD,  queryCaptor.getValue().getSortObject().keySet().stream().findAny().get());
+		Assert.assertEquals(1, queryCaptor.getValue().getSortObject().get(ShareMongoRepositoryImpl.SHARE_NAME_FIELD));
 		
 		Assert.assertEquals(PAGE_OFFSET, queryCaptor.getValue().getSkip());
 		Assert.assertEquals(PAGE_SIZE, queryCaptor.getValue().getLimit());
 		
 	}
 
+	
+
+	private void prepareTimeCoursesPageableTest() {
+		Mockito.when(pageable.getOffset()).thenReturn(PAGE_OFFSET);
+		Mockito.when(pageable.getPageSize()).thenReturn(PAGE_SIZE);
+		Mockito.when(pageable.getSort()).thenReturn(sort);
+		Mockito.when(timeCourse.share()).thenReturn(share);
+		Mockito.when(share.name()).thenReturn(SHARE_NAME);
+		Mockito.when(share.code()).thenReturn(CODE);
+		
+		Mockito.when(share.index()).thenReturn(INDEX);
+	}
+
 	private void assertPattern(final String pattern, final Pattern criteria) {
 		Assert.assertNotNull(criteria);
 		Assert.assertEquals(pattern, criteria.pattern());
 		Assert.assertEquals(Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE, criteria.flags());
+	}
+	
+	@Test
+	public final void  timeCoursesWithoutCriterias() {
+		prepareTimeCoursesPageableTest();
+		Mockito.when(share.name()).thenReturn(null);
+		Mockito.when(share.code()).thenReturn(null);
+		
+		Mockito.when(share.index()).thenReturn(null);
+		Mockito.when(pageable.getSort()).thenReturn(null);
+		
+		Assert.assertEquals(1, timeCourses.size());
+		Assert.assertEquals(timeCourses, shareepository.timeCourses(pageable, share));
+		
+		final DBObject dbObject = queryCaptor.getValue().getQueryObject();
+		Assert.assertEquals(0, dbObject.keySet().size());
+		Assert.assertNull(queryCaptor.getValue().getSortObject());
+		Assert.assertEquals(PAGE_OFFSET, queryCaptor.getValue().getSkip());
+		Assert.assertEquals(PAGE_SIZE, queryCaptor.getValue().getLimit());
+		
+	}
+	
+	@Test
+	public final void pageable() {
+		prepareTimeCoursesPageableTest();
+		Mockito.when(mongoOperations.count(queryCaptor.capture(), classCaptor.capture())).thenReturn(COUNT);
+		Pageable result = shareepository.pageable(share, sort, PAGE_SIZE);
+		
+		final Map<Class<?>,Object> results = new HashMap<>();
+		Arrays.asList(result.getClass().getDeclaredFields()).stream().filter(field -> !Modifier.isStatic(field.getModifiers()) ).forEach(field -> results.put(field.getType(), ReflectionTestUtils.getField(result, field.getName())));
+		
+		Assert.assertEquals(COUNT, results.get(long.class));
+		Assert.assertEquals(sort, results.get(Sort.class));
+		
+		
+		
+		final DBObject dbObject = queryCaptor.getValue().getQueryObject();
+		Assert.assertEquals(3, dbObject.keySet().size());
+		assertPattern(SHARE_NAME, (Pattern) dbObject.get(ShareMongoRepositoryImpl.SHARE_NAME_FIELD));
+		assertPattern(CODE, (Pattern) dbObject.get(ShareMongoRepositoryImpl.SHARE_CODE_FIELD));
+		
+		Assert.assertEquals(INDEX, (String) dbObject.get(ShareMongoRepositoryImpl.SHARE_INDEX_FIELD));
+		
+		Assert.assertNull(queryCaptor.getValue().getSortObject());
+	
+		
+	
 	}
 
 }

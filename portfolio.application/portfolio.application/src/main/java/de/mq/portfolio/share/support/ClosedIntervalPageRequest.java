@@ -6,14 +6,15 @@ import org.springframework.data.domain.Sort;
 
 public class ClosedIntervalPageRequest extends AbstractPageRequest {
 
-	private Sort sort; 
+	private final Sort sort; 
 	
-	private long counter;
+	private final long counter;
 
 	private static final long serialVersionUID = 1L;
 	
 	public ClosedIntervalPageRequest(final int size, final Sort sort, final long counter) {
 		this(0,size,sort,counter);
+		
 	} 
 	
 	private ClosedIntervalPageRequest(final int page, final int size, final Sort sort, final long counter) {
