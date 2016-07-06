@@ -1,8 +1,10 @@
 package de.mq.portfolio.share.support;
 
+
 import org.springframework.data.domain.AbstractPageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.util.Assert;
 
 public class ClosedIntervalPageRequest extends AbstractPageRequest {
 
@@ -19,6 +21,7 @@ public class ClosedIntervalPageRequest extends AbstractPageRequest {
 	
 	private ClosedIntervalPageRequest(final int page, final int size, final Sort sort, final long counter) {
 		super(page, size);
+		Assert.isTrue(counter >= 0, "Counter should be >= 0.");
 		this.sort=sort;
 		this.counter=counter;
 	}

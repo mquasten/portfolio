@@ -101,4 +101,10 @@ public class ClosedIntervalPageRequestTest {
 		Assert.assertFalse(pageable.isLast());
 		Assert.assertTrue(((ClosedIntervalPageRequest)newPage(2)).isLast());
 	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void counterGuard() {
+		new ClosedIntervalPageRequest(PAGE_SIZE, sort, -1L);
+	}
+
 }
