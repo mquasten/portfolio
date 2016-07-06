@@ -59,7 +59,7 @@ public class ClosedIntervalPageRequest extends AbstractPageRequest {
 	}
 
 	public int maxPage() {
-		if(counter==0 ) {
+		if(counter<=0 ) {
 			return 0; 
 		}
 		
