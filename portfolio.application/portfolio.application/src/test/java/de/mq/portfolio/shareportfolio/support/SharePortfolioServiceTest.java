@@ -1,6 +1,7 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +12,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.CollectionUtils;
 
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
@@ -21,6 +24,7 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 public class SharePortfolioServiceTest {
 	
+	private static final String ID = "19680528";
 	private static final long NEXT_COUNTER = 2L;
 	private static final String STATUS_STPPED = "STOPPED";
 	private static final Long LIMIT = 10L;
@@ -35,6 +39,10 @@ public class SharePortfolioServiceTest {
 	
 	private final Collection<PortfolioOptimisation> portfolioOptimisations = new ArrayList<>();
 	private final SharePortfolio sharePortfolio = Mockito.mock(SharePortfolio.class);
+	
+	private final Pageable pageable = Mockito.mock(Pageable.class);
+	
+	private final  Sort sort = Mockito.mock(Sort.class);
 	
 	@Test
 	public final void aggregate() {
@@ -162,5 +170,26 @@ public class SharePortfolioServiceTest {
 	public final void  incCounter() {
 		 Assert.assertEquals(NEXT_COUNTER, (long) ((SharePortfolioServiceImpl)  sharePortfolioService).incCounter(COUNTER));
 		 Assert.assertEquals(COUNTER, ((SharePortfolioServiceImpl)  sharePortfolioService).incCounter(null));
+	}
+	
+	@Test
+	public final void  sharePortfolio() {
+		Mockito.when(sharePortfolioRepository.sharePortfolio(ID)).thenReturn(sharePortfolio);
+		Assert.assertEquals(sharePortfolio, sharePortfolioService.sharePortfolio(ID));
+		Mockito.verify(sharePortfolioRepository).sharePortfolio(ID);
+	}
+	
+	@Test
+	public final void  portfolios() {
+		Mockito.when(sharePortfolioRepository.portfolios(pageable, sharePortfolio)).thenReturn(Arrays.asList(sharePortfolio));
+		Assert.assertEquals(Arrays.asList(sharePortfolio), sharePortfolioService.portfolios(pageable, sharePortfolio));
+		Mockito.verify(sharePortfolioRepository).portfolios(pageable, sharePortfolio);
+	}
+	
+	@Test
+	public final void pageable(){
+		Mockito.when(sharePortfolioRepository.pageable(sharePortfolio, sort, LIMIT)).thenReturn(pageable);
+		Assert.assertEquals(pageable, sharePortfolioService.pageable(sharePortfolio, sort, LIMIT));
+		Mockito.verify(sharePortfolioRepository).pageable(sharePortfolio, sort, LIMIT);
 	}
 }

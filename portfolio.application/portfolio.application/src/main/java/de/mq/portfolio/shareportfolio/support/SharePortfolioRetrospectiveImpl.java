@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
+
 
 class SharePortfolioRetrospectiveImpl implements SharePortfolioRetrospective {
 
@@ -27,6 +31,11 @@ class SharePortfolioRetrospectiveImpl implements SharePortfolioRetrospective {
 			final Collection<TimeCourseRetrospective> timeCoursesWithExchangeRate,
 			final Data initialRateWithExchangeRate, final Data endRateWithExchangeRate, final Double standardDeviation,
 			final Double totalRate, final Double totalRateDividends) {
+		Assert.notNull(committedSharePortfolio , "CommittedSharePortfolio is mandatory.");
+		Assert.notNull(currentSharePortfolio , "CurrentSharePortfolio is mandatory.");
+		Assert.isTrue(!CollectionUtils.isEmpty(timeCoursesWithExchangeRate), "TimeCoursesWithExchangeRate are mandatory.");
+		Assert.notNull(initialRateWithExchangeRate , "InitialRateWithExchangeRate is mandatory.");
+		Assert.notNull(endRateWithExchangeRate , "EndRateWithExchangeRate is mandatory.");
 		this.committedSharePortfolio = committedSharePortfolio;
 		this.currentSharePortfolio = currentSharePortfolio;
 		this.timeCoursesWithExchangeRate.clear();

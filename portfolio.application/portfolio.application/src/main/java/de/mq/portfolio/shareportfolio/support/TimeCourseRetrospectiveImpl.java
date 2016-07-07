@@ -1,6 +1,9 @@
 package de.mq.portfolio.shareportfolio.support;
 
+import org.springframework.util.Assert;
+
 import de.mq.portfolio.share.TimeCourse;
+
 
 class TimeCourseRetrospectiveImpl implements TimeCourseRetrospective {
 	
@@ -9,6 +12,7 @@ class TimeCourseRetrospectiveImpl implements TimeCourseRetrospective {
 	private final double end;
 	
 	TimeCourseRetrospectiveImpl(final TimeCourse timeCourse, final double start, final double end) {
+		Assert.notNull(timeCourse, "TimeCourse is mandatory");
 		this.timeCourse = timeCourse;
 		this.start = start;
 		this.end = end;
