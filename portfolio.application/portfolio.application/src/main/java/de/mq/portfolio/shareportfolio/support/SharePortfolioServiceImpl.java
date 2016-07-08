@@ -185,7 +185,6 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 	public final void assign(final SharePortfolio sharePortfolio, final Collection<TimeCourse> timeCourses){
 		Assert.notNull(sharePortfolio.id(), "Shareportfolio should be persistent.");
 		Assert.notNull(sharePortfolio.id(), String.format("Shareportfolio not found, id: %s", sharePortfolio.id()));
-		
 		final SharePortfolio existing = sharePortfolioRepository.sharePortfolio(sharePortfolio.id());
 	    existing.assign(shareRepository.timeCourses(existing.timeCourses().stream().map(tc -> tc.share().code()).collect(Collectors.toList())));
 	    sharePortfolioRepository.save(existing);

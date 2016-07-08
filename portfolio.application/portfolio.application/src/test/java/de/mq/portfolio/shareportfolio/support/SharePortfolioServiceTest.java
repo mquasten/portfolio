@@ -5,10 +5,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
+
 
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.support.DataAccessUtils;
@@ -17,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.util.CollectionUtils;
 
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
+import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.share.support.ShareRepository;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
@@ -191,5 +195,55 @@ public class SharePortfolioServiceTest {
 		Mockito.when(sharePortfolioRepository.pageable(sharePortfolio, sort, LIMIT)).thenReturn(pageable);
 		Assert.assertEquals(pageable, sharePortfolioService.pageable(sharePortfolio, sort, LIMIT));
 		Mockito.verify(sharePortfolioRepository).pageable(sharePortfolio, sort, LIMIT);
+	}
+	
+	
+	@Test
+	public final void assignTimecourses() {
+		final List<TimeCourse> timeCourses = new ArrayList<>();
+		IntStream.range(1, 3).forEach(i -> {
+			final TimeCourse timeCourse = Mockito.mock(TimeCourse.class);
+			final Share share = Mockito.mock(Share.class);	
+			Mockito.when(share.code()).thenReturn("code"+i);
+			Mockito.when(timeCourse.share()).thenReturn(share);
+			timeCourses.add(timeCourse);
+		});
+		Mockito.when(sharePortfolio.timeCourses()).thenReturn(timeCourses);
+		Mockito.when(sharePortfolio.id()).thenReturn(ID);
+		Mockito.when(sharePortfolioRepository.sharePortfolio(ID)).thenReturn(sharePortfolio);
+		
+		
+		@SuppressWarnings("unchecked")
+		ArgumentCaptor<Collection<String>> codesCaptor = (ArgumentCaptor<Collection<String>>) ArgumentCaptor.forClass( (Class<?>) Collection.class);
+		final List<TimeCourse> newTimeCourses = Arrays.asList(Mockito.mock(TimeCourse.class), Mockito.mock(TimeCourse.class));
+		Mockito.when(shareRepository.timeCourses(codesCaptor.capture())).thenReturn(newTimeCourses);
+		
+		
+		sharePortfolioService.assign(sharePortfolio, timeCourses);
+		
+		Mockito.verify(sharePortfolio).assign(newTimeCourses);
+		sharePortfolioRepository.save(sharePortfolio);
+		Assert.assertEquals(2,codesCaptor.getValue().size());
+		
+		timeCourses.stream().map(tc -> tc.share().code()).forEach(code -> Assert.assertTrue(codesCaptor.getValue().contains(code)));;
+		
+	}
+	
+	@Test
+	public final void  delete() {
+		Mockito.when(sharePortfolio.id()).thenReturn(ID);
+		Mockito.when(sharePortfolioRepository.sharePortfolio(ID)).thenReturn(sharePortfolio);
+		sharePortfolioService.delete(ID);
+		Mockito.verify(sharePortfolioRepository).delete(sharePortfolio);
+		
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void  deleteCommitted() {
+		Mockito.when(sharePortfolio.id()).thenReturn(ID);
+		Mockito.when(sharePortfolio.isCommitted()).thenReturn(true);
+		Mockito.when(sharePortfolioRepository.sharePortfolio(ID)).thenReturn(sharePortfolio);
+		sharePortfolioService.delete(ID);
+		
 	}
 }
