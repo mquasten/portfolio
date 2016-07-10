@@ -1,30 +1,44 @@
 package de.mq.portfolio.shareportfolio.support;
 
+
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-
-import junit.framework.Assert;
+import org.junit.Before;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.CollectionUtils;
 
+
+import de.mq.portfolio.exchangerate.ExchangeRate;
+import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
+import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.share.support.ShareRepository;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
+import junit.framework.Assert;
+
 
 public class SharePortfolioServiceTest {
 	
@@ -36,10 +50,21 @@ public class SharePortfolioServiceTest {
 	private static final double VARIANCE = 1e-3;
 	private static final int SAMPLES_SIZE = 100;
 	private static final String NAME = "mq-test";
-	private final SharePortfolioRepository sharePortfolioRepository = Mockito.mock(SharePortfolioRepository.class);
-	private final ShareRepository shareRepository = Mockito.mock(ShareRepository.class);
-	private final ExchangeRateService exchangeRateService = Mockito.mock(ExchangeRateService.class);
-	private final  SharePortfolioService sharePortfolioService = new SharePortfolioServiceImpl(sharePortfolioRepository, shareRepository, exchangeRateService);
+
+	@Mock
+	private SharePortfolioRepository sharePortfolioRepository = Mockito.mock(SharePortfolioRepository.class);
+	@Mock
+	private ShareRepository shareRepository = Mockito.mock(ShareRepository.class);
+	@Mock
+	private ExchangeRateService exchangeRateService = Mockito.mock(ExchangeRateService.class) ;
+	
+	
+	private SharePortfolioService sharePortfolioService =  Mockito.mock(SharePortfolioServiceImpl.class,Mockito.CALLS_REAL_METHODS);
+			
+		
+	
+	
+	
 	
 	private final Collection<PortfolioOptimisation> portfolioOptimisations = new ArrayList<>();
 	private final SharePortfolio sharePortfolio = Mockito.mock(SharePortfolio.class);
@@ -47,6 +72,17 @@ public class SharePortfolioServiceTest {
 	private final Pageable pageable = Mockito.mock(Pageable.class);
 	
 	private final  Sort sort = Mockito.mock(Sort.class);
+	
+	
+	@Before
+	public final  void setup() {
+		
+		final Map<Class<?>, Object> mocks = new HashMap<>();
+		Arrays.asList(getClass().getDeclaredFields()).stream().filter(field -> field.isAnnotationPresent(Mock.class)).forEach(field -> mocks.put(field.getType(), ReflectionTestUtils.getField(this, field.getName())));
+		Arrays.asList(SharePortfolioServiceImpl.class.getDeclaredFields()).stream().filter(field -> mocks.containsKey(field.getType())).forEach(field -> ReflectionTestUtils.setField(sharePortfolioService, field.getName(), mocks.get(field.getType()))); 
+	}
+	
+	
 	
 	@Test
 	public final void aggregate() {
@@ -200,14 +236,7 @@ public class SharePortfolioServiceTest {
 	
 	@Test
 	public final void assignTimecourses() {
-		final List<TimeCourse> timeCourses = new ArrayList<>();
-		IntStream.range(1, 3).forEach(i -> {
-			final TimeCourse timeCourse = Mockito.mock(TimeCourse.class);
-			final Share share = Mockito.mock(Share.class);	
-			Mockito.when(share.code()).thenReturn("code"+i);
-			Mockito.when(timeCourse.share()).thenReturn(share);
-			timeCourses.add(timeCourse);
-		});
+		final List<TimeCourse> timeCourses = newTimecourses();
 		Mockito.when(sharePortfolio.timeCourses()).thenReturn(timeCourses);
 		Mockito.when(sharePortfolio.id()).thenReturn(ID);
 		Mockito.when(sharePortfolioRepository.sharePortfolio(ID)).thenReturn(sharePortfolio);
@@ -228,6 +257,21 @@ public class SharePortfolioServiceTest {
 		timeCourses.stream().map(tc -> tc.share().code()).forEach(code -> Assert.assertTrue(codesCaptor.getValue().contains(code)));;
 		
 	}
+
+	private List<TimeCourse> newTimecourses() {
+		final List<TimeCourse> timeCourses = new ArrayList<>();
+		IntStream.range(1, 3).forEach(i -> {
+			final TimeCourse timeCourse = Mockito.mock(TimeCourse.class);
+			final Share share = Mockito.mock(Share.class);	
+			Mockito.when(share.code()).thenReturn("code"+i);
+			Mockito.when(timeCourse.share()).thenReturn(share);
+			final Data data = Mockito.mock(Data.class);
+			Mockito.when(data.value()).thenReturn(50d);
+			
+			timeCourses.add(timeCourse);
+		});
+		return timeCourses;
+	}
 	
 	@Test
 	public final void  delete() {
@@ -246,4 +290,70 @@ public class SharePortfolioServiceTest {
 		sharePortfolioService.delete(ID);
 		
 	}
+	
+	@Test
+	public final void  retrospective() {
+		
+		
+	
+		final ArgumentCaptor<SharePortfolio> sharePortfolioCaptor = ArgumentCaptor.forClass(SharePortfolio.class);
+		final ArgumentCaptor<ExchangeRateCalculator> exchangeRateCalculatorCaptor = ArgumentCaptor.forClass(ExchangeRateCalculator.class);
+		
+		
+		@SuppressWarnings("unchecked")
+		final ArgumentCaptor<Collection<TimeCourse>> timeCourseCaptor = (ArgumentCaptor<Collection<TimeCourse>>) ArgumentCaptor.forClass((Class<?>) Collection.class);
+ 		final SharePortfolioRetrospectiveBuilder builder = Mockito.mock(SharePortfolioRetrospectiveBuilder.class);
+		Mockito.when(builder.withCommitedSharePortfolio(sharePortfolioCaptor.capture())).thenReturn(builder);
+		Mockito.when(builder.withExchangeRateCalculator(exchangeRateCalculatorCaptor.capture())).thenReturn(builder);
+	
+		Mockito.when(builder.withTimeCourses(timeCourseCaptor.capture())).thenReturn(builder);
+		SharePortfolioRetrospective sharePortfolioRetrospective = Mockito.mock(SharePortfolioRetrospective.class);
+		Mockito.when(builder.build()).thenReturn(sharePortfolioRetrospective);
+		
+		final List<TimeCourse> timeCourses = newTimecourses();
+		Mockito.when(sharePortfolio.timeCourses()).thenReturn(timeCourses);
+		Mockito.when(sharePortfolio.isCommitted()).thenReturn(true);
+		@SuppressWarnings("unchecked")
+		ArgumentCaptor<Collection<String>> codesCaptor = (ArgumentCaptor<Collection<String>>) ArgumentCaptor.forClass( (Class<?>) Collection.class);
+		final List<TimeCourse> newTimeCourses = Arrays.asList(Mockito.mock(TimeCourse.class), Mockito.mock(TimeCourse.class));
+		Mockito.when(shareRepository.timeCourses(codesCaptor.capture())).thenReturn(newTimeCourses);
+		
+		final Collection<ExchangeRate> exchangeRates = Arrays.asList(Mockito.mock(ExchangeRate.class));
+		Mockito.when(sharePortfolio.exchangeRateTranslations()).thenReturn(exchangeRates);
+	
+	
+		final ExchangeRateCalculator exchangeRateCalculator = Mockito.mock(ExchangeRateCalculator.class);
+		
+		Mockito.when(sharePortfolioRepository.sharePortfolio(ID)).thenReturn(sharePortfolio);
+		
+		Mockito.when(exchangeRateService.exchangeRateCalculator(exchangeRates)).thenReturn(exchangeRateCalculator);
+		
+		Mockito.when(exchangeRateCalculator.factor(Mockito.any(ExchangeRate.class), Mockito.any(Date.class))).thenReturn(1d);
+		
+	//	Mockito.doAnswer(a ->  builder ).when(sharePortfolioService).newBuilder();
+		Mockito.doReturn(builder).when((SharePortfolioServiceImpl)sharePortfolioService).newBuilder();
+		
+		//Mockito.when(sharePortfolioService.newBuilder()).thenReturn(builder);
+		Assert.assertEquals(sharePortfolioRetrospective, sharePortfolioService.retrospective(ID));
+		
+		Assert.assertEquals(sharePortfolio, sharePortfolioCaptor.getValue());
+		Assert.assertEquals(exchangeRateCalculator, exchangeRateCalculatorCaptor.getValue());
+		Assert.assertEquals(newTimeCourses, timeCourseCaptor.getValue());
+		
+	}
+	
+	@Test
+	public final void  newSharePortfolioService() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException  {
+		final SharePortfolioService sharePortfolioService = Mockito.mock(SharePortfolioServiceImpl.class,Mockito.CALLS_REAL_METHODS).getClass().getDeclaredConstructor(SharePortfolioRepository.class, ShareRepository.class, ExchangeRateService.class).newInstance(sharePortfolioRepository, shareRepository, exchangeRateService);
+		
+		final Map<Class<?>, Object> results = new HashMap<>();
+		Arrays.asList(SharePortfolioServiceImpl.class.getDeclaredFields()).stream().filter(field -> !Modifier.isStatic(field.getModifiers())).forEach(field -> results.put(field.getType(),ReflectionTestUtils.getField(sharePortfolioService, field.getName()))); 
+	    Assert.assertEquals(3, results.size());
+	   
+	    Assert.assertEquals(sharePortfolioRepository, results.get(SharePortfolioRepository.class));
+	    Assert.assertEquals(shareRepository, results.get(ShareRepository.class));
+	    Assert.assertEquals(exchangeRateService, results.get(ExchangeRateService.class));
+	}
+	
+	
 }

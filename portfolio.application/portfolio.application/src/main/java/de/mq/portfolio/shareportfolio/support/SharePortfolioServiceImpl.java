@@ -8,8 +8,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -22,27 +22,30 @@ import de.mq.portfolio.share.support.ShareRepository;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
-@Service("sharePortfolioService")
+@Service("sharePortfolioService" )
 class SharePortfolioServiceImpl implements SharePortfolioService {
 
 	static final String STATUS_CONTINUE = "CONTINUE";
 	static final String STATUS_COMPLETED = "COMPLETED";
-	private final SharePortfolioRepository sharePortfolioRepository;
-	private final ShareRepository shareRepository;
-	
-	private final ExchangeRateService exchangeRateService;
-	
-	private final  Class<? extends SharePortfolioRetrospectiveBuilder> builderClass = SharePortfolioRetrospectiveBuilderImpl.class;
-	
-	
 
+	
+	private    SharePortfolioRepository sharePortfolioRepository;
+	
+	private     ShareRepository shareRepository;
+	
+	private     ExchangeRateService exchangeRateService;
+
+
+		
+	
+	
 	@Autowired
 	SharePortfolioServiceImpl(final SharePortfolioRepository sharePortfolioRepository, final ShareRepository shareRepository, final  ExchangeRateService exchangeRateService) {
 		this.sharePortfolioRepository = sharePortfolioRepository;
 		this.shareRepository=shareRepository;
 		this.exchangeRateService=exchangeRateService;
-	}
-
+	} 
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -264,10 +267,13 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 	public final  SharePortfolioRetrospective retrospective(final String sharePortfolioId ) {
 		Assert.hasText(sharePortfolioId , "Id is mandatory");
 		final SharePortfolio portfolio = sharePortfolioRepository.sharePortfolio(sharePortfolioId);
-		return  BeanUtils.instantiateClass(builderClass).withCommitedSharePortfolio(portfolio).withExchangeRateCalculator(exchangeRateService.exchangeRateCalculator(portfolio.exchangeRateTranslations())).withTimeCourses(shareRepository.timeCourses(portfolio.timeCourses().stream().map(tc -> tc.code()).collect(Collectors.toSet()))).build();
+		return  newBuilder().withCommitedSharePortfolio(portfolio).withExchangeRateCalculator(exchangeRateService.exchangeRateCalculator(portfolio.exchangeRateTranslations())).withTimeCourses(shareRepository.timeCourses(portfolio.timeCourses().stream().map(tc -> tc.code()).collect(Collectors.toSet()))).build();
 		
 	}
 
+
+	@Lookup
+	SharePortfolioRetrospectiveBuilder newBuilder() {return null;}
 	
 
 }

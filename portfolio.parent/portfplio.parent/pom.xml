@@ -13,8 +13,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <slf4j.version>1.6.1</slf4j.version>
-     <spring.version>4.0.5.RELEASE</spring.version> 
-		<!--  spring.version>4.2.5.RELEASE</spring.version-->
+     <!--  spring.version>4.0.5.RELEASE</spring.version--> 
+		<spring.version>4.2.5.RELEASE</spring.version>
 		<junit.version>4.9</junit.version>
 		<mockito.version>1.10.19</mockito.version>
 

@@ -13,6 +13,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
@@ -25,7 +27,8 @@ import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.share.support.DataImpl;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
-
+@Component
+@Scope(scopeName="prototype")
 class SharePortfolioRetrospectiveBuilderImpl  implements SharePortfolioRetrospectiveBuilder {
 	
 	
@@ -102,7 +105,7 @@ private final Map<String,TimeCourse> timeCourses = new HashMap<>();
 		final Map<Date,List<Double>> rates = new HashMap<>();	
 		final Map<TimeCourse, Double> min = committedSharePortfolio.min();
 		
-		final Data initialRateWithExchangeRate = committedSharePortfolio.timeCourses().stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(tc, exchangeRateCalculator.factor(committedSharePortfolio.exchangeRate(tc), tc.end())* min.get(tc) *tc.rates().get(tc.rates().size() -1).value())).map(e -> new DataImpl(e.getKey().end(), e.getValue())).reduce((a,b) -> new DataImpl(a.date(), a.value() + b.value())).orElse(new DataImpl(new Date(), 0d));
+		final Data initialRateWithExchangeRate = committedSharePortfolio.timeCourses().stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(tc, exchangeRateCalculator.factor(committedSharePortfolio.exchangeRate(tc), tc.end())* min.get(tc) *tc.rates().get(tc.rates().size() -1).value()) ).map(e -> new DataImpl(e.getKey().end(), e.getValue())).reduce((a,b) -> new DataImpl(a.date(), a.value() + b.value())).orElse(new DataImpl(new Date(), 0d));
 
 		min.entrySet().forEach(e -> timeCourses.get(e.getKey().code()).rates().forEach(r -> addRate(rates, r, e.getValue(), exchangeRateCalculator.factor(committedSharePortfolio.exchangeRate(e.getKey()), r.date()))));
 		final List<Data> portfolioRatesWithExchangeRates = rates.entrySet().stream().filter(e -> e.getValue().size()== min.size()).map(e -> new DataImpl(e.getKey(), e.getValue().stream().reduce((a, b) ->  a+b).orElse(0d))).filter(isNewSample(initialRateWithExchangeRate)).sorted(sortdataByTime()).collect(Collectors.toList());

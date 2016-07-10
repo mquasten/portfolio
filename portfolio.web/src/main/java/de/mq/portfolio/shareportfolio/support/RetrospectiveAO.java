@@ -126,7 +126,7 @@ public class RetrospectiveAO implements Serializable {
 			final LineChartSeries series = new LineChartSeries();
 			series.setShowMarker(false);
 			tcr.timeCourse().rates().forEach(data -> series.set( df.format(data.date()), Double.valueOf(data.value()) ));
-			series.setLabel(tcr.timeCourse().share().name());
+			series.setLabel(tcr.timeCourse().share().name().replaceAll("'", " "));
 			ratesSeries.add(series);
 		});
 		

@@ -44,14 +44,13 @@ public class ChartAO implements Serializable {
 	public ChartAO() {
 		axis.setTickFormat("%b %#d, %y");
 		chartModel.getAxes().put(AxisType.X, axis);
+		
 
 	}
 
 	public void assign(final Collection<LineChartSeries> ratesSeries) {
-		chartModel.clear();
-
+		chartModel.clear(); 
 		ratesSeries.forEach(rs -> chartModel.addSeries(rs));
-
 	}
 
 	
