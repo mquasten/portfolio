@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Lookup;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -22,30 +22,25 @@ import de.mq.portfolio.share.support.ShareRepository;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
-@Service("sharePortfolioService" )
+@Service("sharePortfolioService")
 class SharePortfolioServiceImpl implements SharePortfolioService {
 
 	static final String STATUS_CONTINUE = "CONTINUE";
 	static final String STATUS_COMPLETED = "COMPLETED";
 
-	
-	private    SharePortfolioRepository sharePortfolioRepository;
-	
-	private     ShareRepository shareRepository;
-	
-	private     ExchangeRateService exchangeRateService;
+	private final SharePortfolioRepository sharePortfolioRepository;
 
+	private final ShareRepository shareRepository;
 
-		
-	
-	
+	private final ExchangeRateService exchangeRateService;
+
 	@Autowired
-	SharePortfolioServiceImpl(final SharePortfolioRepository sharePortfolioRepository, final ShareRepository shareRepository, final  ExchangeRateService exchangeRateService) {
+	SharePortfolioServiceImpl(final SharePortfolioRepository sharePortfolioRepository, final ShareRepository shareRepository, final ExchangeRateService exchangeRateService) {
 		this.sharePortfolioRepository = sharePortfolioRepository;
-		this.shareRepository=shareRepository;
-		this.exchangeRateService=exchangeRateService;
-	} 
-	
+		this.shareRepository = shareRepository;
+		this.exchangeRateService = exchangeRateService;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -63,29 +58,42 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 		return sharePortfolio;
 
 	}
+
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#sharePortfolio(java.lang.String)
+	 * 
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#
+	 * sharePortfolio(java.lang.String)
 	 */
 	@Override
 	public final SharePortfolio sharePortfolio(final String id) {
 		return sharePortfolioRepository.sharePortfolio(id);
 	}
+
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#portfolios(org.springframework.data.domain.Pageable, de.mq.portfolio.shareportfolio.SharePortfolio)
+	 * 
+	 * @see
+	 * de.mq.portfolio.shareportfolio.support.SharePortfolioService#portfolios(
+	 * org.springframework.data.domain.Pageable,
+	 * de.mq.portfolio.shareportfolio.SharePortfolio)
 	 */
 	@Override
 	public final Collection<SharePortfolio> portfolios(final Pageable pageable, final SharePortfolio sharePortfolio) {
 		return sharePortfolioRepository.portfolios(pageable, sharePortfolio);
 	}
+
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#pageable(de.mq.portfolio.shareportfolio.SharePortfolio, org.springframework.data.domain.Sort, java.lang.Number)
+	 * 
+	 * @see
+	 * de.mq.portfolio.shareportfolio.support.SharePortfolioService#pageable(de.
+	 * mq.portfolio.shareportfolio.SharePortfolio,
+	 * org.springframework.data.domain.Sort, java.lang.Number)
 	 */
 	@Override
 	public Pageable pageable(final SharePortfolio sharePortfolio, final Sort sort, final Number size) {
-		return sharePortfolioRepository.pageable(sharePortfolio,sort, size);
+		return sharePortfolioRepository.pageable(sharePortfolio, sort, size);
 	}
 
 	/*
@@ -101,7 +109,7 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 		Assert.notNull(size);
 		Assert.isTrue(size.intValue() > 1);
 		final int n = sharePortfolio.timeCourses().size();
-		Assert.isTrue(n > 2 , "Al least 2 Timecourses must be present." );
+		Assert.isTrue(n > 2, "Al least 2 Timecourses must be present.");
 		return IntStream.range(0, size.intValue()).mapToObj(i -> sample(n)).collect(Collectors.toList());
 	}
 
@@ -179,18 +187,21 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 
 		return result;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#assign(de.mq.portfolio.shareportfolio.SharePortfolio, java.util.Collection)
+	 * 
+	 * @see
+	 * de.mq.portfolio.shareportfolio.support.SharePortfolioService#assign(de.mq
+	 * .portfolio.shareportfolio.SharePortfolio, java.util.Collection)
 	 */
 	@Override
-	public final void assign(final SharePortfolio sharePortfolio, final Collection<TimeCourse> timeCourses){
+	public final void assign(final SharePortfolio sharePortfolio, final Collection<TimeCourse> timeCourses) {
 		Assert.notNull(sharePortfolio.id(), "Shareportfolio should be persistent.");
 		Assert.notNull(sharePortfolio.id(), String.format("Shareportfolio not found, id: %s", sharePortfolio.id()));
 		final SharePortfolio existing = sharePortfolioRepository.sharePortfolio(sharePortfolio.id());
-	    existing.assign(shareRepository.timeCourses(existing.timeCourses().stream().map(tc -> tc.share().code()).collect(Collectors.toList())));
-	    sharePortfolioRepository.save(existing);
+		existing.assign(shareRepository.timeCourses(existing.timeCourses().stream().map(tc -> tc.share().code()).collect(Collectors.toList())));
+		sharePortfolioRepository.save(existing);
 	}
 
 	/*
@@ -241,39 +252,48 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 	final Collection<PortfolioOptimisation> aggregate(final Collection<PortfolioOptimisation> portfolioOptimisations) {
 		final List<PortfolioOptimisation> results = new ArrayList<>();
 		portfolioOptimisations.stream().reduce((y, x) -> x.variance() < y.variance() ? x : y).ifPresent(r -> {
-			
-			ReflectionUtils.doWithFields(r.getClass(), field -> {field.setAccessible(true); ReflectionUtils.setField(field, r,  new Long(portfolioOptimisations.size()));}, field -> field.getName().equals("samples") ); 
+
+			ReflectionUtils.doWithFields(r.getClass(), field -> {
+				field.setAccessible(true);
+				ReflectionUtils.setField(field, r, new Long(portfolioOptimisations.size()));
+			}, field -> field.getName().equals("samples"));
 			results.add(r);
 		});
 		return Collections.unmodifiableList(results);
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#delete(java.lang.String)
+	 * 
+	 * @see
+	 * de.mq.portfolio.shareportfolio.support.SharePortfolioService#delete(java.
+	 * lang.String)
 	 */
 	@Override
 	public final void delete(final String sharePortfolioId) {
-		Assert.hasText(sharePortfolioId , "Id is mandatory");
+		Assert.hasText(sharePortfolioId, "Id is mandatory");
 		final SharePortfolio existing = sharePortfolioRepository.sharePortfolio(sharePortfolioId);
 		Assert.isTrue(!existing.isCommitted(), "SharePortfolio should not be committed");
 		sharePortfolioRepository.delete(existing);
 	}
+
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#retrospective(java.lang.String)
+	 * 
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#
+	 * retrospective(java.lang.String)
 	 */
 	@Override
-	public final  SharePortfolioRetrospective retrospective(final String sharePortfolioId ) {
-		Assert.hasText(sharePortfolioId , "Id is mandatory");
+	public final SharePortfolioRetrospective retrospective(final String sharePortfolioId) {
+		Assert.hasText(sharePortfolioId, "Id is mandatory");
 		final SharePortfolio portfolio = sharePortfolioRepository.sharePortfolio(sharePortfolioId);
-		return  newBuilder().withCommitedSharePortfolio(portfolio).withExchangeRateCalculator(exchangeRateService.exchangeRateCalculator(portfolio.exchangeRateTranslations())).withTimeCourses(shareRepository.timeCourses(portfolio.timeCourses().stream().map(tc -> tc.code()).collect(Collectors.toSet()))).build();
-		
+		return newBuilder().withCommitedSharePortfolio(portfolio).withExchangeRateCalculator(exchangeRateService.exchangeRateCalculator(portfolio.exchangeRateTranslations()))
+				.withTimeCourses(shareRepository.timeCourses(portfolio.timeCourses().stream().map(tc -> tc.code()).collect(Collectors.toSet()))).build();
+
 	}
 
-
-	@Lookup
-	SharePortfolioRetrospectiveBuilder newBuilder() {return null;}
-	
+	SharePortfolioRetrospectiveBuilder newBuilder() {
+		return new SharePortfolioRetrospectiveBuilderImpl();
+	}
 
 }

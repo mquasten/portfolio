@@ -13,8 +13,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
@@ -27,8 +25,7 @@ import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.share.support.DataImpl;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
-@Component
-@Scope(scopeName="prototype")
+
 class SharePortfolioRetrospectiveBuilderImpl  implements SharePortfolioRetrospectiveBuilder {
 	
 	

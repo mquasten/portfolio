@@ -2,19 +2,13 @@ package de.mq.portfolio.shareportfolio.support;
 
 
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
-
-import org.junit.Before;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -24,9 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.CollectionUtils;
-
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
@@ -59,7 +51,10 @@ public class SharePortfolioServiceTest {
 	private ExchangeRateService exchangeRateService = Mockito.mock(ExchangeRateService.class) ;
 	
 	
-	private SharePortfolioService sharePortfolioService =  Mockito.mock(SharePortfolioServiceImpl.class,Mockito.CALLS_REAL_METHODS);
+	private SharePortfolioService sharePortfolioService =  new SharePortfolioServiceImpl(sharePortfolioRepository, shareRepository, exchangeRateService );
+			
+			
+			//Mockito.mock(SharePortfolioServiceImpl.class,Mockito.CALLS_REAL_METHODS);
 			
 		
 	
@@ -74,13 +69,6 @@ public class SharePortfolioServiceTest {
 	private final  Sort sort = Mockito.mock(Sort.class);
 	
 	
-	@Before
-	public final  void setup() {
-		
-		final Map<Class<?>, Object> mocks = new HashMap<>();
-		Arrays.asList(getClass().getDeclaredFields()).stream().filter(field -> field.isAnnotationPresent(Mock.class)).forEach(field -> mocks.put(field.getType(), ReflectionTestUtils.getField(this, field.getName())));
-		Arrays.asList(SharePortfolioServiceImpl.class.getDeclaredFields()).stream().filter(field -> mocks.containsKey(field.getType())).forEach(field -> ReflectionTestUtils.setField(sharePortfolioService, field.getName(), mocks.get(field.getType()))); 
-	}
 	
 	
 	
@@ -329,7 +317,7 @@ public class SharePortfolioServiceTest {
 		Mockito.when(exchangeRateService.exchangeRateCalculator(exchangeRates)).thenReturn(exchangeRateCalculator);
 		
 		Mockito.when(exchangeRateCalculator.factor(Mockito.any(ExchangeRate.class), Mockito.any(Date.class))).thenReturn(1d);
-		
+		final SharePortfolioService sharePortfolioService = Mockito.spy(this.sharePortfolioService);
 	//	Mockito.doAnswer(a ->  builder ).when(sharePortfolioService).newBuilder();
 		Mockito.doReturn(builder).when((SharePortfolioServiceImpl)sharePortfolioService).newBuilder();
 		
@@ -343,16 +331,9 @@ public class SharePortfolioServiceTest {
 	}
 	
 	@Test
-	public final void  newSharePortfolioService() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException  {
-		final SharePortfolioService sharePortfolioService = Mockito.mock(SharePortfolioServiceImpl.class,Mockito.CALLS_REAL_METHODS).getClass().getDeclaredConstructor(SharePortfolioRepository.class, ShareRepository.class, ExchangeRateService.class).newInstance(sharePortfolioRepository, shareRepository, exchangeRateService);
+	public final void  newSharePortfolioService()   {
+		Assert.assertTrue(((SharePortfolioServiceImpl)sharePortfolioService).newBuilder() instanceof SharePortfolioRetrospectiveBuilder); 
 		
-		final Map<Class<?>, Object> results = new HashMap<>();
-		Arrays.asList(SharePortfolioServiceImpl.class.getDeclaredFields()).stream().filter(field -> !Modifier.isStatic(field.getModifiers())).forEach(field -> results.put(field.getType(),ReflectionTestUtils.getField(sharePortfolioService, field.getName()))); 
-	    Assert.assertEquals(3, results.size());
-	   
-	    Assert.assertEquals(sharePortfolioRepository, results.get(SharePortfolioRepository.class));
-	    Assert.assertEquals(shareRepository, results.get(ShareRepository.class));
-	    Assert.assertEquals(exchangeRateService, results.get(ExchangeRateService.class));
 	}
 	
 	
