@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -292,8 +292,9 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 
 	}
 
+	@Lookup
 	SharePortfolioRetrospectiveBuilder newBuilder() {
-		return new SharePortfolioRetrospectiveBuilderImpl();
+		return null;
 	}
 
 }

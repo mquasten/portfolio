@@ -140,7 +140,6 @@ public class PortfolioControllerImpl {
 		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(sharePortfolioId);
 		Assert.isTrue(! sharePortfolio.isCommitted() , "Portfolio should not be committed.");
 		sharePortfolio.remove(timeCourse.get());
-		
 		sharePortfolioService.save(sharePortfolio);
 		return String.format(REDIRECT_PATTERN, sharePortfolio.id());
 		

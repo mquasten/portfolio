@@ -93,6 +93,7 @@ public class SharePortfolioTest {
 		Mockito.when(share.name()).thenReturn(NEW_SHARE_NAME);
 		Mockito.when(share.code()).thenReturn(CODE);
 		Mockito.when(timeCourse.share()).thenReturn(share);
+		Mockito.when(timeCourse.name()).thenReturn(NEW_SHARE_NAME);
 
 		randomId(timeCourse);
 		randomId(timeCourse1);
@@ -100,9 +101,11 @@ public class SharePortfolioTest {
 
 		Mockito.when(share1.name()).thenReturn(SHARE_NAME_01);
 		Mockito.when(share1.code()).thenReturn(CODE);
+		Mockito.when(timeCourse1.name()).thenReturn(SHARE_NAME_01);
 
 		Mockito.when(share2.name()).thenReturn(SHARE_NAME_02);
 		Mockito.when(share2.code()).thenReturn(CODE);
+		Mockito.when(timeCourse2.name()).thenReturn(SHARE_NAME_02);
 
 		Mockito.when(timeCourse1.share()).thenReturn(share1);
 		Mockito.when(timeCourse2.share()).thenReturn(share2);
@@ -296,6 +299,7 @@ public class SharePortfolioTest {
 	@Test
 	public final void removeTimeCourse() {
 		Assert.assertEquals(timeCourses, sharePortfolio.timeCourses());
+	
 		sharePortfolio.remove(timeCourse1);
 		Assert.assertEquals(1, sharePortfolio.timeCourses().size());
 		Assert.assertTrue(sharePortfolio.timeCourses().stream().findAny().isPresent());
@@ -304,6 +308,7 @@ public class SharePortfolioTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public final void removeTimeCourseIdMissing() {
+		Mockito.when(timeCourse.name()).thenReturn(null);
 		Mockito.when(timeCourse.id()).thenReturn(null);
 		sharePortfolio.remove(timeCourse);
 	}

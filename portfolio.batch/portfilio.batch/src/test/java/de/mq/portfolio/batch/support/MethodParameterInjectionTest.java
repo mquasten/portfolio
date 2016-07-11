@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.core.convert.support.ConfigurableConversionService;
@@ -16,6 +15,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import de.mq.portfolio.batch.MethodParameterInjection;
 import de.mq.portfolio.share.TimeCourse;
+
 
 public class MethodParameterInjectionTest {
 	private static final String TIME_COURSE_KEY = "timeCourse";

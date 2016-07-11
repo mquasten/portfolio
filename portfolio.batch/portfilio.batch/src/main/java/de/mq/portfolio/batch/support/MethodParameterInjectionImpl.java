@@ -11,7 +11,6 @@ import java.util.stream.IntStream;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.util.Assert;
-
 import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.batch.MethodParameterInjection;

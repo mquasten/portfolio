@@ -332,7 +332,7 @@ public class SharePortfolioServiceTest {
 	
 	@Test
 	public final void  newSharePortfolioService()   {
-		Assert.assertTrue(((SharePortfolioServiceImpl)sharePortfolioService).newBuilder() instanceof SharePortfolioRetrospectiveBuilder); 
+		Assert.assertNull(((SharePortfolioServiceImpl) sharePortfolioService).newBuilder()); 
 		
 	}
 	

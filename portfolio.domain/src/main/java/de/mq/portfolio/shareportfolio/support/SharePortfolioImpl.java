@@ -283,8 +283,8 @@ class SharePortfolioImpl implements SharePortfolio {
 	@Override
 	public void remove(final TimeCourse timeCourse) {
 		Assert.notNull(timeCourses);
-		Assert.notNull(timeCourse.id());
-		this.timeCourses.removeAll(this.timeCourses.stream().filter(tc -> tc.id().equals(timeCourse.id())).collect(Collectors.toSet()));
+		Assert.notNull(timeCourse.name());
+		this.timeCourses.removeAll(this.timeCourses.stream().filter(tc -> tc.name().equals(timeCourse.name())).collect(Collectors.toSet()));
 	}
 
 	/*

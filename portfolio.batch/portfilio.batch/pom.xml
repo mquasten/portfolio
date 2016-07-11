@@ -2,81 +2,183 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	
+	<groupId>de.mq</groupId>
 	<artifactId>portfolio.batch</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
 
 	<packaging>jar</packaging>
-	<parent>
-	<groupId>de.mq</groupId>
-	<artifactId>portfolio.parent</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	</parent>
+	<!-- not useable, because batch is very very old shit and it will not work 
+		with new good spring versions -->
+	<!-- parent> <groupId>de.mq</groupId> <artifactId>portfolio.parent</artifactId> 
+		<version>0.0.1-SNAPSHOT</version> </parent -->
 
 	<name>portfolio.batch</name>
 	<url>http://hsqldb.org/repos/SNAPSHOT</url>
 
+	<properties>
+		<spring.version>4.0.5.RELEASE</spring.version>
+		<spring.batch.version>3.0.6.RELEASE</spring.batch.version>
+		<portfolio.version>0.0.1-SNAPSHOT</portfolio.version>
+		<junit.version>4.9</junit.version>
+		<mockito.version>1.10.19</mockito.version>
+		<mongo-driver.version>2.12.4</mongo-driver.version>
+		<mongo-data-mogo.version>1.6.0.RELEASE</mongo-data-mogo.version>
+		<java.version>1.8</java.version>
+		<maven-compiler-plugin.version>3.0</maven-compiler-plugin.version>
+	</properties>
+	<dependencies>
 
-  <dependencies>
-  
-  <dependency>
-        <groupId>org.springframework.batch</groupId>
-        <artifactId>spring-batch-core</artifactId>
-        <version>${spring.batch.version}</version>
-    </dependency>
-    
-    <dependency>
+		<dependency>
+			<groupId>org.springframework.batch</groupId>
+			<artifactId>spring-batch-core</artifactId>
+			<version>${spring.batch.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>de.mq</groupId>
 			<artifactId>portfolio.application</artifactId>
 			<version>${portfolio.version}</version>
-	</dependency>
+		</dependency>
+
+
+		<!-- dependencies should be removed, when parent can be used -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>${mockito.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- mongodb java driver -->
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>${mongo-driver.version}</version>
+
+
+		</dependency>
+
+		<!-- Spring data mongodb -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-mongodb</artifactId>
+			<version>${mongo-data-mogo.version}</version>
+
+		</dependency>
+
+
+
+	</dependencies>
+
+	<build>
+
+
+		<finalName>${project.name}</finalName>
+
+
+		<plugins>
+
+			<!-- remove the plugin, when parent can be used -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+							<mainClass>org.springframework.batch.core.launch.support.CommandLineJobRunner</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.4.201502262128</version>
+
+				<configuration>
+				    <excludes>
+        			<exclude>**/*DatabaseSetup.*</exclude>
+        			</excludes>
     
-  </dependencies>
-  
-  <build>
-  
-  
-	<finalName>${project.name}</finalName>
-	
-  
-  <plugins>
-  
- <plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-dependency-plugin</artifactId>
-    <executions>
-        <execution>
-            <id>copy-dependencies</id>
-            <phase>prepare-package</phase>
-            <goals>
-                <goal>copy-dependencies</goal>
-                
-            </goals>
-            <configuration>
-                <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                <overWriteReleases>false</overWriteReleases>
-                <overWriteSnapshots>false</overWriteSnapshots>
-                <overWriteIfNewer>true</overWriteIfNewer>
-               
-            </configuration>
-        </execution>
-    </executions>
-</plugin>
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-jar-plugin</artifactId>
-    <configuration>
-        <archive>
-            <manifest>
-                <addClasspath>true</addClasspath>
-                <classpathPrefix>lib/</classpathPrefix>
-                <mainClass>org.springframework.batch.core.launch.support.CommandLineJobRunner</mainClass>
-            </manifest>
-        </archive>
-    </configuration>
-</plugin>
-  
-  
-  </plugins>
-  
-  </build>
+    				 
+					<destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
+					<dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
+				</configuration>
+				<executions>
+					<execution>
+						<id>jacoco-initialize</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						
+							
+						</goals>
+					
+					</execution>
+					<execution>
+						<id>jacoco-site</id>
+						<phase>package</phase>
+						
+						<goals>
+							<goal>report</goal>
+							
+						</goals>
+					   
+					</execution>
+					
+				</executions>
+				
+			
+			</plugin>
+
+
+		</plugins>
+
+	</build>
 </project>
