@@ -40,7 +40,6 @@ class SimpleCSVInputServiceImpl<T> {
 		String line;
 		final Collection<T> results = new ArrayList<>();
 		while ((line = br.readLine()) != null) {
-
 			final String[] cols = line.split(delimiterRegex);
 			results.add((T) converter.convert(cols));
 		}
