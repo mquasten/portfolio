@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
@@ -11,43 +9,51 @@
 
 
 
- 	<bean  class="org.easyrules.spring.RulesEngineFactoryBean">
-        <property name="skipOnFirstAppliedRule" value="false"/>
-        <property name="skipOnFirstFailedRule" value="true"/>
-        <property name="silentMode" value="true"/>
-        <property name="rules">
-            <list>
-               <bean  class="de.mq.portfolio.share.support.CsvImportRuleImpl"  />
-            </list>
-        </property>
-        
-         <property name="ruleListeners">
-            <list>
-                <bean class="de.mq.portfolio.share.support.SimpleRuleListenerImpl" />
-            </list>
-        </property>
-       
-    </bean>
-    
-    <bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
-      <property name="scopes">
-          <map>
-              <entry key="thread">
-                  <bean class="org.springframework.context.support.SimpleThreadScope"/>
-              </entry>
-          </map>
-      </property>
-  </bean>
-    
-   <bean class="de.mq.portfolio.share.support.JobEnvironmentImpl"  scope="thread"/> 
-   
-   
-   
-   <bean name="exchangeRateCSVInputService"  class="de.mq.portfolio.share.support.SimpleCSVInputServiceImpl" >
-	
-	<constructor-arg>
-		<bean class="de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl" />
-	</constructor-arg>
+	<bean class="org.easyrules.spring.RulesEngineFactoryBean">
+		<property name="skipOnFirstAppliedRule" value="false" />
+		<property name="skipOnFirstFailedRule" value="true" />
+		<property name="silentMode" value="true" />
+		<property name="rules">
+			<list>
+				<bean class="de.mq.portfolio.batch.support.ImportServiceRuleImpl">
+					<constructor-arg>
+						<bean name="exchangeRateCSVInputService"
+							class="de.mq.portfolio.share.support.SimpleCSVInputServiceImpl">
+							<constructor-arg>
+								<bean
+									class="de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl" />
+							</constructor-arg>
+						</bean>
+					</constructor-arg>
+					<constructor-arg ref="jobEnvironment" />
+					<constructor-arg value="read(#filename)" />
+				</bean>
+			</list>
+		</property>
+
+		<property name="ruleListeners">
+			<list>
+				<bean class="de.mq.portfolio.batch.support.SimpleRuleListenerImpl">
+					<constructor-arg ref="jobEnvironment" />
+				</bean>
+			</list>
+		</property>
+
 	</bean>
+
+	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+		<property name="scopes">
+			<map>
+				<entry key="thread">
+					<bean class="org.springframework.context.support.SimpleThreadScope" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean name="jobEnvironment" class="de.mq.portfolio.batch.support.JobEnvironmentImpl" scope="thread" />
+
+
+
 
 </beans>

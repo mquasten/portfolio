@@ -1,15 +1,20 @@
-package de.mq.portfolio.share.support;
+package de.mq.portfolio.batch.support;
 
 import org.easyrules.api.Rule;
 import org.easyrules.api.RuleListener;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import de.mq.portfolio.batch.JobEnvironment;
 
 
-public class SimpleRuleListenerImpl implements RuleListener {
+class SimpleRuleListenerImpl implements RuleListener {
 
-	@Autowired
-	private JobEnvironment jobEnvironment;
 	
+	private final JobEnvironment jobEnvironment;
+	
+	SimpleRuleListenerImpl(JobEnvironment jobEnvironment) {
+		this.jobEnvironment = jobEnvironment;
+	}
+
 	@Override
 	public void beforeExecute(final Rule rule) {
 		

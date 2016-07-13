@@ -1,4 +1,4 @@
-package de.mq.portfolio.share.support;
+package de.mq.portfolio.batch;
 
 import java.util.Collection;
 import java.util.Map.Entry;
@@ -9,10 +9,6 @@ public interface JobEnvironment {
 
 	<T> T parameter(String name);
 
-	<T> void assign(Class<? extends T> clazz, T value);
-
-	<T> T bean(Class<? extends T> clazz);
-
 	<T> void assign(String name);
 
 	Collection<String> processed();
@@ -20,5 +16,9 @@ public interface JobEnvironment {
 	<T extends Throwable> void assign(String rule, T exception);
 
 	Collection<Entry<String, ? extends Throwable>> exceptions();
+
+	Collection<String> parameterNames();
+
+
 
 }

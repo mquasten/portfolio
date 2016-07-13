@@ -25,7 +25,7 @@ class SimpleCSVInputServiceImpl<T> {
 		this.delimiterRegex= "[;]";
 	}
 
-	final  Collection<T> read(final String filename) {
+	public final  Collection<T> read(final String filename) {
 		Assert.notNull(filename , "Filename is mandatory.");
 		try (final InputStream in = new FileInputStream(filename); final InputStreamReader isr = new InputStreamReader(in, Charset.forName("UTF-8")); final BufferedReader br = new BufferedReader(isr)) {
 			return doRead(br);
