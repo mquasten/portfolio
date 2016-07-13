@@ -1,4 +1,4 @@
-package de.mq.portfolio.share.support;
+ package de.mq.portfolio.share.support;
 
 import java.util.Arrays;
 import java.util.Collection;

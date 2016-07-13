@@ -1,4 +1,4 @@
-package de.mq.portfolio.exchangerate.support;
+package de.mq.portfolio.batch.support;
 
 import org.easyrules.api.RulesEngine;
 import org.junit.Test;
@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import de.mq.portfolio.share.support.JobEnvironment;
+import de.mq.portfolio.batch.JobEnvironment;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/easy-rules.xml" })
@@ -33,5 +33,6 @@ public class ExchangeRatesImportIntegrationTest {
 		
 		System.out.println(jobEnvironment.exceptions());
 		System.out.println(jobEnvironment.processed());
+		System.out.println((Object) jobEnvironment.parameter(AbstractServiceRule.ITEMS_PARAMETER));
 	}
 }

@@ -1,4 +1,4 @@
-package de.mq.portfolio.share.support;
+package de.mq.portfolio.batch.support;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -11,12 +11,12 @@ import java.util.Map.Entry;
 
 import org.springframework.util.Assert;
 
+import de.mq.portfolio.batch.JobEnvironment;
+
 
 
 class JobEnvironmentImpl implements JobEnvironment {
 	private final Map<String,Object> parameter = new HashMap<>();
-	
-	private final Map<Class<?>,Object> beans = new HashMap<>();
 	
 	private final List<String> processed = new ArrayList<>();
 	
@@ -33,29 +33,21 @@ class JobEnvironmentImpl implements JobEnvironment {
 	/* (non-Javadoc)
 	 * @see de.mq.portfolio.share.support.JobEnvironment#parameter(java.lang.String)
 	 */
-	@Override
+	
 	@SuppressWarnings("unchecked")
+	@Override
 	public final  <T> T parameter(final String name) {
 		Assert.isTrue(parameter.containsKey(name), String.format("Parameter %s is mandatory", name));
 		return (T) parameter.get(name);
 	}
-	
-	/* (non-Javadoc)
-	 * @see de.mq.portfolio.share.support.JobEnvironment#assign(java.lang.Class, T)
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.share.support.JobEnvironment#parameterNames()
 	 */
 	@Override
-	public final  <T> void assign(final Class<? extends T> clazz, T value) {
-		beans.put(clazz, value);
-	}
-	
-	/* (non-Javadoc)
-	 * @see de.mq.portfolio.share.support.JobEnvironment#bean(java.lang.Class)
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T bean(final Class<? extends T> clazz) {
-		Assert.isTrue(parameter.containsKey(clazz), String.format("Bean of type %s is mandatory.", clazz.getName()));
-		return (T) beans.get(clazz);
+	public final Collection<String> parameterNames() {
+		return Collections.unmodifiableCollection(parameter.keySet());
+		
 	}
 	
 	/* (non-Javadoc)
