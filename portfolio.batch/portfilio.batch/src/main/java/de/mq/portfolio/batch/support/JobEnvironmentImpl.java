@@ -16,7 +16,11 @@ import de.mq.portfolio.batch.JobEnvironment;
 
 
 class JobEnvironmentImpl implements JobEnvironment {
+<<<<<<< HEAD:portfolio.batch/portfilio.batch/src/main/java/de/mq/portfolio/batch/support/JobEnvironmentImpl.java
 	private final Map<String,Object> parameters = new HashMap<>();
+=======
+	private final Map<String,Object> parameter = new HashMap<>();
+>>>>>>> 5968e539d5a8fd9d4158676393fd00821240e789:portfolio.batch/portfilio.batch/src/main/java/de/mq/portfolio/batch/support/JobEnvironmentImpl.java
 	
 	private final List<String> processed = new ArrayList<>();
 	
@@ -36,13 +40,20 @@ class JobEnvironmentImpl implements JobEnvironment {
 	
 	@SuppressWarnings("unchecked")
 	@Override
+<<<<<<< HEAD:portfolio.batch/portfilio.batch/src/main/java/de/mq/portfolio/batch/support/JobEnvironmentImpl.java
 	public final  <T> T parameters(final String name) {
 		Assert.isTrue(parameters.containsKey(name), String.format("Parameter %s is mandatory", name));
 		return (T) parameters.get(name);
+=======
+	public final  <T> T parameter(final String name) {
+		Assert.isTrue(parameter.containsKey(name), String.format("Parameter %s is mandatory", name));
+		return (T) parameter.get(name);
+>>>>>>> 5968e539d5a8fd9d4158676393fd00821240e789:portfolio.batch/portfilio.batch/src/main/java/de/mq/portfolio/batch/support/JobEnvironmentImpl.java
 	}
 	/*
 	 * (non-Javadoc)
 	 * @see de.mq.portfolio.share.support.JobEnvironment#parameterNames()
+<<<<<<< HEAD:portfolio.batch/portfilio.batch/src/main/java/de/mq/portfolio/batch/support/JobEnvironmentImpl.java
 	 */
 	@Override
 	public final Collection<String> parameterNames() {
@@ -56,6 +67,13 @@ class JobEnvironmentImpl implements JobEnvironment {
 	@Override
 	public final void clearParameters() {
 		parameters.clear();
+=======
+	 */
+	@Override
+	public final Collection<String> parameterNames() {
+		return Collections.unmodifiableCollection(parameter.keySet());
+		
+>>>>>>> 5968e539d5a8fd9d4158676393fd00821240e789:portfolio.batch/portfilio.batch/src/main/java/de/mq/portfolio/batch/support/JobEnvironmentImpl.java
 	}
 	
 	/*

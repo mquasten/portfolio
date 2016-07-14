@@ -51,6 +51,31 @@
 			</list>
 		</property>
 
+<<<<<<< HEAD
+=======
+	<bean class="org.easyrules.spring.RulesEngineFactoryBean">
+		<property name="skipOnFirstAppliedRule" value="false" />
+		<property name="skipOnFirstFailedRule" value="true" />
+		<property name="silentMode" value="true" />
+		<property name="rules">
+			<list>
+				<bean class="de.mq.portfolio.batch.support.ImportServiceRuleImpl">
+					<constructor-arg>
+						<bean name="exchangeRateCSVInputService"
+							class="de.mq.portfolio.share.support.SimpleCSVInputServiceImpl">
+							<constructor-arg>
+								<bean
+									class="de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl" />
+							</constructor-arg>
+						</bean>
+					</constructor-arg>
+					<constructor-arg ref="jobEnvironment" />
+					<constructor-arg value="read(#filename)" />
+				</bean>
+			</list>
+		</property>
+
+>>>>>>> 5968e539d5a8fd9d4158676393fd00821240e789
 		<property name="ruleListeners">
 			<list>
 				<bean class="de.mq.portfolio.batch.support.SimpleRuleListenerImpl">

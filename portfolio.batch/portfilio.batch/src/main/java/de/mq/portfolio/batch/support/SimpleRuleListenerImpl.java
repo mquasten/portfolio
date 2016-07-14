@@ -9,7 +9,6 @@ import de.mq.portfolio.batch.JobEnvironment;
 class SimpleRuleListenerImpl implements RuleListener {
 
 	
-	
 	private final JobEnvironment jobEnvironment;
 	
 	SimpleRuleListenerImpl(JobEnvironment jobEnvironment) {
@@ -24,14 +23,13 @@ class SimpleRuleListenerImpl implements RuleListener {
 
 	@Override
 	public void onSuccess(final Rule rule) {
-		jobEnvironment.assignProcessed(rule.toString());
+		jobEnvironment.assign(rule.getName());
 		
 	}
 
-	
 	@Override
 	public void onFailure(final Rule rule, final Exception exception) {
-		jobEnvironment.assignFailed(rule.toString(), exception.getCause());
+		jobEnvironment.assign(rule.getName(), exception.getCause());
 	}	
 	
 	
