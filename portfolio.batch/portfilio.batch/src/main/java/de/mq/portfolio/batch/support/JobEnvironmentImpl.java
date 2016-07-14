@@ -16,7 +16,7 @@ import de.mq.portfolio.batch.JobEnvironment;
 
 
 class JobEnvironmentImpl implements JobEnvironment {
-	private final Map<String,Object> parameter = new HashMap<>();
+	private final Map<String,Object> parameters = new HashMap<>();
 	
 	private final List<String> processed = new ArrayList<>();
 	
@@ -27,7 +27,7 @@ class JobEnvironmentImpl implements JobEnvironment {
 	 */
 	@Override
 	public final  <T> void assign(final String name, T value) {
-		parameter.put(name, value);
+		parameters.put(name, value);
 	}
 	
 	/* (non-Javadoc)
@@ -36,9 +36,9 @@ class JobEnvironmentImpl implements JobEnvironment {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public final  <T> T parameter(final String name) {
-		Assert.isTrue(parameter.containsKey(name), String.format("Parameter %s is mandatory", name));
-		return (T) parameter.get(name);
+	public final  <T> T parameters(final String name) {
+		Assert.isTrue(parameters.containsKey(name), String.format("Parameter %s is mandatory", name));
+		return (T) parameters.get(name);
 	}
 	/*
 	 * (non-Javadoc)
@@ -46,15 +46,24 @@ class JobEnvironmentImpl implements JobEnvironment {
 	 */
 	@Override
 	public final Collection<String> parameterNames() {
-		return Collections.unmodifiableCollection(parameter.keySet());
+		return Collections.unmodifiableCollection(parameters.keySet());
 		
 	}
-	
-	/* (non-Javadoc)
-	 * @see de.mq.portfolio.share.support.JobEnvironment#assign(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.batch.JobEnvironment#clearParameters()
 	 */
 	@Override
-	public final <T> void assign(final String name) {
+	public final void clearParameters() {
+		parameters.clear();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.batch.JobEnvironment#assignProcessed(java.lang.String)
+	 */
+	@Override
+	public final <T> void assignProcessed(final String name) {
 		processed.add(name);
 	}
 	
@@ -71,7 +80,7 @@ class JobEnvironmentImpl implements JobEnvironment {
 	 * @see de.mq.portfolio.share.support.JobEnvironment#assign(java.lang.String, T)
 	 */
 	@Override
-	public final  <T extends Throwable> void assign(final String rule, final T exception) {
+	public final  <T extends Throwable> void assignFailed(final String rule, final T exception) {
 		exceptions.add(new AbstractMap.SimpleImmutableEntry<>(rule, exception));
 	}
 	
@@ -79,8 +88,9 @@ class JobEnvironmentImpl implements JobEnvironment {
 	 * @see de.mq.portfolio.share.support.JobEnvironment#exceptions()
 	 */
 	@Override
-	public Collection<Entry<String,? extends Throwable>>  exceptions() {
+	public Collection<Entry<String,? extends Throwable>>  failed() {
 		return Collections.unmodifiableList(exceptions);
 	}
 
+	
 }

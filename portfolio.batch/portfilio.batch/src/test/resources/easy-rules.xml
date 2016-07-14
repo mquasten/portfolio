@@ -7,7 +7,7 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
 
-
+	<import resource="classpath*:application.xml" />
 
 	<bean class="org.easyrules.spring.RulesEngineFactoryBean">
 		<property name="skipOnFirstAppliedRule" value="false" />
@@ -27,7 +27,27 @@
 					</constructor-arg>
 					<constructor-arg ref="jobEnvironment" />
 					<constructor-arg value="read(#filename)" />
+					
 				</bean>
+				
+				<bean class="de.mq.portfolio.batch.support.ProcessServiceRuleImpl">
+				<constructor-arg ref="exchangeRateService" />
+				
+				<constructor-arg ref="jobEnvironment" />
+				<constructor-arg value="exchangeRate(#item)" />
+				
+				</bean>
+				
+				<bean  class="de.mq.portfolio.batch.support.ProcessServiceRuleImpl">
+				<constructor-arg ref="exchangeRateService" />
+				
+				<constructor-arg ref="jobEnvironment" />
+				<constructor-arg value="save(#item)" />
+				<constructor-arg value="3" />
+				</bean>
+				
+				
+				
 			</list>
 		</property>
 
