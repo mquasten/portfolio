@@ -7,17 +7,21 @@ public interface JobEnvironment {
 
 	<T> void assign(String name, T value);
 
-	<T> T parameter(String name);
+	<T> T parameters(String name);
 
-	<T> void assign(String name);
+	<T> void assignProcessed(String name);
 
 	Collection<String> processed();
 
-	<T extends Throwable> void assign(String rule, T exception);
+	<T extends Throwable> void assignFailed(String rule, T exception);
 
-	Collection<Entry<String, ? extends Throwable>> exceptions();
+	
 
 	Collection<String> parameterNames();
+
+	void clearParameters();
+
+	Collection<Entry<String, ? extends Throwable>> failed();
 
 
 
