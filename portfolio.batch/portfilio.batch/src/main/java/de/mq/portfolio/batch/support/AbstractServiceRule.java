@@ -92,8 +92,6 @@ public abstract class AbstractServiceRule<T>  implements Comparable<Rule>{
 	public final int getPriority() {
 		return priority();
 	}
-	
-
 
 	@Override
 	public final int compareTo(final Rule o) {
