@@ -3,25 +3,15 @@ package de.mq.portfolio.batch.support;
 
 
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Proxy;
-
-import org.easyrules.annotation.Action;
-import org.easyrules.annotation.Condition;
 import org.easyrules.api.Rule;
-
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-import org.springframework.util.ReflectionUtils;
-
 import de.mq.portfolio.batch.JobEnvironment;
 
-public abstract class AbstractServiceRule<T>  implements Comparable<Rule>{
-
-
+public abstract class AbstractServiceRule<T>  implements Rule , Comparable<Rule>{
 
 
 
@@ -78,26 +68,20 @@ public abstract class AbstractServiceRule<T>  implements Comparable<Rule>{
 		return jobEnvironment;
 	}
 	
-	@Condition
-	public final  boolean condition() {
-		return checkCondion();
-	}
 	
-	@Action
-	public final  void action()  {
-		action(jobEnvironment());
-	}
+	
+	
 
 
 	public final int getPriority() {
 		return priority();
 	}
 
-	@Override
+/*	@Override
 	public final int compareTo(final Rule o) {
 		return  Math.round(Math.signum(getPriority()-  deProxyMize(o).getPriority()));
 			
-	}
+	} 
 
 
 	@SuppressWarnings("unchecked")
@@ -107,15 +91,65 @@ public abstract class AbstractServiceRule<T>  implements Comparable<Rule>{
 		field.setAccessible(true);		
 		return  (AbstractServiceRule<T>) ReflectionUtils.getField(field, InvocationHandler);
 		
+	} */
+
+
+	
+
+
+	@Override
+	public final  String getName() {
+		return String.format( "%s::%s" , target.getClass().getSimpleName(), expression.getExpressionString());
 	}
 
 
 	@Override
-	public String toString() {
-		return String.format( "%s::%s" , target.getClass().getSimpleName(), expression.getExpressionString());
+	public final  String getDescription() {
+		return  String.format( "class=%s, name=%s, priority=%s" , getClass().getSimpleName(), getName(), getPriority());
+	}
+
+
+	@Override
+	public final boolean evaluate() {
+		return checkCondion();
+	}
+
+
+	@Override
+	public final  void execute() throws Exception {
+		action(jobEnvironment());
+		
 	} 
 	
-	
+	@Override
+	public final int compareTo(Rule rule) {
+		
+		return getPriority() - rule.getPriority();
+		
+	}
 
+	@Override
+	public final String toString() {
+		return getDescription();
+	}
+
+
+
+	@Override
+	public int hashCode() {
+		return  getName().hashCode() + priority;
+	}
+
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (!(obj instanceof Rule)) {
+			return super.equals(obj);
+		}
+		final Rule other = (Rule) obj;
+		return getName().equals(other.getName()) && getPriority()==other.getPriority(); 
+		
+	}
+	
 
 }

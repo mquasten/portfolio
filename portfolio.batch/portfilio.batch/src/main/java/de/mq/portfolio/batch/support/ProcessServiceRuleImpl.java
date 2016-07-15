@@ -3,11 +3,9 @@ package de.mq.portfolio.batch.support;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.easyrules.annotation.Rule;
-
 import de.mq.portfolio.batch.JobEnvironment;
 
-@Rule()
+
 //must be apublic class for easy rules ...
 public class ProcessServiceRuleImpl<T,R> extends AbstractServiceRule<T> {
 

@@ -1,10 +1,8 @@
 package de.mq.portfolio.batch.support;
 
-import org.easyrules.annotation.Rule;
-
 import de.mq.portfolio.batch.JobEnvironment;
 
-@Rule()
+
 //must be apublic class for easy rules ...
 public class ImportServiceRuleImpl<T> extends AbstractServiceRule<T> {
 	
@@ -27,6 +25,11 @@ public class ImportServiceRuleImpl<T> extends AbstractServiceRule<T> {
 
 		jobEnvironment.assign(ITEMS_PARAMETER, executeEl());
 	}
+
+
+
+
+	
 	
 
 	

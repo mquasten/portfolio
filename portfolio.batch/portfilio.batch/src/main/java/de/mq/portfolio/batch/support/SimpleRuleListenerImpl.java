@@ -23,7 +23,7 @@ class SimpleRuleListenerImpl implements RuleListener {
 
 	@Override
 	public void onSuccess(final Rule rule) {
-		jobEnvironment.assignProcessed(rule.toString());
+		jobEnvironment.assignProcessed(rule.getName());
 		
 	}
 
