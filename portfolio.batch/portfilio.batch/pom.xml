@@ -30,6 +30,8 @@
 			<version>2.2.0</version>
 		</dependency>
 
+		<!-- can be removed, when xml config is removed, it#s ony f...ing factorybean that is inside the artefact ... -->
+
 		<dependency>
 			<groupId>org.easyrules</groupId>
 			<artifactId>easyrules-spring</artifactId>

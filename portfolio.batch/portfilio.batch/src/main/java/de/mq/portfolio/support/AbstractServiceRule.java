@@ -13,8 +13,6 @@ import de.mq.portfolio.batch.JobEnvironment;
 
  abstract class AbstractServiceRule<T>  implements Rule , Comparable<Rule>{
 
-
-
 	protected static final String ITEMS_PARAMETER = "items";
 	private final Expression expression;
 	private final T target;
@@ -63,11 +61,6 @@ import de.mq.portfolio.batch.JobEnvironment;
 		
 	}
 	
-	
-	
-	
-	
-
 
 	public final int getPriority() {
 		return priority();
