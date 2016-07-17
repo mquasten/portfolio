@@ -1,18 +1,18 @@
-package de.mq.portfolio.batch.support;
+package de.mq.portfolio.support;
 
 import de.mq.portfolio.batch.JobEnvironment;
 
 
 //must be apublic class for easy rules ...
-public class ImportServiceRuleImpl<T> extends AbstractServiceRule<T> {
+class ImportServiceRuleImpl<T> extends AbstractServiceRule<T> {
 	
 	
 	static final int DEFAULT_PRIORITY = 1;
 
 
 
-	ImportServiceRuleImpl(final T target, final JobEnvironment jobEnvironment, final String spEl) {
-		super(target, jobEnvironment, spEl, DEFAULT_PRIORITY);
+	ImportServiceRuleImpl(final T target, final String spEl, final JobEnvironment jobEnvironment) {
+		super(target,  spEl, jobEnvironment, DEFAULT_PRIORITY);
 
 
 	}
@@ -25,6 +25,25 @@ public class ImportServiceRuleImpl<T> extends AbstractServiceRule<T> {
 
 		jobEnvironment.assign(ITEMS_PARAMETER, executeEl());
 	}
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+	
+
+
+
+	
 
 
 

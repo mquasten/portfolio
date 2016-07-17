@@ -1,4 +1,4 @@
-package de.mq.portfolio.batch.support;
+package de.mq.portfolio.support;
 
 
 
@@ -11,22 +11,22 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import de.mq.portfolio.batch.JobEnvironment;
 
-public abstract class AbstractServiceRule<T>  implements Rule , Comparable<Rule>{
+ abstract class AbstractServiceRule<T>  implements Rule , Comparable<Rule>{
 
 
 
 	protected static final String ITEMS_PARAMETER = "items";
-	private final JobEnvironment jobEnvironment;
 	private final Expression expression;
 	private final T target;
+	private final JobEnvironment jobEnvironment;
 
 	private final int priority; 
 
-	AbstractServiceRule(final T target, final JobEnvironment jobEnvironment, final String spEl, int priority ) {
-		this.jobEnvironment=jobEnvironment;
+	AbstractServiceRule(final T target, final String spEl, final JobEnvironment jobEnvironment, int priority ) {
 		this.expression= new SpelExpressionParser(new SpelParserConfiguration(true,true)).parseExpression(spEl);
 		this.target=target;
 		this.priority=priority;
+		this.jobEnvironment=jobEnvironment;
 	}
 
 
@@ -63,10 +63,6 @@ public abstract class AbstractServiceRule<T>  implements Rule , Comparable<Rule>
 		
 	}
 	
-	protected final JobEnvironment jobEnvironment() {
-
-		return jobEnvironment;
-	}
 	
 	
 	
@@ -116,8 +112,8 @@ public abstract class AbstractServiceRule<T>  implements Rule , Comparable<Rule>
 
 
 	@Override
-	public final  void execute() throws Exception {
-		action(jobEnvironment());
+	public final  void execute() /*throws Exception*/ {
+		action(jobEnvironment);
 		
 	} 
 	

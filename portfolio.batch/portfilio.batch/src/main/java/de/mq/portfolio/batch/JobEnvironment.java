@@ -15,8 +15,6 @@ public interface JobEnvironment {
 
 	<T extends Throwable> void assignFailed(String rule, T exception);
 
-	
-
 	Collection<String> parameterNames();
 
 	void clearParameters();

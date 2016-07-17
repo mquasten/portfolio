@@ -5,6 +5,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.util.Assert;
 
 import de.mq.portfolio.share.Share;
+import de.mq.portfolio.share.support.ShareImpl;
 
 
 

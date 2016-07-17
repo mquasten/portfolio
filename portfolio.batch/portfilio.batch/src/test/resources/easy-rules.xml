@@ -9,13 +9,13 @@
 
 	<import resource="classpath*:application.xml" />
 
-	<bean class="org.easyrules.spring.RulesEngineFactoryBean">
+	<bean name="importExchangeRates" class="org.easyrules.spring.RulesEngineFactoryBean">
 		<property name="skipOnFirstAppliedRule" value="false" />
 		<property name="skipOnFirstFailedRule" value="true" />
 		<property name="silentMode" value="true" />
 		<property name="rules">
 			<list>
-				<bean class="de.mq.portfolio.batch.support.ImportServiceRuleImpl">
+				<bean  class="de.mq.portfolio.support.ImportServiceRuleImpl">
 					<constructor-arg>
 						<bean name="exchangeRateCSVInputService"
 							class="de.mq.portfolio.share.support.SimpleCSVInputServiceImpl">
@@ -30,7 +30,7 @@
 					
 				</bean>
 				
-				<bean class="de.mq.portfolio.batch.support.ProcessServiceRuleImpl">
+				<bean class="de.mq.portfolio.support.ProcessServiceRuleImpl">
 				<constructor-arg ref="exchangeRateService" />
 				
 				<constructor-arg ref="jobEnvironment" />
@@ -38,7 +38,7 @@
 				
 				</bean>
 				
-				<bean  class="de.mq.portfolio.batch.support.ProcessServiceRuleImpl">
+				<bean  class="de.mq.portfolio.support.ProcessServiceRuleImpl">
 				<constructor-arg ref="exchangeRateService" />
 				
 				<constructor-arg ref="jobEnvironment" />
@@ -54,13 +54,117 @@
 
 		<property name="ruleListeners">
 			<list>
-				<bean class="de.mq.portfolio.batch.support.SimpleRuleListenerImpl">
-					<constructor-arg ref="jobEnvironment" />
-				</bean>
+				<ref bean="ruleListener" />
 			</list>
 		</property>
 
 	</bean>
+	
+	
+	
+	
+	
+	
+	
+	
+	<bean  name="importTimeCourses"  class="org.easyrules.spring.RulesEngineFactoryBean">
+		<property name="skipOnFirstAppliedRule" value="false" />
+		<property name="skipOnFirstFailedRule" value="true" />
+		<property name="silentMode" value="true" />
+		<property name="rules">
+			<list>
+				<bean class="de.mq.portfolio.support.ImportServiceRuleImpl">
+					
+					<constructor-arg ref="shareService" />
+					
+					<constructor-arg ref="jobEnvironment" />
+					<constructor-arg value="shares()" />
+					
+				</bean>
+				
+				<bean class="de.mq.portfolio.support.ProcessServiceRuleImpl">
+					
+					<constructor-arg ref="shareService" />
+					
+					<constructor-arg ref="jobEnvironment" />
+					<constructor-arg value="timeCourse(#item)" />
+					
+				</bean>
+				
+				<bean class="de.mq.portfolio.support.ProcessServiceRuleImpl">
+					
+					<constructor-arg ref="shareService" />
+					
+					<constructor-arg ref="jobEnvironment" />
+					<constructor-arg value="replacetTimeCourse(#item)" />
+					<constructor-arg value="3" />
+				</bean>
+				
+				
+			</list>
+		</property>
+
+
+		<property name="ruleListeners">
+			<list>
+				<ref bean="ruleListener" />
+			</list>
+		</property>
+
+	</bean>
+	
+	
+	
+	
+	
+	
+	<bean name="importShares" class="org.easyrules.spring.RulesEngineFactoryBean">
+		<property name="skipOnFirstAppliedRule" value="false" />
+		<property name="skipOnFirstFailedRule" value="true" />
+		<property name="silentMode" value="true" />
+		<property name="rules">
+			<list>
+				<bean  class="de.mq.portfolio.support.ImportServiceRuleImpl">
+					<constructor-arg>
+						<bean name="exchangeRateCSVInputService"
+							class="de.mq.portfolio.share.support.SimpleCSVInputServiceImpl">
+							<constructor-arg>
+								<bean
+									class="de.mq.portfolio.share.support.SharesCSVLineConverterImpl" />
+							</constructor-arg>
+						</bean>
+					</constructor-arg>
+					<constructor-arg ref="jobEnvironment" />
+					<constructor-arg value="read(#filename)" />
+					
+				</bean>
+				
+				<bean  class="de.mq.portfolio.support.ProcessServiceRuleImpl">
+				<constructor-arg ref="shareService" />
+				
+				<constructor-arg ref="jobEnvironment" />
+				<constructor-arg value="save(#item)" />
+				<constructor-arg value="3" />
+				</bean>
+				
+				
+				
+			</list>
+		</property>
+
+
+		<property name="ruleListeners">
+			<list>
+				<ref bean="ruleListener" />
+			</list>
+		</property>
+
+	</bean>
+	
+	
+	
+	
+	
 
 	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
 		<property name="scopes">
@@ -71,8 +175,12 @@
 			</map>
 		</property>
 	</bean>
+	
+	<bean  name="ruleListener" class="de.mq.portfolio.support.SimpleRuleListenerImpl">
+					<constructor-arg ref="jobEnvironment" />
+	</bean>
 
-	<bean name="jobEnvironment" class="de.mq.portfolio.batch.support.JobEnvironmentImpl" scope="thread" />
+	<bean name="jobEnvironment" class="de.mq.portfolio.support.JobEnvironmentImpl" scope="thread" />
 
 
 

@@ -1,4 +1,4 @@
-package de.mq.portfolio.batch.support;
+package de.mq.portfolio.support;
 
 import org.easyrules.api.Rule;
 import org.easyrules.api.RuleListener;
@@ -11,7 +11,7 @@ class SimpleRuleListenerImpl implements RuleListener {
 	
 	private final JobEnvironment jobEnvironment;
 	
-	SimpleRuleListenerImpl(JobEnvironment jobEnvironment) {
+	SimpleRuleListenerImpl(final JobEnvironment jobEnvironment) {
 		this.jobEnvironment = jobEnvironment;
 	}
 
@@ -29,7 +29,8 @@ class SimpleRuleListenerImpl implements RuleListener {
 
 	@Override
 	public void onFailure(final Rule rule, final Exception exception) {
-		jobEnvironment.assignFailed(rule.getName(), exception.getCause());
+		exception.printStackTrace();
+		jobEnvironment.assignFailed(rule.getName(), exception);
 	}	
 	
 	

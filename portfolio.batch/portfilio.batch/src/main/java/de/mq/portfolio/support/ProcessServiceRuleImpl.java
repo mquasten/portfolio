@@ -1,4 +1,4 @@
-package de.mq.portfolio.batch.support;
+package de.mq.portfolio.support;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,16 +7,16 @@ import de.mq.portfolio.batch.JobEnvironment;
 
 
 //must be apublic class for easy rules ...
-public class ProcessServiceRuleImpl<T,R> extends AbstractServiceRule<T> {
+class ProcessServiceRuleImpl<T,R> extends AbstractServiceRule<T> {
 
 	static final int DEFAULT_PRIORITY = 2; 
-	ProcessServiceRuleImpl(final T target, final JobEnvironment jobEnvironment, final String spEl) {
-		this(target, jobEnvironment, spEl, DEFAULT_PRIORITY);
+	ProcessServiceRuleImpl(final T target, final String spEl, final JobEnvironment jobEnvironment) {
+		this(target, spEl,jobEnvironment, DEFAULT_PRIORITY);
 		
 	}
 	
-	ProcessServiceRuleImpl(final T target, final JobEnvironment jobEnvironment, final String spEl, final int priority) {
-		super(target, jobEnvironment, spEl, priority);
+	ProcessServiceRuleImpl(final T target, final String spEl, final JobEnvironment jobEnvironment, final int priority) {
+		super(target, spEl, jobEnvironment, priority);
 		
 	}
 
@@ -34,6 +34,10 @@ public class ProcessServiceRuleImpl<T,R> extends AbstractServiceRule<T> {
 	
 		
 	}
+
+
+
+	
 
 	
 

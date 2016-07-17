@@ -1,4 +1,4 @@
-package de.mq.portfolio.batch.support;
+package de.mq.portfolio.support;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;

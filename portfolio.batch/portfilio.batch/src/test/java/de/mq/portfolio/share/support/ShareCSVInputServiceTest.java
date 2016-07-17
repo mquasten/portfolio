@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.springframework.core.convert.converter.Converter;
 
 import de.mq.portfolio.share.Share;
+import de.mq.portfolio.share.support.ShareImpl;
 
 public class ShareCSVInputServiceTest {
 	

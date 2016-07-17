@@ -14,13 +14,13 @@ import org.springframework.util.Assert;
 
 
 //@Service("shareCSVInputService")
-class SimpleCSVInputServiceImpl<T> {
+public class SimpleCSVInputServiceImpl<T> {
 
 	private final String delimiterRegex;
 	
 	private final Converter<String[], T> converter; 
 	
-	SimpleCSVInputServiceImpl(final Converter<String[], T> converter) {
+	public SimpleCSVInputServiceImpl(final Converter<String[], T> converter) {
 		this.converter=converter;
 		this.delimiterRegex= "[;]";
 	}
