@@ -14,11 +14,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import de.mq.portfolio.batch.JobEnvironment;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.support.AbstractServiceRule;
+import de.mq.portfolio.support.RulesConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/easy-rules.xml" })
+@ContextConfiguration(classes={RulesConfiguration.class})
 @Ignore
-public class SharesImportIntegrationTest {
+public class SharesImportIntegrationTest2 {
 
 	@Autowired
 	@Qualifier("importShares")
@@ -45,7 +46,7 @@ public class SharesImportIntegrationTest {
 		System.out.println("Failed: " + jobEnvironment.failed());
 		System.out.println("Processed: " + jobEnvironment.processed());
 		final Collection<Share> results =  jobEnvironment.parameters(AbstractServiceRule.ITEMS_PARAMETER);
-		System.out.println(results.stream());
+		System.out.println(results.size());
 	
 
 		

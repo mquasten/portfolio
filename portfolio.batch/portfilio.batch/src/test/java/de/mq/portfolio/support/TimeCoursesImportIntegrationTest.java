@@ -14,12 +14,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import de.mq.portfolio.batch.JobEnvironment;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.support.AbstractServiceRule;
+import de.mq.portfolio.support.RulesConfiguration;
 import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/easy-rules.xml" })
+@ContextConfiguration(classes={RulesConfiguration.class})
 @Ignore
-public class TimeCoursesImportIntegrationTest {
+public class TimeCoursesImportIntegrationTest2 {
 	
 	@Autowired
 	private JobEnvironment jobEnvironment;
@@ -34,7 +35,7 @@ public class TimeCoursesImportIntegrationTest {
 	public final void doImport() {
 		Assert.assertNotNull(jobEnvironment);
 		Assert.assertNotNull(rulesEngine);
-		//jobEnvironment.assign("filename", "data/exchange.csv");
+		
 		rulesEngine.fireRules();
 		
 		System.out.println("Failed: " + jobEnvironment.failed());
