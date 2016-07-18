@@ -20,7 +20,7 @@ import junit.framework.Assert;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={RulesConfiguration.class})
 @Ignore
-public class TimeCoursesImportIntegrationTest2 {
+public class TimeCoursesImportIntegrationTest {
 	
 	@Autowired
 	private JobEnvironment jobEnvironment;

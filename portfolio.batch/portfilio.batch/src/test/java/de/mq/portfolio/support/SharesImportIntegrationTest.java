@@ -19,7 +19,7 @@ import de.mq.portfolio.support.RulesConfiguration;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={RulesConfiguration.class})
 @Ignore
-public class SharesImportIntegrationTest2 {
+public class SharesImportIntegrationTest {
 
 	@Autowired
 	@Qualifier("importShares")

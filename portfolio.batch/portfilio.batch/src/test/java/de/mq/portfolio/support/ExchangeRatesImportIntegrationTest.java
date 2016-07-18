@@ -13,14 +13,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.mq.portfolio.batch.JobEnvironment;
 import de.mq.portfolio.exchangerate.ExchangeRate;
-import de.mq.portfolio.support.AbstractServiceRule;
-import de.mq.portfolio.support.RulesConfiguration;
 import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={RulesConfiguration.class})
 @Ignore
-public class ExchangeRatesImportIntegrationTest2 {
+public class ExchangeRatesImportIntegrationTest {
 	
 	@Autowired
 	private JobEnvironment jobEnvironment;
@@ -42,6 +40,7 @@ public class ExchangeRatesImportIntegrationTest2 {
 		System.out.println("Processed: " + jobEnvironment.processed());
 		Collection<ExchangeRate> results =  jobEnvironment.parameters(AbstractServiceRule.ITEMS_PARAMETER);
 		System.out.println(results.stream().findFirst().get().rates().size());
+		
 		
 	}
 	

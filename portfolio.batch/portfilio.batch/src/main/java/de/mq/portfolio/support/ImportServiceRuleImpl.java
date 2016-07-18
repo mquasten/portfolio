@@ -3,7 +3,7 @@ package de.mq.portfolio.support;
 import de.mq.portfolio.batch.JobEnvironment;
 
 
-//must be apublic class for easy rules ...
+
 class ImportServiceRuleImpl<T> extends AbstractServiceRule<T> {
 	
 	
