@@ -22,5 +22,4 @@ public interface JobEnvironment {
 	Collection<Entry<String, ? extends Throwable>> failed();
 
 
-
 }
