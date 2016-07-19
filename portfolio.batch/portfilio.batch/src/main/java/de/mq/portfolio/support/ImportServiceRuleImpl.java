@@ -1,29 +1,23 @@
 package de.mq.portfolio.support;
 
-import de.mq.portfolio.batch.JobEnvironment;
-
-
+import java.util.Map;
 
 class ImportServiceRuleImpl<T> extends AbstractServiceRule<T> {
 	
 	
-	static final int DEFAULT_PRIORITY = 1;
 
 
 
-	ImportServiceRuleImpl(final T target, final String spEl, final JobEnvironment jobEnvironment) {
-		super(target,  spEl, jobEnvironment, DEFAULT_PRIORITY);
-
-
+	ImportServiceRuleImpl(final T target, final String spEl) {
+		super(target,  spEl);
 	}
 	
 	
 
 
 	@Override
-	protected void action(final JobEnvironment jobEnvironment) {
-
-		jobEnvironment.assign(ITEMS_PARAMETER, executeEl());
+	protected void action(final  Map<String, Object> parameters) {
+		parameters.put(ITEMS_PARAMETER, executeEl(parameters));
 	}
 
 

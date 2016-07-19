@@ -1,87 +1,82 @@
 package de.mq.portfolio.support;
 
-import org.easyrules.api.Rule;
+import java.util.Map;
+
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-import de.mq.portfolio.batch.JobEnvironment;
+import de.mq.portfolio.batch.Rule;
 
-abstract class AbstractServiceRule<T> implements Rule, Comparable<Rule> {
+abstract class AbstractServiceRule<T> implements Rule  {
 
 	protected static final String ITEMS_PARAMETER = "items";
 	private final Expression expression;
 	private final T target;
-	private final JobEnvironment jobEnvironment;
+	
 
-	private final int priority;
 
-	AbstractServiceRule(final T target, final String spEl, final JobEnvironment jobEnvironment, int priority) {
+	AbstractServiceRule(final T target, final String spEl) {
 		this.expression = new SpelExpressionParser(new SpelParserConfiguration(true, true)).parseExpression(spEl);
 		this.target = target;
-		this.priority = priority;
-		this.jobEnvironment = jobEnvironment;
+		
 	}
 
 	@SuppressWarnings("unchecked")
-	protected final <R> R executeEl() {
+	protected final <R> R executeEl(final Map<String,Object> parameters) {
 		final StandardEvaluationContext context = new StandardEvaluationContext(this.target);
-		jobEnvironment.parameterNames().forEach(name -> context.setVariable(name, jobEnvironment.parameters(name)));
+		parameters.entrySet().stream().forEach(entry -> context.setVariable(entry.getKey(), entry.getValue()));
 
 		return (R) expression.getValue(context);
 
 	}
 
-	protected abstract void action(final JobEnvironment jobEnvironment);
+	protected abstract void action(final Map<String,Object> parameters);
 
 	protected boolean checkCondion() {
 		return true;
 	}
 
-	protected int priority() {
-		return priority;
-	}
+	
 
-	public final int getPriority() {
-		return priority();
-	}
+	
 
+	/* (non-Javadoc)
+	 * @see de.mq.portfolio.support.Rule#getName()
+	 */
 	@Override
 	public final String getName() {
 		return String.format("%s::%s", target.getClass().getSimpleName(), expression.getExpressionString());
 	}
 
-	@Override
-	public final String getDescription() {
-		return String.format("class=%s, name=%s, priority=%s", getClass().getSimpleName(), getName(), getPriority());
-	}
+	
+	/* (non-Javadoc)
+	 * @see de.mq.portfolio.support.Rule#evaluate()
+	 */
 
 	@Override
 	public final boolean evaluate() {
 		return checkCondion();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.batch.Rule#execute(java.util.Map)
+	 */
 	@Override
-	public final void execute()  {
-		action(jobEnvironment);
+	public final void execute(final Map<String,Object> parameters)  {
+		action(parameters);
 
 	}
 
-	@Override
-	public final int compareTo(final Rule rule) {
-		return getPriority() - rule.getPriority();
+	
 
-	}
-
-	@Override
-	public final String toString() {
-		return getDescription();
-	}
+	
 
 	@Override
 	public int hashCode() {
-		return getName().hashCode() + priority;
+		return getName().hashCode();
 	}
 
 	@Override
@@ -90,7 +85,7 @@ abstract class AbstractServiceRule<T> implements Rule, Comparable<Rule> {
 			return super.equals(obj);
 		}
 		final Rule other = (Rule) obj;
-		return getName().equals(other.getName()) && getPriority() == other.getPriority();
+		return getName().equals(other.getName());
 	}
 
 }

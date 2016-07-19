@@ -9,13 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.easyrules.api.Rule;
 import org.springframework.util.Assert;
 
-import de.mq.portfolio.batch.JobEnvironment;
-import de.mq.portfolio.support.JobEnvironmentImpl;
 
-class SimpleRulesEngineImpl {
+import de.mq.portfolio.batch.Rule;
+import de.mq.portfolio.batch.RulesEngine;
+
+
+class SimpleRulesEngineImpl implements RulesEngine {
 
 	private final Collection<Rule> rules = new ArrayList<>();
 
@@ -34,13 +35,14 @@ class SimpleRulesEngineImpl {
 		this.skipOnFirstApplied = skipOnFirstApplied;
 	}
 
-	SimpleRulesEngineImpl(final List<Rule> rules) {
-		this(rules, true, false);
-	}
 	
-	public final JobEnvironment fireRules(final Map<String,Object> parameters) {
-		final JobEnvironment jobEnvironment = new JobEnvironmentImpl();
-		parameters.entrySet().forEach(entry -> jobEnvironment.assign(entry.getKey(), entry.getValue()) );
+	/* (non-Javadoc)
+	 * @see de.mq.portfolio.batch.support.RulesEngine#fireRules(java.util.Map)
+	 */
+	@Override
+	public final void fireRules(final Map<String,Object> parameters) {
+	//	final JobEnvironment jobEnvironment = new JobEnvironmentImpl();
+	//	parameters.entrySet().forEach(entry -> jobEnvironment.assign(entry.getKey(), entry.getValue()) );
 		
 		
 		for(final Rule rule : rules ){
@@ -48,7 +50,7 @@ class SimpleRulesEngineImpl {
 				continue;
 			}
 			
-			execute(rule);
+			execute(rule,parameters);
 			
 			if( skipOnFirstApplied) {
 				break;
@@ -60,13 +62,12 @@ class SimpleRulesEngineImpl {
 				
 		}
 		
-		return jobEnvironment;
 		
 	}
 
-	private void execute(final Rule rule) {
+	private void execute(final Rule rule, final Map<String,Object> parameters) {
 		try {
-			rule.execute();
+			rule.execute(parameters);
 			processed.add(rule.getName());
 		} catch (final Exception ex) {
 			exceptions.add(new SimpleImmutableEntry<>(rule.getName(), ex));
@@ -74,12 +75,20 @@ class SimpleRulesEngineImpl {
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see de.mq.portfolio.batch.support.RulesEngine#processed()
+	 */
+	@Override
 	public final Collection<String> processed() {
 		return Collections.unmodifiableCollection(processed);
 		
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see de.mq.portfolio.batch.support.RulesEngine#failed()
+	 */
+	@Override
 	public final Collection<Entry<String,? extends Throwable>> failed() {
 		return Collections.unmodifiableCollection(exceptions);
 	}
