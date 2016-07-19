@@ -14,7 +14,6 @@ import org.springframework.util.Assert;
 import de.mq.portfolio.batch.JobEnvironment;
 
 
-
 class JobEnvironmentImpl implements JobEnvironment {
 
 	private final Map<String,Object> parameters = new HashMap<>();
