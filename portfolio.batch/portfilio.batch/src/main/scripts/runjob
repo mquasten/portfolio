@@ -19,6 +19,6 @@ export BIN_DIR=$PROJECT_DIR/target
 cd $BIN_DIR
 
 
-java -jar portfolio.batch.jar batch.xml $*
+java -jar portfolio.batch.jar  $*
 
 cd $DIR

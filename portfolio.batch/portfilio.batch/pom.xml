@@ -62,7 +62,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>org.springframework.batch.core.launch.support.CommandLineJobRunner</mainClass>
+							<mainClass>de.mq.portfolio.support.BatchProcessorImpl</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
