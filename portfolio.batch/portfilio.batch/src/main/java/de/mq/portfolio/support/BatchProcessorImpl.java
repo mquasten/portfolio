@@ -1,9 +1,11 @@
 package de.mq.portfolio.support;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.context.ApplicationContext;
@@ -21,9 +23,12 @@ public class BatchProcessorImpl {
 
 		
 		Assert.notEmpty(arguments, "At least the name of the ruleengine should be given as first parameter.");
+		final String names = arguments.stream().findFirst().get();
+		final Collection<String> params = IntStream.range(1, arguments.size()).mapToObj(i -> arguments.get(i)).collect(Collectors.toList());
 		
 		try (ConfigurableApplicationContext ctx = applicationContext() ) {
-			process(arguments, ctx);
+			Arrays.asList(names.split("[,]")).forEach(name ->  process(name, params, ctx));
+			;
 		}
 	}
 
@@ -31,12 +36,12 @@ public class BatchProcessorImpl {
 		return new AnnotationConfigApplicationContext(RulesConfiguration.class);
 	}
 
-	private void process(final List<String> arguments, ApplicationContext ctx) {
-		final String name = arguments.stream().findFirst().get();
+	private void process(final String name, final Collection<String> params, ApplicationContext ctx) {
+		
 		final RulesEngine rulesEngine = ctx.getBean(name, RulesEngine.class);
 	
 		final Map<String,Object> parameters = new HashMap<>();
-		IntStream.range(1, arguments.size()).mapToObj(i -> arguments.get(i)).forEach(entry -> {
+		params.forEach(entry -> {
 			final String[] values = entry.split("=");
 			Assert.isTrue(values.length==2 , "Parameter should be given in format <key>=<value> as argument.");
 			parameters.put(values[0].trim(), values[1].trim());

@@ -47,7 +47,7 @@ abstract class AbstractServiceRule<T> implements Rule  {
 	 */
 	@Override
 	public final String getName() {
-		return String.format("%s::%s", target.getClass().getSimpleName(), expression.getExpressionString());
+		return String.format("%s.%s [%s]", target.getClass().getSimpleName(), expression.getExpressionString() , getClass().getSimpleName());
 	}
 
 	
@@ -76,7 +76,7 @@ abstract class AbstractServiceRule<T> implements Rule  {
 
 	@Override
 	public int hashCode() {
-		return getName().hashCode();
+		return getName().hashCode() + getClass().hashCode();
 	}
 
 	@Override
@@ -85,7 +85,7 @@ abstract class AbstractServiceRule<T> implements Rule  {
 			return super.equals(obj);
 		}
 		final Rule other = (Rule) obj;
-		return getName().equals(other.getName());
+		return getName().equals(other.getName()) && other.getClass().equals(getClass());
 	}
 
 }

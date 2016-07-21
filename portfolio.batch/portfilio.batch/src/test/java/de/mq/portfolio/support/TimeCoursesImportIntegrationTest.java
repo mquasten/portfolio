@@ -14,8 +14,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.mq.portfolio.batch.RulesEngine;
 import de.mq.portfolio.share.TimeCourse;
-import de.mq.portfolio.support.AbstractServiceRule;
-import de.mq.portfolio.support.RulesConfiguration;
 import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -30,7 +28,10 @@ public class TimeCoursesImportIntegrationTest {
 	@Qualifier("importTimeCourses")
 	private  RulesEngine rulesEngine;
 	
+	
+	
 	@Test
+	@Ignore
 	public final void doImport() {
 		
 		Assert.assertNotNull(rulesEngine);
@@ -43,6 +44,15 @@ public class TimeCoursesImportIntegrationTest {
 		final Collection<TimeCourse> results =  (Collection<TimeCourse>) parameters.get(AbstractServiceRule.ITEMS_PARAMETER);
 		System.out.println(results.size());
 		
+		TimeCourse result = results.stream().filter(x -> x.share().code().equals("KO")).findFirst().get();
+		
+		System.out.println(result.rates().size());
+		System.out.println(result.rates().get(249).date());
+		
+		
+		
 	}
+	
+	
 
 }
