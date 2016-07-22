@@ -30,7 +30,7 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 @Repository
 class SharePortfolioRepositoryImpl implements SharePortfolioRepository {
 
-	private static final String SHARE_NAME_FIELD = "timeCourses.share.name";
+	static final String SHARE_NAME_FIELD = "timeCourses.share.name";
 	static final String SAMPLES_FIELD = "samples";
 	static final String VARIANCE_FIELD = "variance";
 	static final String PORTFOLIO_FIELD = "portfolio";
@@ -92,7 +92,7 @@ class SharePortfolioRepositoryImpl implements SharePortfolioRepository {
 			return query;
 		}
 		if(StringUtils.hasText(criteria.timeCourses().get(0).share().name())) {
-			query.addCriteria(Criteria.where(SHARE_NAME_FIELD).regex(pattern(criteria.name())));
+			query.addCriteria(Criteria.where(SHARE_NAME_FIELD).regex(pattern(criteria.timeCourses().get(0).share().name())));
 		}
 		return query;
 	}

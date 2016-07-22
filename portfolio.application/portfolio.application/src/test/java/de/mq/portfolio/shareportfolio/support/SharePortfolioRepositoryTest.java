@@ -1,40 +1,61 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-
-import junit.framework.Assert;
+import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+import de.mq.portfolio.share.Share;
+import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
+import junit.framework.Assert;
 
 public class SharePortfolioRepositoryTest {
 
+	private static final int PAGE_SIZE = 50;
+
+	private static final int OFFSET = 100;
+
+	private static final String SHARE_NAME = "Minogue-Music AG";
+
 	private static final String NAME = "mq-test";
 
-	final MongoOperations mongoOperations = Mockito.mock(MongoOperations.class);
+	private final MongoOperations mongoOperations = Mockito.mock(MongoOperations.class);
 
-	final SharePortfolioRepository sharePortfolioRepository = new SharePortfolioRepositoryImpl(mongoOperations);
+	private final SharePortfolioRepository sharePortfolioRepository = new SharePortfolioRepositoryImpl(mongoOperations);
 
-	final ArgumentCaptor<Query> queryCaptor = ArgumentCaptor.forClass(Query.class);
+	private final ArgumentCaptor<Query> queryCaptor = ArgumentCaptor.forClass(Query.class);
 
 	@SuppressWarnings("rawtypes")
-	final ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
+	private final ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
 
-	final SharePortfolio sharePortfolio = Mockito.mock(SharePortfolio.class);
+	private final SharePortfolio sharePortfolio = Mockito.mock(SharePortfolio.class);
 
-	final PortfolioOptimisation portfolioOptimisation = Mockito.mock(PortfolioOptimisation.class);
+	private final PortfolioOptimisation portfolioOptimisation = Mockito.mock(PortfolioOptimisation.class);
+
+	private final TimeCourse timeCourse = Mockito.mock(TimeCourse.class);
+
+	private Share share = Mockito.mock(Share.class);
+
+	private Sort sort = new Sort(new Order(SharePortfolioRepositoryImpl.NAME_FIELD));
+
+	private final Pageable pageable = Mockito.mock(Pageable.class);
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -95,4 +116,82 @@ public class SharePortfolioRepositoryTest {
 
 	}
 
+	@Test
+	public final void portfolios() {
+		preparePortfoliosSearch();
+		final Collection<SharePortfolio> results = sharePortfolioRepository.portfolios(pageable, sharePortfolio);
+		Assert.assertEquals(1, results.size());
+		Assert.assertEquals(sharePortfolio, results.stream().findAny().get());
+
+		Assert.assertEquals(SharePortfolioImpl.class, classCaptor.getValue());
+
+		Assert.assertEquals(OFFSET, queryCaptor.getValue().getSkip());
+		Assert.assertEquals(PAGE_SIZE, queryCaptor.getValue().getLimit());
+		Assert.assertEquals(1, queryCaptor.getValue().getSortObject().toMap().size());
+		Assert.assertEquals(SharePortfolioRepositoryImpl.NAME_FIELD, queryCaptor.getValue().getSortObject().toMap().keySet().stream().findAny().get());
+		Assert.assertEquals(1, queryCaptor.getValue().getSortObject().toMap().values().stream().findAny().get());
+		Assert.assertEquals(2, queryCaptor.getValue().getQueryObject().keySet().size());
+		Assert.assertEquals(NAME, ((Pattern) queryCaptor.getValue().getQueryObject().get(SharePortfolioRepositoryImpl.NAME_FIELD)).pattern());
+		Assert.assertEquals(SHARE_NAME, ((Pattern) queryCaptor.getValue().getQueryObject().get(SharePortfolioRepositoryImpl.SHARE_NAME_FIELD)).pattern());
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private void preparePortfoliosSearch() {
+		Mockito.when(sharePortfolio.name()).thenReturn(NAME);
+		Mockito.when(timeCourse.share()).thenReturn(share);
+		Mockito.when(share.name()).thenReturn(SHARE_NAME);
+		Mockito.when(sharePortfolio.timeCourses()).thenReturn(Arrays.asList(timeCourse));
+		Mockito.when(pageable.getSort()).thenReturn(sort);
+		Mockito.when(pageable.getOffset()).thenReturn(OFFSET);
+		Mockito.when(pageable.getPageSize()).thenReturn(PAGE_SIZE);
+
+		Mockito.when(mongoOperations.find(queryCaptor.capture(), classCaptor.capture())).thenReturn(Arrays.asList(sharePortfolio));
+	}
+	
+	@Test
+	public final void portfoliosAllEmty() {
+		preparePortfoliosSearch();
+		Mockito.when(share.name()).thenReturn(null);
+		Mockito.when(sharePortfolio.name()).thenReturn(null);
+		Mockito.when(pageable.getSort()).thenReturn(null);
+		
+		checkPortfolioSearchAllEmpty(sharePortfolioRepository.portfolios(pageable, sharePortfolio));
+		
+		
+	}
+
+	private void checkPortfolioSearchAllEmpty(final Collection<SharePortfolio> results) {
+		Assert.assertEquals(1, results.size());
+		Assert.assertEquals(sharePortfolio, results.stream().findAny().get());
+		
+		Assert.assertEquals(SharePortfolioImpl.class, classCaptor.getValue());
+
+		Assert.assertEquals(OFFSET, queryCaptor.getValue().getSkip());
+		Assert.assertEquals(PAGE_SIZE, queryCaptor.getValue().getLimit());
+		Assert.assertNull(queryCaptor.getValue().getSortObject());
+		
+		
+		Assert.assertEquals(0, queryCaptor.getValue().getQueryObject().keySet().size());
+	}
+	
+	@Test
+	public final void portfoliosAllEmtyNoShare() {
+		preparePortfoliosSearch();
+		Mockito.when(timeCourse.share()).thenReturn(null);
+		Mockito.when(sharePortfolio.name()).thenReturn(null);
+		Mockito.when(pageable.getSort()).thenReturn(null);
+		
+		checkPortfolioSearchAllEmpty(sharePortfolioRepository.portfolios(pageable, sharePortfolio));
+		
+	}
+	
+	@Test
+	public final void portfoliosAllEmtyNoTimeCourses() {
+		preparePortfoliosSearch();
+		Mockito.when(sharePortfolio.timeCourses()).thenReturn(new ArrayList<>());
+		Mockito.when(sharePortfolio.name()).thenReturn(null);
+		Mockito.when(pageable.getSort()).thenReturn(null);
+		checkPortfolioSearchAllEmpty(sharePortfolioRepository.portfolios(pageable, sharePortfolio));
+	}
 }

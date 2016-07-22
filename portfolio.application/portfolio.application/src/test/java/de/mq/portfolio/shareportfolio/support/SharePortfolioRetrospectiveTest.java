@@ -76,4 +76,7 @@ public class SharePortfolioRetrospectiveTest {
 	public final void totalRateDividends() {
 		Assert.assertEquals(totalRateDividends, sharePortfolioRetrospective.totalRateDividends());
 	}
+	
+
+	
 }
