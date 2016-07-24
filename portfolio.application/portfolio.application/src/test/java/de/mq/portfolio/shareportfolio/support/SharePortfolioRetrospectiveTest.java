@@ -77,6 +77,9 @@ public class SharePortfolioRetrospectiveTest {
 		Assert.assertEquals(totalRateDividends, sharePortfolioRetrospective.totalRateDividends());
 	}
 	
-
+	@Test(expected=IllegalArgumentException.class)
+	public final void timeCorsesMissing() {
 	
+		new SharePortfolioRetrospectiveImpl(committedSharePortfolio , currentSharePortfolio, new ArrayList<>(), initialRateWithExchangeRate, endRateWithExchangeRate, standardDeviation, totalRate, totalRateDividends);
+	}
 }

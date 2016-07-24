@@ -19,6 +19,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
@@ -27,6 +28,10 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 import junit.framework.Assert;
 
 public class SharePortfolioRepositoryTest {
+
+	private static final String ID = "19680528";
+
+	private static final long COUNTER = 42L;
 
 	private static final int PAGE_SIZE = 50;
 
@@ -41,6 +46,7 @@ public class SharePortfolioRepositoryTest {
 	private final SharePortfolioRepository sharePortfolioRepository = new SharePortfolioRepositoryImpl(mongoOperations);
 
 	private final ArgumentCaptor<Query> queryCaptor = ArgumentCaptor.forClass(Query.class);
+	
 
 	@SuppressWarnings("rawtypes")
 	private final ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
@@ -193,5 +199,45 @@ public class SharePortfolioRepositoryTest {
 		Mockito.when(sharePortfolio.name()).thenReturn(null);
 		Mockito.when(pageable.getSort()).thenReturn(null);
 		checkPortfolioSearchAllEmpty(sharePortfolioRepository.portfolios(pageable, sharePortfolio));
+	}
+	
+	@Test
+	public final void pageable() {
+		preparePortfoliosSearch();
+		
+		Mockito.when(mongoOperations.count(queryCaptor.capture(), classCaptor.capture())).thenReturn(COUNTER);
+		
+		final Pageable pageable = sharePortfolioRepository.pageable(sharePortfolio, sort, PAGE_SIZE);
+		Assert.assertEquals(COUNTER, ReflectionTestUtils.getField(pageable, "counter"));
+		Assert.assertEquals(PAGE_SIZE, ReflectionTestUtils.getField(pageable, "size"));
+		Assert.assertEquals(sort, pageable.getSort());
+		Assert.assertEquals(SharePortfolioImpl.class, classCaptor.getValue());
+		Assert.assertNull(queryCaptor.getValue().getSortObject());
+		Assert.assertEquals(2, queryCaptor.getValue().getQueryObject().keySet().size());
+		Assert.assertEquals(NAME, ((Pattern) queryCaptor.getValue().getQueryObject().get(SharePortfolioRepositoryImpl.NAME_FIELD)).pattern());
+		Assert.assertEquals(SHARE_NAME, ((Pattern) queryCaptor.getValue().getQueryObject().get(SharePortfolioRepositoryImpl.SHARE_NAME_FIELD)).pattern());
+		
+	}
+	
+	
+	@Test
+	public final void sharePortfolio() {
+		final SharePortfolio sharePortfolio = BeanUtils.instantiateClass(SharePortfolioImpl.class);
+		Mockito.when(mongoOperations.findById(ID, SharePortfolioImpl.class)).thenReturn((SharePortfolioImpl) sharePortfolio);
+		Assert.assertEquals(sharePortfolio, sharePortfolioRepository.sharePortfolio(ID));
+		Mockito.verify(mongoOperations).findById(ID,SharePortfolioImpl.class);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void sharePortfolioNotFound() {
+		Mockito.when(mongoOperations.findById(ID, SharePortfolioImpl.class)).thenReturn(null);
+		sharePortfolioRepository.sharePortfolio(ID);
+	}
+	
+	@Test
+	public final void delete() {
+		sharePortfolioRepository.delete(sharePortfolio);
+		
+		Mockito.verify(mongoOperations).remove(sharePortfolio);
 	}
 }
