@@ -119,7 +119,11 @@ class SharePortfolioImpl implements SharePortfolio {
 		Assert.isTrue(variances.length == covariances.length, "Variances and covariances Vector should have the same size.");
 		Assert.isTrue(weightingVector.length == variances.length, "Variances and weighting Vector should have the same size.");
 		final double[] sum = { IntStream.range(0, variances.length).mapToDouble(i -> Math.pow(weightingVector[i], 2) * variances[i]).reduce((result, yi) -> result + yi).orElse(0) };
+		
+		
 		IntStream.range(0, variances.length).forEach(i -> IntStream.range(i + 1, variances.length).forEach(j -> sum[0] += 2 * weightingVector[i] * weightingVector[j] * covariances[i][j]));
+		
+	
 		return sum[0];
 
 	}
@@ -152,7 +156,9 @@ class SharePortfolioImpl implements SharePortfolio {
 		if (timeCourses.isEmpty()) {
 			return false;
 		}
+		
 		variances = toVarianceArray(timeCourses);
+		
 		covariances = toMatrix(timeCourses, (timeCourses, i, j) -> timeCourses.get(i).covariance(timeCourses.get(j)));
 		correlations = toMatrix(timeCourses, (timeCourses, i, j) -> timeCourses.get(i).covariance(timeCourses.get(j)) / (Math.sqrt(variances[i]) * Math.sqrt(variances[j])));
 		return true;
@@ -166,7 +172,6 @@ class SharePortfolioImpl implements SharePortfolio {
 
 	private double[] toVarianceArray(final Collection<TimeCourse> timeCourses) {
 		double[] results = new double[timeCourses.size()];
-
 		IntStream.range(0, timeCourses.size()).forEach(i -> results[i] = timeCourses().get(i).variance());
 		return results;
 	}

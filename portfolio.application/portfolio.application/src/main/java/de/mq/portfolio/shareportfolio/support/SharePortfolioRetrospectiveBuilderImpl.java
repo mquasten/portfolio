@@ -129,13 +129,15 @@ private final Map<String,TimeCourse> timeCourses = new HashMap<>();
 		final List<TimeCourse> newTimeCourses = new ArrayList<>();
 		committedSharePortfolio.timeCourses().stream().map(tc -> tc.code()).forEach(code -> newTimeCourses.add(timeCourses.get(code)));
 		final SharePortfolio currentSharePortfolio = new SharePortfolioImpl(committedSharePortfolio.name(), newTimeCourses);
-	//	((SharePortfolioImpl)currentSharePortfolio).onBeforeSave();
+		//((SharePortfolioImpl)currentSharePortfolio).onBeforeSave();
 		
 		ReflectionUtils.doWithMethods(currentSharePortfolio.getClass(), m -> invokeBeforePersist(currentSharePortfolio, m), m -> m.getName().equals(ON_BEFORE_SAVE_METHOD_NAME)&&m.getParameterTypes().length==0);
 		
+		
+		
 		final Double standardDeviation = currentSharePortfolio.standardDeviation(committedSharePortfolio.minWeights());
 		final Double totalRate= currentSharePortfolio.totalRate(committedSharePortfolio.minWeights(), exchangeRateCalculator);
-		
+	
 		final Double totalRateDividends= currentSharePortfolio.totalRateDividends(committedSharePortfolio.minWeights(), exchangeRateCalculator);
 		return new SharePortfolioRetrospectiveImpl(committedSharePortfolio, currentSharePortfolio, timeCoursesWithExchangeRate , initialRateWithExchangeRate, portfolioRatesWithExchangeRates.get(portfolioRatesWithExchangeRates.size()-1), standardDeviation, totalRate, totalRateDividends);
 		

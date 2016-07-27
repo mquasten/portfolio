@@ -24,6 +24,8 @@ import junit.framework.Assert;
 public class SharePortfolioRetrospectiveBuilderTest {
 	
 	
+	private static final String PORTFOLIO_NAME = "mq-min-risk";
+
 	private static final String COMMITTED_SHARE_PORTFOLIO_FIELD = "committedSharePortfolio";
 
 	private static final String CODE = "KO";
@@ -109,6 +111,9 @@ public class SharePortfolioRetrospectiveBuilderTest {
    
    @Test
    public void build() {
+	   
+	   Mockito.when(sharePortfolio.name()).thenReturn(PORTFOLIO_NAME);
+	 
 	   final Share share01 = Mockito.mock(Share.class);
 	   final Share share02 = Mockito.mock(Share.class);
 	   Mockito.when(share01.name()).thenReturn("Share01");
@@ -141,12 +146,17 @@ public class SharePortfolioRetrospectiveBuilderTest {
 	   Mockito.when(tc11.code()).thenReturn("CODE01");
 	   final TimeCourse tc12 = Mockito.mock(TimeCourse.class);
 	   Mockito.when(tc12.code()).thenReturn("CODE02");
+	   Mockito.when(tc11.variance()).thenReturn(1e-6);
+	   Mockito.when(tc12.variance()).thenReturn(1.5e-6);
 	   
 	   Mockito.when(tc11.share()).thenReturn(share01);
 	   Mockito.when(tc12.share()).thenReturn(share02);
 	   
-	   Mockito.when(tc11.rates()).thenReturn(Arrays.asList(new DataImpl(date(date,180), 60d),new DataImpl(new Date(date),70d)));
-	   Mockito.when(tc12.rates()).thenReturn(Arrays.asList(new DataImpl(date(date,180), 40d),new DataImpl(new Date(date) , 50d)));
+	   Mockito.when(tc11.rates()).thenReturn(Arrays.asList(new DataImpl(date(date,180), 60d), new DataImpl(new Date(date),70d)));
+	   
+	 //  Mockito.when(tc11.rates()).thenReturn(Arrays.asList(new DataImpl(date(date,90), 65d),new DataImpl(new Date(date),70d)));
+	   
+	   Mockito.when(tc12.rates()).thenReturn(Arrays.asList(new DataImpl(date(date,180), 40d), new DataImpl(new Date(date) , 50d)));
 	   
 	   final Map<String,TimeCourse> timeCourses = new HashMap<>();
 	   timeCourses.put(tc11.code(), tc11);
@@ -187,11 +197,31 @@ public class SharePortfolioRetrospectiveBuilderTest {
 	   
 	 
 	   final SharePortfolioRetrospective result = builder.build();
-	   
-	   System.out.println(result);
-	   
-	   
-	   
+	
+	
+	  Assert.assertEquals(sharePortfolio, result.committedSharePortfolio());
+	  Assert.assertEquals(2, result.currentSharePortfolio().timeCourses().size());
+	  result.currentSharePortfolio().timeCourses().stream().map(tc -> tc.code()).forEach(code -> Assert.assertTrue(timeCourses.containsKey(code)));
+	  Assert.assertEquals(timeCourses.size()+1, result.timeCoursesWithExchangeRate().size());
+	  Assert.assertEquals(PORTFOLIO_NAME, result.timeCoursesWithExchangeRate().stream().map(t -> t.name()).findFirst().get());
+	  Assert.assertTrue(result.timeCoursesWithExchangeRate().stream().map(tcr -> tcr.name()).filter(name ->  name.equals(share01.name())).findAny().isPresent());
+	  Assert.assertTrue(result.timeCoursesWithExchangeRate().stream().map(tcr -> tcr.name()).filter(name ->  name.equals(share02.name())).findAny().isPresent());
+	  
+	 result.timeCoursesWithExchangeRate().stream().filter(tcr -> tcr.name().equals(PORTFOLIO_NAME)).forEach(tcr -> {Assert.assertEquals(55d, tcr.start());Assert.assertEquals(66.25d, tcr.end()); });
+	
+	 result.timeCoursesWithExchangeRate().stream().filter(tcr -> tcr.name().equals(share01.name())).forEach(tcr ->  { Assert.assertEquals(30d , tcr.start()); Assert.assertEquals(35d , tcr.end()); }); 
+	 
+	 result.timeCoursesWithExchangeRate().stream().filter(tcr -> tcr.name().equals(share02.name())).forEach(tcr ->  { Assert.assertEquals(25d , tcr.start()); Assert.assertEquals(31.25d , tcr.end()); }); 
+	 Assert.assertEquals(date(date, 0), result.endRateWithExchangeRate().date());
+	 Assert.assertEquals(66.25d, result.endRateWithExchangeRate().value());
+	 
+	 Assert.assertEquals(date(date,181), result.initialRateWithExchangeRate().date());
+	 
+	 Assert.assertEquals(55d, result.initialRateWithExchangeRate().value());
+	 
+	 // should be calculated by hand
+	 Assert.assertNotNull(result.standardDeviation());
+	
    }
 
 private Date date(final Long date, long offset) {
@@ -201,6 +231,7 @@ private Date date(final Long date, long offset) {
 	cal.set(Calendar.MINUTE, 0);
 	cal.set(Calendar.SECOND, 0);
 	cal.set(Calendar.MILLISECOND, 0);
+	
 	return cal.getTime();
 }
 
