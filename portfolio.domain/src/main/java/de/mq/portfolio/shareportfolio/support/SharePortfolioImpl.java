@@ -123,7 +123,6 @@ class SharePortfolioImpl implements SharePortfolio {
 		
 		IntStream.range(0, variances.length).forEach(i -> IntStream.range(i + 1, variances.length).forEach(j -> sum[0] += 2 * weightingVector[i] * weightingVector[j] * covariances[i][j]));
 		
-	
 		return sum[0];
 
 	}
@@ -158,7 +157,6 @@ class SharePortfolioImpl implements SharePortfolio {
 		}
 		
 		variances = toVarianceArray(timeCourses);
-		
 		covariances = toMatrix(timeCourses, (timeCourses, i, j) -> timeCourses.get(i).covariance(timeCourses.get(j)));
 		correlations = toMatrix(timeCourses, (timeCourses, i, j) -> timeCourses.get(i).covariance(timeCourses.get(j)) / (Math.sqrt(variances[i]) * Math.sqrt(variances[j])));
 		return true;
@@ -324,7 +322,6 @@ class SharePortfolioImpl implements SharePortfolio {
 			return null;
 		}
 		final double richtig = sumRates(exchangeRateCalculator, timeCourses, weights, tc -> Arrays.asList(tc.rates().get(0)));
-		
 		final double falsch =  sumRates(exchangeRateCalculator, timeCourses, weights, tc -> Arrays.asList(tc.rates().get(tc.rates().size()-1)));
 		return (falsch - richtig) / richtig;
 	}
