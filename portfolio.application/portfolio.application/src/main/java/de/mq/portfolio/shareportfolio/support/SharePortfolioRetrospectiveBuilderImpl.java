@@ -54,9 +54,7 @@ class SharePortfolioRetrospectiveBuilderImpl implements SharePortfolioRetrospect
 	@Override
 	public SharePortfolioRetrospectiveBuilder withExchangeRateCalculator(final ExchangeRateCalculator exchangeRateCalculator) {
 		Assert.notNull(exchangeRateCalculator, "ExchangeRateCalculator is mandatory.");
-
 		Assert.isNull(this.exchangeRateCalculator, "ExchangeRateCalculator is already assigned.");
-
 		this.exchangeRateCalculator = exchangeRateCalculator;
 		return this;
 	}
@@ -127,24 +125,17 @@ class SharePortfolioRetrospectiveBuilderImpl implements SharePortfolioRetrospect
 		final Map<Date, List<Double>> rates = new HashMap<>();
 		final Map<TimeCourse, Double> min = committedSharePortfolio.min();
 
-		final Data initialRateWithExchangeRate = committedSharePortfolio.timeCourses().stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(tc, exchangeRateCalculator.factor(committedSharePortfolio.exchangeRate(tc), tc.end()) * min.get(tc) * tc.rates().get(tc.rates().size() - 1).value()))
-				.map(e -> new DataImpl(e.getKey().end(), e.getValue())).reduce((a, b) -> new DataImpl(a.date(), a.value() + b.value())).orElse(new DataImpl(new Date(), 0d));
-
+		final Data initialRateWithExchangeRate = committedSharePortfolio.timeCourses().stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(tc, exchangeRateCalculator.factor(committedSharePortfolio.exchangeRate(tc), tc.end()) * min.get(tc) * tc.rates().get(tc.rates().size() - 1).value())).map(e -> new DataImpl(e.getKey().end(), e.getValue())).reduce((a, b) -> new DataImpl(a.date(), a.value() + b.value())).orElse(new DataImpl(new Date(), 0d));
 		min.entrySet().forEach(e -> timeCourses.get(e.getKey().code()).rates().forEach(r -> addRate(rates, r, e.getValue(), exchangeRateCalculator.factor(committedSharePortfolio.exchangeRate(e.getKey()), r.date()))));
-		final List<Data> portfolioRatesWithExchangeRates = rates.entrySet().stream().filter(e -> e.getValue().size() == min.size()).map(e -> new DataImpl(e.getKey(), e.getValue().stream().reduce((a, b) -> a + b).orElse(0d))).filter(isNewSample(initialRateWithExchangeRate)).sorted(sortdataByTime())
-				.collect(Collectors.toList());
+		final List<Data> portfolioRatesWithExchangeRates = rates.entrySet().stream().filter(e -> e.getValue().size() == min.size()).map(e -> new DataImpl(e.getKey(), e.getValue().stream().reduce((a, b) -> a + b).orElse(0d))).filter(isNewSample(initialRateWithExchangeRate)).sorted(sortdataByTime()).collect(Collectors.toList());
 		final List<TimeCourseRetrospective> timeCoursesWithExchangeRate = new ArrayList<>();
 
-		timeCoursesWithExchangeRate.add(new TimeCourseRetrospectiveImpl(newTimeCourse(newShare(committedSharePortfolio.name(), committedSharePortfolio.currency()), portfolioRatesWithExchangeRates, new ArrayList<>()), initialRateWithExchangeRate.value(),
-				portfolioRatesWithExchangeRates.get(portfolioRatesWithExchangeRates.size() - 1).value()));
+		timeCoursesWithExchangeRate.add(new TimeCourseRetrospectiveImpl(newTimeCourse(newShare(committedSharePortfolio.name(), committedSharePortfolio.currency()), portfolioRatesWithExchangeRates, new ArrayList<>()), initialRateWithExchangeRate.value(),portfolioRatesWithExchangeRates.get(portfolioRatesWithExchangeRates.size() - 1).value()));
 
 		committedSharePortfolio.timeCourses().forEach(tc -> {
-
 			final Data start = tc.rates().get(tc.rates().size() - 1);
-
 			final double startValue = start.value() * exchangeRateCalculator.factor(committedSharePortfolio.exchangeRate(tc), start.date()) * min.get(tc);
-			final List<Data> shareRatesWithExchangeRate = timeCourses.get(tc.code()).rates().stream().filter(isNewSample(initialRateWithExchangeRate))
-					.map(data -> new DataImpl(data.date(), exchangeRateCalculator.factor(committedSharePortfolio.exchangeRate(tc), data.date()) * min.get(tc) * data.value())).collect(Collectors.toList());
+			final List<Data> shareRatesWithExchangeRate = timeCourses.get(tc.code()).rates().stream().filter(isNewSample(initialRateWithExchangeRate)).map(data -> new DataImpl(data.date(), exchangeRateCalculator.factor(committedSharePortfolio.exchangeRate(tc), data.date()) * min.get(tc) * data.value())).collect(Collectors.toList());
 			final double endValue = shareRatesWithExchangeRate.get(shareRatesWithExchangeRate.size() - 1).value();
 			timeCoursesWithExchangeRate.add(new TimeCourseRetrospectiveImpl(newTimeCourse(newShare(tc.share().name(), committedSharePortfolio.currency()), shareRatesWithExchangeRate, new ArrayList<>()), startValue, endValue));
 		});
@@ -152,8 +143,6 @@ class SharePortfolioRetrospectiveBuilderImpl implements SharePortfolioRetrospect
 		final List<TimeCourse> newTimeCourses = new ArrayList<>();
 		committedSharePortfolio.timeCourses().stream().map(tc -> tc.code()).forEach(code -> newTimeCourses.add(timeCourses.get(code)));
 		final SharePortfolio currentSharePortfolio = new SharePortfolioImpl(committedSharePortfolio.name(), newTimeCourses);
-		// ((SharePortfolioImpl)currentSharePortfolio).onBeforeSave();
-
 		ReflectionUtils.doWithMethods(currentSharePortfolio.getClass(), m -> invokeBeforePersist(currentSharePortfolio, m), m -> m.getName().equals(ON_BEFORE_SAVE_METHOD_NAME) && m.getParameterTypes().length == 0);
 
 		final Double standardDeviation = currentSharePortfolio.standardDeviation(committedSharePortfolio.minWeights());
@@ -186,8 +175,7 @@ class SharePortfolioRetrospectiveBuilderImpl implements SharePortfolioRetrospect
 		try {
 			return (Constructor<T>) Class.forName(name).getDeclaredConstructor(classes);
 		} catch (final Exception ex) {
-			// To dirrrty to clean my ... , java and f...ing checked
-			// Exceptions!!!
+			// To dirrrty to clean my ... , java and f...ing checked Exceptions!!!
 			throw new IllegalStateException(ex);
 		}
 	}
