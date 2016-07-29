@@ -3,6 +3,7 @@ package de.mq.portfolio.shareportfolio.support;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -153,6 +154,12 @@ public class SharePortfolioRetrospectiveBuilderTest {
 		Mockito.when(tc11.rates()).thenReturn(Arrays.asList(new DataImpl(date(date, 180), 60d), new DataImpl(new Date(date), 70d)));
 
 		Mockito.when(tc12.rates()).thenReturn(Arrays.asList(new DataImpl(date(date, 180), 40d), new DataImpl(new Date(date), 50d)));
+		
+		
+		Mockito.when(tc11.dividends()).thenReturn(Arrays.asList(new DataImpl(date(date, 180), 6d)));
+
+		Mockito.when(tc12.dividends()).thenReturn(Arrays.asList(new DataImpl(date(date, 180), 4d)));
+		
 
 		final Map<String, TimeCourse> timeCourses = new HashMap<>();
 		timeCourses.put(tc11.code(), tc11);
@@ -187,6 +194,8 @@ public class SharePortfolioRetrospectiveBuilderTest {
 
 		Mockito.when(exchangeRateCalculator.factor(er01, date(date, 0))).thenReturn(1D);
 		Mockito.when(exchangeRateCalculator.factor(er02, date(date, 0))).thenReturn(1.25D);
+		
+		
 
 		Mockito.when(sharePortfolio.minWeights()).thenReturn(new double[] { 0.6, 0.4 });
 
@@ -221,10 +230,13 @@ public class SharePortfolioRetrospectiveBuilderTest {
 
 		Assert.assertEquals(55d, result.initialRateWithExchangeRate().value());
 
-		// should be calculated by hand
+		
 		Assert.assertEquals(Math.sqrt(0.72e-6), result.standardDeviation());
 
 		Assert.assertEquals((67d - 56d) / 56d, result.totalRate());
+		
+		Assert.assertEquals(5.6d/56d, result.totalRateDividends());
+		
 
 	}
 
@@ -241,6 +253,42 @@ public class SharePortfolioRetrospectiveBuilderTest {
 
 	private void setField(final Class<?> clazz, final Object value) {
 		Arrays.asList(SharePortfolioRetrospectiveBuilderImpl.class.getDeclaredFields()).stream().filter(field -> field.getType().equals(clazz)).forEach(field -> ReflectionTestUtils.setField(builder, field.getName(), value));
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void buildTimeCoursesEmpty() {
+		Mockito.when(sharePortfolio.isCommitted()).thenReturn(true);
+		builder.withCommitedSharePortfolio(sharePortfolio);
+		builder.build();
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void buildTimeCoursesOnlyOneExists() {
+		Mockito.when(sharePortfolio.isCommitted()).thenReturn(true);
+		builder.withCommitedSharePortfolio(sharePortfolio);
+		Mockito.when(timeCourse.share()).thenReturn(share);
+		Mockito.when(share.code()).thenReturn(CODE);
+		builder.withTimeCourse(timeCourse);
+		builder.build();
+	}
+	
+	@Test
+	public void declaredConstructorTimeCourse() {
+		Assert.assertNotNull(((SharePortfolioRetrospectiveBuilderImpl)builder).declaredConstructor(SharePortfolioRetrospectiveBuilderImpl.TIME_COURSE_PATH, Share.class, Collection.class, Collection.class));
+	}
+	
+	@Test(expected=IllegalStateException.class)
+	public void declaredConstructorTimeCourseSucks() {
+		Assert.assertNotNull(((SharePortfolioRetrospectiveBuilderImpl)builder).declaredConstructor(SharePortfolioRetrospectiveBuilderImpl.TIME_COURSE_PATH, Share.class));
+	}
+	
+	@Test
+	public void declaredConstructorShare() {
+		Assert.assertNotNull(((SharePortfolioRetrospectiveBuilderImpl)builder).declaredConstructor(SharePortfolioRetrospectiveBuilderImpl.SHARE_PATH, String.class, String.class, String.class, String.class, String.class));
+	}
+	@Test(expected=IllegalStateException.class)
+	public void declaredConstructorShareSucks() {
+		Assert.assertNotNull(((SharePortfolioRetrospectiveBuilderImpl)builder).declaredConstructor(SharePortfolioRetrospectiveBuilderImpl.SHARE_PATH,String.class, String.class));
 	}
 
 }
