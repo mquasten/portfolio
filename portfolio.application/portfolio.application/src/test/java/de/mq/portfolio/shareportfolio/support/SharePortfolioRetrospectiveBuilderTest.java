@@ -1,5 +1,6 @@
 package de.mq.portfolio.shareportfolio.support;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -7,16 +8,21 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.ReflectionUtils.MethodFilter;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
+import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.share.support.DataImpl;
@@ -24,6 +30,22 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 import junit.framework.Assert;
 
 public class SharePortfolioRetrospectiveBuilderTest {
+
+	private static final double[] WEIGHTS = new double[] { 0.6, 0.4 };
+
+	private static final String CURRENCY_US$ = "USD";
+
+	private static final String CURRENCY_EURO = "EUR";
+
+	private static final String CODE_02 = "CODE02";
+
+	private static final String CODE_01 = "CODE01";
+
+	private static final String SHARE_NAME2 = "Share02";
+
+	private static final String SHARE_NAME_1 = "Share01";
+
+	private static final String TEST_METHOD_NAME = "test";
 
 	private static final String PORTFOLIO_NAME = "mq-min-risk";
 
@@ -115,15 +137,15 @@ public class SharePortfolioRetrospectiveBuilderTest {
 
 		final Share share01 = Mockito.mock(Share.class);
 		final Share share02 = Mockito.mock(Share.class);
-		Mockito.when(share01.name()).thenReturn("Share01");
-		Mockito.when(share02.name()).thenReturn("Share02");
-		Mockito.when(share01.currency()).thenReturn("EUR");
-		Mockito.when(share02.currency()).thenReturn("USD");
+		Mockito.when(share01.name()).thenReturn(SHARE_NAME_1);
+		Mockito.when(share02.name()).thenReturn(SHARE_NAME2);
+		Mockito.when(share01.currency()).thenReturn(CURRENCY_EURO);
+		Mockito.when(share02.currency()).thenReturn(CURRENCY_US$);
 		final Long date = new Date().getTime();
 		final TimeCourse tc01 = Mockito.mock(TimeCourse.class);
-		Mockito.when(tc01.code()).thenReturn("CODE01");
+		Mockito.when(tc01.code()).thenReturn(CODE_01);
 		final TimeCourse tc02 = Mockito.mock(TimeCourse.class);
-		Mockito.when(tc02.code()).thenReturn("CODE02");
+		Mockito.when(tc02.code()).thenReturn(CODE_02);
 
 		Mockito.when(tc01.rates()).thenReturn(Arrays.asList(new DataImpl(date(date, 360), 50d), new DataImpl(date(date, 181), 60d)));
 		Mockito.when(tc02.rates()).thenReturn(Arrays.asList(new DataImpl(date(date, 360), 30d), new DataImpl(date(date, 181), 40d)));
@@ -139,9 +161,9 @@ public class SharePortfolioRetrospectiveBuilderTest {
 
 		final TimeCourse tc11 = Mockito.mock(TimeCourse.class);
 
-		Mockito.when(tc11.code()).thenReturn("CODE01");
+		Mockito.when(tc11.code()).thenReturn(CODE_01);
 		final TimeCourse tc12 = Mockito.mock(TimeCourse.class);
-		Mockito.when(tc12.code()).thenReturn("CODE02");
+		Mockito.when(tc12.code()).thenReturn(CODE_02);
 		Mockito.when(tc11.variance()).thenReturn(1e-6);
 		Mockito.when(tc12.variance()).thenReturn(1.5e-6);
 
@@ -175,9 +197,9 @@ public class SharePortfolioRetrospectiveBuilderTest {
 		weights.put(tc02, 0.5d);
 
 		Mockito.when(sharePortfolio.min()).thenReturn(weights);
-		final ExchangeRate er01 = new ExchangeRateImpl("EUR", "EUR");
+		final ExchangeRate er01 = new ExchangeRateImpl(CURRENCY_EURO, CURRENCY_EURO);
 		// Mockito.mock(ExchangeRate.class);
-		final ExchangeRate er02 = new ExchangeRateImpl("USD", "EUR");
+		final ExchangeRate er02 = new ExchangeRateImpl(CURRENCY_US$, CURRENCY_EURO);
 
 		// Mockito.mock(ExchangeRate.class);
 		Mockito.when(sharePortfolio.exchangeRate(tc01)).thenReturn(er01);
@@ -197,7 +219,7 @@ public class SharePortfolioRetrospectiveBuilderTest {
 		
 		
 
-		Mockito.when(sharePortfolio.minWeights()).thenReturn(new double[] { 0.6, 0.4 });
+		Mockito.when(sharePortfolio.minWeights()).thenReturn(WEIGHTS);
 
 		final SharePortfolioRetrospective result = builder.build();
 
@@ -290,5 +312,48 @@ public class SharePortfolioRetrospectiveBuilderTest {
 	public void declaredConstructorShareSucks() {
 		Assert.assertNotNull(((SharePortfolioRetrospectiveBuilderImpl)builder).declaredConstructor(SharePortfolioRetrospectiveBuilderImpl.SHARE_PATH,String.class, String.class));
 	}
+	
+	@Test
+	public final void isNewSample() {
+		final Data  data = Mockito.mock(Data.class);
+		final Data  before = Mockito.mock(Data.class);
+		final Data  after = Mockito.mock(Data.class);
+		final long time = new Date().getTime();
+		Mockito.when(data.date()).thenReturn(date(time, 10));
+		Mockito.when(before.date()).thenReturn(date(time, 9));
+		Mockito.when(after.date()).thenReturn(date(time, 11));
+		final Predicate<? super Data> filter = ((SharePortfolioRetrospectiveBuilderImpl)builder).isNewSample(data);
+		Assert.assertTrue(filter.test(before));
+		Assert.assertTrue(filter.test(data));
+		Assert.assertFalse(filter.test(after));
+	}
+	
+	@Test
+	public final void  sameSize() {
+		final Map<TimeCourse,Double> weights = new HashMap<>();
+		weights.put(timeCourse, 0.5D);
+		weights.put(Mockito.mock(TimeCourse.class), 0.5D);
+		Entry<Date, List<Double>> samples =  new  AbstractMap.SimpleImmutableEntry<>(new Date(), Arrays.asList(50D,60D));
+		final Predicate<? super Entry<Date, List<Double>>> sameSizeFilter = ((SharePortfolioRetrospectiveBuilderImpl)builder).sameSize(weights);
+		Assert.assertTrue(sameSizeFilter.test(samples));
+		weights.remove(timeCourse);
+		Assert.assertFalse(sameSizeFilter.test(samples));
+	}
+	
+	@Test
+	public final void prePersistMethodFilter() throws NoSuchMethodException, SecurityException {
+		final MethodFilter methodfilter = ((SharePortfolioRetrospectiveBuilderImpl)builder).prePersistMethodFilter();
+		Assert.assertTrue(methodfilter.matches(EntityMock.class.getDeclaredMethod(SharePortfolioRetrospectiveBuilderImpl.ON_BEFORE_SAVE_METHOD_NAME)));
+		Assert.assertFalse(methodfilter.matches(EntityMock.class.getDeclaredMethod(SharePortfolioRetrospectiveBuilderImpl.ON_BEFORE_SAVE_METHOD_NAME, Long.class)));
+		
+		Assert.assertFalse(methodfilter.matches(EntityMock.class.getDeclaredMethod(TEST_METHOD_NAME)));
+	
+	}
 
+}
+
+interface  EntityMock {
+	void onBeforeSave();
+	void onBeforeSave(final Long id);
+	void test();
 }
