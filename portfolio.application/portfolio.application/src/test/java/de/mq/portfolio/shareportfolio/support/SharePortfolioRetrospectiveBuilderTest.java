@@ -251,7 +251,7 @@ public class SharePortfolioRetrospectiveBuilderTest {
 		Assert.assertEquals(date(date, 181), result.initialRateWithExchangeRate().date());
 
 		Assert.assertEquals(55d, result.initialRateWithExchangeRate().value());
-
+		//markowitz.odt Seite 5/6
 		
 		Assert.assertEquals(Math.sqrt(0.72e-6), result.standardDeviation());
 
