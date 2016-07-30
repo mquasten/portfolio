@@ -255,7 +255,7 @@ public class SharePortfolioRetrospectiveBuilderTest {
 		
 		Assert.assertEquals(Math.sqrt(0.72e-6), result.standardDeviation());
 
-		Assert.assertEquals((67d - 56d) / 56d, result.totalRate());
+		Assert.assertEquals(11d / 56d, result.totalRate());
 		
 		Assert.assertEquals(5.6d/56d, result.totalRateDividends());
 		
