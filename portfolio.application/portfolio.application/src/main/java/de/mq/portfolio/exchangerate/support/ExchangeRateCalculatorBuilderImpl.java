@@ -5,13 +5,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 
-
+@Component
+@Scope("prototype")
 class ExchangeRateCalculatorBuilderImpl implements ExchangeRateCalculatorBuilder {
 	private final Map<ExchangeRate,Map<Date,Double>>  exchangeRates = new HashMap<>();
 	

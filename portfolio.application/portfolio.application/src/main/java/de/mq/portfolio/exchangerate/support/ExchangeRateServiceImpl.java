@@ -2,8 +2,8 @@ package de.mq.portfolio.exchangerate.support;
 
 import java.util.Collection;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
@@ -16,8 +16,6 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
 	private final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository;
 	
 	private final ExchangeRateRepository exchangeRateRepository;
-	
-	private final Class< ? extends ExchangeRateCalculatorBuilder> builderClass=ExchangeRateCalculatorBuilderImpl.class; 
 	
 	@Autowired
 	public ExchangeRateServiceImpl(final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository, final ExchangeRateRepository exchangeRateRepository) {
@@ -48,7 +46,7 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
 	 */
 	@Override
 	public final ExchangeRateCalculator exchangeRateCalculator(final Collection<ExchangeRate> exchangerates) {
-		return BeanUtils.instantiateClass(builderClass).withExchangeRates(exchangeRateDatebaseRepository.exchangerates(exchangerates)).build();
+		return newBuilder().withExchangeRates(exchangeRateDatebaseRepository.exchangerates(exchangerates)).build();
 	}
 	
 	/* (non-Javadoc)
@@ -56,7 +54,12 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
 	 */
 	@Override
 	public final ExchangeRateCalculator exchangeRateCalculator() {
-		return BeanUtils.instantiateClass(builderClass).withExchangeRates(exchangeRateDatebaseRepository.exchangerates()).build();
+		return newBuilder().withExchangeRates(exchangeRateDatebaseRepository.exchangerates()).build();
+	}
+	
+	@Lookup
+	ExchangeRateCalculatorBuilder newBuilder() {
+		return null;
 	}
 
 }
