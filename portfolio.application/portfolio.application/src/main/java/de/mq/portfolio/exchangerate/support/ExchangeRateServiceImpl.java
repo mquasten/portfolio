@@ -11,7 +11,7 @@ import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.share.Data;
 
 @Service("exchangeRateService")
-public class ExchangeRateServiceImpl implements ExchangeRateService {
+class ExchangeRateServiceImpl implements ExchangeRateService {
 	
 	private final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository;
 	
@@ -58,8 +58,5 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
 	}
 	
 	@Lookup
-	ExchangeRateCalculatorBuilder newBuilder() {
-		return null;
-	}
-
+	ExchangeRateCalculatorBuilder newBuilder() {return null;};
 }
