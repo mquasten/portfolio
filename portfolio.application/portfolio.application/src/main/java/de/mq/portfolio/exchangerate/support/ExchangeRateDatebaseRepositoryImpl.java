@@ -19,8 +19,8 @@ import de.mq.portfolio.exchangerate.ExchangeRate;
 @Repository
 class ExchangeRateDatebaseRepositoryImpl implements ExchangeRateDatebaseRepository {
 	
-	private static final String TARGET_FIELD_NAME = "target";
-	private static final String SOURCE_FIELD_NAME = "source";
+	static final String TARGET_FIELD_NAME = "target";
+	static final String SOURCE_FIELD_NAME = "source";
 	private final MongoOperations mongoOperations;
 
 	@Autowired
