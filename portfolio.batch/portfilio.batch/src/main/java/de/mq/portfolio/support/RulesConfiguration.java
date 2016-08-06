@@ -6,7 +6,6 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Scope;
 
 import de.mq.portfolio.batch.RulesEngine;
-import de.mq.portfolio.batch.support.RulesEngineBuilder;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl;
 import de.mq.portfolio.share.ShareService;

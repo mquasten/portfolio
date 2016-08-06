@@ -8,7 +8,7 @@ import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.support.ShareImpl;
 
 
-
+// :TODO new -> builder + methodInjection
 public class SharesCSVLineConverterImpl implements Converter<String[], Share>{
 
 	@Override

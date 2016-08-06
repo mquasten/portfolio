@@ -12,9 +12,7 @@ import java.util.Collection;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.util.Assert;
 
-
-//@Service("shareCSVInputService")
-public class SimpleCSVInputServiceImpl<T> {
+ public class SimpleCSVInputServiceImpl<T> {
 
 	private final String delimiterRegex;
 	
@@ -25,7 +23,7 @@ public class SimpleCSVInputServiceImpl<T> {
 		this.delimiterRegex= "[;]";
 	}
 
-	public final  Collection<T> read(final String filename) {
+	final  Collection<T> read(final String filename) {
 		Assert.notNull(filename , "Filename is mandatory.");
 		try (final InputStream in = new FileInputStream(filename); final InputStreamReader isr = new InputStreamReader(in, Charset.forName("UTF-8")); final BufferedReader br = new BufferedReader(isr)) {
 			return doRead(br);
