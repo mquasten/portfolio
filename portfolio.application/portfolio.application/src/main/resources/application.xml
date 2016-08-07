@@ -50,7 +50,7 @@
 </bean>
 	
 
-
+<bean class="de.mq.portfolio.exchangerate.support.AbstractExchangeRateService" />
 	
 </beans>
 
