@@ -23,7 +23,7 @@ import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @Service("sharePortfolioService")
-class SharePortfolioServiceImpl implements SharePortfolioService {
+abstract class AbstractSharePortfolioService implements SharePortfolioService {
 
 	static final String STATUS_CONTINUE = "CONTINUE";
 	static final String STATUS_COMPLETED = "COMPLETED";
@@ -35,7 +35,7 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 	private final ExchangeRateService exchangeRateService;
 
 	@Autowired
-	SharePortfolioServiceImpl(final SharePortfolioRepository sharePortfolioRepository, final ShareRepository shareRepository, final ExchangeRateService exchangeRateService) {
+	AbstractSharePortfolioService(final SharePortfolioRepository sharePortfolioRepository, final ShareRepository shareRepository, final ExchangeRateService exchangeRateService) {
 		this.sharePortfolioRepository = sharePortfolioRepository;
 		this.shareRepository = shareRepository;
 		this.exchangeRateService = exchangeRateService;
@@ -293,8 +293,6 @@ class SharePortfolioServiceImpl implements SharePortfolioService {
 	}
 
 	@Lookup
-	SharePortfolioRetrospectiveBuilder newBuilder() {
-		return null;
-	}
+	abstract SharePortfolioRetrospectiveBuilder newBuilder(); 
 
 }

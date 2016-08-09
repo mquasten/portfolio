@@ -1,24 +1,27 @@
 package de.mq.portfolio.shareportfolio.support;
 
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
@@ -43,24 +46,16 @@ public class SharePortfolioServiceTest {
 	private static final int SAMPLES_SIZE = 100;
 	private static final String NAME = "mq-test";
 
-	@Mock
+	
 	private SharePortfolioRepository sharePortfolioRepository = Mockito.mock(SharePortfolioRepository.class);
-	@Mock
+	
 	private ShareRepository shareRepository = Mockito.mock(ShareRepository.class);
-	@Mock
+	
 	private ExchangeRateService exchangeRateService = Mockito.mock(ExchangeRateService.class) ;
 	
 	
-	private SharePortfolioService sharePortfolioService =  new SharePortfolioServiceImpl(sharePortfolioRepository, shareRepository, exchangeRateService );
-			
-			
-			//Mockito.mock(SharePortfolioServiceImpl.class,Mockito.CALLS_REAL_METHODS);
-			
-		
-	
-	
-	
-	
+	private SharePortfolioService sharePortfolioService = Mockito.mock(AbstractSharePortfolioService.class, Mockito.CALLS_REAL_METHODS);
+
 	private final Collection<PortfolioOptimisation> portfolioOptimisations = new ArrayList<>();
 	private final SharePortfolio sharePortfolio = Mockito.mock(SharePortfolio.class);
 	
@@ -68,27 +63,37 @@ public class SharePortfolioServiceTest {
 	
 	private final  Sort sort = Mockito.mock(Sort.class);
 	
+	private final Map<Class<?>, Object> dependencies = new HashMap<>();
 	
-	
+	@Before
+	public final void setup() {
+		dependencies.put(SharePortfolioRepository.class, sharePortfolioRepository);
+		dependencies.put(ShareRepository.class, shareRepository);
+		dependencies.put(ExchangeRateService.class, exchangeRateService);
+		
+		
+		ReflectionUtils.doWithFields(sharePortfolioService.getClass(), field -> ReflectionTestUtils.setField(sharePortfolioService, field.getName(), dependencies.get(field.getType())), field -> dependencies.containsKey(field.getType()));
+		
+	}
 	
 	
 	@Test
 	public final void aggregate() {
 	
 		
-		Assert.assertTrue((((SharePortfolioServiceImpl)sharePortfolioService).aggregate(portfolioOptimisations).isEmpty()));
+		Assert.assertTrue((((AbstractSharePortfolioService)sharePortfolioService).aggregate(portfolioOptimisations).isEmpty()));
 		
 		portfolioOptimisations.add(new  PortfolioOptimisationImpl(NAME, new double[]{} ,0.5, 1L));
 	  
-		Assert.assertEquals(0.5, DataAccessUtils.requiredSingleResult(((SharePortfolioServiceImpl)sharePortfolioService).aggregate(portfolioOptimisations)).variance());
+		Assert.assertEquals(0.5, DataAccessUtils.requiredSingleResult(((AbstractSharePortfolioService)sharePortfolioService).aggregate(portfolioOptimisations)).variance());
 		
 		portfolioOptimisations.add(new  PortfolioOptimisationImpl(NAME, new double[]{} ,0.6, 1L));
 	
-		Assert.assertEquals(0.5, DataAccessUtils.requiredSingleResult(((SharePortfolioServiceImpl)sharePortfolioService).aggregate(portfolioOptimisations)).variance());
+		Assert.assertEquals(0.5, DataAccessUtils.requiredSingleResult(((AbstractSharePortfolioService)sharePortfolioService).aggregate(portfolioOptimisations)).variance());
 		
 		portfolioOptimisations.add(new  PortfolioOptimisationImpl(NAME, new double[]{} ,0.4, 1L));
 		
-		Assert.assertEquals(0.4, DataAccessUtils.requiredSingleResult(((SharePortfolioServiceImpl)sharePortfolioService).aggregate(portfolioOptimisations)).variance());
+		Assert.assertEquals(0.4, DataAccessUtils.requiredSingleResult(((AbstractSharePortfolioService)sharePortfolioService).aggregate(portfolioOptimisations)).variance());
 		
 	}
 	
@@ -188,16 +193,16 @@ public class SharePortfolioServiceTest {
 	
 	@Test
 	public final void  status() {
-		Assert.assertEquals(SharePortfolioServiceImpl.STATUS_CONTINUE, (((SharePortfolioServiceImpl)  sharePortfolioService).status(SharePortfolioServiceImpl.STATUS_COMPLETED, COUNTER, LIMIT)));
-		Assert.assertEquals(SharePortfolioServiceImpl.STATUS_COMPLETED, (((SharePortfolioServiceImpl)  sharePortfolioService).status(SharePortfolioServiceImpl.STATUS_COMPLETED,LIMIT, LIMIT)));
-		Assert.assertEquals(STATUS_STPPED, (((SharePortfolioServiceImpl)  sharePortfolioService).status(STATUS_STPPED, COUNTER, LIMIT)));
-		Assert.assertEquals(SharePortfolioServiceImpl.STATUS_COMPLETED, (((SharePortfolioServiceImpl)  sharePortfolioService).status(SharePortfolioServiceImpl.STATUS_COMPLETED,COUNTER, null)));
+		Assert.assertEquals(AbstractSharePortfolioService.STATUS_CONTINUE, (((AbstractSharePortfolioService)  sharePortfolioService).status(AbstractSharePortfolioService.STATUS_COMPLETED, COUNTER, LIMIT)));
+		Assert.assertEquals(AbstractSharePortfolioService.STATUS_COMPLETED, (((AbstractSharePortfolioService)  sharePortfolioService).status(AbstractSharePortfolioService.STATUS_COMPLETED,LIMIT, LIMIT)));
+		Assert.assertEquals(STATUS_STPPED, (((AbstractSharePortfolioService)  sharePortfolioService).status(STATUS_STPPED, COUNTER, LIMIT)));
+		Assert.assertEquals(AbstractSharePortfolioService.STATUS_COMPLETED, (((AbstractSharePortfolioService)  sharePortfolioService).status(AbstractSharePortfolioService.STATUS_COMPLETED,COUNTER, null)));
 	}
 	
 	@Test
 	public final void  incCounter() {
-		 Assert.assertEquals(NEXT_COUNTER, (long) ((SharePortfolioServiceImpl)  sharePortfolioService).incCounter(COUNTER));
-		 Assert.assertEquals(COUNTER, ((SharePortfolioServiceImpl)  sharePortfolioService).incCounter(null));
+		 Assert.assertEquals(NEXT_COUNTER, (long) ((AbstractSharePortfolioService)  sharePortfolioService).incCounter(COUNTER));
+		 Assert.assertEquals(COUNTER, ((AbstractSharePortfolioService)  sharePortfolioService).incCounter(null));
 	}
 	
 	@Test
@@ -317,11 +322,9 @@ public class SharePortfolioServiceTest {
 		Mockito.when(exchangeRateService.exchangeRateCalculator(exchangeRates)).thenReturn(exchangeRateCalculator);
 		
 		Mockito.when(exchangeRateCalculator.factor(Mockito.any(ExchangeRate.class), Mockito.any(Date.class))).thenReturn(1d);
-		final SharePortfolioService sharePortfolioService = Mockito.spy(this.sharePortfolioService);
-	//	Mockito.doAnswer(a ->  builder ).when(sharePortfolioService).newBuilder();
-		Mockito.doReturn(builder).when((SharePortfolioServiceImpl)sharePortfolioService).newBuilder();
 		
-		//Mockito.when(sharePortfolioService.newBuilder()).thenReturn(builder);
+		Mockito.doReturn(builder).when((AbstractSharePortfolioService)sharePortfolioService).newBuilder();
+		
 		Assert.assertEquals(sharePortfolioRetrospective, sharePortfolioService.retrospective(ID));
 		
 		Assert.assertEquals(sharePortfolio, sharePortfolioCaptor.getValue());
@@ -330,11 +333,13 @@ public class SharePortfolioServiceTest {
 		
 	}
 	
-	@Test
-	public final void  newSharePortfolioService()   {
-		Assert.assertNull(((SharePortfolioServiceImpl) sharePortfolioService).newBuilder()); 
-		
-	}
 	
+	@Test
+	public final void newSharePortfolioService() throws Exception {
+		final SharePortfolioService sharePortfolioService = BeanUtils.instantiateClass(this.sharePortfolioService.getClass().getDeclaredConstructor(SharePortfolioRepository.class, ShareRepository.class, ExchangeRateService.class), sharePortfolioRepository, shareRepository, exchangeRateService);
+		final Map<Class<?>, Object> results = new HashMap<>();
+		ReflectionUtils.doWithFields(sharePortfolioService.getClass(), field ->  results.put(field.getType(), ReflectionTestUtils.getField(sharePortfolioService, field.getName())), field -> dependencies.containsKey(field.getType()));
+		Assert.assertEquals(dependencies, results);
+	}
 	
 }
