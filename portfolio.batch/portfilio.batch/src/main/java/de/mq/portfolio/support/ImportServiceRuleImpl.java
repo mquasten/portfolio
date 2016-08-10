@@ -4,9 +4,6 @@ import java.util.Map;
 
 class ImportServiceRuleImpl<T> extends AbstractServiceRule<T> {
 	
-	
-
-
 
 	ImportServiceRuleImpl(final T target, final String spEl) {
 		super(target,  spEl);

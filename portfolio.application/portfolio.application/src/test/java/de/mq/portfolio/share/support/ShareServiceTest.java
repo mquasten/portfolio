@@ -67,7 +67,7 @@ public class ShareServiceTest {
 	@Test
 	public void replacetTimeCourse() {
 		Mockito.when(timeCourse.share()).thenReturn(share);
-		shareService.replacetTimeCourse(timeCourse);
+		shareService.replaceTimeCourse(timeCourse);
 
 		Mockito.verify(shareRepository).deleteTimeCourse(share);
 		Mockito.verify(shareRepository).save(timeCourse);

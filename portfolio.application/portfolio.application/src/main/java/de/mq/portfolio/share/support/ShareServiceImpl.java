@@ -77,7 +77,7 @@ class ShareServiceImpl implements ShareService {
 	 * .share.support.TimeCourse)
 	 */
 	@Override
-	public final void replacetTimeCourse(final TimeCourse timeCourse) {
+	public final void replaceTimeCourse(final TimeCourse timeCourse) {
 		shareRepository.deleteTimeCourse(timeCourse.share());
 		shareRepository.save(timeCourse);
 	}

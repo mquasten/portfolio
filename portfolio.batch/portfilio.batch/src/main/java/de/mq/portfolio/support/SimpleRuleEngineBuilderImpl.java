@@ -1,7 +1,7 @@
 package de.mq.portfolio.support;
 
 import java.util.ArrayList;
-
+import java.util.Collection;
 import java.util.List;
 
 
@@ -13,7 +13,7 @@ import de.mq.portfolio.batch.RulesEngine;
 
 class SimpleRuleEngineBuilderImpl implements RulesEngineBuilder {
 	
-	private final List<Rule> rules = new ArrayList<>();
+	private final Collection<Rule> rules = new ArrayList<>();
 
 	private boolean skipOnFailure=true;
 

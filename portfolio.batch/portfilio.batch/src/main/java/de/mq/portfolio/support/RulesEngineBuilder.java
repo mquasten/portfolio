@@ -19,8 +19,5 @@ public interface RulesEngineBuilder {
 
 	RulesEngine build();
 	
-	static RulesEngineBuilder newBuilder() {
-		return new SimpleRuleEngineBuilderImpl();
-	}
-
+	
 }
