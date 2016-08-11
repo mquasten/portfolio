@@ -13,7 +13,7 @@ class ImportServiceRuleImpl<T> extends AbstractServiceRule<T> {
 
 
 	@Override
-	protected void action(final  Map<String, Object> parameters) {
+	protected final void  action(final  Map<String, Object> parameters) {
 		parameters.put(ITEMS_PARAMETER, executeEl(parameters));
 	}
 
