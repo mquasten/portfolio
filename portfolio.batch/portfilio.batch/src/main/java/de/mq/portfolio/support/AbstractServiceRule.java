@@ -11,6 +11,7 @@ import de.mq.portfolio.batch.Rule;
 
 abstract class AbstractServiceRule<T> implements Rule  {
 
+	static final String NAME_PATTERN = "%s.%s [%s]";
 	protected static final String ITEMS_PARAMETER = "items";
 	private final Expression expression;
 	private final T target;
@@ -47,7 +48,7 @@ abstract class AbstractServiceRule<T> implements Rule  {
 	 */
 	@Override
 	public final String getName() {
-		return String.format("%s.%s [%s]", target.getClass().getSimpleName(), expression.getExpressionString() , getClass().getSimpleName());
+		return String.format(NAME_PATTERN, target.getClass().getSimpleName(), expression.getExpressionString() , getClass().getSimpleName());
 	}
 
 	
