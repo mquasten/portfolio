@@ -2,6 +2,7 @@
 package de.mq.portfolio.support;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,7 +65,7 @@ public class AbstractServiceRuleTest {
 	
 	@Test
 	public final void name() {
-		Assert.assertEquals(String.format(AbstractServiceRule.NAME_PATTERN, shareService.getClass().getSimpleName(), SPEL_EXPRESSION , abstractServiceRule.getClass().getSimpleName()), abstractServiceRule.getName());
+		Assert.assertEquals(String.format(AbstractServiceRule.NAME_PATTERN, shareService.getClass().getSimpleName(), SPEL_EXPRESSION ), abstractServiceRule.getName());
 	}
 
 	@Test
@@ -77,8 +78,18 @@ public class AbstractServiceRuleTest {
 	@Test
 	public final void hash() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		final AbstractServiceRule<?> rule = new ImportServiceRuleImpl<>(shareService, SPEL_EXPRESSION);
-		Assert.assertEquals(String.format(AbstractServiceRule.NAME_PATTERN, shareService.getClass().getSimpleName(), SPEL_EXPRESSION, rule.getClass().getSimpleName()).hashCode() + rule.getClass().hashCode(), rule.hashCode());
-	}	
+		Assert.assertEquals(String.format(AbstractServiceRule.NAME_PATTERN, shareService.getClass().getSimpleName(), SPEL_EXPRESSION).hashCode() + rule.getClass().hashCode(), rule.hashCode());
+	}
+	
+	@Test
+	public final void equals() {
+		final AbstractServiceRule<?> rule = new ImportServiceRuleImpl<>(shareService, SPEL_EXPRESSION);
+		Assert.assertFalse(rule.equals(new Date()));
+		Assert.assertTrue(rule.equals(new ImportServiceRuleImpl<>(shareService, SPEL_EXPRESSION)));
+		Assert.assertFalse(rule.equals(new ImportServiceRuleImpl<>(shareService, "otherSpel")));
+		Assert.assertFalse(rule.equals(new ProcessServiceRuleImpl<>(shareService, SPEL_EXPRESSION)));
+		
+	}
 		
 	
 }
