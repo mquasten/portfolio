@@ -16,7 +16,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.share.TimeCourse;
-import de.mq.portfolio.share.support.SimpleCSVInputServiceImpl;
 import junit.framework.Assert;
 
 public class ImportServiceRuleTest {

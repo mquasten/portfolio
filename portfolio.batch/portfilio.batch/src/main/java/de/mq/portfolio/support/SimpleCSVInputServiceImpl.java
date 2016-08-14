@@ -1,4 +1,4 @@
-package de.mq.portfolio.share.support;
+package de.mq.portfolio.support;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -12,13 +12,13 @@ import java.util.Collection;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.util.Assert;
 
- public class SimpleCSVInputServiceImpl<T> {
+ class SimpleCSVInputServiceImpl<T> {
 
 	private final String delimiterRegex;
 	
 	private final Converter<String[], T> converter; 
 	
-	public SimpleCSVInputServiceImpl(final Converter<String[], T> converter) {
+	SimpleCSVInputServiceImpl(final Converter<String[], T> converter) {
 		this.converter=converter;
 		this.delimiterRegex= "[;]";
 	}

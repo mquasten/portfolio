@@ -16,10 +16,16 @@ import org.springframework.util.CollectionUtils;
 
 import de.mq.portfolio.batch.RulesEngine;
 
-public class BatchProcessorImpl {
+
+public class BatchProcessorImpl  {
+	
+
+
 	
 	
-	final void process(final List<String> arguments) {
+
+	final void   process (final List<String> arguments) {
+	
 
 		
 		Assert.notEmpty(arguments, "At least the name of the ruleengine should be given as first parameter.");
@@ -57,15 +63,30 @@ public class BatchProcessorImpl {
 		});
 		
 		
-		
+		 
 		Assert.isTrue(CollectionUtils.isEmpty(rulesEngine.failed()), "Rules processed with errors");
 		Assert.isTrue(!CollectionUtils.isEmpty(rulesEngine.processed()) , "At least one rule must be processed.");
 		System.out.println(String.format("Sucessfully finished rules for %s:", name));
 		rulesEngine.processed().forEach(rule -> System.out.println(String.format("\t%s", rule)));
 	}
 	
-	public static void  main(final String[] args){
-		new BatchProcessorImpl().process(Arrays.asList(args)); 
+	
+	
+
+	
+	public   static   void main(final String[] args) {	
+		new BatchProcessorImpl().process(Arrays.asList(args));
 	}
+
+	
+
+	
+
+	
+
+	
+
+	
+	
 
 }

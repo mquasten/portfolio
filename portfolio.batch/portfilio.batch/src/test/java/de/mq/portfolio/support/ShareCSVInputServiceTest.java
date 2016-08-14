@@ -1,4 +1,4 @@
-package de.mq.portfolio.share.support;
+package de.mq.portfolio.support;
 
 import java.util.Collection;
 
@@ -10,7 +10,8 @@ import org.mockito.Mockito;
 import org.springframework.core.convert.converter.Converter;
 
 import de.mq.portfolio.share.Share;
-import de.mq.portfolio.share.support.ShareImpl;
+
+import de.mq.portfolio.support.SimpleCSVInputServiceImpl;
 
 public class ShareCSVInputServiceTest {
 	
@@ -24,8 +25,15 @@ public class ShareCSVInputServiceTest {
 	public final void setup() {
 		Mockito.doAnswer(i -> {
 			final String[] cols = (String[]) i.getArguments()[0];
-			return (cols.length == 5) ? new ShareImpl(cols[0], cols[3], cols[4], cols[1], cols[2]) : new ShareImpl(cols[0], cols[3],null, cols[1], cols[2]);
-			
+			final Share share = Mockito.mock(Share.class);
+			Mockito.when(share.code()).thenReturn(cols[0]);
+			Mockito.when(share.name()).thenReturn(cols[3]);
+			Mockito.when(share.wkn()).thenReturn(cols[1]);
+			Mockito.when(share.currency()).thenReturn(cols[2]);
+			if(cols.length==5 ){
+				Mockito.when(share.index()).thenReturn(cols[4]);
+			}
+			return share;
 		}).when(converter).convert(Mockito.any(String[].class));
 	}
 	
