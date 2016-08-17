@@ -1,6 +1,7 @@
 package de.mq.portfolio.support;
 
 
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -50,6 +51,19 @@ class RulesConfiguration {
 	@Scope("prototype")
 	RulesEngineBuilder rulesEngineBuilder() {
 		return new SimpleRuleEngineBuilderImpl(); 
+	}
+	
+	@Bean
+	@Scope("singleton")
+	static BeanFactoryPostProcessor commandLineProcessor(){
+		return new SimpleCommandlineProcessorImpl(DummyBean.class);
+		
+	}
+	
+	@Bean
+	@Scope("singleton")
+	DummyBean mainDelegate() {
+		return new DummyBean();
 	}
 	
 }
