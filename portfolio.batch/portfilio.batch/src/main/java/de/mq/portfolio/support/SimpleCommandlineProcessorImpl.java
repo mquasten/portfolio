@@ -26,10 +26,10 @@ public  class SimpleCommandlineProcessorImpl implements BeanFactoryPostProcessor
 	private static Method method;
 	private static Object target;
 	
-	private static final String [] packages= new String [] {SimpleCommandlineProcessorImpl.class.getPackage().getName()};
+	private static String [] packages= new String [] {SimpleCommandlineProcessorImpl.class.getPackage().getName()};
 	
 	
-	private final static Function<String[], ApplicationContext> applicationContextSupplier =  packages -> new AnnotationConfigApplicationContext(packages) ;
+	private  static   Function<String[], ApplicationContext> applicationContextSupplier =  packages -> new AnnotationConfigApplicationContext(packages) ;
 	
 	@Retention(RetentionPolicy.RUNTIME)
 	@interface Main {
@@ -97,8 +97,6 @@ public  class SimpleCommandlineProcessorImpl implements BeanFactoryPostProcessor
 	}
 
 
-
-	
 	
 
 }
