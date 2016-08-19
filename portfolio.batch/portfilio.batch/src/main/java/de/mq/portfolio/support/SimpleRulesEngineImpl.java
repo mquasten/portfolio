@@ -19,11 +19,15 @@ class SimpleRulesEngineImpl implements RulesEngine {
 	private final boolean skipOnFailure;
 
 	private final boolean skipOnFirstApplied;
+	
+	private String name ;
 
 	private final Collection<Entry<String, ? extends Throwable>> exceptions = new ArrayList<>();
 	private final Collection<String> processed = new ArrayList<>();
 
-	SimpleRulesEngineImpl(final Collection<Rule> rules, boolean skipOnFailure, boolean skipOnFirstApplied) {
+	SimpleRulesEngineImpl(final  String name, final Collection<Rule> rules, boolean skipOnFailure, boolean skipOnFirstApplied) {
+		Assert.hasText(name);
+		this.name=name;
 		Assert.notEmpty(rules, "At least one Rule is mandatory");
 		this.rules.addAll(rules);
 		this.skipOnFailure = skipOnFailure;
@@ -84,6 +88,15 @@ class SimpleRulesEngineImpl implements RulesEngine {
 	@Override
 	public final Collection<Entry<String, ? extends Throwable>> failed() {
 		return Collections.unmodifiableCollection(exceptions);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.batch.RulesEngine#name()
+	 */
+	@Override
+	public String name() {
+		return  name;
 	}
 
 }

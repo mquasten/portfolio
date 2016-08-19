@@ -16,11 +16,13 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import de.mq.portfolio.batch.RulesEngine;
+import de.mq.portfolio.support.SimpleCommandlineProcessorImpl.Main;
 
 public class BatchProcessorImpl {
 
 	private static Class<? extends BatchProcessorImpl> TARGET = BatchProcessorImpl.class;
 
+	@Main
 	void process(final List<String> arguments) {
 
 		Assert.notEmpty(arguments, "At least the name of the ruleengine should be given as first parameter.");

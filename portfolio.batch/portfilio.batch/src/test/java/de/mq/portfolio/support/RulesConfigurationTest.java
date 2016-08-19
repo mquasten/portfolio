@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -29,6 +30,8 @@ import junit.framework.Assert;
 
 public class RulesConfigurationTest {
 	
+	private static final String SCOPE_SINGLETON = "singleton";
+
 	private static final String SCOPE_PROTOTYPE = "prototype";
 
 	private static final String TARGET_FIELD = "target";
@@ -39,6 +42,7 @@ public class RulesConfigurationTest {
 	
 	private final RulesEngineBuilder rulesEngineBuilder = Mockito.mock(RulesEngineBuilder.class);
 	private final ArgumentCaptor<Rule> ruleCapor = ArgumentCaptor.forClass(Rule.class);
+	private final ArgumentCaptor<String> nameCaptor = ArgumentCaptor.forClass(String.class);
 	private final RulesEngine rulesEngine = Mockito.mock(RulesEngine.class);
 	
 	private final  ExchangeRateService  exchangeRateService = Mockito.mock(ExchangeRateService.class);
@@ -46,6 +50,7 @@ public class RulesConfigurationTest {
 	@Before
 	public final void setup() {
 		Mockito.when(rulesEngineBuilder.withRule(ruleCapor.capture())).thenReturn(rulesEngineBuilder);
+		Mockito.when(rulesEngineBuilder.withName(nameCaptor.capture())).thenReturn(rulesEngineBuilder);
 		Mockito.when(rulesEngineBuilder.build()).thenReturn(rulesEngine);
 	}
 	
@@ -57,6 +62,9 @@ public class RulesConfigurationTest {
 	@Test
 	public void importShares() {
 		Assert.assertEquals(rulesEngine, rulesConfiguration.importShares(shareService, rulesEngineBuilder));
+		
+		Assert.assertEquals(RulesConfiguration.IMPORT_SHARES_RULE_ENGINE_NAME, nameCaptor.getValue());
+		
 		final List<Rule> rules = ruleCapor.getAllValues();
 		Assert.assertEquals(2, rules.size());
 		Assert.assertEquals(ImportServiceRuleImpl.class, rules.get(0).getClass());
@@ -89,6 +97,8 @@ public class RulesConfigurationTest {
 	@Test
 	public void importTimeCourses() {
 		Assert.assertEquals(rulesEngine, rulesConfiguration.importTimeCourses(shareService, rulesEngineBuilder));
+		Assert.assertEquals(RulesConfiguration.IMPORT_TIME_COURSES_RULE_ENGINE_NAME, nameCaptor.getValue());
+		
 		final List<Rule> rules = ruleCapor.getAllValues();
 		Assert.assertEquals(3, rules.size());
 		IntStream.range(0, 3).forEach(i ->Assert.assertEquals(shareService, ReflectionTestUtils.getField(rules.get(i), TARGET_FIELD)));
@@ -113,6 +123,7 @@ public class RulesConfigurationTest {
 	@Test
 	public void  importExchangeRates() {
 		Assert.assertEquals(rulesEngine, rulesConfiguration.importExchangeRates(exchangeRateService, rulesEngineBuilder));
+		Assert.assertEquals(RulesConfiguration.IMPORT_EXCHANGE_RATES_RULE_ENGINE_NAME, nameCaptor.getValue());
 		final List<Rule> rules = ruleCapor.getAllValues();
 		Assert.assertEquals(3, rules.size());
 		
@@ -134,16 +145,44 @@ public class RulesConfigurationTest {
 	}
 	
 	@Test
+	public final void batchProcessor() {
+		Assert.assertEquals(BatchProcessorImpl.class,rulesConfiguration.batchProcessor().getClass());
+	}
+	
+	@Test
+	public final void beanFactoryPostProcessor() {
+		final BeanFactoryPostProcessor beanFactoryPostProcessor = RulesConfiguration.commandlineProcessor();
+		final Collection<Class<?>> results = new ArrayList<>();
+		ReflectionUtils.doWithFields(beanFactoryPostProcessor.getClass(), field -> results.add((Class<?>) ReflectionTestUtils.getField(beanFactoryPostProcessor, field.getName())), field -> field.getType().equals(Class.class));
+		Assert.assertEquals(BatchProcessorImpl.class, DataAccessUtils.requiredSingleResult(results));
+		
+	}
+	
+	@Test
 	public void  annotationsAware() {
 		Assert.assertTrue(RulesConfiguration.class.isAnnotationPresent(Configuration.class));
 		Assert.assertTrue(RulesConfiguration.class.isAnnotationPresent(ImportResource.class));
-		
+		final int[]counters =  {0};
 		ReflectionUtils.doWithMethods(RulesConfiguration.class, method -> {
-			
+			counters[0]=counters[0]+1;
+						
 			Assert.assertTrue(method.isAnnotationPresent(Bean.class));
-			Assert.assertTrue(method.isAnnotationPresent(Scope.class));
-			Assert.assertEquals(SCOPE_PROTOTYPE, method.getAnnotation(Scope.class).value());
-		}, method -> method.getDeclaringClass().equals(RulesConfiguration.class)&& ! Modifier.isStatic(method.getModifiers()));
+			
+			if(  method.getReturnType().equals(BatchProcessorImpl.class)||method.getReturnType().equals(BeanFactoryPostProcessor.class)) {
+				Assert.assertEquals(method.getReturnType().equals(BeanFactoryPostProcessor.class), Modifier.isStatic(method.getModifiers()));
+				if(method.isAnnotationPresent(Scope.class)) {
+					Assert.assertEquals(SCOPE_SINGLETON, method.getAnnotation(Scope.class).value());
+				}
+			} else {
+				Assert.assertFalse(Modifier.isStatic(method.getModifiers()));
+				Assert.assertTrue(method.isAnnotationPresent(Scope.class));
+				Assert.assertEquals(SCOPE_PROTOTYPE, method.getAnnotation(Scope.class).value());
+			}
+		}, method -> method.getDeclaringClass().equals(RulesConfiguration.class)&& (!Modifier.isStatic(method.getModifiers()) || method.getReturnType().equals(BeanFactoryPostProcessor.class) ));
+		
+		Assert.assertEquals(6, counters[0]);
 	}
+	
+	
 
 }

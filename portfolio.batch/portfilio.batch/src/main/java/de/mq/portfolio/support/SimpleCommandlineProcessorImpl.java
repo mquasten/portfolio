@@ -46,13 +46,17 @@ public  class SimpleCommandlineProcessorImpl implements BeanFactoryPostProcessor
 
 	@Override
 	public void postProcessBeanFactory(final ConfigurableListableBeanFactory beanFactory) throws BeansException {
+	
 		target  = beanFactory.getBean(targetClass);
+	
+	
 		final Collection<Method> methods = new  HashSet<>();
-		ReflectionUtils.doWithMethods(target.getClass(),method -> methods.add(method), method -> method.isAnnotationPresent(Main.class));
-		Assert.isTrue(! methods.isEmpty() , String.format("One and only one method should be annotated with @Main in class %s.", targetClass.getName()));
+		ReflectionUtils.doWithMethods(targetClass,method -> methods.add(method), method -> method.isAnnotationPresent(Main.class));
+		
+		Assert.isTrue( methods.size() == 1 , String.format("One and only one method should be annotated with @Main in class %s.", targetClass.getName()));
 		
 		method= DataAccessUtils.requiredSingleResult(methods);
-		Assert.isTrue(method.getParameterTypes().length <= 1);
+		Assert.isTrue(method.getParameterTypes().length <= 1, "Max. 1 Argument is expected.");
 		method.setAccessible(true);
 		if( method.getParameterTypes().length==0) {
 			return;

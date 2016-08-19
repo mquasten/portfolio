@@ -18,6 +18,9 @@ import junit.framework.Assert;
 
 public class RulesEngineBuilderTest {
 	
+	private static final String MATCH_ALL_PATTERN = ".*";
+	private static final String RULE_PATTERN = ".*rule.*";
+	private static final String NAME = "importExchangeRates";
 	private static final String SKIP_ON_FIRST_APPLIED_PATTERN = ".*first.*";
 	private static final String CONTINUE_ON_FAILURE_PATTERN = ".*fail.*";
 	private final RulesEngineBuilder rulesEngineBuilder = new SimpleRuleEngineBuilderImpl();
@@ -60,6 +63,12 @@ public class RulesEngineBuilderTest {
 		
 		
 	}
+	
+	@Test
+	public final void withName() {
+		Assert.assertEquals(rulesEngineBuilder, rulesEngineBuilder.withName(NAME));
+		Assert.assertEquals(NAME, valueLikeName(rulesEngineBuilder, String.class, MATCH_ALL_PATTERN));
+	}
 
 	private <T> T  valueLikeName(final Object target, final Class<T> type, final String regex ) {
 		final Collection<T> results =  values(target, type).entrySet().stream().filter(entry -> entry.getKey().toLowerCase().matches(regex.toLowerCase())).map(entry -> entry.getValue()).collect(Collectors.toSet());
@@ -77,12 +86,13 @@ public class RulesEngineBuilderTest {
 	
 	@Test
 	public final void build() {
-		final RulesEngine rulesEngine = rulesEngineBuilder.withRule(rule).withContinueOnFailure().withSkipOnFirstAppliedRule().build();
+		final RulesEngine rulesEngine = rulesEngineBuilder.withRule(rule).withContinueOnFailure().withName(NAME).withSkipOnFirstAppliedRule().build();
 		
-		final Collection<?> rules = valueLikeName(rulesEngine, Collection.class, ".*rule.*");		
+		final Collection<?> rules = valueLikeName(rulesEngine, Collection.class, RULE_PATTERN);		
 		Assert.assertEquals(Arrays.asList(rule), rules);
 		Assert.assertFalse(valueLikeName(rulesEngine, boolean.class, CONTINUE_ON_FAILURE_PATTERN));
 		Assert.assertTrue(valueLikeName(rulesEngine, boolean.class, SKIP_ON_FIRST_APPLIED_PATTERN));
+		Assert.assertEquals(NAME, valueLikeName(rulesEngine, String.class, MATCH_ALL_PATTERN));
 	}
 	
 	@Test(expected=IllegalArgumentException.class)

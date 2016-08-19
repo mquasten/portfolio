@@ -19,6 +19,8 @@ class SimpleRuleEngineBuilderImpl implements RulesEngineBuilder {
 
 	private  boolean skipOnFirstApplied=false;
 	
+	private String name;
+	
 	SimpleRuleEngineBuilderImpl() {
 		
 	}
@@ -61,14 +63,28 @@ class SimpleRuleEngineBuilderImpl implements RulesEngineBuilder {
 		return this;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.support.RulesEngineBuilder#withName(java.lang.String)
+	 */
+	@Override
+	public RulesEngineBuilder withName(final String name) {
+		Assert.hasText(name);
+		this.name=name;
+		return this;
+	}
+	
 	/* (non-Javadoc)
 	 * @see de.mq.portfolio.batch.support.RulesEngineBuilder#build()
 	 */
 	@Override
 	public final RulesEngine build() {
 		Assert.notEmpty(rules, "At least one Rule must be given.");
-		return new SimpleRulesEngineImpl(rules, skipOnFailure, skipOnFirstApplied);
+		Assert.hasText(name);
+		return new SimpleRulesEngineImpl(name, rules, skipOnFailure, skipOnFirstApplied);
 		
 	}
+
+	
 
 }

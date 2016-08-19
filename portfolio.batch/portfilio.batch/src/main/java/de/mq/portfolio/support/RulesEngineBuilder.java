@@ -16,6 +16,8 @@ public interface RulesEngineBuilder {
 	RulesEngineBuilder withRule(final Rule rule);
 
 	RulesEngineBuilder withRules(final List<Rule> rules);
+	
+	RulesEngineBuilder withName(final String name);
 
 	RulesEngine build();
 	

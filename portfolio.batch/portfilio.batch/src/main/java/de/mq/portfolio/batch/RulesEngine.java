@@ -11,5 +11,7 @@ public interface RulesEngine {
 	Collection<String> processed();
 
 	Collection<Entry<String, ? extends Throwable>> failed();
+	
+	String name();
 
 }
