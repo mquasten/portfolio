@@ -17,9 +17,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -39,9 +38,9 @@ public class CommandlineProcessorTest {
 
 	private static Function<String[], ApplicationContext> applicationContextFunctionOrg;
 
-	private final BeanFactoryPostProcessor beanFactoryPostProcessor = new SimpleCommandlineProcessorImpl(TestBean.class);
+	private final ApplicationContextAware applicationContextAware = new SimpleCommandlineProcessorImpl(TestBean.class);
 
-	private final ConfigurableListableBeanFactory beanFactory = Mockito.mock(ConfigurableListableBeanFactory.class);
+	private final ApplicationContext applicationContext = Mockito.mock(ApplicationContext.class);
 
 	@SuppressWarnings("unchecked")
 	@BeforeClass
@@ -118,25 +117,25 @@ public class CommandlineProcessorTest {
 	}
 
 	@Test
-	public final void postProcessBeanFactory() {
+	public final void setApplicationContext() {
 		ReflectionUtils.setField(fields.get(Method.class), null, null);
 		ReflectionUtils.setField(fields.get(Object.class), null, null);
 
 		Assert.assertNull(ReflectionUtils.getField(fields.get(Method.class), null));
 		Assert.assertNull(ReflectionUtils.getField(fields.get(Object.class), null));
 
-		Mockito.when(beanFactory.getBean(TestBean.class)).thenReturn(testBean);
+		Mockito.when(applicationContext.getBean(TestBean.class)).thenReturn(testBean);
 
-		beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
+		applicationContextAware.setApplicationContext(applicationContext);
 
-		Mockito.verify(beanFactory).getBean(TestBean.class);
+		Mockito.verify(applicationContext).getBean(TestBean.class);
 
 		Assert.assertEquals(ReflectionUtils.findMethod(TestBean.class, "process", Collection.class), ReflectionUtils.getField(fields.get(Method.class), null));
 		Assert.assertEquals(testBean, ReflectionUtils.getField(fields.get(Object.class), null));
 	}
 
 	@Test
-	public final void postProcessBeanFactoryArray() {
+	public final void setApplicationContextArray() {
 		ReflectionUtils.setField(fields.get(Method.class), null, null);
 		ReflectionUtils.setField(fields.get(Object.class), null, null);
 
@@ -144,20 +143,20 @@ public class CommandlineProcessorTest {
 		Assert.assertNull(ReflectionUtils.getField(fields.get(Object.class), null));
 
 		TestArray testBean = Mockito.mock(TestArray.class);
-		Mockito.when(beanFactory.getBean(TestArray.class)).thenReturn(testBean);
+		Mockito.when(applicationContext.getBean(TestArray.class)).thenReturn(testBean);
 
-		ReflectionUtils.doWithFields(beanFactoryPostProcessor.getClass(), field -> ReflectionTestUtils.setField(beanFactoryPostProcessor, field.getName(), TestArray.class), field -> field.getType().equals(Class.class));
+		ReflectionUtils.doWithFields(applicationContextAware.getClass(), field -> ReflectionTestUtils.setField(applicationContextAware, field.getName(), TestArray.class), field -> field.getType().equals(Class.class));
 
-		beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
+		applicationContextAware.setApplicationContext(applicationContext);
 
-		Mockito.verify(beanFactory).getBean(TestArray.class);
+		Mockito.verify(applicationContext).getBean(TestArray.class);
 
 		Assert.assertEquals(ReflectionUtils.findMethod(TestArray.class, "process", String[].class), ReflectionUtils.getField(fields.get(Method.class), null));
 		Assert.assertEquals(testBean, ReflectionUtils.getField(fields.get(Object.class), null));
 	}
 
 	@Test
-	public final void postProcessBeanFactoryWithoutArg() {
+	public final void setApplicationContextWithoutArg() {
 		ReflectionUtils.setField(fields.get(Method.class), null, null);
 		ReflectionUtils.setField(fields.get(Object.class), null, null);
 
@@ -165,20 +164,20 @@ public class CommandlineProcessorTest {
 		Assert.assertNull(ReflectionUtils.getField(fields.get(Object.class), null));
 
 		TestWithoutArgs testBean = Mockito.mock(TestWithoutArgs.class);
-		Mockito.when(beanFactory.getBean(TestWithoutArgs.class)).thenReturn(testBean);
+		Mockito.when(applicationContext.getBean(TestWithoutArgs.class)).thenReturn(testBean);
 
-		ReflectionUtils.doWithFields(beanFactoryPostProcessor.getClass(), field -> ReflectionTestUtils.setField(beanFactoryPostProcessor, field.getName(), TestWithoutArgs.class), field -> field.getType().equals(Class.class));
+		ReflectionUtils.doWithFields(applicationContextAware.getClass(), field -> ReflectionTestUtils.setField(applicationContextAware, field.getName(), TestWithoutArgs.class), field -> field.getType().equals(Class.class));
 
-		beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
+		applicationContextAware.setApplicationContext(applicationContext);
 
-		Mockito.verify(beanFactory).getBean(TestWithoutArgs.class);
+		Mockito.verify(applicationContext).getBean(TestWithoutArgs.class);
 
 		Assert.assertEquals(ReflectionUtils.findMethod(TestWithoutArgs.class, "process"), ReflectionUtils.getField(fields.get(Method.class), null));
 		Assert.assertEquals(testBean, ReflectionUtils.getField(fields.get(Object.class), null));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public final void postProcessBeanFactoryWrongArg() {
+	public final void setApplicationContextWrongArg() {
 		ReflectionUtils.setField(fields.get(Method.class), null, null);
 		ReflectionUtils.setField(fields.get(Object.class), null, null);
 
@@ -186,16 +185,16 @@ public class CommandlineProcessorTest {
 		Assert.assertNull(ReflectionUtils.getField(fields.get(Object.class), null));
 
 		TestWrongArg testBean = Mockito.mock(TestWrongArg.class);
-		Mockito.when(beanFactory.getBean(TestWrongArg.class)).thenReturn(testBean);
+		Mockito.when(applicationContext.getBean(TestWrongArg.class)).thenReturn(testBean);
 
-		ReflectionUtils.doWithFields(beanFactoryPostProcessor.getClass(), field -> ReflectionTestUtils.setField(beanFactoryPostProcessor, field.getName(), TestWrongArg.class), field -> field.getType().equals(Class.class));
+		ReflectionUtils.doWithFields(applicationContextAware.getClass(), field -> ReflectionTestUtils.setField(applicationContextAware, field.getName(), TestWrongArg.class), field -> field.getType().equals(Class.class));
 
-		beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
+		applicationContextAware.setApplicationContext(applicationContext);
 
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public final void postProcessBeanFactoryAnnotationNotFound() {
+	public final void setApplicationContextAnnotationNotFound() {
 		ReflectionUtils.setField(fields.get(Method.class), null, null);
 		ReflectionUtils.setField(fields.get(Object.class), null, null);
 
@@ -203,16 +202,16 @@ public class CommandlineProcessorTest {
 		Assert.assertNull(ReflectionUtils.getField(fields.get(Object.class), null));
 
 		Function<?, ?> testBean = Mockito.mock(Function.class);
-		Mockito.when(beanFactory.getBean(Function.class)).thenReturn(testBean);
+		Mockito.when(applicationContext.getBean(Function.class)).thenReturn(testBean);
 
-		ReflectionUtils.doWithFields(beanFactoryPostProcessor.getClass(), field -> ReflectionTestUtils.setField(beanFactoryPostProcessor, field.getName(), Function.class), field -> field.getType().equals(Class.class));
+		ReflectionUtils.doWithFields(applicationContextAware.getClass(), field -> ReflectionTestUtils.setField(applicationContextAware, field.getName(), Function.class), field -> field.getType().equals(Class.class));
 
-		beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
+		applicationContextAware.setApplicationContext(applicationContext);
 
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public final void postProcessBeanFactoryToMutchArgs() {
+	public final void setApplicationContextToMutchArgs() {
 		ReflectionUtils.setField(fields.get(Method.class), null, null);
 		ReflectionUtils.setField(fields.get(Object.class), null, null);
 
@@ -220,11 +219,11 @@ public class CommandlineProcessorTest {
 		Assert.assertNull(ReflectionUtils.getField(fields.get(Object.class), null));
 
 		TestToMutchArgs testBean = Mockito.mock(TestToMutchArgs.class);
-		Mockito.when(beanFactory.getBean(TestToMutchArgs.class)).thenReturn(testBean);
+		Mockito.when(applicationContext.getBean(TestToMutchArgs.class)).thenReturn(testBean);
 
-		ReflectionUtils.doWithFields(beanFactoryPostProcessor.getClass(), field -> ReflectionTestUtils.setField(beanFactoryPostProcessor, field.getName(), TestToMutchArgs.class), field -> field.getType().equals(Class.class));
+		ReflectionUtils.doWithFields(applicationContextAware.getClass(), field -> ReflectionTestUtils.setField(applicationContextAware, field.getName(), TestToMutchArgs.class), field -> field.getType().equals(Class.class));
 
-		beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
+		applicationContextAware.setApplicationContext(applicationContext);
 
 	}
 

@@ -1,6 +1,8 @@
 package de.mq.portfolio.support;
 
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import java.util.Collection;
+
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -14,6 +16,7 @@ import de.mq.portfolio.share.support.SharesCSVLineConverterImpl;
 
 @Configuration
 @ImportResource("classpath*:application.xml")
+
 class RulesConfiguration {
 
 	static final String IMPORT_SHARES_RULE_ENGINE_NAME = "importShares";
@@ -52,15 +55,15 @@ class RulesConfiguration {
 
 	@Bean
 	@Scope("singleton")
-	BatchProcessorImpl batchProcessor() {
-		return new BatchProcessorImpl();
+	BatchProcessorImpl batchProcessor(Collection<RulesEngine> rulesEngines) {
+		return new BatchProcessorImpl(rulesEngines);
 
-	}
+	} 
 
 	@Bean
 	@Scope("singleton")
-	 static BeanFactoryPostProcessor commandlineProcessor() {
+	ApplicationContextAware commandlineProcessor() {
 		return new SimpleCommandlineProcessorImpl(BatchProcessorImpl.class);
-	}
+	} 
 
 }

@@ -10,8 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.batch.RulesEngine;
 import junit.framework.Assert;
@@ -22,27 +20,32 @@ public class BatchProcessorTest {
 	private static final String PARAM_KEY = "filename";
 	private static final String PARAM_VALUE = "exchangeRates.csv";
 	private static final String SUCCESS_RULE = "aRule";
-	private final BatchProcessorImpl batchProcessor = Mockito.mock(BatchProcessorImpl.class, Mockito.CALLS_REAL_METHODS);
+	
 	private final List<String> arguments = Arrays.asList(RULE_ENGINE_BEAN_NAME, PARAM_KEY + "=" + PARAM_VALUE);
 
-	private final AnnotationConfigApplicationContext applicationContext = Mockito.mock(AnnotationConfigApplicationContext.class);
+//	private final AnnotationConfigApplicationContext applicationContext = Mockito.mock(AnnotationConfigApplicationContext.class);
 
 	private final RulesEngine rulesEngine = Mockito.mock(RulesEngine.class);
+	
+	private  BatchProcessorImpl batchProcessor ;
 
 	@SuppressWarnings("rawtypes")
 	ArgumentCaptor<Map> paramsCaptor = ArgumentCaptor.forClass(Map.class);
 
 	@Before
-	public final void setup() {
-		BatchProcessorMock.COUNTER = 0;
+	public final void setup(){
+		Mockito.when(rulesEngine.name()).thenReturn(RULE_ENGINE_BEAN_NAME);
+		batchProcessor = new BatchProcessorImpl(Arrays.asList(rulesEngine));
 	}
+	
+	
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public final void process() {
-		Mockito.when(batchProcessor.applicationContext()).thenReturn(applicationContext);
+		
 
-		Mockito.when(applicationContext.getBean(RULE_ENGINE_BEAN_NAME, RulesEngine.class)).thenReturn(rulesEngine);
+		
 		Mockito.when(rulesEngine.processed()).thenReturn(Arrays.asList(SUCCESS_RULE));
 
 		batchProcessor.process(arguments);
@@ -61,9 +64,7 @@ public class BatchProcessorTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public final void processNoRuleProcesses() {
-		Mockito.when(batchProcessor.applicationContext()).thenReturn(applicationContext);
-
-		Mockito.when(applicationContext.getBean(RULE_ENGINE_BEAN_NAME, RulesEngine.class)).thenReturn(rulesEngine);
+		
 		Mockito.when(rulesEngine.processed()).thenReturn(new ArrayList<>());
 
 		batchProcessor.process(arguments);
@@ -72,9 +73,7 @@ public class BatchProcessorTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public final void processWrornParameters() {
-		Mockito.when(batchProcessor.applicationContext()).thenReturn(applicationContext);
-
-		Mockito.when(applicationContext.getBean(RULE_ENGINE_BEAN_NAME, RulesEngine.class)).thenReturn(rulesEngine);
+	
 		Mockito.when(rulesEngine.processed()).thenReturn(Arrays.asList(SUCCESS_RULE));
 
 		batchProcessor.process(Arrays.asList(RULE_ENGINE_BEAN_NAME, PARAM_KEY));
@@ -83,9 +82,7 @@ public class BatchProcessorTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public final void failed() {
-		Mockito.when(batchProcessor.applicationContext()).thenReturn(applicationContext);
-
-		Mockito.when(applicationContext.getBean(RULE_ENGINE_BEAN_NAME, RulesEngine.class)).thenReturn(rulesEngine);
+		
 		@SuppressWarnings("unchecked")
 		final Entry<String, Throwable> entry = Mockito.mock(Entry.class);
 		Mockito.when(entry.getValue()).thenReturn(Mockito.mock(RuntimeException.class));
@@ -95,29 +92,6 @@ public class BatchProcessorTest {
 		batchProcessor.process(arguments);
 	}
 
-	@Test
-	public final void main() {
-
-		Assert.assertEquals(0, BatchProcessorMock.COUNTER);
-
-		ReflectionUtils.doWithFields(BatchProcessorMock.class, field -> {
-			field.setAccessible(true);
-			ReflectionUtils.setField(field, field.getName(), BatchProcessorMock.class);
-		}, field -> field.getType().equals(Class.class));
-		BatchProcessorMock.main(new String[] {});
-
-		Assert.assertEquals(1, BatchProcessorMock.COUNTER);
-	}
 	
-
-}
-
-class BatchProcessorMock extends BatchProcessorImpl {
-	static int COUNTER = 0;
-
-	@Override
-	void process(List<String> arguments) {
-		COUNTER++;
-	}
 
 }

@@ -12,16 +12,15 @@ import java.util.Set;
 import java.util.function.Function;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 
-public  class SimpleCommandlineProcessorImpl implements BeanFactoryPostProcessor {
+public  class SimpleCommandlineProcessorImpl implements ApplicationContextAware {
 	
 	private static Method method;
 	private static Object target;
@@ -44,10 +43,10 @@ public  class SimpleCommandlineProcessorImpl implements BeanFactoryPostProcessor
 
 	
 
-	@Override
-	public void postProcessBeanFactory(final ConfigurableListableBeanFactory beanFactory) throws BeansException {
 	
-		target  = beanFactory.getBean(targetClass);
+	public  void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+	
+		target  = applicationContext.getBean(targetClass);
 	
 	
 		final Collection<Method> methods = new  HashSet<>();
@@ -99,6 +98,11 @@ public  class SimpleCommandlineProcessorImpl implements BeanFactoryPostProcessor
 		ReflectionUtils.invokeMethod(method, target, Arrays.asList(args));
 		
 	}
+
+
+
+
+	
 
 
 	

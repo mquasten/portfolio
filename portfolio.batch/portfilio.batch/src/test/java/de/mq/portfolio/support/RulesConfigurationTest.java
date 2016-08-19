@@ -2,15 +2,19 @@ package de.mq.portfolio.support;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import org.junit.Before;
+
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -28,8 +32,11 @@ import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.support.SharesCSVLineConverterImpl;
 import junit.framework.Assert;
 
+
 public class RulesConfigurationTest {
 	
+	private static final String RULES_ENGINE_NAME = "importExchangeRates";
+
 	private static final String SCOPE_SINGLETON = "singleton";
 
 	private static final String SCOPE_PROTOTYPE = "prototype";
@@ -52,6 +59,7 @@ public class RulesConfigurationTest {
 		Mockito.when(rulesEngineBuilder.withRule(ruleCapor.capture())).thenReturn(rulesEngineBuilder);
 		Mockito.when(rulesEngineBuilder.withName(nameCaptor.capture())).thenReturn(rulesEngineBuilder);
 		Mockito.when(rulesEngineBuilder.build()).thenReturn(rulesEngine);
+		Mockito.when(rulesEngine.name()).thenReturn(RULES_ENGINE_NAME);
 	}
 	
 	@Test
@@ -144,16 +152,26 @@ public class RulesConfigurationTest {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public final void batchProcessor() {
-		Assert.assertEquals(BatchProcessorImpl.class,rulesConfiguration.batchProcessor().getClass());
+		
+		final BatchProcessorImpl batchProcessor = rulesConfiguration.batchProcessor(Arrays.asList(rulesEngine));
+		final Collection<Map<String,RulesEngine>> results = new ArrayList<>();
+		ReflectionUtils.doWithFields(batchProcessor.getClass(), field -> results.add( (Map<String, RulesEngine>) ReflectionTestUtils.getField(batchProcessor, field.getName())), field -> field.getType().equals(Map.class));
+		Assert.assertEquals(1, results.size());
+		
+		final Map<String,RulesEngine> result = results.stream().findAny().get();
+		Assert.assertEquals(1, result.size());
+	    Assert.assertEquals(RULES_ENGINE_NAME, result.keySet().stream().findAny().get());
+	    Assert.assertEquals(rulesEngine, result.values().stream().findAny().get());
 	}
 	
 	@Test
 	public final void beanFactoryPostProcessor() {
-		final BeanFactoryPostProcessor beanFactoryPostProcessor = RulesConfiguration.commandlineProcessor();
+		final ApplicationContextAware applicationContextAware = rulesConfiguration.commandlineProcessor();
 		final Collection<Class<?>> results = new ArrayList<>();
-		ReflectionUtils.doWithFields(beanFactoryPostProcessor.getClass(), field -> results.add((Class<?>) ReflectionTestUtils.getField(beanFactoryPostProcessor, field.getName())), field -> field.getType().equals(Class.class));
+		ReflectionUtils.doWithFields(applicationContextAware.getClass(), field -> results.add((Class<?>) ReflectionTestUtils.getField(applicationContextAware, field.getName())), field -> field.getType().equals(Class.class));
 		Assert.assertEquals(BatchProcessorImpl.class, DataAccessUtils.requiredSingleResult(results));
 		
 	}
@@ -168,7 +186,7 @@ public class RulesConfigurationTest {
 						
 			Assert.assertTrue(method.isAnnotationPresent(Bean.class));
 			
-			if(  method.getReturnType().equals(BatchProcessorImpl.class)||method.getReturnType().equals(BeanFactoryPostProcessor.class)) {
+			if(  method.getReturnType().equals(BatchProcessorImpl.class)||method.getReturnType().equals(ApplicationContextAware.class)) {
 				Assert.assertEquals(method.getReturnType().equals(BeanFactoryPostProcessor.class), Modifier.isStatic(method.getModifiers()));
 				if(method.isAnnotationPresent(Scope.class)) {
 					Assert.assertEquals(SCOPE_SINGLETON, method.getAnnotation(Scope.class).value());

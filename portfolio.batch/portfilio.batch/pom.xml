@@ -62,7 +62,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>de.mq.portfolio.support.BatchProcessorImpl</mainClass>
+							<mainClass>de.mq.portfolio.support.SimpleCommandlineProcessorImpl</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

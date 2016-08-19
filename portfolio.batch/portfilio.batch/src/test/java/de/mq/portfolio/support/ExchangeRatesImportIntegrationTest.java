@@ -31,6 +31,7 @@ public class ExchangeRatesImportIntegrationTest {
 	@Qualifier("importExchangeRates")
 	private  RulesEngine rulesEngine;
 	
+	
 	@Test
 	public final void doImport() {
 		

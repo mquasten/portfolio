@@ -8,19 +8,22 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.springframework.beans.BeanUtils;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import de.mq.portfolio.batch.RulesEngine;
 import de.mq.portfolio.support.SimpleCommandlineProcessorImpl.Main;
 
-public class BatchProcessorImpl {
+class BatchProcessorImpl {
+	
+	private final Map<String,RulesEngine> rulesEngines = new HashMap<>();
 
-	private static Class<? extends BatchProcessorImpl> TARGET = BatchProcessorImpl.class;
+	BatchProcessorImpl(final Collection<RulesEngine> rulesEngines ){
+		this.rulesEngines.clear();
+		rulesEngines.forEach(rulesEngine -> this.rulesEngines.put(rulesEngine.name(), rulesEngine));
+	}
+	
+	
 
 	@Main
 	void process(final List<String> arguments) {
@@ -29,20 +32,18 @@ public class BatchProcessorImpl {
 		final String names = arguments.stream().findFirst().get();
 		final Collection<String> params = IntStream.range(1, arguments.size()).mapToObj(i -> arguments.get(i)).collect(Collectors.toList());
 
-		try (ConfigurableApplicationContext ctx = applicationContext()) {
-			Arrays.asList(names.split("[,]")).forEach(name -> process(name, params, ctx));
-			;
-		}
+		
+			Arrays.asList(names.split("[,]")).forEach(name -> process(name, params));
+	
 	}
 
-	AnnotationConfigApplicationContext applicationContext() {
-		return new AnnotationConfigApplicationContext(RulesConfiguration.class);
-	}
+	
 
-	private void process(final String name, final Collection<String> params, ApplicationContext ctx) {
-
-		final RulesEngine rulesEngine = ctx.getBean(name, RulesEngine.class);
-
+	private void process(final String name, final Collection<String> params) {
+		
+		System.out.println(this.rulesEngines);
+		Assert.isTrue(rulesEngines.containsKey(name), String.format("RuleEngine with name %s not found." , name));
+		final RulesEngine rulesEngine = rulesEngines.get(name);
 		final Map<String, Object> parameters = new HashMap<>();
 		params.forEach(entry -> {
 			final String[] values = entry.split("=");
@@ -64,8 +65,6 @@ public class BatchProcessorImpl {
 		rulesEngine.processed().forEach(rule -> System.out.println(String.format("\t%s", rule)));
 	}
 
-	public static void main(final String[] args) {
-		BeanUtils.instantiateClass(TARGET).process(Arrays.asList(args));
-	}
+	
 
 }
