@@ -14,6 +14,7 @@ import java.util.function.Function;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.util.Assert;
@@ -28,7 +29,7 @@ public  class SimpleCommandlineProcessorImpl implements ApplicationContextAware 
 	private static String [] packages= new String [] {SimpleCommandlineProcessorImpl.class.getPackage().getName()};
 	
 	
-	private  static   Function<String[], ApplicationContext> applicationContextSupplier =  packages -> new AnnotationConfigApplicationContext(packages) ;
+	private  static   Function<String[], ConfigurableApplicationContext> applicationContextSupplier =  packages -> new AnnotationConfigApplicationContext(packages) ;
 	
 	@Retention(RetentionPolicy.RUNTIME)
 	@interface Main {
@@ -73,10 +74,17 @@ public  class SimpleCommandlineProcessorImpl implements ApplicationContextAware 
 	
 	public static final void main(final String[] args) {
 		
+		try (final ConfigurableApplicationContext ctx = applicationContextSupplier.apply(packages)) {
+			doInApplicationContext(args);
+		}
 		
-		applicationContextSupplier.apply(packages);
 		
-		
+	}
+
+
+
+
+	private static void doInApplicationContext(final String[] args) {
 		Assert.notNull(target, "TargetBean is required, possibly BeanFactoryPostProcessor is not registered.");
 		Assert.notNull(method, "Method is required, possibly BeanFactoryPostProcessor is not registered.");
 		
@@ -96,15 +104,17 @@ public  class SimpleCommandlineProcessorImpl implements ApplicationContextAware 
 		}
 
 		ReflectionUtils.invokeMethod(method, target, Arrays.asList(args));
-		
 	}
 
 
 
 
 	
+	
+	
 
 
 	
 
 }
+
