@@ -39,7 +39,7 @@
 		<mongo-data-mogo.version>1.9.2.RELEASE</mongo-data-mogo.version>
     
     
-    	<spring.batch.version>3.0.7.RELEASE</spring.batch.version>
+    	<et.version>0.2.0</et.version>
   </properties>
 
   <dependencies>

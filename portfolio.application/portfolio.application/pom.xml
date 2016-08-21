@@ -32,7 +32,13 @@
 			<artifactId>spring-web</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-				
+
+
+		<dependency>
+			<groupId>com.mscharhag</groupId>
+			<artifactId>et</artifactId>
+			<version>${et.version}</version>
+		</dependency>
 
 	</dependencies>
 
