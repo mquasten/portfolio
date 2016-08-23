@@ -1,6 +1,8 @@
 package de.mq.portfolio.support;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -24,7 +27,22 @@ import junit.framework.Assert;
 
 public class ExceptionTranslationBuilderTest {
 	
+	private static final byte[] TEXT_AS_BYTES = "Kylie is nice and ...".getBytes();
 	private final ExceptionTranslationBuilder<Object,AutoCloseable> exceptionTranslationBuilder = new  ExceptionTranslationBuilderImpl<>();
+	
+	
+	@SuppressWarnings({"unchecked" })
+	private final Supplier<ByteArrayInputStream> supplier = Mockito.mock(Supplier.class);
+	
+	@SuppressWarnings({ "rawtypes" })
+	private final Entry entry = Mockito.mock(Entry.class);
+	
+	@Before
+	public final void setup(){
+		 Mockito.when(supplier.get()).thenReturn(new ByteArrayInputStream(TEXT_AS_BYTES));
+		 Mockito.when(entry.getKey()).thenReturn(IllegalStateException.class);
+		 Mockito.when(entry.getValue()).thenReturn(new Class[] {IOException.class});
+	}
 	
 	@Test
 	public final void withStatementReturningTryBlockWithResource() {
@@ -124,5 +142,71 @@ public class ExceptionTranslationBuilderTest {
 	public final void  withTranslationEmptySourceArray() {
 		exceptionTranslationBuilder.withTranslation(IllegalStateException.class, new Class[]{});
 	}
+	
+	@Test
+	public final void translateReturningTryBlockWithResource() {
+		 final Map<Class<?>,Field> fields = fields();
+		 ReturningTryBlockWithResource<Object,ByteArrayInputStream> returningTryBlockWithResource = bis -> {
+			 final byte[] buffer = new byte[TEXT_AS_BYTES.length];
+			 bis.read(buffer);
+			 return new String(buffer);
+		 };
+		 
+		
+		
+				
+		 ReflectionUtils.setField(fields.get(Supplier.class), exceptionTranslationBuilder, supplier);
+		 ReflectionUtils.setField(fields.get(ReturningTryBlockWithResource.class), exceptionTranslationBuilder,returningTryBlockWithResource);
+		 ReflectionUtils.setField(fields.get(ExceptionTranslationBuilderImpl.Type.class), exceptionTranslationBuilder, ExceptionTranslationBuilderImpl.Type.ReturningWithResource);
+		 Assert.assertEquals(new String(TEXT_AS_BYTES), exceptionTranslationBuilder.translate());
+		 
+	}
+
+	private  Map<Class<?>,Field> fields() {
+		final Map<Class<?>,Field> fields = new HashMap<>();
+		ReflectionUtils.doWithFields(exceptionTranslationBuilder.getClass(), field -> {field.setAccessible(true);fields.put(field.getType(), field);}, field -> !Modifier.isStatic(field.getModifiers()));
+	    return fields;
+	}
+	
+	@Test(expected=IllegalStateException.class)
+	public final void translateReturningTryBlockWithResourceSupplierSucks() {
+		
+		
+		final ReturningTryBlockWithResource<?,?> returningTryBlockWithResource = Mockito.mock(ReturningTryBlockWithResource.class);
+		
+		final Supplier<?> supplier = Mockito.mock(Supplier.class);
+		 Mockito.doThrow(IOException.class).when(supplier).get();
+		 final Map<Class<?>,Field> fields = fields();
+		 ReflectionUtils.setField(fields.get(Supplier.class), exceptionTranslationBuilder, supplier);
+		 ReflectionUtils.setField(fields.get(ReturningTryBlockWithResource.class), exceptionTranslationBuilder,returningTryBlockWithResource);
+		 ReflectionUtils.setField(fields.get(ExceptionTranslationBuilderImpl.Type.class), exceptionTranslationBuilder, ExceptionTranslationBuilderImpl.Type.ReturningWithResource);
+		 ReflectionUtils.setField(fields.get(Collection.class), exceptionTranslationBuilder, Arrays.asList(entry));
+		 exceptionTranslationBuilder.translate();	
+	
+	} 
+	
+	@Test(expected=IllegalStateException.class)
+	public final void translateReturningTryBlockWithResourceBlockSucks() {
+		
+		 ReturningTryBlockWithResource<Object,ByteArrayInputStream> returningTryBlockWithResource = bis -> {throw new IOException("Don't worry, only for test"); };
+		
+		 final Map<Class<?>,Field> fields = fields();
+		 ReflectionUtils.setField(fields.get(Supplier.class), exceptionTranslationBuilder, supplier);
+		 ReflectionUtils.setField(fields.get(ReturningTryBlockWithResource.class), exceptionTranslationBuilder,returningTryBlockWithResource);
+		 ReflectionUtils.setField(fields.get(ExceptionTranslationBuilderImpl.Type.class), exceptionTranslationBuilder, ExceptionTranslationBuilderImpl.Type.ReturningWithResource);
+		 ReflectionUtils.setField(fields.get(Collection.class), exceptionTranslationBuilder, Arrays.asList(entry));
+		 exceptionTranslationBuilder.translate();
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void translateResourceStatementMissmatch() {
+		ReturningTryBlockWithResource<Object,ByteArrayInputStream> returningTryBlockWithResource = bis -> new String(TEXT_AS_BYTES);
+		 final Map<Class<?>,Field> fields = fields();
+		 ReflectionUtils.setField(fields.get(ReturningTryBlockWithResource.class), exceptionTranslationBuilder,returningTryBlockWithResource);
+		 ReflectionUtils.setField(fields.get(ExceptionTranslationBuilderImpl.Type.class), exceptionTranslationBuilder, ExceptionTranslationBuilderImpl.Type.ReturningWithResource);
+		 ReflectionUtils.setField(fields.get(Collection.class), exceptionTranslationBuilder, Arrays.asList(entry));
+		 exceptionTranslationBuilder.translate();
+	}
+	
 	
 }
