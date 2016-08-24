@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
+
 import com.mscharhag.et.ReturningTryBlock;
 import com.mscharhag.et.TryBlock;
 
@@ -207,6 +208,42 @@ public class ExceptionTranslationBuilderTest {
 		 ReflectionUtils.setField(fields.get(Collection.class), exceptionTranslationBuilder, Arrays.asList(entry));
 		 exceptionTranslationBuilder.translate();
 	}
+	
+	@Test
+	public final void  returningWithoutResource() {
+		
+		 final ReturningTryBlock<String> returningTryBlock =  () -> new String(TEXT_AS_BYTES);
+		 final Map<Class<?>,Field> fields = fields();
+		 ReflectionUtils.setField(fields.get(ReturningTryBlock.class), exceptionTranslationBuilder,returningTryBlock);
+		 ReflectionUtils.setField(fields.get(ExceptionTranslationBuilderImpl.Type.class), exceptionTranslationBuilder, ExceptionTranslationBuilderImpl.Type.ReturningWithoutResource);
+		 Assert.assertEquals(new String(TEXT_AS_BYTES),exceptionTranslationBuilder.translate());
+		
+	}
+	
+	@Test(expected=IllegalStateException.class)
+	public final void  returningWithoutResourceSucks() {
+		 final ReturningTryBlock<String> returningTryBlock =  () ->  {throw new IOException("Don't worry, only for test"); };
+		 final Map<Class<?>,Field> fields = fields();
+		 ReflectionUtils.setField(fields.get(ReturningTryBlock.class), exceptionTranslationBuilder,returningTryBlock);
+		 ReflectionUtils.setField(fields.get(ExceptionTranslationBuilderImpl.Type.class), exceptionTranslationBuilder, ExceptionTranslationBuilderImpl.Type.ReturningWithoutResource);
+		 ReflectionUtils.setField(fields.get(Collection.class), exceptionTranslationBuilder, Arrays.asList(entry));
+		 Assert.assertEquals(new String(TEXT_AS_BYTES),exceptionTranslationBuilder.translate());
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void  returningWithoutResourceStatementMissmatch() {
+		
+		 final ReturningTryBlock<?> returningTryBlock =  Mockito.mock(ReturningTryBlock.class);
+		
+		 final Supplier<?> supplier = Mockito.mock(Supplier.class);
+		 final Map<Class<?>,Field> fields = fields();
+		 ReflectionUtils.setField(fields.get(ReturningTryBlock.class), exceptionTranslationBuilder,returningTryBlock);
+		 ReflectionUtils.setField(fields.get(ExceptionTranslationBuilderImpl.Type.class), exceptionTranslationBuilder, ExceptionTranslationBuilderImpl.Type.ReturningWithoutResource);
+		 ReflectionUtils.setField(fields.get(Supplier.class), exceptionTranslationBuilder, supplier);
+		 exceptionTranslationBuilder.translate();	
+	}
+		
+	
 	
 	
 }
