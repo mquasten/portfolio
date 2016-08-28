@@ -16,7 +16,6 @@ import de.mq.portfolio.share.support.SharesCSVLineConverterImpl;
 
 @Configuration
 @ImportResource("classpath*:application.xml")
-
 class RulesConfiguration {
 
 	static final String IMPORT_SHARES_RULE_ENGINE_NAME = "importShares";

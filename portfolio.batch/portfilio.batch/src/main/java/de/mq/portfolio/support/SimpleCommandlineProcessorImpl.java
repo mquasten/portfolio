@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -29,7 +29,10 @@ public  class SimpleCommandlineProcessorImpl implements ApplicationContextAware 
 	private static String [] packages= new String [] {SimpleCommandlineProcessorImpl.class.getPackage().getName()};
 	
 	
-	private  static   Function<String[], ConfigurableApplicationContext> applicationContextSupplier =  packages -> new AnnotationConfigApplicationContext(packages) ;
+	private  static   Supplier<ConfigurableApplicationContext> applicationContextSupplier =  () -> new AnnotationConfigApplicationContext(packages) ;
+	
+	
+
 	
 	@Retention(RetentionPolicy.RUNTIME)
 	@interface Main {
@@ -73,15 +76,9 @@ public  class SimpleCommandlineProcessorImpl implements ApplicationContextAware 
 	}
 	
 	public static final void main(final String[] args) {
-		
-		try (final ConfigurableApplicationContext ctx = applicationContextSupplier.apply(packages)) {
-			doInApplicationContext(args);
-		}
-		
-		
+		 new ExceptionTranslationBuilderImpl<Void, ConfigurableApplicationContext>().withResource(applicationContextSupplier).withStatement(ctx -> { doInApplicationContext(args); }).translate();
+
 	}
-
-
 
 
 	private static void doInApplicationContext(final String[] args) {
@@ -90,17 +87,17 @@ public  class SimpleCommandlineProcessorImpl implements ApplicationContextAware 
 		
 		if( method.getParameterTypes().length==0) {
 			ReflectionUtils.invokeMethod(method, target);
-			return;
+			return ;
 		}
 		
 		if(method.getParameterTypes()[0].isArray() ) {
 			ReflectionUtils.invokeMethod(method, target, new Object[] { args});
-			return;
+			return ;
 		}
 		
 		if(Set.class.isAssignableFrom(method.getParameterTypes()[0])){
 			ReflectionUtils.invokeMethod(method, target, new HashSet<>(Arrays.asList(args)));
-			return;
+			return ;
 		}
 
 		ReflectionUtils.invokeMethod(method, target, Arrays.asList(args));
