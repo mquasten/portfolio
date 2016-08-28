@@ -1,11 +1,16 @@
 package de.mq.portfolio.support;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
 import java.util.stream.IntStream;
 
 import org.junit.Before;
@@ -23,6 +28,7 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.expression.Expression;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.web.client.ResourceAccessException;
 
 import de.mq.portfolio.batch.Rule;
 import de.mq.portfolio.batch.RulesEngine;
@@ -172,7 +178,18 @@ public class RulesConfigurationTest {
 		final Collection<Class<?>> results = new ArrayList<>();
 		ReflectionUtils.doWithFields(applicationContextAware.getClass(), field -> results.add((Class<?>) ReflectionTestUtils.getField(applicationContextAware, field.getName())), field -> field.getType().equals(Class.class));
 		Assert.assertEquals(BatchProcessorImpl.class, DataAccessUtils.requiredSingleResult(results));
-		
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public final void ecceptionTranslator() {
+		final ExceptionTranslationBuilder<Void, InputStreamReader> builder = rulesConfiguration.exceptionTranslationBuilder();
+		final Collection<Entry<?,?>> results = new HashSet<>();
+		ReflectionUtils.doWithFields(builder.getClass(), field -> results.addAll((Collection<Entry<?,?>>) ReflectionTestUtils.getField(builder, field.getName())), field -> field.getType().equals(Collection.class));
+		final Entry<?,?> result = DataAccessUtils.requiredSingleResult(results);
+		Assert.assertEquals(ResourceAccessException.class, result.getKey());
+		Assert.assertEquals(1,  ((Class<?>[])result.getValue()).length);
+		Assert.assertEquals(IOException.class, ((Class<?>[])result.getValue())[0]);
 	}
 	
 	@Test
@@ -197,7 +214,7 @@ public class RulesConfigurationTest {
 			}
 		}, method -> method.getDeclaringClass().equals(RulesConfiguration.class)&& (!Modifier.isStatic(method.getModifiers()) || method.getReturnType().equals(BeanFactoryPostProcessor.class) ));
 		
-		Assert.assertEquals(6, counters[0]);
+		Assert.assertEquals(7, counters[0]);
 	}
 	
 	

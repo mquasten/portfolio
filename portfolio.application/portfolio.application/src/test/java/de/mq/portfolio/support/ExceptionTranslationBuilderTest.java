@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
@@ -24,8 +23,9 @@ import org.springframework.util.ReflectionUtils;
 import com.mscharhag.et.ReturningTryBlock;
 import com.mscharhag.et.TryBlock;
 
-import de.mq.portfolio.support.ExceptionTranslationBuilderImpl.ReturningTryBlockWithResource;
-import de.mq.portfolio.support.ExceptionTranslationBuilderImpl.TryBlockWithResource;
+import de.mq.portfolio.support.ExceptionTranslationBuilder.ResourceSupplier;
+import de.mq.portfolio.support.ExceptionTranslationBuilder.ReturningTryBlockWithResource;
+import de.mq.portfolio.support.ExceptionTranslationBuilder.TryBlockWithResource;
 import junit.framework.Assert;
 
 public class ExceptionTranslationBuilderTest {
@@ -34,13 +34,13 @@ public class ExceptionTranslationBuilderTest {
 	private final ExceptionTranslationBuilder<Object, AutoCloseable> exceptionTranslationBuilder = new ExceptionTranslationBuilderImpl<>();
 
 	@SuppressWarnings({ "unchecked" })
-	private final Supplier<ByteArrayInputStream> supplier = Mockito.mock(Supplier.class);
+	private final ResourceSupplier<ByteArrayInputStream> supplier = Mockito.mock(ResourceSupplier.class);
 
 	@SuppressWarnings({ "rawtypes" })
 	private final Entry entry = Mockito.mock(Entry.class);
 
 	@Before
-	public final void setup() {
+	public final void setup() throws Exception {
 		Mockito.when(supplier.get()).thenReturn(new ByteArrayInputStream(TEXT_AS_BYTES));
 		Mockito.when(entry.getKey()).thenReturn(IllegalStateException.class);
 		Mockito.when(entry.getValue()).thenReturn(new Class[] { IOException.class });
@@ -115,10 +115,10 @@ public class ExceptionTranslationBuilderTest {
 	@Test
 	public final void withResource() {
 		@SuppressWarnings("unchecked")
-		final Supplier<AutoCloseable> supplier = Mockito.mock(Supplier.class);
+		final ResourceSupplier<AutoCloseable> supplier = Mockito.mock(ResourceSupplier.class);
 		Assert.assertEquals(exceptionTranslationBuilder, exceptionTranslationBuilder.withResource(supplier));
 		final Map<Class<?>, Object> results = fields2Map(exceptionTranslationBuilder);
-		Assert.assertEquals(supplier, results.get(Supplier.class));
+		Assert.assertEquals(supplier, results.get(ResourceSupplier.class));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -150,7 +150,7 @@ public class ExceptionTranslationBuilderTest {
 			return new String(buffer);
 		};
 
-		ReflectionUtils.setField(fields.get(Supplier.class), exceptionTranslationBuilder, supplier);
+		ReflectionUtils.setField(fields.get(ResourceSupplier.class), exceptionTranslationBuilder, supplier);
 		ReflectionUtils.setField(fields.get(ReturningTryBlockWithResource.class), exceptionTranslationBuilder, returningTryBlockWithResource);
 		ReflectionUtils.setField(fields.get(ExceptionTranslationBuilderImpl.Type.class), exceptionTranslationBuilder, ExceptionTranslationBuilderImpl.Type.ReturningWithResource);
 		Assert.assertEquals(new String(TEXT_AS_BYTES), exceptionTranslationBuilder.translate());
@@ -167,14 +167,14 @@ public class ExceptionTranslationBuilderTest {
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public final void translateReturningTryBlockWithResourceSupplierSucks() {
+	public final void translateReturningTryBlockWithResourceSupplierSucks() throws Exception  {
 
 		final ReturningTryBlockWithResource<?, ?> returningTryBlockWithResource = Mockito.mock(ReturningTryBlockWithResource.class);
 
-		final Supplier<?> supplier = Mockito.mock(Supplier.class);
+		final ResourceSupplier<?> supplier = Mockito.mock(ResourceSupplier.class);
 		Mockito.doThrow(IOException.class).when(supplier).get();
 		final Map<Class<?>, Field> fields = fields();
-		ReflectionUtils.setField(fields.get(Supplier.class), exceptionTranslationBuilder, supplier);
+		ReflectionUtils.setField(fields.get(ResourceSupplier.class), exceptionTranslationBuilder, supplier);
 		ReflectionUtils.setField(fields.get(ReturningTryBlockWithResource.class), exceptionTranslationBuilder, returningTryBlockWithResource);
 		ReflectionUtils.setField(fields.get(ExceptionTranslationBuilderImpl.Type.class), exceptionTranslationBuilder, ExceptionTranslationBuilderImpl.Type.ReturningWithResource);
 		ReflectionUtils.setField(fields.get(Collection.class), exceptionTranslationBuilder, Arrays.asList(entry));
@@ -190,7 +190,7 @@ public class ExceptionTranslationBuilderTest {
 		};
 
 		final Map<Class<?>, Field> fields = fields();
-		ReflectionUtils.setField(fields.get(Supplier.class), exceptionTranslationBuilder, supplier);
+		ReflectionUtils.setField(fields.get(ResourceSupplier.class), exceptionTranslationBuilder, supplier);
 		ReflectionUtils.setField(fields.get(ReturningTryBlockWithResource.class), exceptionTranslationBuilder, returningTryBlockWithResource);
 		ReflectionUtils.setField(fields.get(ExceptionTranslationBuilderImpl.Type.class), exceptionTranslationBuilder, ExceptionTranslationBuilderImpl.Type.ReturningWithResource);
 		ReflectionUtils.setField(fields.get(Collection.class), exceptionTranslationBuilder, Arrays.asList(entry));
@@ -235,11 +235,11 @@ public class ExceptionTranslationBuilderTest {
 
 		final ReturningTryBlock<?> returningTryBlock = Mockito.mock(ReturningTryBlock.class);
 
-		final Supplier<?> supplier = Mockito.mock(Supplier.class);
+		final ResourceSupplier<?> supplier = Mockito.mock(ResourceSupplier.class);
 		final Map<Class<?>, Field> fields = fields();
 		ReflectionUtils.setField(fields.get(ReturningTryBlock.class), exceptionTranslationBuilder, returningTryBlock);
 		ReflectionUtils.setField(fields.get(ExceptionTranslationBuilderImpl.Type.class), exceptionTranslationBuilder, ExceptionTranslationBuilderImpl.Type.ReturningWithoutResource);
-		ReflectionUtils.setField(fields.get(Supplier.class), exceptionTranslationBuilder, supplier);
+		ReflectionUtils.setField(fields.get(ResourceSupplier.class), exceptionTranslationBuilder, supplier);
 		exceptionTranslationBuilder.translate();
 	}
 
@@ -254,7 +254,7 @@ public class ExceptionTranslationBuilderTest {
 		final Map<Class<?>, Field> fields = fields();
 		ReflectionUtils.setField(fields.get(TryBlockWithResource.class), exceptionTranslationBuilder, tryBlockWithResource);
 		ReflectionUtils.setField(fields.get(ExceptionTranslationBuilderImpl.Type.class), exceptionTranslationBuilder, ExceptionTranslationBuilderImpl.Type.VoidWithResource);
-		ReflectionUtils.setField(fields.get(Supplier.class), exceptionTranslationBuilder, supplier);
+		ReflectionUtils.setField(fields.get(ResourceSupplier.class), exceptionTranslationBuilder, supplier);
 		exceptionTranslationBuilder.translate();
 		Assert.assertEquals(1, results.size());
 		Assert.assertTrue(results.stream().findAny().isPresent());
@@ -262,7 +262,7 @@ public class ExceptionTranslationBuilderTest {
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public final void translateVoidWithResourceSupplierSucks() {
+	public final void translateVoidWithResourceSupplierSucks() throws Exception {
 
 		final TryBlockWithResource<?> tryBlockWithResource = Mockito.mock(TryBlockWithResource.class);
 
@@ -270,7 +270,7 @@ public class ExceptionTranslationBuilderTest {
 		final Map<Class<?>, Field> fields = fields();
 		ReflectionUtils.setField(fields.get(TryBlockWithResource.class), exceptionTranslationBuilder, tryBlockWithResource);
 		ReflectionUtils.setField(fields.get(ExceptionTranslationBuilderImpl.Type.class), exceptionTranslationBuilder, ExceptionTranslationBuilderImpl.Type.VoidWithResource);
-		ReflectionUtils.setField(fields.get(Supplier.class), exceptionTranslationBuilder, supplier);
+		ReflectionUtils.setField(fields.get(ResourceSupplier.class), exceptionTranslationBuilder, supplier);
 		ReflectionUtils.setField(fields.get(Collection.class), exceptionTranslationBuilder, Arrays.asList(entry));
 		exceptionTranslationBuilder.translate();
 
@@ -284,7 +284,7 @@ public class ExceptionTranslationBuilderTest {
 		final Map<Class<?>, Field> fields = fields();
 		ReflectionUtils.setField(fields.get(TryBlockWithResource.class), exceptionTranslationBuilder, tryBlockWithResource);
 		ReflectionUtils.setField(fields.get(ExceptionTranslationBuilderImpl.Type.class), exceptionTranslationBuilder, ExceptionTranslationBuilderImpl.Type.VoidWithResource);
-		ReflectionUtils.setField(fields.get(Supplier.class), exceptionTranslationBuilder, supplier);
+		ReflectionUtils.setField(fields.get(ResourceSupplier.class), exceptionTranslationBuilder, supplier);
 		ReflectionUtils.setField(fields.get(Collection.class), exceptionTranslationBuilder, Arrays.asList(entry));
 
 		exceptionTranslationBuilder.translate();
@@ -335,7 +335,7 @@ public class ExceptionTranslationBuilderTest {
 		final Map<Class<?>, Field> fields = fields();
 		ReflectionUtils.setField(fields.get(TryBlock.class), exceptionTranslationBuilder, tryBlockWithoutResource);
 		ReflectionUtils.setField(fields.get(ExceptionTranslationBuilderImpl.Type.class), exceptionTranslationBuilder, ExceptionTranslationBuilderImpl.Type.VoidWithoutResource);
-		ReflectionUtils.setField(fields.get(Supplier.class), exceptionTranslationBuilder, supplier);
+		ReflectionUtils.setField(fields.get(ResourceSupplier.class), exceptionTranslationBuilder, supplier);
 		exceptionTranslationBuilder.translate();
 
 	}

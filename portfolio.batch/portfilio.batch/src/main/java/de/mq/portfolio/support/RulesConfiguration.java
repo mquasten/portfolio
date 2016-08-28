@@ -1,5 +1,7 @@
 package de.mq.portfolio.support;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Collection;
 
 import org.springframework.context.ApplicationContextAware;
@@ -7,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Scope;
+import org.springframework.web.client.ResourceAccessException;
 
 import de.mq.portfolio.batch.RulesEngine;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
@@ -64,5 +67,12 @@ class RulesConfiguration {
 	ApplicationContextAware commandlineProcessor() {
 		return new SimpleCommandlineProcessorImpl(BatchProcessorImpl.class);
 	} 
+	
+	@SuppressWarnings("unchecked")
+	@Bean
+	@Scope("prototype")
+	ExceptionTranslationBuilder<Void, InputStreamReader> exceptionTranslationBuilder() {
+		 return new ExceptionTranslationBuilderImpl<Void, InputStreamReader>().withTranslation(ResourceAccessException.class, new Class[] {IOException.class});
+	}
 
 }

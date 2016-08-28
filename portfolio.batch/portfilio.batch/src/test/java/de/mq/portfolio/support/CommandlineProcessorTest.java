@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
+
 import java.util.stream.Collectors;
 
 import org.junit.Before;
@@ -26,6 +26,7 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
+import de.mq.portfolio.support.ExceptionTranslationBuilder.ResourceSupplier;
 import de.mq.portfolio.support.SimpleCommandlineProcessorImpl.Main;
 import junit.framework.Assert;
 
@@ -37,9 +38,9 @@ public class CommandlineProcessorTest {
 	private TestBean testBean = Mockito.mock(TestBean.class);
 	private Method method = ReflectionUtils.findMethod(testBean.getClass(), "process", Collection.class);
 	@SuppressWarnings("unchecked")
-	private final Supplier<ConfigurableApplicationContext> applicationContextFunction = Mockito.mock(Supplier.class);
+	private final ResourceSupplier<ConfigurableApplicationContext> resourceSupplier = Mockito.mock(ResourceSupplier.class);
 
-	private static Supplier<ConfigurableApplicationContext> applicationContextSupplierOrg;
+	private static ResourceSupplier<ConfigurableApplicationContext> applicationContextSupplierOrg;
 
 	private final ApplicationContextAware applicationContextAware = new SimpleCommandlineProcessorImpl(TestBean.class);
 
@@ -48,7 +49,8 @@ public class CommandlineProcessorTest {
 	@SuppressWarnings("unchecked")
 	@BeforeClass
 	public static void beforeClass() {
-		CommandlineProcessorTest.applicationContextSupplierOrg = (Supplier<ConfigurableApplicationContext>) DataAccessUtils.requiredSingleResult(Arrays.asList(SimpleCommandlineProcessorImpl.class.getDeclaredFields()).stream().filter(field -> field.getType().equals(Supplier.class)).map(field -> {
+		
+		CommandlineProcessorTest.applicationContextSupplierOrg = (ResourceSupplier<ConfigurableApplicationContext>) DataAccessUtils.requiredSingleResult(Arrays.asList(SimpleCommandlineProcessorImpl.class.getDeclaredFields()).stream().filter(field -> field.getType().equals(ResourceSupplier.class)).map(field -> {
 			field.setAccessible(true);
 			return ReflectionUtils.getField(field, null);
 
@@ -57,15 +59,15 @@ public class CommandlineProcessorTest {
 	}
 
 	@Before
-	public final void setup() throws NoSuchMethodException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	public final void setup() throws Exception {
 
-		Mockito.when(applicationContextFunction.get()).thenReturn(applicationContext);
+		Mockito.when(resourceSupplier.get()).thenReturn(applicationContext);
 		ReflectionUtils.doWithFields(SimpleCommandlineProcessorImpl.class, field -> {
 			field.setAccessible(true);
 			fields.put(field.getType(), field);
 		}, field -> Modifier.isStatic(field.getModifiers()));
 
-		ReflectionUtils.setField(fields.get(Supplier.class), null, applicationContextFunction);
+		ReflectionUtils.setField(fields.get(ResourceSupplier.class), null, resourceSupplier);
 
 		ReflectionUtils.setField(fields.get(Method.class), null, method);
 		ReflectionUtils.setField(fields.get(Object.class), null, testBean);
@@ -75,53 +77,53 @@ public class CommandlineProcessorTest {
 	}
 
 	@Test
-	public final void mainCollection() {
+	public final void mainCollection() throws Exception {
 
 		SimpleCommandlineProcessorImpl.main(ARGS);
 
 		Mockito.verify(testBean).process(Arrays.asList(ARGS));
-		Mockito.verify(applicationContextFunction).get();
+		Mockito.verify(resourceSupplier).get();
 		Mockito.verify(applicationContext).close();
 
 	}
 
 	@Test
-	public final void mainArray() {
+	public final void mainArray() throws Exception {
 
 		ReflectionUtils.setField(fields.get(Method.class), null, ReflectionUtils.findMethod(testBean.getClass(), "process", String[].class));
 		SimpleCommandlineProcessorImpl.main(ARGS);
 
-		Mockito.verify(applicationContextFunction).get();
+		Mockito.verify(resourceSupplier).get();
 		Mockito.verify(testBean).process(ARGS);
 		Mockito.verify(applicationContext).close();
 
 	}
 
 	@Test
-	public final void mainSet() {
+	public final void mainSet() throws Exception {
 
 		ReflectionUtils.setField(fields.get(Method.class), null, ReflectionUtils.findMethod(testBean.getClass(), "process", Set.class));
 		SimpleCommandlineProcessorImpl.main(ARGS);
 
-		Mockito.verify(applicationContextFunction).get();
+		Mockito.verify(resourceSupplier).get();
 		Mockito.verify(testBean).process(new HashSet<>(Arrays.asList(ARGS)));
 		Mockito.verify(applicationContext).close();
 
 	}
 
 	@Test
-	public final void main() {
+	public final void main() throws Exception {
 		ReflectionUtils.setField(fields.get(Method.class), null, ReflectionUtils.findMethod(testBean.getClass(), "process"));
 		SimpleCommandlineProcessorImpl.main(ARGS);
 
-		Mockito.verify(applicationContextFunction).get();
+		Mockito.verify(resourceSupplier).get();
 		Mockito.verify(testBean).process();
 		Mockito.verify(applicationContext).close();
 
 	}
 
 	@Test
-	public final void applicationContext() {
+	public final void applicationContext() throws Exception {
 		
 		
 		

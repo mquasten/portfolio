@@ -26,7 +26,7 @@ public class ExceptionTranslationBuilderImpl<R, T extends AutoCloseable> impleme
 
 	private TryBlock voidWithoutResource;
 
-	private Supplier<T> resourceSupplier;
+	private ResourceSupplier<T> resourceSupplier;
 
 	private final Collection<Entry<Class<? extends RuntimeException>, Class<? extends Exception>[]>> translations = new HashSet<>();
 
@@ -125,7 +125,7 @@ public class ExceptionTranslationBuilderImpl<R, T extends AutoCloseable> impleme
 	 * util.function.Supplier)
 	 */
 	@Override
-	public final ExceptionTranslationBuilder<R, T> withResource(final Supplier<T> resourceSupplier) {
+	public final ExceptionTranslationBuilder<R, T> withResource(final ResourceSupplier<T> resourceSupplier) {
 		statementMandatoryGuard(resourceSupplier);
 		this.resourceSupplier = resourceSupplier;
 		return this;
@@ -200,16 +200,6 @@ public class ExceptionTranslationBuilderImpl<R, T extends AutoCloseable> impleme
 			}
 
 		});
-	}
-
-	@FunctionalInterface
-	public interface ReturningTryBlockWithResource<R, T extends AutoCloseable> {
-		R run(final T resource) throws Exception;
-	}
-
-	@FunctionalInterface
-	public interface TryBlockWithResource<T extends AutoCloseable> {
-		void run(final T resource) throws Exception;
 	}
 
 }

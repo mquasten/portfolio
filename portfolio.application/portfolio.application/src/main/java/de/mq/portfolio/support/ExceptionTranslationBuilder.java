@@ -1,12 +1,8 @@
 package de.mq.portfolio.support;
 
-import java.util.function.Supplier;
 
 import com.mscharhag.et.ReturningTryBlock;
 import com.mscharhag.et.TryBlock;
-
-import de.mq.portfolio.support.ExceptionTranslationBuilderImpl.ReturningTryBlockWithResource;
-import de.mq.portfolio.support.ExceptionTranslationBuilderImpl.TryBlockWithResource;
 
 public interface ExceptionTranslationBuilder<R, T extends AutoCloseable> {
 
@@ -18,10 +14,30 @@ public interface ExceptionTranslationBuilder<R, T extends AutoCloseable> {
 
 	ExceptionTranslationBuilder<R, T> withStatement(final TryBlock voidWithoutResource);
 
-	ExceptionTranslationBuilder<R, T> withResource(final Supplier<T> resourceSupplier);
+	ExceptionTranslationBuilder<R, T> withResource(final ResourceSupplier<T> resourceSupplier);
 
 	ExceptionTranslationBuilder<R, T> withTranslation(final Class<? extends RuntimeException> targetClass, final Class<? extends Exception>[] sourceClasses);
 
 	R translate();
 
+
+
+	@FunctionalInterface
+	public interface ReturningTryBlockWithResource<R, T extends AutoCloseable> {
+		R run(final T resource) throws Exception;
+	}
+
+	@FunctionalInterface
+	public interface TryBlockWithResource<T extends AutoCloseable> {
+		void run(final T resource) throws Exception;
+	}
+	
+	@FunctionalInterface
+	public interface ResourceSupplier<T extends AutoCloseable> {
+		T get() throws Exception; 
+	}
+
+
 }
+
+

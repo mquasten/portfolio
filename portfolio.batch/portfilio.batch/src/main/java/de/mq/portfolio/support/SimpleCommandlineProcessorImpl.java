@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Supplier;
+
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -20,6 +20,8 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
+import de.mq.portfolio.support.ExceptionTranslationBuilder.ResourceSupplier;
+
 
 public  class SimpleCommandlineProcessorImpl implements ApplicationContextAware {
 	
@@ -29,7 +31,7 @@ public  class SimpleCommandlineProcessorImpl implements ApplicationContextAware 
 	private static String [] packages= new String [] {SimpleCommandlineProcessorImpl.class.getPackage().getName()};
 	
 	
-	private  static   Supplier<ConfigurableApplicationContext> applicationContextSupplier =  () -> new AnnotationConfigApplicationContext(packages) ;
+	private  static  ResourceSupplier<ConfigurableApplicationContext> applicationContextSupplier =  () -> new AnnotationConfigApplicationContext(packages) ;
 	
 	
 
