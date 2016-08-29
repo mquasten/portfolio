@@ -1,7 +1,7 @@
 package de.mq.portfolio.support;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Collection;
 
 import org.springframework.context.ApplicationContextAware;
@@ -12,8 +12,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.web.client.ResourceAccessException;
 
 import de.mq.portfolio.batch.RulesEngine;
+import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl;
+import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.support.SharesCSVLineConverterImpl;
 
@@ -33,8 +35,8 @@ class RulesConfiguration {
 
 	@Bean
 	@Scope("prototype")
-	RulesEngine importExchangeRates(final ExchangeRateService exchangeRateService, final RulesEngineBuilder rulesEngineBuilder) {
-		return rulesEngineBuilder.withName(IMPORT_EXCHANGE_RATES_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new ExchangeRatesCSVLineConverterImpl()), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(exchangeRateService, SPEL_PROCESS_EXCHANGE_RATE_ITEM)).withRule(new ProcessServiceRuleImpl<>(exchangeRateService, SPEL_SAVE_ITEM)).build();
+	RulesEngine importExchangeRates(final ExchangeRateService exchangeRateService, final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<ExchangeRate>, BufferedReader> exceptionTranslationBuilder) {
+		return rulesEngineBuilder.withName(IMPORT_EXCHANGE_RATES_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new ExchangeRatesCSVLineConverterImpl(),exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(exchangeRateService, SPEL_PROCESS_EXCHANGE_RATE_ITEM)).withRule(new ProcessServiceRuleImpl<>(exchangeRateService, SPEL_SAVE_ITEM)).build();
 	}
 
 	@Bean
@@ -45,8 +47,8 @@ class RulesConfiguration {
 
 	@Bean
 	@Scope("prototype")
-	RulesEngine importShares(final ShareService shareService, final RulesEngineBuilder rulesEngineBuilder) {
-		return rulesEngineBuilder.withName(IMPORT_SHARES_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new SharesCSVLineConverterImpl()), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(shareService, SPEL_SAVE_ITEM)).build();
+	RulesEngine importShares(final ShareService shareService, final RulesEngineBuilder rulesEngineBuilder,  final ExceptionTranslationBuilder<Collection<Share>, BufferedReader> exceptionTranslationBuilder) {
+		return rulesEngineBuilder.withName(IMPORT_SHARES_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new SharesCSVLineConverterImpl(), exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(shareService, SPEL_SAVE_ITEM)).build();
 	}
 
 	@Bean
@@ -68,11 +70,12 @@ class RulesConfiguration {
 		return new SimpleCommandlineProcessorImpl(BatchProcessorImpl.class);
 	} 
 	
+
 	@SuppressWarnings("unchecked")
 	@Bean
 	@Scope("prototype")
-	ExceptionTranslationBuilder<Void, InputStreamReader> exceptionTranslationBuilder() {
-		 return new ExceptionTranslationBuilderImpl<Void, InputStreamReader>().withTranslation(ResourceAccessException.class, new Class[] {IOException.class});
+	 ExceptionTranslationBuilder<?,?> exceptionTranslationBuilder() {
+		 return new ExceptionTranslationBuilderImpl<>().withTranslation(ResourceAccessException.class, new Class[] {IOException.class});
 	}
 
 }

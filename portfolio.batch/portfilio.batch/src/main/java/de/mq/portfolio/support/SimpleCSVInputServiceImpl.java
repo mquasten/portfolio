@@ -2,7 +2,6 @@ package de.mq.portfolio.support;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
@@ -18,20 +17,20 @@ import org.springframework.util.Assert;
 	
 	private final Converter<String[], T> converter; 
 	
+	private final ExceptionTranslationBuilder<Collection<T>, BufferedReader> exceptionTranslationBuilder;
 	
-	SimpleCSVInputServiceImpl(final Converter<String[], T> converter) {
+	
+	SimpleCSVInputServiceImpl(final Converter<String[], T> converter, final ExceptionTranslationBuilder<Collection<T>, BufferedReader> exceptionTranslationBuilder) {
 		this.converter=converter;
+		this.exceptionTranslationBuilder=exceptionTranslationBuilder;
 		this.delimiterRegex= "[;]";
 	}
 
 	public final  Collection<T> read(final String filename)  {
 		Assert.notNull(filename , "Filename is mandatory.");
-		try ( final BufferedReader br = new BufferedReader( new InputStreamReader( new FileInputStream(filename), Charset.forName("UTF-8")))) {
-			return doRead(br);
-		} catch( IOException ex) {
-			throw new IllegalStateException(String.format("Unable to read csv-file %s", filename), ex);
-		}
-
+		
+		return exceptionTranslationBuilder.withResource(  () ->  new BufferedReader( new InputStreamReader( new FileInputStream(filename), Charset.forName("UTF-8")))).withStatement(br -> { return doRead(br);}).translate();
+	
 	}
 
 	

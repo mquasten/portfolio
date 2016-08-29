@@ -1,5 +1,7 @@
 package de.mq.portfolio.support;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.Collection;
 
 import junit.framework.Assert;
@@ -8,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.web.client.ResourceAccessException;
 
 import de.mq.portfolio.share.Share;
 
@@ -19,7 +22,11 @@ public class ShareCSVInputServiceTest {
 	@SuppressWarnings("unchecked")
 	private final Converter<String[], Share>  converter = Mockito.mock(Converter.class);
 	
-	private final SimpleCSVInputServiceImpl<Share> service = new SimpleCSVInputServiceImpl<>(converter);
+	
+	@SuppressWarnings("unchecked")
+	private final ExceptionTranslationBuilder<Collection<Share>, BufferedReader> exceptionTranslationBuilder = new ExceptionTranslationBuilderImpl<Collection<Share>,BufferedReader>().withTranslation(ResourceAccessException.class, new Class[] {IOException.class});
+	
+	private final SimpleCSVInputServiceImpl<Share> service = new SimpleCSVInputServiceImpl<>(converter, exceptionTranslationBuilder);
 	
 	@Before
 	public final void setup() {
@@ -45,7 +52,7 @@ public class ShareCSVInputServiceTest {
 		shares.stream().forEach( share -> {Assert.assertTrue(share.name().trim().length() > 0);Assert.assertTrue(share.code().trim().length() > 0);} ); 
 	}
 	
-	@Test(expected=IllegalStateException.class)
+	@Test(expected=ResourceAccessException.class)
 	public final void readWrongName() {
 	service.read("dontLetMeGetMe");
 		

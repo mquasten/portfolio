@@ -1,7 +1,7 @@
 package de.mq.portfolio.support;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import java.util.stream.IntStream;
 
 import org.junit.Before;
@@ -32,7 +31,10 @@ import org.springframework.web.client.ResourceAccessException;
 
 import de.mq.portfolio.batch.Rule;
 import de.mq.portfolio.batch.RulesEngine;
+import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
+import de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl;
+import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.support.SharesCSVLineConverterImpl;
 import junit.framework.Assert;
@@ -51,6 +53,13 @@ public class RulesConfigurationTest {
 	private final RulesConfiguration rulesConfiguration  = new RulesConfiguration();
 	
 	private final ShareService shareService = Mockito.mock(ShareService.class);
+	
+	
+	
+	@SuppressWarnings("unchecked")
+	private final ExceptionTranslationBuilder<Collection<ExchangeRate>, BufferedReader> exceptionTranslationBuilderExchangeRateImport = Mockito.mock(ExceptionTranslationBuilder.class);
+	@SuppressWarnings("unchecked")
+	private final ExceptionTranslationBuilder<Collection<Share>, BufferedReader> exceptionTranslationBuilderShareImport = Mockito.mock(ExceptionTranslationBuilder.class);
 	
 	private final RulesEngineBuilder rulesEngineBuilder = Mockito.mock(RulesEngineBuilder.class);
 	private final ArgumentCaptor<Rule> ruleCapor = ArgumentCaptor.forClass(Rule.class);
@@ -72,9 +81,10 @@ public class RulesConfigurationTest {
 		Assert.assertEquals(SimpleRuleEngineBuilderImpl.class,rulesConfiguration.rulesEngineBuilder().getClass());
 	}
 	
+	
 	@Test
 	public void importShares() {
-		Assert.assertEquals(rulesEngine, rulesConfiguration.importShares(shareService, rulesEngineBuilder));
+		Assert.assertEquals(rulesEngine, rulesConfiguration.importShares(shareService, rulesEngineBuilder, exceptionTranslationBuilderShareImport));
 		
 		Assert.assertEquals(RulesConfiguration.IMPORT_SHARES_RULE_ENGINE_NAME, nameCaptor.getValue());
 		
@@ -82,6 +92,9 @@ public class RulesConfigurationTest {
 		Assert.assertEquals(2, rules.size());
 		Assert.assertEquals(ImportServiceRuleImpl.class, rules.get(0).getClass());
 		final SimpleCSVInputServiceImpl<?> reader = (SimpleCSVInputServiceImpl<?>) ReflectionTestUtils.getField(rules.get(0), TARGET_FIELD);
+		
+		
+		Assert.assertEquals(exceptionTranslationBuilderShareImport, fieldValue(reader,ExceptionTranslationBuilder.class));
 		
 		Assert.assertEquals(SharesCSVLineConverterImpl.class, fieldValue(reader,Converter.class).getClass());
 		final Expression inputExpression = fieldValue(rules.get(0), Expression.class);
@@ -135,7 +148,7 @@ public class RulesConfigurationTest {
 	
 	@Test
 	public void  importExchangeRates() {
-		Assert.assertEquals(rulesEngine, rulesConfiguration.importExchangeRates(exchangeRateService, rulesEngineBuilder));
+		Assert.assertEquals(rulesEngine, rulesConfiguration.importExchangeRates(exchangeRateService, rulesEngineBuilder, exceptionTranslationBuilderExchangeRateImport));
 		Assert.assertEquals(RulesConfiguration.IMPORT_EXCHANGE_RATES_RULE_ENGINE_NAME, nameCaptor.getValue());
 		final List<Rule> rules = ruleCapor.getAllValues();
 		Assert.assertEquals(3, rules.size());
@@ -143,7 +156,11 @@ public class RulesConfigurationTest {
 		Assert.assertEquals(ImportServiceRuleImpl.class, rules.get(0).getClass());
 		IntStream.range(1, 3).forEach(i -> Assert.assertEquals(ProcessServiceRuleImpl.class, rules.get(i).getClass()));
 		
-		Assert.assertEquals(SimpleCSVInputServiceImpl.class, ReflectionTestUtils.getField(rules.get(0), TARGET_FIELD).getClass());
+		final SimpleCSVInputServiceImpl<?> reader = (SimpleCSVInputServiceImpl<?>) ReflectionTestUtils.getField(rules.get(0), TARGET_FIELD);
+		Assert.assertEquals(exceptionTranslationBuilderExchangeRateImport, fieldValue(reader ,ExceptionTranslationBuilder.class));
+		
+		Assert.assertEquals(ExchangeRatesCSVLineConverterImpl.class, fieldValue(reader ,Converter.class).getClass());
+		
 		IntStream.range(1, 3).forEach(i ->Assert.assertEquals(exchangeRateService, ReflectionTestUtils.getField(rules.get(i), TARGET_FIELD)));
 		
 		final Expression inputExpression = fieldValue(rules.get(0), Expression.class);
@@ -157,6 +174,7 @@ public class RulesConfigurationTest {
 		
 	}
 	
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public final void batchProcessor() {
@@ -183,7 +201,7 @@ public class RulesConfigurationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public final void ecceptionTranslator() {
-		final ExceptionTranslationBuilder<Void, InputStreamReader> builder = rulesConfiguration.exceptionTranslationBuilder();
+		final ExceptionTranslationBuilder<?, ?> builder = rulesConfiguration.exceptionTranslationBuilder();
 		final Collection<Entry<?,?>> results = new HashSet<>();
 		ReflectionUtils.doWithFields(builder.getClass(), field -> results.addAll((Collection<Entry<?,?>>) ReflectionTestUtils.getField(builder, field.getName())), field -> field.getType().equals(Collection.class));
 		final Entry<?,?> result = DataAccessUtils.requiredSingleResult(results);
