@@ -43,7 +43,7 @@ public class ExceptionTranslationBuilderTest {
 	public final void setup() throws Exception {
 		Mockito.when(supplier.get()).thenReturn(new ByteArrayInputStream(TEXT_AS_BYTES));
 		Mockito.when(entry.getKey()).thenReturn(IllegalStateException.class);
-		Mockito.when(entry.getValue()).thenReturn(new Class[] { IOException.class });
+		Mockito.when(entry.getValue()).thenReturn(Arrays.asList(IOException.class ));
 	}
 
 	@Test
@@ -124,21 +124,20 @@ public class ExceptionTranslationBuilderTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public final void withTranslation() {
-		Assert.assertEquals(exceptionTranslationBuilder, exceptionTranslationBuilder.withTranslation(IllegalStateException.class, new Class[] { IOException.class }));
+		Assert.assertEquals(exceptionTranslationBuilder, exceptionTranslationBuilder.withTranslation(IllegalStateException.class, Arrays.asList(IOException.class) ));
 		final Map<Class<?>, Object> results = fields2Map(exceptionTranslationBuilder);
 		Assert.assertEquals(1, ((Collection<?>) results.get(Collection.class)).size());
-		final Optional<Entry<Class<?>, Class<?>[]>> result = (Optional<Entry<Class<?>, Class<?>[]>>) ((Collection<?>) results.get(Collection.class)).stream().findAny();
+		final Optional<Entry<Class<?>, Collection<?>>> result = (Optional<Entry<Class<?>, Collection<?>>>) ((Collection<?>) results.get(Collection.class)).stream().findAny();
 		Assert.assertTrue(result.isPresent());
 		Assert.assertEquals(IllegalStateException.class, result.get().getKey());
-		Assert.assertEquals(1, result.get().getValue().length);
-		Assert.assertEquals(IOException.class, result.get().getValue()[0]);
+		Assert.assertEquals(1, result.get().getValue().size());
+		Assert.assertEquals(IOException.class, result.get().getValue().stream().findAny().get());
 
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test(expected = IllegalArgumentException.class)
 	public final void withTranslationEmptySourceArray() {
-		exceptionTranslationBuilder.withTranslation(IllegalStateException.class, new Class[] {});
+		exceptionTranslationBuilder.withTranslation(IllegalStateException.class, new ArrayList<>());
 	}
 
 	@Test

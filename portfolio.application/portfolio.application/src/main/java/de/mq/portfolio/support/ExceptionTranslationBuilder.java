@@ -1,6 +1,8 @@
 package de.mq.portfolio.support;
 
 
+import java.util.Collection;
+
 import com.mscharhag.et.ReturningTryBlock;
 import com.mscharhag.et.TryBlock;
 
@@ -16,7 +18,7 @@ public interface ExceptionTranslationBuilder<R, T extends AutoCloseable> {
 
 	ExceptionTranslationBuilder<R, T> withResource(final ResourceSupplier<T> resourceSupplier);
 
-	ExceptionTranslationBuilder<R, T> withTranslation(final Class<? extends RuntimeException> targetClass, final Class<? extends Exception>[] sourceClasses);
+	ExceptionTranslationBuilder<R, T> withTranslation(final Class<? extends RuntimeException> targetClass, final Collection<Class<? extends Exception>>  sourceClasses );
 
 	R translate();
 

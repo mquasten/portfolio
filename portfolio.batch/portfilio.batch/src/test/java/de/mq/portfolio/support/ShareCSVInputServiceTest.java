@@ -2,6 +2,7 @@ package de.mq.portfolio.support;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 
 import junit.framework.Assert;
@@ -23,8 +24,7 @@ public class ShareCSVInputServiceTest {
 	private final Converter<String[], Share>  converter = Mockito.mock(Converter.class);
 	
 	
-	@SuppressWarnings("unchecked")
-	private final ExceptionTranslationBuilder<Collection<Share>, BufferedReader> exceptionTranslationBuilder = new ExceptionTranslationBuilderImpl<Collection<Share>,BufferedReader>().withTranslation(ResourceAccessException.class, new Class[] {IOException.class});
+	private final ExceptionTranslationBuilder<Collection<Share>, BufferedReader> exceptionTranslationBuilder = new ExceptionTranslationBuilderImpl<Collection<Share>,BufferedReader>().withTranslation(ResourceAccessException.class, Arrays.asList(IOException.class));
 	
 	private final SimpleCSVInputServiceImpl<Share> service = new SimpleCSVInputServiceImpl<>(converter, exceptionTranslationBuilder);
 	

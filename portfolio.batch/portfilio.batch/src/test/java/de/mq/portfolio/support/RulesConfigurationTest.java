@@ -206,8 +206,8 @@ public class RulesConfigurationTest {
 		ReflectionUtils.doWithFields(builder.getClass(), field -> results.addAll((Collection<Entry<?,?>>) ReflectionTestUtils.getField(builder, field.getName())), field -> field.getType().equals(Collection.class));
 		final Entry<?,?> result = DataAccessUtils.requiredSingleResult(results);
 		Assert.assertEquals(ResourceAccessException.class, result.getKey());
-		Assert.assertEquals(1,  ((Class<?>[])result.getValue()).length);
-		Assert.assertEquals(IOException.class, ((Class<?>[])result.getValue())[0]);
+		Assert.assertEquals(1,  ((Collection<?>)result.getValue()).size());
+		Assert.assertEquals(IOException.class, ((Collection<?>)result.getValue()).stream().findAny().get());
 	}
 	
 	@Test

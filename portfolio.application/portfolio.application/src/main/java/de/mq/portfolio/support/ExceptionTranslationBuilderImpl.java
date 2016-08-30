@@ -28,7 +28,7 @@ public class ExceptionTranslationBuilderImpl<R, T extends AutoCloseable> impleme
 
 	private ResourceSupplier<T> resourceSupplier;
 
-	private final Collection<Entry<Class<? extends RuntimeException>, Class<? extends Exception>[]>> translations = new HashSet<>();
+	private final Collection<Entry<Class<? extends RuntimeException>, Collection<Class<? extends Exception>>>> translations = new HashSet<>();
 
 	private Type type;
 
@@ -140,10 +140,10 @@ public class ExceptionTranslationBuilderImpl<R, T extends AutoCloseable> impleme
 	 * lang.Class, java.lang.Class)
 	 */
 	@Override
-	public final ExceptionTranslationBuilder<R, T> withTranslation(final Class<? extends RuntimeException> targetClass, Class<? extends Exception>[] sourceClasses) {
+	public final ExceptionTranslationBuilder<R, T> withTranslation(final Class<? extends RuntimeException> targetClass, Collection<Class<? extends Exception>>  sourceClasses) {
 		Assert.notNull(targetClass);
 		Assert.notNull(sourceClasses);
-		Assert.isTrue(sourceClasses.length > 0);
+		Assert.isTrue(sourceClasses.size() > 0);
 		translations.add(new AbstractMap.SimpleImmutableEntry<>(targetClass, sourceClasses));
 		return this;
 
@@ -154,11 +154,12 @@ public class ExceptionTranslationBuilderImpl<R, T extends AutoCloseable> impleme
 	 * 
 	 * @see de.mq.portfolio.support.ExceptionTranslationBuilder#translate()
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public final R translate() {
 		statementMandatoryGuard(type);
 		final ExceptionTranslatorConfigurer exceptionTranslatorConfigurer = ET.newConfiguration();
-		translations.forEach(entry -> exceptionTranslatorConfigurer.translate(entry.getValue()).to(entry.getKey()));
+		translations.forEach(entry -> exceptionTranslatorConfigurer.translate(entry.getValue().toArray(new Class[entry.getValue().size()])).to(entry.getKey()));
 		final ExceptionTranslator exceptionTranslator = exceptionTranslatorConfigurer.done();
 		return type(exceptionTranslator);
 	}

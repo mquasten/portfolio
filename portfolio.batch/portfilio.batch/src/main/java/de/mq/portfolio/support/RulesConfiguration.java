@@ -2,6 +2,7 @@ package de.mq.portfolio.support;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.springframework.context.ApplicationContextAware;
@@ -71,11 +72,10 @@ class RulesConfiguration {
 	} 
 	
 
-	@SuppressWarnings("unchecked")
 	@Bean
 	@Scope("prototype")
 	 ExceptionTranslationBuilder<?,?> exceptionTranslationBuilder() {
-		 return new ExceptionTranslationBuilderImpl<>().withTranslation(ResourceAccessException.class, new Class[] {IOException.class});
+		 return new ExceptionTranslationBuilderImpl<>().withTranslation(ResourceAccessException.class, Arrays.asList(IOException.class));
 	}
 
 }
