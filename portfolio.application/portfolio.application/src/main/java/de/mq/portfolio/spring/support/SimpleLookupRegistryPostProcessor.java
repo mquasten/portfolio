@@ -47,9 +47,6 @@ class SimpleLookupRegistryPostProcessor implements BeanDefinitionRegistryPostPro
 				if (result) {
 					return true;
 				}
-				if (!beanDefinition.getMetadata().isAbstract()) {
-					return false;
-				}
 
 				return !beanDefinition.getMetadata().getAnnotatedMethods(Lookup.class.getName()).isEmpty();
 
