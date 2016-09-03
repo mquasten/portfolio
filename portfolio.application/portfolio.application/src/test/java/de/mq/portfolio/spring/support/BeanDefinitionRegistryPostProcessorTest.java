@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
@@ -101,6 +102,13 @@ public class BeanDefinitionRegistryPostProcessorTest {
 		
 		
 		
+	}
+	
+	@Test
+	public final void postProcessBeanFactory() {
+		ConfigurableListableBeanFactory beanFactory = Mockito.mock(ConfigurableListableBeanFactory.class);
+		beanDefinitionRegistryPostProcessor.postProcessBeanFactory(beanFactory);
+		Mockito.verifyZeroInteractions(beanFactory);
 	}
 	
 }

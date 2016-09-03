@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -22,13 +23,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
+
+import de.mq.portfolio.support.ExceptionTranslationBuilder;
+import de.mq.portfolio.support.ExceptionTranslationBuilderImpl;
+
 class SimpleLookupRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor {
 
 	private static final String ANNOTATION_VALUE_METHOD = "value";
 	private final Collection<Class<? extends Annotation>> beanDefinitionAnnotations = new HashSet<>();
 
 	private final Collection<String> packages = new HashSet<>();
-
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Class<? extends ExceptionTranslationBuilder<Class<?>,AutoCloseable>> exceptionTranslationBuilderTarget =  (Class) ExceptionTranslationBuilderImpl.class;
+	
+	
+	
 	SimpleLookupRegistryPostProcessor(final String path) {
 		beanDefinitionAnnotations.add(Service.class);
 		beanDefinitionAnnotations.add(Repository.class);
@@ -39,6 +49,8 @@ class SimpleLookupRegistryPostProcessor implements BeanDefinitionRegistryPostPro
 	@Override
 	public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry registry) throws BeansException {
 
+		
+		
 		final ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(true) {
 			@Override
 			protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
@@ -92,16 +104,16 @@ class SimpleLookupRegistryPostProcessor implements BeanDefinitionRegistryPostPro
 	}
 
 	private Class<?> forName(final String path) {
-		try {
-			return Class.forName(path);
-		} catch (final ClassNotFoundException e) {
-			throw new BeanDefinitionValidationException(String.format("Invalid className: %s", path), e);
-		}
+		return newExceptionTranslator().withTranslation(BeanDefinitionValidationException.class, Arrays.asList(ClassNotFoundException.class)).withStatement(() -> Class.forName(path)).translate();
+	}
+	
+	private ExceptionTranslationBuilder<Class<?>, AutoCloseable> newExceptionTranslator() {
+		return  BeanUtils.instantiateClass(exceptionTranslationBuilderTarget);
 	}
 
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-
+		
 	}
 
 }
