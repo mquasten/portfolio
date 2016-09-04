@@ -14,6 +14,8 @@ import de.mq.portfolio.support.UserModel;
 @Component("message")
 public class MessageImpl extends HashMap<String, String> {
 
+	static final String UNDEFINED_MESSAGE_PATTERN = "?%s?";
+
 	private static final long serialVersionUID = 1L;
 
 	private final MessageSource messageSource;
@@ -29,7 +31,7 @@ public class MessageImpl extends HashMap<String, String> {
 		try {
 			return messageSource.getMessage((String) key, null, locale());
 		} catch (final NoSuchMessageException me) {
-			return String.format("?%s?", key);
+			return String.format(UNDEFINED_MESSAGE_PATTERN, key);
 		}
 
 	}
