@@ -18,6 +18,14 @@ import de.mq.portfolio.share.Data;
 @Scope("view")
 public class ChartAO implements Serializable {
 
+	static final String LABEL_TIME = "t";
+
+
+
+	static final String TICK_FORMAT = "%b %#d, %y";
+
+
+
 	/**
 	 * 
 	 */
@@ -39,10 +47,10 @@ public class ChartAO implements Serializable {
 
 	private final LineChartModel chartModel = new LineChartModel();
 
-	private final DateAxis axis = new DateAxis("t");
+	private final DateAxis axis = new DateAxis(LABEL_TIME);
 
 	public ChartAO() {
-		axis.setTickFormat("%b %#d, %y");
+		axis.setTickFormat(TICK_FORMAT);
 		chartModel.getAxes().put(AxisType.X, axis);
 		
 
