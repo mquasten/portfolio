@@ -36,10 +36,10 @@
 	
 	<p:submenu label="#{message.template_submenu_user}" >
 	
-	<p:menuitem value="#{message.template_submenu_user_logout}"  action="#{loginController.logout(securityContext,facesContext)}" />
+	<p:menuitem value="#{message.template_submenu_user_logout}"  action="#{loginController.logout()}" />
 		<p:submenu label="#{message.template_submenu_languages}" >
-		 	<p:menuitem value="#{message.template_submenu_language_de}"  action="#{loginController.language(facesContext, 'de')}" disabled="#{userModel.locale =='de'}" />
-		 	<p:menuitem value="#{message.template_submenu_language_en}"  action="#{loginController.language(facesContext, 'en')}" disabled="#{userModel.locale =='en'}" />
+		 	<p:menuitem value="#{message.template_submenu_language_de}"  action="#{loginController.language('de')}" disabled="#{userModel.locale =='de'}" />
+		 	<p:menuitem value="#{message.template_submenu_language_en}"  action="#{loginController.language('en')}" disabled="#{userModel.locale =='en'}" />
 		</p:submenu>
 	</p:submenu>
 	
