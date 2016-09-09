@@ -20,8 +20,10 @@ import de.mq.portfolio.support.UserModelImpl;
 @Component("loginController")
 public abstract class AbstractLoginController {
 	
+	static final String LANGUAGE_PARAM = "&language=";
+	static final String FACES_REDIRECT = "?faces-redirect=true";
 	private static final String EXCEPTION_PATTERN = "Exception";
-	static final String ERROR_PATTERN = "login?faces-redirect=true&name=%s&message=login_%s";
+	static final String ERROR_PATTERN = "login" + FACES_REDIRECT +"&name=%s&message=login_%s";
 	static final String SUCCESS = "shares?faces-redirect=true";
 	@Autowired
 	@Qualifier("authentificationManager")
@@ -47,11 +49,11 @@ public abstract class AbstractLoginController {
 		securityContext().setAuthentication(null);
 		((HttpSession) facesContext().getExternalContext().getSession(false)).invalidate();
 		
-		return facesContext().getViewRoot().getViewId() + "?faces-redirect=true" ; 
+		return facesContext().getViewRoot().getViewId() + FACES_REDIRECT ; 
 	}
 	
 	public String language(final String language) {
-		return facesContext().getViewRoot().getViewId() + "?faces-redirect=true&language=" + language.toLowerCase().trim() ;
+		return facesContext().getViewRoot().getViewId() + "?faces-redirect=true" + LANGUAGE_PARAM + language.toLowerCase().trim() ;
 	}
 	
 	@Lookup

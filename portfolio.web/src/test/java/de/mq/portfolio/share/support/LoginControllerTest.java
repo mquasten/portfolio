@@ -1,5 +1,10 @@
 package de.mq.portfolio.share.support;
 
+import javax.faces.component.UIViewRoot;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +25,10 @@ import junit.framework.Assert;
 @RunWith(MockitoJUnitRunner.class)
 public class LoginControllerTest {
 	
+	private static final String LANGUAGE = "de";
+
+	private static final String VIEW_LODIN= "login.xhtml";
+
 	private static final String PASSWORD = "kinkyKylie";
 
 	private static final String USER = "km";
@@ -36,8 +45,15 @@ public class LoginControllerTest {
 	private Authentication authentication = Mockito.mock(Authentication.class);
 	
 
+	private final FacesContext facesContext = Mockito.mock(FacesContext.class);
 	
 	private LoginAO loginAO = Mockito.mock(LoginAO.class);
+	
+	ExternalContext externalContext = Mockito.mock(ExternalContext.class);
+	
+	final HttpSession session = Mockito.mock(HttpSession.class);
+	
+	final UIViewRoot viewRoot = Mockito.mock(UIViewRoot.class);
 	
 	@Mock
 	private SecurityContext securityContext;
@@ -51,6 +67,13 @@ public class LoginControllerTest {
 		Mockito.when(authenticationManager.authenticate(authenticationCaptorManager.capture())).thenReturn(authentication);
 		
 		Mockito.when(loginController.securityContext()).thenReturn(securityContext);
+		Mockito.when(loginController.facesContext()).thenReturn(facesContext);
+		
+		Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
+		Mockito.when(externalContext.getSession(Mockito.anyBoolean())).thenReturn(session);
+		
+		Mockito.when(facesContext.getViewRoot()).thenReturn(viewRoot);
+		Mockito.when(viewRoot.getViewId()).thenReturn(VIEW_LODIN);
 	}
 	
 	
@@ -84,5 +107,20 @@ public class LoginControllerTest {
 	public final void create() {
 		Assert.assertTrue(Mockito.spy(AbstractLoginController.class) instanceof AbstractLoginController);
 	}	
+	
+	@Test
+	public final void logout() {
+		
+		//Mockito.when(facesContext.getExternalContext()
+		Assert.assertEquals(VIEW_LODIN + AbstractLoginController.FACES_REDIRECT, loginController.logout());
+		
+		Mockito.verify(securityContext).setAuthentication(null);
+		Mockito.verify(session).invalidate();
+	}
+	
+	@Test
+	public final void language() {
+		Assert.assertEquals(VIEW_LODIN+AbstractLoginController.FACES_REDIRECT+AbstractLoginController.LANGUAGE_PARAM + LANGUAGE, loginController.language(LANGUAGE));
+	}
 	
 }
