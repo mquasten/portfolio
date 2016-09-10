@@ -20,7 +20,7 @@ public class ChartControllerImpl {
 
 	private final ShareService shareService;
 
-	private final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Autowired
 	ChartControllerImpl(final ShareService shareService) {
