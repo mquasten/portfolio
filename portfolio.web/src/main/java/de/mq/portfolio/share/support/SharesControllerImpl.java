@@ -28,6 +28,13 @@ import de.mq.portfolio.support.UserModel;
 @Scope("singleton")
 public class SharesControllerImpl {
 	
+	static final String SHARE_FIELDS_NAME = "share";
+	 static final String STANDARD_DEVIATION_FIELD_NAME = "standardDeviation";
+	static final String TOTAL_RATE_DIVIDENDS_FIELD_NAME = "totalRateDividends";
+	static final String TOTAL_RATE_FIELD_NAME = "totalRate";
+	static final String MEAN_RATE_FRIELDE_NAME = "meanRate";
+	static final String NAME_FIELD_NAME = "name";
+	static final String ID_FIELD_NAME = "id";
 	private final ShareService shareService;
 	private final SharePortfolioService sharePortfolioService;
 	private final Map<String,Sort> orderBy = new HashMap<>();
@@ -36,12 +43,12 @@ public class SharesControllerImpl {
 	SharesControllerImpl(final ShareService shareService, final SharePortfolioService sharePortfolioService) {
 		this.shareService = shareService;
 		this.sharePortfolioService=sharePortfolioService;
-		orderBy.put("id", new Sort("id"));
-		orderBy.put("name", new Sort("share.name", "id"));
-		orderBy.put("meanRate", new Sort(Direction.DESC, "meanRate" ,"id"));
-		orderBy.put("totalRate", new Sort(Direction.DESC, "totalRate" ,"id"));
-		orderBy.put("totalRateDividends", new Sort(Direction.DESC, "totalRateDividends" ,"id"));
-		orderBy.put("standardDeviation", new Sort("standardDeviation" ,"id"));
+		orderBy.put(ID_FIELD_NAME, new Sort(ID_FIELD_NAME));
+		orderBy.put(NAME_FIELD_NAME, new Sort( SHARE_FIELDS_NAME + "." + NAME_FIELD_NAME, ID_FIELD_NAME));
+		orderBy.put(MEAN_RATE_FRIELDE_NAME, new Sort(Direction.DESC, MEAN_RATE_FRIELDE_NAME ,ID_FIELD_NAME));
+		orderBy.put(TOTAL_RATE_FIELD_NAME, new Sort(Direction.DESC, TOTAL_RATE_FIELD_NAME ,ID_FIELD_NAME));
+		orderBy.put(TOTAL_RATE_DIVIDENDS_FIELD_NAME, new Sort(Direction.DESC, TOTAL_RATE_DIVIDENDS_FIELD_NAME ,ID_FIELD_NAME));
+		orderBy.put(STANDARD_DEVIATION_FIELD_NAME, new Sort(STANDARD_DEVIATION_FIELD_NAME ,ID_FIELD_NAME));
 	}
 
 	
