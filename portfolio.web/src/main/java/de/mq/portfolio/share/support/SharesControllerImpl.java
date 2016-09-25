@@ -77,11 +77,8 @@ public class SharesControllerImpl {
 	}
 	
 	public final void page(final SharesSearchAO sharesSearchAO) {
-		
 		sharesSearchAO.setPageable(shareService.pageable(sharesSearchAO.getSearch(),orderBy.get(sharesSearchAO.getSelectedSort()), 10));
-		
 		refreshTimeCourses(sharesSearchAO);
-		
 	}
 
 	

@@ -44,7 +44,7 @@ public class SharesSearchAO implements Serializable {
 
 	private String index;
 
-	public final Share getSearch() {
+	public  Share getSearch() {
 		return new ShareImpl(code, name, index, null, null);
 
 	}
@@ -93,7 +93,7 @@ public class SharesSearchAO implements Serializable {
 		return timeCourses;
 	}
 
-	public final void setTimeCorses(final Collection<TimeCourse> timeCourses) {
+	public  void setTimeCorses(final Collection<TimeCourse> timeCourses) {
 		this.timeCourses.clear();
 		this.timeCourses.addAll(timeCourses.stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(tc.share(), tc)).collect(Collectors.toList()));
 	}
@@ -102,7 +102,7 @@ public class SharesSearchAO implements Serializable {
 		return indexes;
 	}
 
-	public final void setIndexes(final Collection<String> indexes) {
+	public  void setIndexes(final Collection<String> indexes) {
 		this.indexes.clear();
 		this.indexes.addAll(indexes);
 
