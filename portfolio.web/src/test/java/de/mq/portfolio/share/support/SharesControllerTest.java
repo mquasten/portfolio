@@ -49,20 +49,21 @@ public class SharesControllerTest {
 	private final TimeCourse timecourse = Mockito.mock(TimeCourse.class);
 
 	private Share share = Mockito.mock(Share.class);
-	
-	private Collection<String> indexes = Arrays.asList("Dow","Dax");
-	
-	private final Pageable pageable = Mockito.mock(Pageable.class);
-	
+
+	private Collection<String> indexes = Arrays.asList("Dow", "Dax");
+
+	private final ClosedIntervalPageRequest pageable = Mockito.mock(ClosedIntervalPageRequest.class);
+
+	private final Pageable newPageable = Mockito.mock(Pageable.class);
+
 	@SuppressWarnings("unchecked")
 	private final ArgumentCaptor<Collection<Entry<String, String>>> entries = (ArgumentCaptor<Collection<Entry<String, String>>>) ArgumentCaptor.forClass((Class<?>) Collection.class);
 
-
 	@Before
 	public final void setup() {
-		
+
 		Mockito.when(share.name()).thenReturn(SHARE_NAME);
-		
+
 		Mockito.when(userModel.getPortfolioId()).thenReturn(PORTFOLIO_ID);
 		Mockito.when(timecourse.share()).thenReturn(share);
 		Mockito.when(timecourse.id()).thenReturn(TIMECOURSE_ID);
@@ -72,17 +73,17 @@ public class SharesControllerTest {
 		Mockito.when(sharePortfolioService.sharePortfolio(PORTFOLIO_ID)).thenReturn(sharePortfolio);
 
 		Mockito.when(sharePortfolio.timeCourses()).thenReturn(Arrays.asList(timecourse));
-		
+
 		Mockito.when(shareService.indexes()).thenReturn(indexes);
-		
+
 		Mockito.when(sharesSearchAO.getSelectedSort()).thenReturn(SharesControllerImpl.ID_FIELD_NAME);
 		Mockito.when(sharesSearchAO.getSearch()).thenReturn(share);
-	
+
 		Mockito.when(shareService.pageable(sharesSearchAO.getSearch(), orderByMap().entrySet().stream().filter(e -> e.getKey().equals(SharesControllerImpl.ID_FIELD_NAME)).map(e -> e.getValue()).findAny().get(), 10)).thenReturn(pageable);
 
 		Mockito.when(sharesSearchAO.getPageable()).thenReturn(pageable);
 		Mockito.when(shareService.timeCourses(pageable, share)).thenReturn(Arrays.asList(timecourse));
-		
+
 	}
 
 	@Test
@@ -119,46 +120,182 @@ public class SharesControllerTest {
 		Assert.assertEquals(1, entries.getValue().size());
 		Assert.assertEquals(SHARE_NAME, entries.getValue().stream().findAny().get().getKey());
 		Assert.assertEquals(TIMECOURSE_ID, entries.getValue().stream().findAny().get().getValue());
-		
+
 		Mockito.verify(sharesSearchAO).setPortfolioName(PORTFOLIO_NAME);
-		
+
 		Mockito.verify(sharesSearchAO).setSelectedPortfolioItem(null);
-		
+
 		Mockito.verify(sharesSearchAO).setIndexes(indexes);
-		
+
 		Mockito.verify(sharesSearchAO).setPageable(pageable);
-		
-	    Mockito.verify(sharesSearchAO).setSelectedTimeCourse(null);
-	    
-	    Mockito.verify(sharesSearchAO).setTimeCorses(Arrays.asList(timecourse));
-		
+
+		Mockito.verify(sharesSearchAO).setSelectedTimeCourse(null);
+
+		Mockito.verify(sharesSearchAO).setTimeCorses(Arrays.asList(timecourse));
+
 	}
-	
+
 	@Test
 	public final void initNoPortfolioSelected() {
-		
+
 		Mockito.when(userModel.getPortfolioId()).thenReturn(null);
-		
+
 		sharesController.init(sharesSearchAO, userModel);
 
 		Mockito.verify(sharesSearchAO).setPortfolio(entries.capture());
 
 		Assert.assertEquals(0, entries.getValue().size());
-		
-		
+
 		Mockito.verify(sharesSearchAO, Mockito.never()).setPortfolioName(Mockito.anyString());
-		
+
 		Mockito.verify(sharesSearchAO).setSelectedPortfolioItem(null);
-		
+
 		Mockito.verify(sharesSearchAO).setIndexes(indexes);
-		
+
 		Mockito.verify(sharesSearchAO).setPageable(pageable);
-		
-	    Mockito.verify(sharesSearchAO).setSelectedTimeCourse(null);
-	    
-	    Mockito.verify(sharesSearchAO).setTimeCorses(Arrays.asList(timecourse));
-		
-		
+
+		Mockito.verify(sharesSearchAO).setSelectedTimeCourse(null);
+
+		Mockito.verify(sharesSearchAO).setTimeCorses(Arrays.asList(timecourse));
+
+	}
+
+	@Test
+	public final void page() {
+		sharesController.page(sharesSearchAO);
+
+		Mockito.verify(sharesSearchAO).setPageable(pageable);
+
+		Mockito.verify(sharesSearchAO).setSelectedTimeCourse(null);
+
+		Mockito.verify(sharesSearchAO).setTimeCorses(Arrays.asList(timecourse));
+
+	}
+
+	@Test
+	public final void next() {
+
+		Mockito.when(pageable.next()).thenReturn(newPageable);
+
+		sharesController.next(sharesSearchAO);
+
+		Mockito.verify(pageable).next();
+		Mockito.verify(sharesSearchAO).setPageable(newPageable);
+		Mockito.verify(sharesSearchAO).setSelectedTimeCourse(null);
+	}
+
+	@Test
+	public final void nextPageableNull() {
+
+		Mockito.when(sharesSearchAO.getPageable()).thenReturn(null);
+
+		sharesController.next(sharesSearchAO);
+
+		Mockito.verify(pageable, Mockito.never()).next();
+		Mockito.verify(sharesSearchAO, Mockito.never()).setPageable(Mockito.any());
+		Mockito.verify(sharesSearchAO, Mockito.never()).setSelectedTimeCourse(null);
+	}
+
+	@Test
+	public final void previous() {
+		Mockito.when(pageable.previous()).thenReturn(newPageable);
+		sharesController.previous(sharesSearchAO);
+
+		Mockito.verify(pageable).previous();
+		Mockito.verify(sharesSearchAO).setPageable(newPageable);
+		Mockito.verify(sharesSearchAO).setSelectedTimeCourse(null);
+	}
+
+	@Test
+	public final void previousPageableNull() {
+		Mockito.when(sharesSearchAO.getPageable()).thenReturn(null);
+		sharesController.previous(sharesSearchAO);
+
+		Mockito.verify(pageable, Mockito.never()).previous();
+		Mockito.verify(sharesSearchAO, Mockito.never()).setPageable(Mockito.any());
+		Mockito.verify(sharesSearchAO, Mockito.never()).setSelectedTimeCourse(null);
+	}
+
+	@Test
+	public final void first() {
+		Mockito.when(pageable.first()).thenReturn(newPageable);
+		sharesController.first(sharesSearchAO);
+
+		Mockito.verify(pageable).first();
+		Mockito.verify(sharesSearchAO).setPageable(newPageable);
+		Mockito.verify(sharesSearchAO).setSelectedTimeCourse(null);
+
+	}
+
+	@Test
+	public final void firstPageableNull() {
+		Mockito.when(sharesSearchAO.getPageable()).thenReturn(null);
+		sharesController.first(sharesSearchAO);
+
+		Mockito.verify(pageable, Mockito.never()).first();
+		Mockito.verify(sharesSearchAO, Mockito.never()).setPageable(Mockito.any());
+		Mockito.verify(sharesSearchAO, Mockito.never()).setSelectedTimeCourse(null);
+	}
+
+	@Test
+	public final void last() {
+		Mockito.when(pageable.last()).thenReturn(newPageable);
+		sharesController.last(sharesSearchAO);
+
+		Mockito.verify(pageable).last();
+		Mockito.verify(sharesSearchAO).setPageable(newPageable);
+		Mockito.verify(sharesSearchAO).setSelectedTimeCourse(null);
+
+	}
+
+	@Test
+	public final void lastPageableNull() {
+		Mockito.when(sharesSearchAO.getPageable()).thenReturn(null);
+		sharesController.last(sharesSearchAO);
+
+		Mockito.verify(pageable, Mockito.never()).last();
+		Mockito.verify(sharesSearchAO, Mockito.never()).setPageable(Mockito.any());
+		Mockito.verify(sharesSearchAO, Mockito.never()).setSelectedTimeCourse(null);
+	}
+
+	@Test
+	public final void add2Portfolio() {
+
+		@SuppressWarnings("unchecked")
+		final Entry<Share, TimeCourse> selected = Mockito.mock(Entry.class);
+		Mockito.when(selected.getKey()).thenReturn(share);
+		Mockito.when(selected.getValue()).thenReturn(timecourse);
+
+		Mockito.when(sharesSearchAO.getSelectedTimeCourse()).thenReturn(selected);
+		sharesController.add2Portfolio(sharesSearchAO, userModel);
+
+		Mockito.verify(sharePortfolio).assign(timecourse);
+		Mockito.verify(sharePortfolioService).save(sharePortfolio);
+		Mockito.verify(sharesSearchAO).setSelectedPortfolioItem(null);
+	}
+
+	@Test
+	public final void removeFromPortfolio() {
+
+		Mockito.when(sharesSearchAO.getSelectedPortfolioItem()).thenReturn(TIMECOURSE_ID);
+		sharesController.removeFromPortfolio(sharesSearchAO, userModel);
+
+		Mockito.verify(sharePortfolio).remove(timecourse);
+
+		Mockito.verify(sharePortfolioService).save(sharePortfolio);
+		Mockito.verify(sharesSearchAO).setSelectedPortfolioItem(null);
+
+	}
+
+	@Test
+	public final void removeFromPortfolioNotFound() {
+		Mockito.when(sharesSearchAO.getSelectedPortfolioItem()).thenReturn(PORTFOLIO_ID);
+		sharesController.removeFromPortfolio(sharesSearchAO, userModel);
+
+		Mockito.verify(sharePortfolio, Mockito.never()).remove(Mockito.any());
+
+		Mockito.verify(sharePortfolioService, Mockito.never()).save(sharePortfolio);
+		Mockito.verify(sharesSearchAO, Mockito.never()).setSelectedPortfolioItem(null);
 	}
 
 }
