@@ -7,36 +7,44 @@ import javax.faces.context.FacesContext;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
 
-public class SimpleViewScopeImpl implements Scope {
-	 
-   public Object get(String name, ObjectFactory<?> objectFactory) {
-       final Map<String,Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
+class SimpleViewScopeImpl implements Scope {
 
-       if(viewMap.containsKey(name)) {
-           return viewMap.get(name);
-       } else {
-           Object object = objectFactory.getObject();
-           viewMap.put(name, object);
+	public final Object get(final String name, final ObjectFactory<?> objectFactory) {
+		final Map<String, Object> viewMap = viewMap();
 
-           return object;
-       }
-   }
+		if (viewMap.containsKey(name)) {
+			return viewMap.get(name);
+		} else {
+			Object object = objectFactory.getObject();
+			viewMap.put(name, object);
 
-   public Object remove(String name) {
-       return FacesContext.getCurrentInstance().getViewRoot().getViewMap().remove(name);
-   }
+			return object;
+		}
+	}
 
-   public String getConversationId() {
-       return null;
-   }
+	private Map<String, Object> viewMap() {
 
-   public void registerDestructionCallback(String name, Runnable callback) {
-       //Not supported
-   }
+		return facesContext().getViewRoot().getViewMap();
+	}
 
-   public Object resolveContextualObject(String key) {
-       return null;
-   }
+	FacesContext facesContext() {
+		return FacesContext.getCurrentInstance();
+	}
 
-	
+	public final Object remove(String name) {
+		return viewMap().remove(name);
+	}
+
+	public final String getConversationId() {
+		return null;
+	}
+
+	public final void registerDestructionCallback(String name, Runnable callback) {
+		// Not supported
+	}
+
+	public final Object resolveContextualObject(String key) {
+		return null;
+	}
+
 }

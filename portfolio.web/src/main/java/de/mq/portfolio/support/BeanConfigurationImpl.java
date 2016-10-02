@@ -18,7 +18,7 @@ public class BeanConfigurationImpl {
 			return null;
 		}
 		
-		return (UserModel) securityContext().getAuthentication().getPrincipal();
+		return (UserModel) securityContext.getAuthentication().getPrincipal();
 	
 		
 	}
