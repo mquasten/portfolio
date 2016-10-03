@@ -43,7 +43,7 @@
 
 	</bean>
 
-	<bean name="localeChangeFilter" class="de.mq.portfolio.support.LocaleChangeFilter"/>
+	<bean name="localeChangeFilter" class="de.mq.portfolio.support.AbstractLocaleChangeFilter" />
 
 
     <bean class="javax.faces.context.FacesContext" factory-method="getCurrentInstance"  scope="prototype"/>
