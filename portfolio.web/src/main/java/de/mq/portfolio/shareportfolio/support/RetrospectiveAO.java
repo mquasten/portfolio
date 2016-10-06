@@ -30,21 +30,20 @@ import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 @Scope("view")
 public class RetrospectiveAO implements Serializable {
 
- 
 	private static final long serialVersionUID = 1L;
 
 	private String portfolioId;
 
-	private final  LineChartModel chartModel =  new LineChartModel();
-	private final   DateAxis axis = new DateAxis("t");
-	
+	private final LineChartModel chartModel = new LineChartModel();
+	private final DateAxis axis = new DateAxis("t");
+
 	private final Collection<SelectItem> curves = new ArrayList<>();
-	
-	private  final Collection<TimeCourseRetrospective> timeCourseRetrospectives = new ArrayList<>();
-	
+
+	private final Collection<TimeCourseRetrospective> timeCourseRetrospectives = new ArrayList<>();
+
 	private String currency = "EURxx";
 
-	private double standardDeviation= 0d;
+	private double standardDeviation = 0d;
 
 	private Double totalRate = 0d;
 
@@ -53,28 +52,23 @@ public class RetrospectiveAO implements Serializable {
 	private Date startDate;
 
 	private Date endDate;
-	
-	private String filter=".*"; 
-	
 
-	private final PortfolioAO committedPortfolio = new PortfolioAO(); 
-	
-	private final  DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	private String filter = ".*";
+
+	private final PortfolioAO committedPortfolio = new PortfolioAO();
+
+	private final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
 	private final PortfolioAO currentPortfolio = new PortfolioAO();
-
-	
-
-	
 
 	public RetrospectiveAO() {
 		axis.setTickFormat("%b %#d, %y");
 		chartModel.getAxes().put(AxisType.X, axis);
 		chartModel.setLegendPosition("e");
 		chartModel.setLegendPlacement(LegendPlacement.OUTSIDEGRID);
-		
+
 	}
-	
+
 	public ChartModel getChartModel() {
 		return chartModel;
 	}
@@ -86,84 +80,78 @@ public class RetrospectiveAO implements Serializable {
 	public void setPortfolioId(String portfolioId) {
 		this.portfolioId = portfolioId;
 	}
-	
+
 	private void assign(final Collection<LineChartSeries> ratesSeries) {
 		chartModel.clear();
 		curves.clear();
 		ratesSeries.forEach(rs -> {
-			if( rs.getLabel().matches(filter)){
+			if (rs.getLabel().matches(filter)) {
 				chartModel.addSeries(rs);
 			}
 			curves.add(new SelectItem(rs.getLabel().replaceAll("[&?=]", "."), rs.getLabel()));
-		    
+
 		});
-		
+
 	}
-	
+
 	void assign(final SharePortfolioRetrospective aggregation, final Converter<String, String> currencyConverter, final Optional<ExchangeRateCalculator> exchangeRateCalculator) {
-		
+
 		committedPortfolio.setSharePortfolio(aggregation.committedSharePortfolio(), exchangeRateCalculator);
 		currentPortfolio.setSharePortfolio(aggregation.currentSharePortfolio(), exchangeRateCalculator);
-		
-		this.currency=aggregation.committedSharePortfolio().currency();
-		
-		chartModel.getAxis(AxisType.Y).setLabel(String.format("Wert Anteil / %s" , currencyConverter.convert(aggregation.committedSharePortfolio().currency())));
+
+		this.currency = aggregation.committedSharePortfolio().currency();
+
+		chartModel.getAxis(AxisType.Y).setLabel(String.format("Wert Anteil / %s", currencyConverter.convert(aggregation.committedSharePortfolio().currency())));
 		chartModel.setTitle(aggregation.committedSharePortfolio().name());
-		startDate=aggregation.initialRateWithExchangeRate().date();
-		
-		endDate=aggregation.endRateWithExchangeRate().date();
-		
-		standardDeviation=aggregation.standardDeviation();
-		
-		totalRate=aggregation.totalRate();
-		
-		totalRateDividends=aggregation.totalRateDividends();
-		
-		
+		startDate = aggregation.initialRateWithExchangeRate().date();
+
+		endDate = aggregation.endRateWithExchangeRate().date();
+
+		standardDeviation = aggregation.standardDeviation();
+
+		totalRate = aggregation.totalRate();
+
+		totalRateDividends = aggregation.totalRateDividends();
+
 		final Collection<LineChartSeries> ratesSeries = new ArrayList<>();
 		setTimeCourseRetrospectives(aggregation.timeCoursesWithExchangeRate());
 		aggregation.timeCoursesWithExchangeRate().stream().forEach(tcr -> {
 			final LineChartSeries series = new LineChartSeries();
 			series.setShowMarker(false);
-			tcr.timeCourse().rates().forEach(data -> series.set( df.format(data.date()), Double.valueOf(data.value()) ));
+			tcr.timeCourse().rates().forEach(data -> series.set(df.format(data.date()), Double.valueOf(data.value())));
 			series.setLabel(tcr.timeCourse().share().name().replaceAll("'", " "));
 			ratesSeries.add(series);
 		});
-		
-		
+
 		final LocalDate start = aggregation.initialRateWithExchangeRate().date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		final LineChartSeries startLine = new LineChartSeries();
-        startLine.setShowMarker(false);
-        startLine.setLabel("Start");
-      
-        LongStream.rangeClosed(0, ChronoUnit.DAYS.between(start,aggregation.endRateWithExchangeRate().date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())).forEach(i ->  startLine.set(df.format(Date.from(start.plusDays(i).atStartOfDay(ZoneId.systemDefault()).toInstant())), aggregation.initialRateWithExchangeRate().value() ));
-        ratesSeries.add(startLine);
-      
-        assign(ratesSeries);
-		
-		
+		startLine.setShowMarker(false);
+		startLine.setLabel("Start");
+
+		LongStream.rangeClosed(0, ChronoUnit.DAYS.between(start, aggregation.endRateWithExchangeRate().date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()))
+				.forEach(i -> startLine.set(df.format(Date.from(start.plusDays(i).atStartOfDay(ZoneId.systemDefault()).toInstant())), aggregation.initialRateWithExchangeRate().value()));
+		ratesSeries.add(startLine);
+
+		assign(ratesSeries);
+
 	}
-	
-	
 
-
-	
 	public final void setTitle(final String title) {
 		chartModel.setTitle(title);
 	}
-	
+
 	public Collection<SelectItem> getCurves() {
 		return curves;
 	}
-	
-	public final String getFilter() {
+
+	public String getFilter() {
 		return filter;
 	}
 
 	public void setFilter(final String filter) {
 		this.filter = filter;
 	}
-	
+
 	public Collection<TimeCourseRetrospective> getTimeCourseRetrospectives() {
 		return timeCourseRetrospectives;
 	}
@@ -177,44 +165,32 @@ public class RetrospectiveAO implements Serializable {
 		return startDate;
 	}
 
-
-
 	public Date getEndDate() {
 		return endDate;
 	}
 
-	
-	
 	public String getCurrency() {
 		return currency;
 	}
 
-
-	
 	public final PortfolioAO getCommittedPortfolio() {
 		return committedPortfolio;
 	}
-	
+
 	public PortfolioAO getCurrentPortfolio() {
 		return currentPortfolio;
 	}
-	
+
 	public double getStandardDeviation() {
 		return standardDeviation;
 	}
-
-
 
 	public Double getTotalRate() {
 		return totalRate;
 	}
 
-
-	
-
-
 	public Double getTotalRateDividends() {
 		return totalRateDividends;
 	}
-	
+
 }

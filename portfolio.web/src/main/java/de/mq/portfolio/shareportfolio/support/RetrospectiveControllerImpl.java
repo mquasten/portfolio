@@ -14,28 +14,29 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 @Component("retrospectiveController")
 @Scope("singleton")
 public class RetrospectiveControllerImpl {
-	
+
+	static final String REDIRECT_PATTERN = "retrospective?portfolioId=%s&filter=%s&faces-redirect=true";
 	private final SharePortfolioService sharePortfolioService;
 	private final Converter<String, String> currencyConverter;
 
 	private final ExchangeRateService exchangeRateService;
-	
+
 	@Autowired
-	RetrospectiveControllerImpl(final SharePortfolioService sharePortfolioService,final ExchangeRateService exchangeRateService, @Qualifier("currencyConverter") final Converter<String, String> currencyConverter) {
+	RetrospectiveControllerImpl(final SharePortfolioService sharePortfolioService, final ExchangeRateService exchangeRateService, @Qualifier("currencyConverter") final Converter<String, String> currencyConverter) {
 		this.sharePortfolioService = sharePortfolioService;
 		this.exchangeRateService = exchangeRateService;
-	    this.currencyConverter=currencyConverter;
+		this.currencyConverter = currencyConverter;
 	}
 
 	public void init(final RetrospectiveAO retrospectiveAO) {
 		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(retrospectiveAO.getPortfolioId());
 		final SharePortfolioRetrospective sharePortfolioRetrospective = sharePortfolioService.retrospective(retrospectiveAO.getPortfolioId());
-		
-		retrospectiveAO.assign(sharePortfolioRetrospective, currencyConverter,  Optional.of(exchangeRateService.exchangeRateCalculator(sharePortfolio.exchangeRateTranslations())));
+
+		retrospectiveAO.assign(sharePortfolioRetrospective, currencyConverter, Optional.of(exchangeRateService.exchangeRateCalculator(sharePortfolio.exchangeRateTranslations())));
 	}
 
 	public String show(final RetrospectiveAO retrospectiveAO) {
-		
-		return String.format(String.format("retrospective?portfolioId=%s&filter=%s&faces-redirect=true", retrospectiveAO.getPortfolioId(), retrospectiveAO.getFilter()));
+
+		return String.format(String.format(REDIRECT_PATTERN, retrospectiveAO.getPortfolioId(), retrospectiveAO.getFilter()));
 	}
 }
