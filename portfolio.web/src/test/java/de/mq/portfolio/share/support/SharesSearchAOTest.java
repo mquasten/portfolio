@@ -148,4 +148,6 @@ public class SharesSearchAOTest {
 		sharesSearchAO.setSelectedPortfolioItem(ID);
 		Assert.assertEquals(ID, sharesSearchAO.getSelectedPortfolioItem());
 	}
+	
+	
 }
