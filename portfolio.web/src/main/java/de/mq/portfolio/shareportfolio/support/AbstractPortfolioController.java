@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.convert.converter.Converter;
@@ -28,10 +29,12 @@ import de.mq.portfolio.support.UserModel;
 
 @Component("portfolioController")
 @Scope("singleton")
-public class PortfolioControllerImpl {
+public abstract class AbstractPortfolioController {
 
+	static final int DEFAULT_PAGE_SIZE = 10;
+	static final Sort DEFAULT_SORT = new Sort("name");
 	private static final String REDIRECT_PATTERN = "portfolio?faces-redirect=true&portfolioId=%s";
-	private static final String REDIRECT_TO_PORTFOLIOS_PAGE = "portfolios?faces-redirect=true";
+	static final String REDIRECT_TO_PORTFOLIOS_PAGE = "portfolios?faces-redirect=true";
 	private final SharePortfolioService sharePortfolioService;
 	
 	private final ExchangeRateService exchangeRateService;
@@ -43,7 +46,7 @@ public class PortfolioControllerImpl {
 	private final ShareService shareService;
 
 	@Autowired
-	PortfolioControllerImpl(final SharePortfolioService sharePortfolioService, final ShareService shareService, final ExchangeRateService exchangeRateService, final @Qualifier("portfolio2PdfConverter") Converter<PortfolioAO, byte[]> pdfConverter) {
+	AbstractPortfolioController(final SharePortfolioService sharePortfolioService, final ShareService shareService, final ExchangeRateService exchangeRateService, final @Qualifier("portfolio2PdfConverter") Converter<PortfolioAO, byte[]> pdfConverter) {
 		this.sharePortfolioService = sharePortfolioService;
 		this.shareService=shareService;
 		this.exchangeRateService=exchangeRateService;
@@ -59,7 +62,7 @@ public class PortfolioControllerImpl {
 	}
 
 	public void page(final PortfolioSearchAO portfolioSearchAO) {
-		portfolioSearchAO.setPageable(sharePortfolioService.pageable(portfolioSearchAO.criteria(), new Sort("name"), 10));
+		portfolioSearchAO.setPageable(sharePortfolioService.pageable(portfolioSearchAO.criteria(), DEFAULT_SORT, DEFAULT_PAGE_SIZE));
 
 		portfolioSearchAO.setSharePortfolios(sharePortfolioService.portfolios(portfolioSearchAO.getPageable(), portfolioSearchAO.criteria()));
 		
@@ -71,12 +74,12 @@ public class PortfolioControllerImpl {
 		portfolioSearchAO.setPortfolioName(portfolioSearchAO.getSelectedPortfolio().name());
 	}
 
-	public String save(final SharePortfolio sharePortfolio, final FacesContext facesContext, final String existsMessage) {
+	public String save(final SharePortfolio sharePortfolio, final String existsMessage) {
 		try {
 			sharePortfolioService.save(sharePortfolio);
 			return REDIRECT_TO_PORTFOLIOS_PAGE;
 		} catch (final DuplicateKeyException de) {
-			facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, existsMessage, null));
+			facesContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, existsMessage, null));
 			return null;
 		}
 	}
@@ -145,5 +148,8 @@ public class PortfolioControllerImpl {
 		
 		
 	}
+	
+	@Lookup
+	abstract FacesContext facesContext() ;
 
 }

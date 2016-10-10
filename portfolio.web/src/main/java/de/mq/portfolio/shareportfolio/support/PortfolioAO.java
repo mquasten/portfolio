@@ -83,7 +83,7 @@ public class PortfolioAO implements Serializable {
 
 	}
 
-	public final SharePortfolio getSharePortfolio() {
+	public SharePortfolio getSharePortfolio() {
 		final SharePortfolio result = new SharePortfolioImpl(name, timeCourses);
 		ReflectionUtils.doWithFields(result.getClass(), field -> {
 			/* "...touched for the very first time." mdna (like a virgin **/ field.setAccessible(true);

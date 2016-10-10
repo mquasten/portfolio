@@ -189,7 +189,7 @@
  	<p:commandButton value="aktualisieren"  process="@form" update="@form"  action="#{portfolioController.assign(sharePortfolio)}" rendered="#{(sharePortfolio.timeCourses.size() >= 2) and sharePortfolio.editable }"  />
 	<p:commandButton value="abschließen"  process="@form" update="@form"  action="#{portfolioController.commit(sharePortfolio.name)}" rendered="#{(sharePortfolio.timeCourses.size() >= 2) and sharePortfolio.editable }"  />
 	<p:commandButton value="löschen"  process="@form" update="@form" action="#{portfolioController.delete(sharePortfolio.id)}" rendered="#{sharePortfolio.editable and (sharePortfolio.id != null) }"  />
-	<p:commandButton value="speichern"  process="@form" update="@form" action="#{portfolioController.save(sharePortfolio.sharePortfolio,facesContext,'Portfolio mit diesem Namen existiert bereits')}" rendered="#{sharePortfolio.editable}"  />
+	<p:commandButton value="speichern"  process="@form" update="@form" action="#{portfolioController.save(sharePortfolio.sharePortfolio,'Portfolio mit diesem Namen existiert bereits')}" rendered="#{sharePortfolio.editable}"  />
 
 </h:panelGrid >   
 </h:panelGrid >
