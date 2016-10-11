@@ -1,11 +1,17 @@
 package de.mq.portfolio.shareportfolio.support;
 
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,9 +20,12 @@ import org.mockito.Mockito;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.web.client.ResourceAccessException;
 
+import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.share.ShareService;
@@ -27,6 +36,7 @@ import junit.framework.Assert;
 
 public class PortfolioControllerTest {
 	
+	private static final byte[] CONTENT = "kylie is nice and ...".getBytes();
 	private static final String SELECTED_PORTFOLIO_NAME = "selectedPortfolio";
 	private static final String SELECTED_PORTFOLIO_ID = "19680528";
 	private static final String PORTFOLIO_NAME = "minRisk";
@@ -65,7 +75,11 @@ public class PortfolioControllerTest {
 	
 	private final TimeCourse timeCourse = Mockito.mock(TimeCourse.class);
 	
+	private final ExchangeRate exchangeRate = Mockito.mock(ExchangeRate.class);
 	
+	private final ExternalContext externalContext = Mockito.mock(ExternalContext.class);
+	
+	private MockHttpServletResponse response = new MockHttpServletResponse();
 	
 	@Before
 	public final void setup() {
@@ -86,8 +100,25 @@ public class PortfolioControllerTest {
 		
 		Mockito.when(portfolioSearchAO.getSelectedPortfolio()).thenReturn(selectedSharePortfolio);
 		
+		Mockito.when(portfolioAO.getId()).thenReturn(PORTFOLIO_ID);
+		Mockito.when(portfolioAO.getName()).thenReturn(PORTFOLIO_NAME);
+		
 		Mockito.when(portfolioAO.getSharePortfolio()).thenReturn(sharePortfolio);
 		Mockito.when(portfolioAO.getTimeCourses()).thenReturn(Arrays.asList(timeCourse));
+		
+		Mockito.when(sharePortfolio.exchangeRateTranslations()).thenReturn(Arrays.asList(exchangeRate));
+		
+		Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
+		
+		Mockito.when(externalContext.getResponse()).thenReturn(response);
+		
+		Mockito.when(pdfConverter.convert(portfolioAO)).thenReturn(CONTENT);
+		
+		Mockito.when(sharePortfolioService.committedPortfolio(PORTFOLIO_NAME)).thenReturn(sharePortfolio);
+		
+		Mockito.when(sharePortfolio.id()).thenReturn(PORTFOLIO_ID);
+		
+		Mockito.when(exchangeRateService.exchangeRateCalculator(sharePortfolio.exchangeRateTranslations())).thenReturn(exchangeRateCalculator);
 		final Map<Class<?>, Object> dependencies = new HashMap<>();
 		dependencies.put(SharePortfolioService.class, sharePortfolioService);
 		dependencies.put(ShareService .class, shareService);
@@ -166,6 +197,63 @@ public class PortfolioControllerTest {
 	public final void assign() {
 		portfolioController.assign(portfolioAO);
 		 Mockito.verify(sharePortfolioService).assign(sharePortfolio, portfolioAO.getTimeCourses());
+	}
+	
+	@Test
+	public final void initPortfolio() {
+		portfolioController.init(portfolioAO);
+		
+		Mockito.verify(portfolioAO).setSharePortfolio(sharePortfolio, Optional.of(exchangeRateCalculator));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public final void initPortfolioIdNull() {
+		final ArgumentCaptor<SharePortfolio> sharePortfolioCaptor = ArgumentCaptor.forClass(SharePortfolio.class);
+		
+		@SuppressWarnings("rawtypes")
+		final ArgumentCaptor<Optional> exchangeRateCalculatorCaptor = ArgumentCaptor.forClass(Optional.class);
+		Mockito.when(portfolioAO.getId()).thenReturn(null);
+		portfolioController.init(portfolioAO);
+		
+		Mockito.verify(portfolioAO).setSharePortfolio(sharePortfolioCaptor.capture(), exchangeRateCalculatorCaptor.capture());
+	    Assert.assertFalse(exchangeRateCalculatorCaptor.getValue().isPresent());
+	    Assert.assertNull(sharePortfolioCaptor.getValue().name());
+	    Assert.assertTrue(sharePortfolioCaptor.getValue().timeCourses().isEmpty());
+	}	
+	
+	@Test
+	public final void pdf() throws UnsupportedEncodingException {
+		
+		
+		portfolioController.pdf(portfolioAO);
+		
+		Assert.assertEquals(AbstractPortfolioController.CONTENT_TYPE_APPLICATION_PDF, response.getContentType());
+		
+		Assert.assertEquals(String.format(AbstractPortfolioController.DISPOSITION_PATTERN, PORTFOLIO_NAME), response.getHeader(AbstractPortfolioController.HEADER_CONTENT_DISPOSITION));
+	
+	    Assert.assertEquals(CONTENT.length, response.getContentLength());
+	    Assert.assertEquals(new String(CONTENT), response.getContentAsString());
+	    Mockito.verify(facesContext).responseComplete();
+	}
+	
+	@Test(expected=ResourceAccessException.class)
+	public final void pdfSucks() throws IOException {
+		final HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+		Mockito.when(externalContext.getResponse()).thenReturn(response);
+		Mockito.doThrow(IOException.class).when(response).getOutputStream();
+		portfolioController.pdf(portfolioAO);
+	}
+	
+	@Test
+	public final void commit() {
+		Assert.assertEquals(String.format(AbstractPortfolioController.REDIRECT_PATTERN, PORTFOLIO_ID), portfolioController.commit(PORTFOLIO_NAME));
+	}
+	
+	@Test
+	public final void  delete() {
+			Assert.assertEquals(AbstractPortfolioController.REDIRECT_TO_PORTFOLIOS_PAGE, portfolioController.delete(PORTFOLIO_ID));
+			Mockito.verify(sharePortfolioService).delete(PORTFOLIO_ID);
 	}
 
 }

@@ -55,7 +55,7 @@ public class PortfolioAO implements Serializable {
 		this.name = name;
 	}
 
-	public final void setSharePortfolio(final SharePortfolio sharePortfolio, final Optional<ExchangeRateCalculator> exchangeRateCalculator) {
+	public  void setSharePortfolio(final SharePortfolio sharePortfolio, final Optional<ExchangeRateCalculator> exchangeRateCalculator) {
 		this.name = sharePortfolio.name();
 		this.currency = sharePortfolio.currency();
 		this.timeCourses.clear();

@@ -31,9 +31,12 @@ import de.mq.portfolio.support.UserModel;
 @Scope("singleton")
 public abstract class AbstractPortfolioController {
 
+	static final String DISPOSITION_PATTERN = "attachment; filename=\"%s.pdf\"";
+	static final String HEADER_CONTENT_DISPOSITION = "Content-Disposition";
+	static final String CONTENT_TYPE_APPLICATION_PDF = "application/pdf";
 	static final int DEFAULT_PAGE_SIZE = 10;
 	static final Sort DEFAULT_SORT = new Sort("name");
-	private static final String REDIRECT_PATTERN = "portfolio?faces-redirect=true&portfolioId=%s";
+	static final String REDIRECT_PATTERN = "portfolio?faces-redirect=true&portfolioId=%s";
 	static final String REDIRECT_TO_PORTFOLIOS_PAGE = "portfolios?faces-redirect=true";
 	private final SharePortfolioService sharePortfolioService;
 	
@@ -96,19 +99,18 @@ public abstract class AbstractPortfolioController {
 		}
 
 		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(portfolioAO.getId());
-	
 		portfolioAO.setSharePortfolio(sharePortfolio, Optional.of(exchangeRateService.exchangeRateCalculator(sharePortfolio.exchangeRateTranslations())));
 
 	}
 
-	public final void pdf(final PortfolioAO portfolioAO, final FacesContext facesContext)  {
+	public final void pdf(final PortfolioAO portfolioAO)  {
 		
 		
-		final HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
+		final HttpServletResponse response = (HttpServletResponse) facesContext().getExternalContext().getResponse();
 		response.reset();
-		response.setContentType("application/pdf");
+		response.setContentType(CONTENT_TYPE_APPLICATION_PDF);
 		
-		response.setHeader("Content-Disposition", "attachment; filename=\"" + portfolioAO.getName() + ".pdf" + "\""); // The
+		response.setHeader(HEADER_CONTENT_DISPOSITION, String.format(DISPOSITION_PATTERN, portfolioAO.getName())); // The
 		
 			try {
 				final byte[] content = pdfConverter.convert(portfolioAO);
@@ -119,7 +121,7 @@ public abstract class AbstractPortfolioController {
 			}
 	
 
-		facesContext.responseComplete();
+		facesContext().responseComplete();
 	}
 	
 	public final String commit(final String portfolioName)  {
