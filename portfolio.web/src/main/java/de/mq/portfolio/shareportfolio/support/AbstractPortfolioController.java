@@ -26,7 +26,6 @@ import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.support.UserModel;
 
-
 @Component("portfolioController")
 @Scope("singleton")
 public abstract class AbstractPortfolioController {
@@ -39,21 +38,19 @@ public abstract class AbstractPortfolioController {
 	static final String REDIRECT_PATTERN = "portfolio?faces-redirect=true&portfolioId=%s";
 	static final String REDIRECT_TO_PORTFOLIOS_PAGE = "portfolios?faces-redirect=true";
 	private final SharePortfolioService sharePortfolioService;
-	
-	private final ExchangeRateService exchangeRateService;
-	
-	private final Converter<PortfolioAO, byte[]> pdfConverter;
-	
 
+	private final ExchangeRateService exchangeRateService;
+
+	private final Converter<PortfolioAO, byte[]> pdfConverter;
 
 	private final ShareService shareService;
 
 	@Autowired
 	AbstractPortfolioController(final SharePortfolioService sharePortfolioService, final ShareService shareService, final ExchangeRateService exchangeRateService, final @Qualifier("portfolio2PdfConverter") Converter<PortfolioAO, byte[]> pdfConverter) {
 		this.sharePortfolioService = sharePortfolioService;
-		this.shareService=shareService;
-		this.exchangeRateService=exchangeRateService;
-		this.pdfConverter=pdfConverter;
+		this.shareService = shareService;
+		this.exchangeRateService = exchangeRateService;
+		this.pdfConverter = pdfConverter;
 	}
 
 	public void init(final PortfolioSearchAO portfolioSearchAO, final UserModel userModel) {
@@ -68,7 +65,7 @@ public abstract class AbstractPortfolioController {
 		portfolioSearchAO.setPageable(sharePortfolioService.pageable(portfolioSearchAO.criteria(), DEFAULT_SORT, DEFAULT_PAGE_SIZE));
 
 		portfolioSearchAO.setSharePortfolios(sharePortfolioService.portfolios(portfolioSearchAO.getPageable(), portfolioSearchAO.criteria()));
-		
+
 	}
 
 	public void activate(final PortfolioSearchAO portfolioSearchAO, final UserModel userModel) {
@@ -91,7 +88,7 @@ public abstract class AbstractPortfolioController {
 		sharePortfolioService.assign(portfolioAO.getSharePortfolio(), portfolioAO.getTimeCourses());
 		return String.format(REDIRECT_PATTERN, portfolioAO.getId());
 	}
-	
+
 	public void init(final PortfolioAO portfolioAO) {
 		if (portfolioAO.getId() == null) {
 			portfolioAO.setSharePortfolio(BeanUtils.instantiateClass(SharePortfolioImpl.class), Optional.empty());
@@ -103,55 +100,53 @@ public abstract class AbstractPortfolioController {
 
 	}
 
-	public final void pdf(final PortfolioAO portfolioAO)  {
-		
-		
+	public final void pdf(final PortfolioAO portfolioAO) {
+
 		final HttpServletResponse response = (HttpServletResponse) facesContext().getExternalContext().getResponse();
 		response.reset();
 		response.setContentType(CONTENT_TYPE_APPLICATION_PDF);
-		
+
 		response.setHeader(HEADER_CONTENT_DISPOSITION, String.format(DISPOSITION_PATTERN, portfolioAO.getName())); // The
-		
-			try {
-				final byte[] content = pdfConverter.convert(portfolioAO);
-				response.setContentLength(content.length);
-				FileCopyUtils.copy(content, response.getOutputStream());
-			} catch (IOException ex) {
-			   throw new ResourceAccessException("Unable to create Pdf", ex);
-			}
-	
+
+		try {
+			final byte[] content = pdfConverter.convert(portfolioAO);
+			response.setContentLength(content.length);
+			FileCopyUtils.copy(content, response.getOutputStream());
+		} catch (IOException ex) {
+			throw new ResourceAccessException("Unable to create Pdf", ex);
+		}
 
 		facesContext().responseComplete();
 	}
-	
-	public final String commit(final String portfolioName)  {
-		final SharePortfolio sharePortfolio=   sharePortfolioService.committedPortfolio(portfolioName);
+
+	public final String commit(final String portfolioName) {
+		final SharePortfolio sharePortfolio = sharePortfolioService.committedPortfolio(portfolioName);
 		return String.format(REDIRECT_PATTERN, sharePortfolio.id());
-		
+
 	}
-	
-	public final String delete(final String portfolioId)  {
+
+	public final String delete(final String portfolioId) {
 		sharePortfolioService.delete(portfolioId);
 		return REDIRECT_TO_PORTFOLIOS_PAGE;
 	}
-	
+
 	public final String deleteTimeCourse(final String sharePortfolioId, final String timeCourseCode) {
-		
-		final Optional<TimeCourse> timeCourse= shareService.timeCourse(timeCourseCode);
-		if( ! timeCourse.isPresent()){
+
+		final Optional<TimeCourse> timeCourse = shareService.timeCourse(timeCourseCode);
+		if (!timeCourse.isPresent()) {
 			return String.format(REDIRECT_PATTERN, sharePortfolioId);
 		}
-		
+
 		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(sharePortfolioId);
-		Assert.isTrue(! sharePortfolio.isCommitted() , "Portfolio should not be committed.");
+		Assert.isTrue(!sharePortfolio.isCommitted(), "Portfolio should not be committed.");
+
 		sharePortfolio.remove(timeCourse.get());
 		sharePortfolioService.save(sharePortfolio);
 		return String.format(REDIRECT_PATTERN, sharePortfolio.id());
-		
-		
+
 	}
-	
+
 	@Lookup
-	abstract FacesContext facesContext() ;
+	abstract FacesContext facesContext();
 
 }
