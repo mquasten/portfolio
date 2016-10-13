@@ -30,12 +30,18 @@ import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 @Scope("view")
 public class RetrospectiveAO implements Serializable {
 
+	static final String DEFAULT_FILTER = ".*";
+
+	static final String TICKFORMAT = "%b %#d, %y";
+
+	static final String LEGEGEND_POSITION = "e";
+
 	private static final long serialVersionUID = 1L;
 
 	private String portfolioId;
 
 	private final LineChartModel chartModel = new LineChartModel();
-	private final DateAxis axis = new DateAxis("t");
+	final DateAxis axis = new DateAxis("t");
 
 	private final Collection<SelectItem> curves = new ArrayList<>();
 
@@ -53,7 +59,7 @@ public class RetrospectiveAO implements Serializable {
 
 	private Date endDate;
 
-	private String filter = ".*";
+	private String filter = DEFAULT_FILTER;
 
 	private final PortfolioAO committedPortfolio = new PortfolioAO();
 
@@ -62,9 +68,9 @@ public class RetrospectiveAO implements Serializable {
 	private final PortfolioAO currentPortfolio = new PortfolioAO();
 
 	public RetrospectiveAO() {
-		axis.setTickFormat("%b %#d, %y");
+		axis.setTickFormat(TICKFORMAT);
 		chartModel.getAxes().put(AxisType.X, axis);
-		chartModel.setLegendPosition("e");
+		chartModel.setLegendPosition(LEGEGEND_POSITION);
 		chartModel.setLegendPlacement(LegendPlacement.OUTSIDEGRID);
 
 	}
@@ -81,7 +87,7 @@ public class RetrospectiveAO implements Serializable {
 		this.portfolioId = portfolioId;
 	}
 
-	private void assign(final Collection<LineChartSeries> ratesSeries) {
+	void assign(final Collection<LineChartSeries> ratesSeries) {
 		chartModel.clear();
 		curves.clear();
 		ratesSeries.forEach(rs -> {
