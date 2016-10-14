@@ -47,7 +47,7 @@ public class RetrospectiveAO implements Serializable {
 
 	private final Collection<TimeCourseRetrospective> timeCourseRetrospectives = new ArrayList<>();
 
-	private String currency = "EURxx";
+	private String currency ;
 
 	private double standardDeviation = 0d;
 
@@ -162,7 +162,7 @@ public class RetrospectiveAO implements Serializable {
 		return timeCourseRetrospectives;
 	}
 
-	private void setTimeCourseRetrospectives(Collection<TimeCourseRetrospective> timeCourseRetrospectives) {
+	void setTimeCourseRetrospectives(Collection<TimeCourseRetrospective> timeCourseRetrospectives) {
 		this.timeCourseRetrospectives.clear();
 		this.timeCourseRetrospectives.addAll(timeCourseRetrospectives);
 	}
