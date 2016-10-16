@@ -30,6 +30,10 @@ import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 @Scope("view")
 public class RetrospectiveAO implements Serializable {
 
+	static final String START_LINE_LABEL = "Start";
+
+	static final String ORDINATE_LABEL_PATTERN = "Wert Anteil / %s";
+
 	static final String DEFAULT_FILTER = ".*";
 
 	static final String TICKFORMAT = "%b %#d, %y";
@@ -94,6 +98,7 @@ public class RetrospectiveAO implements Serializable {
 			if (rs.getLabel().matches(filter)) {
 				chartModel.addSeries(rs);
 			}
+			
 			curves.add(new SelectItem(rs.getLabel().replaceAll("[&?=]", "."), rs.getLabel()));
 
 		});
@@ -107,7 +112,7 @@ public class RetrospectiveAO implements Serializable {
 
 		this.currency = aggregation.committedSharePortfolio().currency();
 
-		chartModel.getAxis(AxisType.Y).setLabel(String.format("Wert Anteil / %s", currencyConverter.convert(aggregation.committedSharePortfolio().currency())));
+		chartModel.getAxis(AxisType.Y).setLabel(String.format(ORDINATE_LABEL_PATTERN, currencyConverter.convert(aggregation.committedSharePortfolio().currency())));
 		chartModel.setTitle(aggregation.committedSharePortfolio().name());
 		startDate = aggregation.initialRateWithExchangeRate().date();
 
@@ -124,6 +129,7 @@ public class RetrospectiveAO implements Serializable {
 		aggregation.timeCoursesWithExchangeRate().stream().forEach(tcr -> {
 			final LineChartSeries series = new LineChartSeries();
 			series.setShowMarker(false);
+			
 			tcr.timeCourse().rates().forEach(data -> series.set(df.format(data.date()), Double.valueOf(data.value())));
 			series.setLabel(tcr.timeCourse().share().name().replaceAll("'", " "));
 			ratesSeries.add(series);
@@ -132,7 +138,7 @@ public class RetrospectiveAO implements Serializable {
 		final LocalDate start = aggregation.initialRateWithExchangeRate().date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		final LineChartSeries startLine = new LineChartSeries();
 		startLine.setShowMarker(false);
-		startLine.setLabel("Start");
+		startLine.setLabel(START_LINE_LABEL);
 
 		LongStream.rangeClosed(0, ChronoUnit.DAYS.between(start, aggregation.endRateWithExchangeRate().date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()))
 				.forEach(i -> startLine.set(df.format(Date.from(start.plusDays(i).atStartOfDay(ZoneId.systemDefault()).toInstant())), aggregation.initialRateWithExchangeRate().value()));
