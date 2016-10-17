@@ -26,6 +26,16 @@ import com.lowagie.text.pdf.PdfWriter;
 
 public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 
+	static final int SIZE_VARIANCE_TABLE = 100;
+
+
+
+	static final String HEADLINE_CORRELATION_PATTERN = "Korrelationen %s";
+
+
+
+	static final String HEADLINE_SHARE_PATTERN = "Aktien %s [Währung: %s]";
+
 	final Font headline = FontFactory.getFont(FontFactory.TIMES_BOLD, 24);
 	
 	final Font tableHeadline = FontFactory.getFont(FontFactory.TIMES_BOLD, 10);
@@ -48,7 +58,7 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 		numberFormat.setMaximumFractionDigits(2);
 		numberFormat.setMinimumFractionDigits(2);
 
-		final Document document = new Document(PageSize.A4.rotate());
+		final Document document = newDocument();
 		try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 		PdfWriter.getInstance(document, os);
 			
@@ -56,9 +66,10 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 		
 	        document.open();
 				document.addTitle(portfolioAO.getName());
-				document.add(new Paragraph(String.format("Aktien %s [Währung: %s]", portfolioAO.getName() , currencyConverter.convert(portfolioAO.getCurrency()) ), headline));
-				final Table varianceSharesTable = new  Table(7);
-				varianceSharesTable.setWidth(100);
+				document.add(new Paragraph(String.format(HEADLINE_SHARE_PATTERN, portfolioAO.getName() , currencyConverter.convert(portfolioAO.getCurrency()) ), headline));
+				final Table varianceSharesTable = newVarianceTable();
+				
+				varianceSharesTable.setWidth(SIZE_VARIANCE_TABLE);
 				addCellHeader(varianceSharesTable,  "Aktie");
 				addCellHeader(varianceSharesTable,  "WKN");
 				addCellHeader(varianceSharesTable, "Zeitreihe");
@@ -91,9 +102,9 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 			   
 				
 				
-				document.add(new Paragraph(String.format("Korrelationen %s", portfolioAO.getName()), headline));
+				document.add(new Paragraph(String.format(HEADLINE_CORRELATION_PATTERN, portfolioAO.getName()), headline));
 				
-				final Table corrlationTable = new  Table(portfolioAO.getShares().size()+1);
+				final Table corrlationTable = newCorrelationTable(portfolioAO.getShares().size()+1);
 				corrlationTable.setAlignment(Element.ALIGN_LEFT);
 				corrlationTable.setWidth(100);
 				addCellHeader(corrlationTable, "Korrelationen [%]");
@@ -114,6 +125,18 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 		}
 		
 
+	}
+
+	Table newCorrelationTable(final int size) throws BadElementException {
+		return new  Table(size);
+	}
+
+	Table newVarianceTable() throws BadElementException {
+		return new  Table(7);
+	}
+
+	Document newDocument() {
+		return new Document(PageSize.A4.rotate());
 	}
 
 	private void addCell(final Table table, final Double value, final double scale)  {
