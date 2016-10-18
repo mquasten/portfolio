@@ -26,7 +26,29 @@ import com.lowagie.text.pdf.PdfWriter;
 
 public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 
-	static final int SIZE_VARIANCE_TABLE = 100;
+	static final String DATE_RANGE_PATTERN = "%s - %s";
+
+	static final String VARIANCE_TABLE_SHARE_HEADER = "Aktie";
+	
+	static final String VARIANCE_TABLE_WKN_HEADER = "WKN";
+
+
+	static final String VARIANCE_TABLE_TIME_FRAME_HEADER = "Zeitreihe";
+	
+	
+	static final String VARIANCE_TABLE_STANDARD_DEVIATION_HEADER = "Standardabweichung [‰]";
+	
+	static final String VARIANCE_TABLE_RATIO_HEADER = "Anteil [%]";
+	
+	static final String VARIANCE_TABLE_RATE_HEADER = "Rendite [%]";
+	
+	static final String VARIANCE_TABLE_RATE_DIVIDENDS_HEADER = "Dividenden [%]";
+
+	static final int VARIANCE_TABLE_COL_SIZE = 7;
+
+
+
+	static final int WIDTH_VARIANCE_TABLE = 100;
 
 
 
@@ -69,21 +91,22 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 				document.add(new Paragraph(String.format(HEADLINE_SHARE_PATTERN, portfolioAO.getName() , currencyConverter.convert(portfolioAO.getCurrency()) ), headline));
 				final Table varianceSharesTable = newVarianceTable();
 				
-				varianceSharesTable.setWidth(SIZE_VARIANCE_TABLE);
-				addCellHeader(varianceSharesTable,  "Aktie");
-				addCellHeader(varianceSharesTable,  "WKN");
-				addCellHeader(varianceSharesTable, "Zeitreihe");
-				addCellHeader(varianceSharesTable, "Standardabweichung [‰]");
-				addCellHeader(varianceSharesTable, "Anteil [%]");
-				addCellHeader(varianceSharesTable, "Rendite [%]");
-				addCellHeader(varianceSharesTable, "Dividenden [%]");
+				varianceSharesTable.setWidth(WIDTH_VARIANCE_TABLE);
+				addCellHeader(varianceSharesTable,  VARIANCE_TABLE_SHARE_HEADER);
+				addCellHeader(varianceSharesTable,  VARIANCE_TABLE_WKN_HEADER);
+				addCellHeader(varianceSharesTable, VARIANCE_TABLE_TIME_FRAME_HEADER);
+				addCellHeader(varianceSharesTable, VARIANCE_TABLE_STANDARD_DEVIATION_HEADER);
+				addCellHeader(varianceSharesTable, VARIANCE_TABLE_RATIO_HEADER);
+				addCellHeader(varianceSharesTable, VARIANCE_TABLE_RATE_HEADER);
+				addCellHeader(varianceSharesTable, VARIANCE_TABLE_RATE_DIVIDENDS_HEADER);
+				
 				varianceSharesTable.setAlignment(Element.ALIGN_LEFT);
 				portfolioAO.getTimeCourses().forEach(tc ->
 				{
 					addCellHeader(varianceSharesTable, tc.share().name());
 					addCell(varianceSharesTable, tc.wkn());
 					
-					addCell(varianceSharesTable, "" +dateFormat.format( tc.start()) +" - "+ dateFormat.format( tc.end()) );
+					addCell(varianceSharesTable, String.format(DATE_RANGE_PATTERN, dateFormat.format( tc.start()) , dateFormat.format( tc.end()))) ;
 					addCell(varianceSharesTable, tc.standardDeviation(), 1000d);
 					addCell(varianceSharesTable, portfolioAO.getWeights().get(tc), 100d);
 					addCell(varianceSharesTable, tc.totalRate(), 100d);
@@ -132,7 +155,7 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 	}
 
 	Table newVarianceTable() throws BadElementException {
-		return new  Table(7);
+		return new  Table(VARIANCE_TABLE_COL_SIZE);
 	}
 
 	Document newDocument() {
