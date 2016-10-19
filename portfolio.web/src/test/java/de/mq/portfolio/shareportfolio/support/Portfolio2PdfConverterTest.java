@@ -7,11 +7,14 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
@@ -38,6 +41,10 @@ import junit.framework.Assert;
 public class Portfolio2PdfConverterTest {
 	
 	
+	private static final double CORRELATION = 0.2345;
+
+	private static final double NO_CORRELATION = 0d;
+
 	private static final double TOTAL_RATE = 7.0e-2;
 	
 	private static final double TOTAL_RATE_DIVIDENDS = 4.2e-2;
@@ -95,7 +102,9 @@ public class Portfolio2PdfConverterTest {
 	
 	private final ArgumentCaptor<Element> elementCaptor = ArgumentCaptor.forClass(Element.class);
 	
-	private final ArgumentCaptor<Phrase> phraseCaptor = ArgumentCaptor.forClass(Phrase.class);
+	private final ArgumentCaptor<Phrase> phraseVarianceTableCaptor = ArgumentCaptor.forClass(Phrase.class);
+	
+	private final ArgumentCaptor<Phrase> phraseCorrelationTableCaptor = ArgumentCaptor.forClass(Phrase.class);
 	
 	
 	private final Table varianceTable = Mockito.mock(Table.class);
@@ -119,6 +128,8 @@ public class Portfolio2PdfConverterTest {
 	private final NumberFormat numberFormat = NumberFormat.getInstance();
 	
 	private Map<TimeCourse,Double> weights = new HashMap<>();
+	
+	private final List<Entry<String, Map<String, Double>>> correlations = new ArrayList<>();
 	
 	Date asDate(LocalDateTime localDateTime) {
 	    return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
@@ -179,6 +190,18 @@ public class Portfolio2PdfConverterTest {
 		Mockito.when(portfolioAO.getTotalRate()).thenReturn(TOTAL_RATE);
 		
 		Mockito.when(portfolioAO.getTotalRateDividends()).thenReturn(TOTAL_RATE_DIVIDENDS);
+		
+		final Map<String, Double> correlationsMap01 = new HashMap<>();
+		correlationsMap01.put(shares.get(0), NO_CORRELATION);
+		correlationsMap01.put(shares.get(1), CORRELATION);
+		
+		final Map<String, Double> correlationsMap02 = new HashMap<>();
+		correlationsMap02.put(shares.get(0), CORRELATION);
+		correlationsMap02.put(shares.get(1), NO_CORRELATION);
+		correlations.add(new AbstractMap.SimpleImmutableEntry<>(shares.get(0), correlationsMap01));
+		correlations.add(new AbstractMap.SimpleImmutableEntry<>(shares.get(1), correlationsMap02));
+		
+		Mockito.when(portfolioAO.getCorrelations()).thenReturn(correlations);
 	}
 	
 	@Test
@@ -213,16 +236,16 @@ public class Portfolio2PdfConverterTest {
 		Assert.assertEquals(varianceTable, tables.get(0));
 		Assert.assertEquals(correlationTable, tables.get(1));
 		
-		Mockito.verify(varianceTable).setWidth(Portfolio2PdfConverter.WIDTH_VARIANCE_TABLE);
+		Mockito.verify(varianceTable).setWidth(Portfolio2PdfConverter.WIDTH_TABLE);
 		
-		Mockito.verify(varianceTable, Mockito.atLeastOnce()).addCell(phraseCaptor.capture());
+		Mockito.verify(varianceTable, Mockito.atLeastOnce()).addCell(phraseVarianceTableCaptor.capture());
 		
 		Mockito.verify(varianceTable).setAlignment(Element.ALIGN_LEFT);
-		Assert.assertEquals(4*Portfolio2PdfConverter.VARIANCE_TABLE_COL_SIZE, phraseCaptor.getAllValues().size());
+		Assert.assertEquals(4*Portfolio2PdfConverter.VARIANCE_TABLE_COL_SIZE, phraseVarianceTableCaptor.getAllValues().size());
 		
-		phraseCaptor.getAllValues().stream().map(p -> p.getFont()).forEach(f ->Assert.assertEquals(FONT, f));
+		phraseVarianceTableCaptor.getAllValues().stream().map(p -> p.getFont()).forEach(f ->Assert.assertEquals(FONT, f));
 		
-		final List<String> varianceTableCells = phraseCaptor.getAllValues().stream().map(p -> p.getContent()).collect(Collectors.toList());
+		final List<String> varianceTableCells = phraseVarianceTableCaptor.getAllValues().stream().map(p -> p.getContent()).collect(Collectors.toList());
 		
 		Assert.assertEquals(Portfolio2PdfConverter.VARIANCE_TABLE_SHARE_HEADER, varianceTableCells.get(0));
 		Assert.assertEquals(Portfolio2PdfConverter.VARIANCE_TABLE_WKN_HEADER, varianceTableCells.get(1));
@@ -257,6 +280,28 @@ public class Portfolio2PdfConverterTest {
 		Assert.assertEquals(numberFormat.format(TOTAL_RATE * 100),varianceTableCells.get(26));
 		
 		Assert.assertEquals(numberFormat.format(TOTAL_RATE_DIVIDENDS * 100), varianceTableCells.get(27));
+		
+		
+		Mockito.verify(correlationTable).setAlignment(Element.ALIGN_LEFT);
+		Mockito.verify(correlationTable).setWidth(Portfolio2PdfConverter.WIDTH_TABLE);
+		
+		Mockito.verify(correlationTable, Mockito.atLeastOnce()).addCell(phraseCorrelationTableCaptor.capture());
+		final List<String> correlationTableCells = phraseCorrelationTableCaptor.getAllValues().stream().map(p -> p.getContent()).collect(Collectors.toList());
+		Assert.assertEquals(Math.pow(1+shares.size(), 2), (double) correlationTableCells.size());
+		
+		Assert.assertEquals(Portfolio2PdfConverter.CORRELATION_TABLE_CORRELATIONS_HEADER, correlationTableCells.get(0));
+		Assert.assertEquals(shares.get(0), correlationTableCells.get(1));
+		Assert.assertEquals(shares.get(1), correlationTableCells.get(2));
+		
+		Assert.assertEquals(shares.get(0), correlationTableCells.get(3));
+		Assert.assertEquals(numberFormat.format(NO_CORRELATION), correlationTableCells.get(4));
+		Assert.assertEquals(numberFormat.format(CORRELATION*100), correlationTableCells.get(5));
+		
+		Assert.assertEquals(shares.get(1), correlationTableCells.get(6));
+		Assert.assertEquals(numberFormat.format(CORRELATION*100), correlationTableCells.get(7));
+		Assert.assertEquals(numberFormat.format(NO_CORRELATION), correlationTableCells.get(8));
+		
+		Mockito.verify(document).close();
 		
 	}
 	

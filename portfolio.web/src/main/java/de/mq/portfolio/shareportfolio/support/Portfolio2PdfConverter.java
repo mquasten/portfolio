@@ -43,12 +43,14 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 	static final String VARIANCE_TABLE_RATE_HEADER = "Rendite [%]";
 	
 	static final String VARIANCE_TABLE_RATE_DIVIDENDS_HEADER = "Dividenden [%]";
+	
+	static final String CORRELATION_TABLE_CORRELATIONS_HEADER = "Korrelationen [%]";
 
 	static final int VARIANCE_TABLE_COL_SIZE = 7;
 
 
 
-	static final int WIDTH_VARIANCE_TABLE = 100;
+	static final int WIDTH_TABLE = 100;
 
 
 
@@ -91,7 +93,7 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 				document.add(new Paragraph(String.format(HEADLINE_SHARE_PATTERN, portfolioAO.getName() , currencyConverter.convert(portfolioAO.getCurrency()) ), headline));
 				final Table varianceSharesTable = newVarianceTable();
 				
-				varianceSharesTable.setWidth(WIDTH_VARIANCE_TABLE);
+				varianceSharesTable.setWidth(WIDTH_TABLE);
 				addCellHeader(varianceSharesTable,  VARIANCE_TABLE_SHARE_HEADER);
 				addCellHeader(varianceSharesTable,  VARIANCE_TABLE_WKN_HEADER);
 				addCellHeader(varianceSharesTable, VARIANCE_TABLE_TIME_FRAME_HEADER);
@@ -127,19 +129,19 @@ public class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]>{
 				
 				document.add(new Paragraph(String.format(HEADLINE_CORRELATION_PATTERN, portfolioAO.getName()), headline));
 				
-				final Table corrlationTable = newCorrelationTable(portfolioAO.getShares().size()+1);
-				corrlationTable.setAlignment(Element.ALIGN_LEFT);
-				corrlationTable.setWidth(100);
-				addCellHeader(corrlationTable, "Korrelationen [%]");
-				portfolioAO.getShares().forEach(share -> addCellHeader(corrlationTable, share));
+				final Table correlationTable = newCorrelationTable(portfolioAO.getShares().size()+1);
+				correlationTable.setAlignment(Element.ALIGN_LEFT);
+				correlationTable.setWidth(WIDTH_TABLE);
+				addCellHeader(correlationTable, CORRELATION_TABLE_CORRELATIONS_HEADER);
+				portfolioAO.getShares().forEach(share -> addCellHeader(correlationTable, share));
 				portfolioAO.getCorrelations().forEach(e -> {
 					
-					addCellHeader(corrlationTable, e.getKey());
-					portfolioAO.getShares().forEach(share -> addCell(corrlationTable,e.getValue().get(share), 100d));
+					addCellHeader(correlationTable, e.getKey());
+					portfolioAO.getShares().forEach(share -> addCell(correlationTable,e.getValue().get(share), 100d));
 					
 				});
 				
-				document.add(corrlationTable);
+				document.add(correlationTable);
 				document.close();
 			
 			return os.toByteArray();
