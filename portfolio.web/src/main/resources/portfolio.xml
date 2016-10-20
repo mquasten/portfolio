@@ -48,5 +48,8 @@
 
     <bean class="javax.faces.context.FacesContext" factory-method="getCurrentInstance"  scope="prototype"/>
     
+    
+   <bean class="de.mq.portfolio.support.ExceptionTranslationBuilderImpl" scope="prototype" />
+    
 </beans> 
 

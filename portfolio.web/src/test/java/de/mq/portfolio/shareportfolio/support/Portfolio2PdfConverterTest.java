@@ -36,6 +36,7 @@ import com.lowagie.text.Table;
 
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.support.ExceptionTranslationBuilderImpl;
 import junit.framework.Assert;
 
 public class Portfolio2PdfConverterTest {
@@ -131,6 +132,8 @@ public class Portfolio2PdfConverterTest {
 	
 	private final List<Entry<String, Map<String, Double>>> correlations = new ArrayList<>();
 	
+	//private final ExceptionTranslationBuilder<byte[], AutoCloseable> exceptionTranslationBuilder = new ExceptionTranslationBuilderImpl<>();
+	
 	Date asDate(LocalDateTime localDateTime) {
 	    return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 	  }
@@ -143,10 +146,12 @@ public class Portfolio2PdfConverterTest {
 		numberFormat.setMaximumFractionDigits(2);
 		numberFormat.setMinimumFractionDigits(2);
 		
-		
+		Mockito.doAnswer(in -> new ExceptionTranslationBuilderImpl<Table,AutoCloseable>()).when(portfolio2PdfConverter).exceptionTranslationBuilder();	
 		Mockito.when(portfolio2PdfConverter.newDocument()).thenReturn(document);
 		Mockito.when(portfolio2PdfConverter.newVarianceTable()).thenReturn(varianceTable);
 		Mockito.when(portfolio2PdfConverter.newCorrelationTable(shares.size()+1)).thenReturn(correlationTable);
+		
+	
 		
 		Mockito.when(portfolioAO.getShares()).thenReturn(shares);
 		
