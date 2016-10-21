@@ -76,71 +76,64 @@ public abstract class Portfolio2PdfConverter implements Converter<PortfolioAO, b
 	public byte[] convert(final PortfolioAO portfolioAO) {
 		numberFormat.setMaximumFractionDigits(2);
 		numberFormat.setMinimumFractionDigits(2);
-
 		final Document document = newDocument();
-		try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-			assignWriter(document, os);
+		return  (byte[]) translator().withResource(() -> new ByteArrayOutputStream()).withStatement(bas -> (byte[]) writeDocument(portfolioAO, document, (ByteArrayOutputStream) bas) ).translate();
+	}
 
-			document.open();
-			document.addTitle(portfolioAO.getName());
-			// document.add(new Paragraph(String.format(HEADLINE_SHARE_PATTERN,portfolioAO.getName() ,currencyConverter.convert(portfolioAO.getCurrency()) ), headline));
-			add(document, new Paragraph(String.format(HEADLINE_SHARE_PATTERN, portfolioAO.getName(), currencyConverter.convert(portfolioAO.getCurrency())), headline));
-			final Table varianceSharesTable = newVarianceTable();
+	private byte[] writeDocument(final PortfolioAO portfolioAO, final Document document, final ByteArrayOutputStream os) {
+		assignWriter(document, os);
+		document.open();
+		document.addTitle(portfolioAO.getName());
+		add(document, new Paragraph(String.format(HEADLINE_SHARE_PATTERN, portfolioAO.getName(), currencyConverter.convert(portfolioAO.getCurrency())), headline));
+		final Table varianceSharesTable = newVarianceTable();
 
-			varianceSharesTable.setWidth(WIDTH_TABLE);
-			addCellHeader(varianceSharesTable, VARIANCE_TABLE_SHARE_HEADER);
-			addCellHeader(varianceSharesTable, VARIANCE_TABLE_WKN_HEADER);
-			addCellHeader(varianceSharesTable, VARIANCE_TABLE_TIME_FRAME_HEADER);
-			addCellHeader(varianceSharesTable, VARIANCE_TABLE_STANDARD_DEVIATION_HEADER);
-			addCellHeader(varianceSharesTable, VARIANCE_TABLE_RATIO_HEADER);
-			addCellHeader(varianceSharesTable, VARIANCE_TABLE_RATE_HEADER);
-			addCellHeader(varianceSharesTable, VARIANCE_TABLE_RATE_DIVIDENDS_HEADER);
+		varianceSharesTable.setWidth(WIDTH_TABLE);
+		addCellHeader(varianceSharesTable, VARIANCE_TABLE_SHARE_HEADER);
+		addCellHeader(varianceSharesTable, VARIANCE_TABLE_WKN_HEADER);
+		addCellHeader(varianceSharesTable, VARIANCE_TABLE_TIME_FRAME_HEADER);
+		addCellHeader(varianceSharesTable, VARIANCE_TABLE_STANDARD_DEVIATION_HEADER);
+		addCellHeader(varianceSharesTable, VARIANCE_TABLE_RATIO_HEADER);
+		addCellHeader(varianceSharesTable, VARIANCE_TABLE_RATE_HEADER);
+		addCellHeader(varianceSharesTable, VARIANCE_TABLE_RATE_DIVIDENDS_HEADER);
 
-			varianceSharesTable.setAlignment(Element.ALIGN_LEFT);
-			portfolioAO.getTimeCourses().forEach(tc -> {
-				addCellHeader(varianceSharesTable, tc.share().name());
-				addCell(varianceSharesTable, tc.wkn());
+		varianceSharesTable.setAlignment(Element.ALIGN_LEFT);
+		portfolioAO.getTimeCourses().forEach(tc -> {
+			addCellHeader(varianceSharesTable, tc.share().name());
+			addCell(varianceSharesTable, tc.wkn());
 
-				addCell(varianceSharesTable, String.format(DATE_RANGE_PATTERN, dateFormat.format(tc.start()), dateFormat.format(tc.end())));
-				addCell(varianceSharesTable, tc.standardDeviation(), 1000d);
-				addCell(varianceSharesTable, portfolioAO.getWeights().get(tc), 100d);
-				addCell(varianceSharesTable, tc.totalRate(), 100d);
-				addCell(varianceSharesTable, tc.totalRateDividends(), 100d);
+			addCell(varianceSharesTable, String.format(DATE_RANGE_PATTERN, dateFormat.format(tc.start()), dateFormat.format(tc.end())));
+			addCell(varianceSharesTable, tc.standardDeviation(), 1000d);
+			addCell(varianceSharesTable, portfolioAO.getWeights().get(tc), 100d);
+			addCell(varianceSharesTable, tc.totalRate(), 100d);
+			addCell(varianceSharesTable, tc.totalRateDividends(), 100d);
 
-			});
+		});
 
-			addCell(varianceSharesTable, null, 0);
-			addCell(varianceSharesTable, null, 0);
-			addCell(varianceSharesTable, null, 0);
-			addCellHeader(varianceSharesTable, portfolioAO.getMinStandardDeviation(), 1000d);
-			addCell(varianceSharesTable, null, 0);
-			addCellHeader(varianceSharesTable, portfolioAO.getTotalRate(), 100d);
-			addCellHeader(varianceSharesTable, portfolioAO.getTotalRateDividends(), 100d);
-			// document.add(varianceSharesTable);
-			add(document, varianceSharesTable);
+		addCell(varianceSharesTable, null, 0);
+		addCell(varianceSharesTable, null, 0);
+		addCell(varianceSharesTable, null, 0);
+		addCellHeader(varianceSharesTable, portfolioAO.getMinStandardDeviation(), 1000d);
+		addCell(varianceSharesTable, null, 0);
+		addCellHeader(varianceSharesTable, portfolioAO.getTotalRate(), 100d);
+		addCellHeader(varianceSharesTable, portfolioAO.getTotalRateDividends(), 100d);
+		
+		add(document, varianceSharesTable);
 
-			// document.add(new Paragraph(String.format(HEADLINE_CORRELATION_PATTERN, portfolioAO.getName()), headline));
-			add(document, new Paragraph(String.format(HEADLINE_CORRELATION_PATTERN, portfolioAO.getName()), headline));
-			final Table correlationTable = newCorrelationTable(portfolioAO.getShares().size() + 1);
-			correlationTable.setAlignment(Element.ALIGN_LEFT);
-			correlationTable.setWidth(WIDTH_TABLE);
-			addCellHeader(correlationTable, CORRELATION_TABLE_CORRELATIONS_HEADER);
-			portfolioAO.getShares().forEach(share -> addCellHeader(correlationTable, share));
-			portfolioAO.getCorrelations().forEach(e -> {
+		add(document, new Paragraph(String.format(HEADLINE_CORRELATION_PATTERN, portfolioAO.getName()), headline));
+		final Table correlationTable = newCorrelationTable(portfolioAO.getShares().size() + 1);
+		correlationTable.setAlignment(Element.ALIGN_LEFT);
+		correlationTable.setWidth(WIDTH_TABLE);
+		addCellHeader(correlationTable, CORRELATION_TABLE_CORRELATIONS_HEADER);
+		portfolioAO.getShares().forEach(share -> addCellHeader(correlationTable, share));
+		portfolioAO.getCorrelations().forEach(e -> {
+			addCellHeader(correlationTable, e.getKey());
+			portfolioAO.getShares().forEach(share -> addCell(correlationTable, e.getValue().get(share), 100d));
+		});
+		add(document, correlationTable);
+		
+		document.close();
 
-				addCellHeader(correlationTable, e.getKey());
-				portfolioAO.getShares().forEach(share -> addCell(correlationTable, e.getValue().get(share), 100d));
-
-			});
-			add(document, correlationTable);
-			// document.add(correlationTable);
-			document.close();
-
-			return os.toByteArray();
-		} catch (IOException ex) {
-			throw new IllegalStateException(ex);
-		}
-
+		return os.toByteArray();
 	}
 
 	private void assignWriter(final Document document, final ByteArrayOutputStream os) {
@@ -157,6 +150,7 @@ public abstract class Portfolio2PdfConverter implements Converter<PortfolioAO, b
 		return (Table) translator().withStatement(() -> new Table(VARIANCE_TABLE_COL_SIZE)).translate();
 	}
 
+
 	Document newDocument() {
 		return new Document(PageSize.A4.rotate());
 	}
@@ -172,9 +166,7 @@ public abstract class Portfolio2PdfConverter implements Converter<PortfolioAO, b
 	}
 
 	private void add(final Document document, Element element) {
-		
 		translator().withStatement(() -> document.add(element)).translate();
-	
 	}
 
 	private String text(final Double value, final double scale) {
@@ -186,18 +178,15 @@ public abstract class Portfolio2PdfConverter implements Converter<PortfolioAO, b
 
 	private void addCellHeader(final Table table, String text) {
 		translator().withStatement(() -> table.addCell(new Phrase(text, tableHeadline))).translate();
-
 	}
 
 	private void addCellHeader(final Table table, final Double value, final double scale) {
-
 		translator().withStatement(() -> table.addCell(new Phrase(text(value, scale), tableHeadline))).translate();
-
 	}
 
 	@SuppressWarnings("unchecked")
 	private <R> ExceptionTranslationBuilder<R, AutoCloseable> translator() {
-		return (ExceptionTranslationBuilder<R, AutoCloseable>) exceptionTranslationBuilder().withTranslation(IllegalStateException.class, Arrays.asList(BadElementException.class, DocumentException.class, IllegalStateException.class, IOException.class));
+		return (ExceptionTranslationBuilder<R, AutoCloseable>) exceptionTranslationBuilder().withTranslation(IllegalStateException.class, Arrays.asList(BadElementException.class, DocumentException.class,  IOException.class));
 	}
 
 	@Lookup

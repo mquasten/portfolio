@@ -2,6 +2,7 @@ package de.mq.portfolio.shareportfolio.support;
 
 
 
+import java.lang.reflect.Modifier;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -10,8 +11,10 @@ import java.time.ZoneId;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,6 +39,7 @@ import com.lowagie.text.Table;
 
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.support.ExceptionTranslationBuilder;
 import de.mq.portfolio.support.ExceptionTranslationBuilderImpl;
 import junit.framework.Assert;
 
@@ -44,7 +48,7 @@ public class Portfolio2PdfConverterTest {
 	
 	private static final double CORRELATION = 0.2345;
 
-	private static final double NO_CORRELATION = 0d;
+	private static final double FULL_CORRELATION = 1.0d;
 
 	private static final double TOTAL_RATE = 7.0e-2;
 	
@@ -197,12 +201,12 @@ public class Portfolio2PdfConverterTest {
 		Mockito.when(portfolioAO.getTotalRateDividends()).thenReturn(TOTAL_RATE_DIVIDENDS);
 		
 		final Map<String, Double> correlationsMap01 = new HashMap<>();
-		correlationsMap01.put(shares.get(0), NO_CORRELATION);
+		correlationsMap01.put(shares.get(0), FULL_CORRELATION);
 		correlationsMap01.put(shares.get(1), CORRELATION);
 		
 		final Map<String, Double> correlationsMap02 = new HashMap<>();
 		correlationsMap02.put(shares.get(0), CORRELATION);
-		correlationsMap02.put(shares.get(1), NO_CORRELATION);
+		correlationsMap02.put(shares.get(1), FULL_CORRELATION);
 		correlations.add(new AbstractMap.SimpleImmutableEntry<>(shares.get(0), correlationsMap01));
 		correlations.add(new AbstractMap.SimpleImmutableEntry<>(shares.get(1), correlationsMap02));
 		
@@ -299,15 +303,49 @@ public class Portfolio2PdfConverterTest {
 		Assert.assertEquals(shares.get(1), correlationTableCells.get(2));
 		
 		Assert.assertEquals(shares.get(0), correlationTableCells.get(3));
-		Assert.assertEquals(numberFormat.format(NO_CORRELATION), correlationTableCells.get(4));
+		Assert.assertEquals(numberFormat.format(100* FULL_CORRELATION), correlationTableCells.get(4));
 		Assert.assertEquals(numberFormat.format(CORRELATION*100), correlationTableCells.get(5));
 		
 		Assert.assertEquals(shares.get(1), correlationTableCells.get(6));
 		Assert.assertEquals(numberFormat.format(CORRELATION*100), correlationTableCells.get(7));
-		Assert.assertEquals(numberFormat.format(NO_CORRELATION), correlationTableCells.get(8));
+		Assert.assertEquals(numberFormat.format(100 * FULL_CORRELATION), correlationTableCells.get(8));
 		
 		Mockito.verify(document).close();
 		
+	}
+	
+	@Test
+	public final void dependencies() {
+		final Portfolio2PdfConverter portfolio2PdfConverter = new Portfolio2PdfConverter(currencyConverter) {
+
+			@Override
+			final ExceptionTranslationBuilder<?, AutoCloseable> exceptionTranslationBuilder() {
+				return null;
+			}};
+			
+			final Map<Class<?>, Collection<Object>> dependencies = new HashMap<>();
+			Arrays.asList(Portfolio2PdfConverter.class.getDeclaredFields()).stream().filter(field -> ! Modifier.isStatic(field.getModifiers())).forEach(field -> {
+				if( ! dependencies.containsKey(field.getType())) {
+					dependencies.put(field.getType(), new HashSet<>());
+				}
+				
+				dependencies.get(field.getType()).add(ReflectionTestUtils.getField(portfolio2PdfConverter, field.getName()));
+			});
+			
+			Assert.assertEquals(4, dependencies.size());
+			Assert.assertTrue(dependencies.containsKey(Font.class));
+			Assert.assertEquals(3, dependencies.get(Font.class).size());
+			
+			Assert.assertTrue(dependencies.containsKey(NumberFormat.class));
+			Assert.assertEquals(1, dependencies.get(NumberFormat.class).size());
+			
+			Assert.assertTrue(dependencies.containsKey(DateFormat.class));
+			Assert.assertEquals(1, dependencies.get(DateFormat.class).size());
+			
+			Assert.assertTrue(dependencies.containsKey(Converter.class));
+			Assert.assertEquals(1, dependencies.get(Converter.class).size());
+			Assert.assertEquals(currencyConverter, dependencies.get(Converter.class).stream().findAny().get());
+			
 	}
 	
 }
