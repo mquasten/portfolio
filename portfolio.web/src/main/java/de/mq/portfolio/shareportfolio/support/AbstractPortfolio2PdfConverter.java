@@ -28,8 +28,7 @@ import com.lowagie.text.pdf.PdfWriter;
 import de.mq.portfolio.support.ExceptionTranslationBuilder;
 
 @Component("portfolio2PdfConverter")
-
-public abstract class Portfolio2PdfConverter implements Converter<PortfolioAO, byte[]> {
+public abstract class AbstractPortfolio2PdfConverter implements Converter<PortfolioAO, byte[]> {
 
 	static final String DATE_RANGE_PATTERN = "%s - %s";
 
@@ -68,7 +67,7 @@ public abstract class Portfolio2PdfConverter implements Converter<PortfolioAO, b
 	private final Converter<String, String> currencyConverter;
 
 	@Autowired
-	Portfolio2PdfConverter(@Qualifier("currencyConverter") final Converter<String, String> currencyConverter) {
+	AbstractPortfolio2PdfConverter(@Qualifier("currencyConverter") final Converter<String, String> currencyConverter) {
 		this.currencyConverter = currencyConverter;
 	}
 

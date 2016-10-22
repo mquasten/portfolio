@@ -97,7 +97,7 @@ public class Portfolio2PdfConverterTest {
 	@SuppressWarnings("unchecked")
 	private final Converter<String, String> currencyConverter = (Converter<String, String>) Mockito.mock((Class<?>) Converter.class);
 	
-	private final Portfolio2PdfConverter portfolio2PdfConverter = Mockito.mock(Portfolio2PdfConverter.class, Mockito.CALLS_REAL_METHODS);
+	private final AbstractPortfolio2PdfConverter portfolio2PdfConverter = Mockito.mock(AbstractPortfolio2PdfConverter.class, Mockito.CALLS_REAL_METHODS);
 	
 	private final  Document document = Mockito.mock(Document.class);
 	
@@ -222,7 +222,7 @@ public class Portfolio2PdfConverterTest {
 		dependencies.put(Font.class,FONT);
 		dependencies.put(Converter.class,currencyConverter);
 		
-		Arrays.asList(Portfolio2PdfConverter.class.getDeclaredFields()).stream().filter(field -> dependencies.containsKey(field.getType())).forEach(field -> ReflectionTestUtils.setField(portfolio2PdfConverter, field.getName(), dependencies.get(field.getType())));
+		Arrays.asList(AbstractPortfolio2PdfConverter.class.getDeclaredFields()).stream().filter(field -> dependencies.containsKey(field.getType())).forEach(field -> ReflectionTestUtils.setField(portfolio2PdfConverter, field.getName(), dependencies.get(field.getType())));
 		
 	
 		portfolio2PdfConverter.convert(portfolioAO);
@@ -237,36 +237,36 @@ public class Portfolio2PdfConverterTest {
 		final List<String> headlines = elementCaptor.getAllValues().stream().filter(e -> e.getClass().equals(Paragraph.class) ).map(p -> ((Paragraph)p).getContent()).collect(Collectors.toList());
 		
 		Assert.assertEquals(2, headlines.size());
-		Assert.assertEquals(String.format(Portfolio2PdfConverter.HEADLINE_SHARE_PATTERN, PORTFOLIO_NAME, CURRENCY_SYMBOL),headlines.get(0));
-		Assert.assertEquals(String.format(Portfolio2PdfConverter.HEADLINE_CORRELATION_PATTERN, PORTFOLIO_NAME), headlines.get(1));
+		Assert.assertEquals(String.format(AbstractPortfolio2PdfConverter.HEADLINE_SHARE_PATTERN, PORTFOLIO_NAME, CURRENCY_SYMBOL),headlines.get(0));
+		Assert.assertEquals(String.format(AbstractPortfolio2PdfConverter.HEADLINE_CORRELATION_PATTERN, PORTFOLIO_NAME), headlines.get(1));
 		
 		final List<Element> tables = elementCaptor.getAllValues().stream().filter(e -> Table.class.isInstance(e) ).collect(Collectors.toList());
 		Assert.assertEquals(2, tables.size());
 		Assert.assertEquals(varianceTable, tables.get(0));
 		Assert.assertEquals(correlationTable, tables.get(1));
 		
-		Mockito.verify(varianceTable).setWidth(Portfolio2PdfConverter.WIDTH_TABLE);
+		Mockito.verify(varianceTable).setWidth(AbstractPortfolio2PdfConverter.WIDTH_TABLE);
 		
 		Mockito.verify(varianceTable, Mockito.atLeastOnce()).addCell(phraseVarianceTableCaptor.capture());
 		
 		Mockito.verify(varianceTable).setAlignment(Element.ALIGN_LEFT);
-		Assert.assertEquals(4*Portfolio2PdfConverter.VARIANCE_TABLE_COL_SIZE, phraseVarianceTableCaptor.getAllValues().size());
+		Assert.assertEquals(4*AbstractPortfolio2PdfConverter.VARIANCE_TABLE_COL_SIZE, phraseVarianceTableCaptor.getAllValues().size());
 		
 		phraseVarianceTableCaptor.getAllValues().stream().map(p -> p.getFont()).forEach(f ->Assert.assertEquals(FONT, f));
 		
 		final List<String> varianceTableCells = phraseVarianceTableCaptor.getAllValues().stream().map(p -> p.getContent()).collect(Collectors.toList());
 		
-		Assert.assertEquals(Portfolio2PdfConverter.VARIANCE_TABLE_SHARE_HEADER, varianceTableCells.get(0));
-		Assert.assertEquals(Portfolio2PdfConverter.VARIANCE_TABLE_WKN_HEADER, varianceTableCells.get(1));
-		Assert.assertEquals(Portfolio2PdfConverter.VARIANCE_TABLE_TIME_FRAME_HEADER, varianceTableCells.get(2));
-		Assert.assertEquals(Portfolio2PdfConverter.VARIANCE_TABLE_STANDARD_DEVIATION_HEADER, varianceTableCells.get(3));
-		Assert.assertEquals(Portfolio2PdfConverter.VARIANCE_TABLE_RATIO_HEADER,  varianceTableCells.get(4));
-		Assert.assertEquals(Portfolio2PdfConverter.VARIANCE_TABLE_RATE_HEADER , varianceTableCells.get(5));
-		Assert.assertEquals(Portfolio2PdfConverter.VARIANCE_TABLE_RATE_DIVIDENDS_HEADER , varianceTableCells.get(6));
+		Assert.assertEquals(AbstractPortfolio2PdfConverter.VARIANCE_TABLE_SHARE_HEADER, varianceTableCells.get(0));
+		Assert.assertEquals(AbstractPortfolio2PdfConverter.VARIANCE_TABLE_WKN_HEADER, varianceTableCells.get(1));
+		Assert.assertEquals(AbstractPortfolio2PdfConverter.VARIANCE_TABLE_TIME_FRAME_HEADER, varianceTableCells.get(2));
+		Assert.assertEquals(AbstractPortfolio2PdfConverter.VARIANCE_TABLE_STANDARD_DEVIATION_HEADER, varianceTableCells.get(3));
+		Assert.assertEquals(AbstractPortfolio2PdfConverter.VARIANCE_TABLE_RATIO_HEADER,  varianceTableCells.get(4));
+		Assert.assertEquals(AbstractPortfolio2PdfConverter.VARIANCE_TABLE_RATE_HEADER , varianceTableCells.get(5));
+		Assert.assertEquals(AbstractPortfolio2PdfConverter.VARIANCE_TABLE_RATE_DIVIDENDS_HEADER , varianceTableCells.get(6));
 		
 		Assert.assertEquals(shares.get(0) , varianceTableCells.get(7));
 		Assert.assertEquals(WKN_01 , varianceTableCells.get(8));
-		Assert.assertEquals( String.format(Portfolio2PdfConverter.DATE_RANGE_PATTERN, DATEFORMAT.format(startDate) , DATEFORMAT.format(endDate)) ,  varianceTableCells.get(9) ) ; ;
+		Assert.assertEquals( String.format(AbstractPortfolio2PdfConverter.DATE_RANGE_PATTERN, DATEFORMAT.format(startDate) , DATEFORMAT.format(endDate)) ,  varianceTableCells.get(9) ) ; ;
 		Assert.assertEquals(numberFormat.format(STD_01 * 1000), varianceTableCells.get(10));
 		Assert.assertEquals(numberFormat.format(WEIGHT_01 * 100), varianceTableCells.get(11));
 		Assert.assertEquals(numberFormat.format(RATE_01 * 100),varianceTableCells.get(12));
@@ -275,7 +275,7 @@ public class Portfolio2PdfConverterTest {
 		
 		Assert.assertEquals(shares.get(1) , varianceTableCells.get(14));
 		Assert.assertEquals(WKN_02 , varianceTableCells.get(15));
-		Assert.assertEquals( String.format(Portfolio2PdfConverter.DATE_RANGE_PATTERN, DATEFORMAT.format(startDate) , DATEFORMAT.format(endDate)) ,  varianceTableCells.get(16) ) ; ;
+		Assert.assertEquals( String.format(AbstractPortfolio2PdfConverter.DATE_RANGE_PATTERN, DATEFORMAT.format(startDate) , DATEFORMAT.format(endDate)) ,  varianceTableCells.get(16) ) ; ;
 		Assert.assertEquals(numberFormat.format(STD_02 * 1000), varianceTableCells.get(17));
 		Assert.assertEquals(numberFormat.format(WEIGHT_02 * 100), varianceTableCells.get(18));
 		Assert.assertEquals(numberFormat.format(RATE_02 * 100),varianceTableCells.get(19));
@@ -292,13 +292,13 @@ public class Portfolio2PdfConverterTest {
 		
 		
 		Mockito.verify(correlationTable).setAlignment(Element.ALIGN_LEFT);
-		Mockito.verify(correlationTable).setWidth(Portfolio2PdfConverter.WIDTH_TABLE);
+		Mockito.verify(correlationTable).setWidth(AbstractPortfolio2PdfConverter.WIDTH_TABLE);
 		
 		Mockito.verify(correlationTable, Mockito.atLeastOnce()).addCell(phraseCorrelationTableCaptor.capture());
 		final List<String> correlationTableCells = phraseCorrelationTableCaptor.getAllValues().stream().map(p -> p.getContent()).collect(Collectors.toList());
 		Assert.assertEquals(Math.pow(1+shares.size(), 2), (double) correlationTableCells.size());
 		
-		Assert.assertEquals(Portfolio2PdfConverter.CORRELATION_TABLE_CORRELATIONS_HEADER, correlationTableCells.get(0));
+		Assert.assertEquals(AbstractPortfolio2PdfConverter.CORRELATION_TABLE_CORRELATIONS_HEADER, correlationTableCells.get(0));
 		Assert.assertEquals(shares.get(0), correlationTableCells.get(1));
 		Assert.assertEquals(shares.get(1), correlationTableCells.get(2));
 		
@@ -316,7 +316,7 @@ public class Portfolio2PdfConverterTest {
 	
 	@Test
 	public final void dependencies() {
-		final Portfolio2PdfConverter portfolio2PdfConverter = new Portfolio2PdfConverter(currencyConverter) {
+		final AbstractPortfolio2PdfConverter portfolio2PdfConverter = new AbstractPortfolio2PdfConverter(currencyConverter) {
 
 			@Override
 			final ExceptionTranslationBuilder<?, AutoCloseable> exceptionTranslationBuilder() {
@@ -324,7 +324,7 @@ public class Portfolio2PdfConverterTest {
 			}};
 			
 			final Map<Class<?>, Collection<Object>> dependencies = new HashMap<>();
-			Arrays.asList(Portfolio2PdfConverter.class.getDeclaredFields()).stream().filter(field -> ! Modifier.isStatic(field.getModifiers())).forEach(field -> {
+			Arrays.asList(AbstractPortfolio2PdfConverter.class.getDeclaredFields()).stream().filter(field -> ! Modifier.isStatic(field.getModifiers())).forEach(field -> {
 				if( ! dependencies.containsKey(field.getType())) {
 					dependencies.put(field.getType(), new HashSet<>());
 				}
