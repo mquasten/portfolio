@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="template.xhtml">
+	<ui:param name="headline" value="Wechselkurse anzeigen" />
+
+<ui:define name="meta">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<f:metadata>
+			
+			
+
+		</f:metadata>
+
+	</ui:define>
+
+
+<ui:define name="content">
+
+<h:form> 
+
+
+<p:chart type="line" model="#{exchangeRates.chartModel}"  style="height:700px" rendered="true" />
+		
+			<h:panelGrid columns="3">
+
+				<p:outputLabel value="Wechselkurs" />
+
+				<p:selectOneMenu value="#{exchangeRates.filter}"  style="width: 300px;" >
+					<f:selectItem itemLabel="Alle" itemValue=".*" />
+					<f:selectItems value="#{exchangeRates.curves}" />
+					
+				</p:selectOneMenu>
+				<p:commandButton value="anzeigen"   process="@form" update="@form" />
+
+			
+</h:panelGrid>
+</h:form>
+
+</ui:define>
+
+</ui:composition>
+
+
+
+
+</html>

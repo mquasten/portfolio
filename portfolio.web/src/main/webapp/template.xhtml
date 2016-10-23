@@ -23,15 +23,21 @@
 	
 	
 	
-	<p:menubar>
+	<p:menubar >
 	<p:submenu label="#{message.template_submenu_shares}" >
 		 <p:menuitem value="#{message.template_submenu_shares_search}" outcome="shares"  disabled="#{facesContext.viewRoot.viewId == '/shares.xhtml'}"/>
 		
 	</p:submenu>
+	
 	<p:submenu label="#{message.template_submenu_portfolios}" >
 	
 		 <p:menuitem value="#{message.template_submenu_portfolios_search}" outcome="portfolios" disabled="#{facesContext.viewRoot.viewId == '/portfolios.xhtml'}" />
 		
+	</p:submenu>
+	
+	
+	<p:submenu label="#{message.template_submenu_exchange_rates}" >
+		 <p:menuitem value="#{message.template_submenu_exchange_rates_show}" outcome="exchangeRates" disabled="#{facesContext.viewRoot.viewId == '/exchangeRates.xhtml'}" />
 	</p:submenu>
 	
 	<p:submenu label="#{message.template_submenu_user}" >
@@ -44,6 +50,8 @@
 	</p:submenu>
 	
 	</p:menubar>
+	
+	
 	
 	
 	</h:form>
