@@ -20,6 +20,7 @@ public class RetrospectiveControllerImpl {
 	private final Converter<String, String> currencyConverter;
 
 	private final ExchangeRateService exchangeRateService;
+	
 
 	@Autowired
 	RetrospectiveControllerImpl(final SharePortfolioService sharePortfolioService, final ExchangeRateService exchangeRateService, @Qualifier("currencyConverter") final Converter<String, String> currencyConverter) {

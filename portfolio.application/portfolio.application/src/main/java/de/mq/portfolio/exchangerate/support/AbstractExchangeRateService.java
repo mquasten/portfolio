@@ -36,6 +36,15 @@ abstract class AbstractExchangeRateService implements ExchangeRateService {
 		exchangeRate.assign(rates);
 		return exchangeRate;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.exchangerate.support.ExchangeRateService#exchangeRates()
+	 */
+	@Override
+	public final Collection<ExchangeRate> exchangeRates() {
+		return exchangeRateDatebaseRepository.exchangerates();
+	}
 
 	/*
 	 * (non-Javadoc)

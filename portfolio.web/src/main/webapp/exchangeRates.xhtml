@@ -12,7 +12,7 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<f:metadata>
 			
-			
+			<f:viewAction action="#{exchangeRateController.init()}" />
 
 		</f:metadata>
 
@@ -24,7 +24,7 @@
 <h:form> 
 
 
-<p:chart type="line" model="#{exchangeRates.chartModel}"  style="height:700px" rendered="true" />
+<p:chart type="line" model="#{exchangeRates.chartModel}"  style="height:700px"  />
 		
 			<h:panelGrid columns="3">
 

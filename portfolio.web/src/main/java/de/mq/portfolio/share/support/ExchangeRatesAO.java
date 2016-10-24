@@ -1,8 +1,13 @@
 package de.mq.portfolio.share.support;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.faces.model.SelectItem;
 
@@ -12,9 +17,9 @@ import org.primefaces.model.chart.ChartSeries;
 import org.primefaces.model.chart.DateAxis;
 import org.primefaces.model.chart.LegendPlacement;
 import org.primefaces.model.chart.LineChartModel;
-import org.primefaces.model.chart.LineChartSeries;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
 
 @Component("exchangeRates")
 @Scope("view")
@@ -46,19 +51,22 @@ public class ExchangeRatesAO implements Serializable {
 		
 		chartModel.getAxis(AxisType.Y).setLabel("Wechselkurs");
 		
-		
-		chartModel.addSeries(newChartSeriesMock());	
-		
-		curves.add(new SelectItem("EUR-US$", "EUR-USD"));
+	
 		
 	
 	}
-
-	private ChartSeries newChartSeriesMock() {
-		final ChartSeries x =  new LineChartSeries("EUR-US$");
-		x.set(2016-0-01, 1);
-		return x;
+	
+	Date asDate(LocalDateTime localDateTime) {
+	    return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+	  }
+	
+	public final void assign(final Collection<Entry<String, ChartSeries>> charts) {
+		System.out.println(charts);
+		charts.stream().map(e -> e.getValue()).forEach(s -> chartModel.addSeries(s));
+		curves.addAll(charts.stream().map(e -> new SelectItem(e.getKey(), e.getValue().getLabel())).collect(Collectors.toList()));
 	}
+
+
 	
 	public ChartModel getChartModel() {
 		return chartModel;
