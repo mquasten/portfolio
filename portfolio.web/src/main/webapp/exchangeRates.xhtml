@@ -11,7 +11,7 @@
 <ui:define name="meta">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<f:metadata>
-			
+			<f:viewParam name="filter" value="#{exchangeRates.filter}" />
 			<f:viewAction action="#{exchangeRateController.init()}" />
 
 		</f:metadata>
@@ -35,7 +35,7 @@
 					<f:selectItems value="#{exchangeRates.curves}" />
 					
 				</p:selectOneMenu>
-				<p:commandButton value="anzeigen"   process="@form" update="@form" />
+				<p:commandButton value="anzeigen"   process="@form" update="@form"  action="#{exchangeRateController.show()}"/>
 
 			
 </h:panelGrid>

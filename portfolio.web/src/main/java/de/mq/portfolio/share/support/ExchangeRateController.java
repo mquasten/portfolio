@@ -1,7 +1,6 @@
 package de.mq.portfolio.share.support;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -33,7 +32,7 @@ public abstract class ExchangeRateController {
 	
 	private final Converter<String, String> currencyConverter;
 	
-	private final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	static final String REDIRECT_PATTERN = "exchangeRates?filter=%s&faces-redirect=true";
 	
 	@Autowired
 	ExchangeRateController(final ExchangeRateService exchangeRateService, @Qualifier("currencyConverter") final Converter<String, String> currencyConverter) {
@@ -54,8 +53,12 @@ public abstract class ExchangeRateController {
 		final String title = currencyConverter.convert(exchangeRate.source()) + " - " + currencyConverter.convert(exchangeRate.target());
 		final LineChartSeries series =  new LineChartSeries(title);
 		series.setShowMarker(false);
-		exchangeRate.rates().stream().filter(data -> !data.date().before(startDate) ).forEach(data -> series.set(df.format(data.date()), Double.valueOf(data.value())));
+		exchangeRate.rates().stream().filter(data -> !data.date().before(startDate) ).forEach(data -> series.set(data.date().getTime(), Double.valueOf(data.value())));
 		return series;
+	}
+	
+	public String show() {
+		return String.format(REDIRECT_PATTERN, exchangeRatesAO().getFilter());
 	}
 	
 	

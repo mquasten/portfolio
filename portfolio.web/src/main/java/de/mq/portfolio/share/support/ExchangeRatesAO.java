@@ -1,8 +1,6 @@
 package de.mq.portfolio.share.support;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -17,6 +15,7 @@ import org.primefaces.model.chart.ChartSeries;
 import org.primefaces.model.chart.DateAxis;
 import org.primefaces.model.chart.LegendPlacement;
 import org.primefaces.model.chart.LineChartModel;
+import org.primefaces.model.chart.LineChartSeries;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -56,14 +55,27 @@ public class ExchangeRatesAO implements Serializable {
 	
 	}
 	
-	Date asDate(LocalDateTime localDateTime) {
-	    return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-	  }
+	
 	
 	public final void assign(final Collection<Entry<String, ChartSeries>> charts) {
-		System.out.println(charts);
-		charts.stream().map(e -> e.getValue()).forEach(s -> chartModel.addSeries(s));
+		chartModel.clear();
+		curves.clear();
+		
+		charts.stream().filter(e -> e.getKey().matches(filter)).map(e -> e.getValue()).forEach(s -> chartModel.addSeries(s));
+		
+		addDummyIfEmpty();
+		
+	
 		curves.addAll(charts.stream().map(e -> new SelectItem(e.getKey(), e.getValue().getLabel())).collect(Collectors.toList()));
+	}
+
+	private void addDummyIfEmpty() {
+		if(chartModel.getSeries().stream().mapToInt(s -> s.getData().size()).sum() == 0 ) {
+			final LineChartSeries empty = new LineChartSeries(" ");
+			empty.set(new Date().getTime(), 0);
+		    chartModel.addSeries(empty);
+			
+		}
 	}
 
 
