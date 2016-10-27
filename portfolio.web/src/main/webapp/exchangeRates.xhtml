@@ -12,6 +12,7 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<f:metadata>
 			<f:viewParam name="filter" value="#{exchangeRates.filter}" />
+			<f:viewParam name="period" value="#{exchangeRates.period}" />
 			<f:viewAction action="#{exchangeRateController.init()}" />
 
 		</f:metadata>
@@ -26,15 +27,25 @@
 
 <p:chart type="line" model="#{exchangeRates.chartModel}"  style="height:700px"  />
 		
-			<h:panelGrid columns="3">
+			<h:panelGrid columns="4">
 
 				<p:outputLabel value="Wechselkurs" />
 
-				<p:selectOneMenu value="#{exchangeRates.filter}"  style="width: 300px;" >
+				<p:selectOneMenu value="#{exchangeRates.filter}"  style="width: 150px;" >
 					<f:selectItem itemLabel="Alle" itemValue=".*" />
 					<f:selectItems value="#{exchangeRates.curves}" />
 					
 				</p:selectOneMenu>
+				
+				
+				<p:selectOneMenu value="#{exchangeRates.period}"  style="width: 150px;" >
+					<f:selectItem itemLabel="Alles" itemValue="99999" />
+					<f:selectItem itemLabel="Jahr" 	itemValue="365" />
+					<f:selectItem itemLabel="Monat" itemValue="30" />
+					<f:selectItem itemLabel="Woche" itemValue="7" />
+					
+				</p:selectOneMenu>
+				
 				<p:commandButton value="anzeigen"   process="@form" update="@form"  action="#{exchangeRateController.show()}"/>
 
 			

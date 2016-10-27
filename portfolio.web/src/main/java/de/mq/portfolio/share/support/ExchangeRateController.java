@@ -26,13 +26,13 @@ import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 public abstract class ExchangeRateController {
 	
 	
-	private static final int DAYS_BACK = 365;
+	
 
 	private final ExchangeRateService exchangeRateService;
 	
 	private final Converter<String, String> currencyConverter;
 	
-	static final String REDIRECT_PATTERN = "exchangeRates?filter=%s&faces-redirect=true";
+	static final String REDIRECT_PATTERN = "exchangeRates?filter=%s&period=%s&faces-redirect=true";
 	
 	@Autowired
 	ExchangeRateController(final ExchangeRateService exchangeRateService, @Qualifier("currencyConverter") final Converter<String, String> currencyConverter) {
@@ -42,8 +42,9 @@ public abstract class ExchangeRateController {
 
 
 	public void init() {
-		final Date startDate =  Date.from(LocalDateTime.now().minusDays(DAYS_BACK).truncatedTo(ChronoUnit.DAYS).atZone(ZoneId.systemDefault()).toInstant());
 		final ExchangeRatesAO exchangeRatesAO = exchangeRatesAO();
+		final Date startDate =  Date.from(LocalDateTime.now().minusDays(exchangeRatesAO.period()).truncatedTo(ChronoUnit.DAYS).atZone(ZoneId.systemDefault()).toInstant());
+		
 		final Collection<ExchangeRate> rates = exchangeRateService.exchangeRates();
 		exchangeRatesAO.assign(rates.stream().map(exchangeRate -> new AbstractMap.SimpleImmutableEntry<>( exchangeRate.source() + "-" + exchangeRate.target(), series(exchangeRate, startDate))).collect(Collectors.toList()));
 	}
@@ -58,7 +59,7 @@ public abstract class ExchangeRateController {
 	}
 	
 	public String show() {
-		return String.format(REDIRECT_PATTERN, exchangeRatesAO().getFilter());
+		return String.format(REDIRECT_PATTERN, exchangeRatesAO().getFilter(), exchangeRatesAO().getPeriod());
 	}
 	
 	
