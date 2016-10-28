@@ -1,4 +1,4 @@
-package de.mq.portfolio.share.support;
+package de.mq.portfolio.exchangerate.support;
 
 import java.io.Serializable;
 import java.util.ArrayList;
