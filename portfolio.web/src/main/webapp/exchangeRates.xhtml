@@ -52,6 +52,68 @@
 </h:panelGrid>
 </h:form>
 
+<h:panelGrid>
+
+<p:dataTable id="ratesTable" var="rate"
+				value="#{exchangeRates.exchangeRateRetrospectives}"  lazy="true" resizableColumns="true">
+				
+				<p:column>
+						<f:facet name="header">
+							<h:outputText value="f" />
+						</f:facet>
+
+						<h:outputText value="#{rate.name()}" />
+				</p:column>
+				
+				
+				<p:column>
+						<f:facet name="header">
+							<h:outputText value="T" />
+						</f:facet>
+
+						<h:outputText value="#{rate.startDate()}" >
+							<f:convertDateTime type="date" dateStyle="short" />
+						</h:outputText> -
+						<h:outputText value="#{rate.endDate()}" >
+							<f:convertDateTime type="date" dateStyle="short" />
+						</h:outputText>
+				</p:column>
+				
+				<p:column>
+						<f:facet name="header">
+							<h:outputText value="f(0)" />
+						</f:facet>
+
+						<h:outputText value="#{rate.startValue()}" >
+						<f:convertNumber pattern="#0.0000" />
+						</h:outputText>
+				</p:column>
+				<p:column>
+						<f:facet name="header">
+							<h:outputText value="f(T)" />
+						</f:facet>
+
+						<h:outputText value="#{rate.endValue()}" >
+						 <f:convertNumber pattern="#0.0000" />
+						</h:outputText>
+				</p:column>
+				
+				<p:column>
+						<f:facet name="header">
+							<h:outputText value="Änderung [%]" />
+						</f:facet>
+
+						<h:outputText value="#{100*rate.rate()}" >
+						   <f:convertNumber pattern="#0.00" />
+						</h:outputText>
+				</p:column>
+
+
+</p:dataTable>
+
+
+</h:panelGrid>
+
 </ui:define>
 
 </ui:composition>

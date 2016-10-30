@@ -41,6 +41,10 @@ public class ExchangeRatesAO implements Serializable {
 	private Integer period = DEFAULT_PERIOD;
 
 	private final Collection<SelectItem> curves = new ArrayList<>();
+	
+	final private  Collection<ExchangeRateRetrospective> exchangeRateRetrospectives = new ArrayList<>();
+
+	
 
 	public ExchangeRatesAO() {
 
@@ -105,9 +109,23 @@ public class ExchangeRatesAO implements Serializable {
 			this.period = DEFAULT_PERIOD;
 		}
 	}
+	
+	
+	
 
 	int period() {
 		return period;
 	}
+	
+	public Collection<ExchangeRateRetrospective> getExchangeRateRetrospectives() {
+		return exchangeRateRetrospectives;
+	}
+	
+	void  setExchangeRateRetrospectives(final Collection<ExchangeRateRetrospective> exchangeRateRetrospectives) {
+		this.exchangeRateRetrospectives.clear();
+		this.exchangeRateRetrospectives.addAll(exchangeRateRetrospectives);
+	}
+
+	
 
 }

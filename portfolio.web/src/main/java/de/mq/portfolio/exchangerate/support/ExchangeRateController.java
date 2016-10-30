@@ -5,10 +5,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
+
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,7 +35,7 @@ public abstract class ExchangeRateController {
 	
 	private final Converter<String, String> currencyConverter;
 	
-	private final Collection<ExchangeRateRetrospective> exchangeRateRetrospectives = new ArrayList<>();
+	
 	
 	static final String REDIRECT_PATTERN = "exchangeRates?filter=%s&period=%s&faces-redirect=true";
 	
@@ -56,36 +56,28 @@ public abstract class ExchangeRateController {
 		rates.stream().map(rate -> { 
 			//:TODO extract Builder
 			
-			final Collection<Data> ratesSince = rate.rates().stream().filter(data -> ! data.date().before(initialDate)).collect(Collectors.toList());
+			final List<Data> ratesSince = rate.rates().stream().filter(data -> ! data.date().before(initialDate)).collect(Collectors.toList());
 			
-			final Comparator<Data> comparator = (d1,d2)-> (int)  Math.signum((double)(d1.date().getTime()- d2.date().getTime()));
-			final Optional<Data> start = ratesSince.stream().min(comparator); 
-			
-			final Optional<Data> max = ratesSince.stream().max(comparator); 
 		
-			
-			if( start.isPresent() && max.isPresent()) {
+			final String name = currencyConverter.convert(rate.source()) + "-" +currencyConverter.convert(rate.target());
+			if( ratesSince.size()>1) {
 				
-				return new ExchangeRateRetrospectiveImpl(rate.source() +":" + rate.target(), start.get().date(), max.get().date(),  start.get().value(), max.get().value());
+				return new ExchangeRateRetrospectiveImpl(name, ratesSince.get(0).date(), ratesSince.get(ratesSince.size()-1).date(),  ratesSince.get(0).value(),  ratesSince.get(ratesSince.size()-1).value());
 			}
 			
 			
-			return  new ExchangeRateRetrospectiveImpl(rate.source() +":" + rate.target());
+			return  new ExchangeRateRetrospectiveImpl(name);
 			
 		}).collect(Collectors.toList());
 		
-		exchangeRateRetrospectives.forEach(r -> System.out.println(r.startDate() + "," + r.endDate() + "," + r.rate()));
 		
-		assign(exchangeRateRetrospectives);
+		exchangeRatesAO.setExchangeRateRetrospectives(exchangeRateRetrospectives);
 		
 		exchangeRatesAO.assign(rates.stream().map(exchangeRate -> new AbstractMap.SimpleImmutableEntry<>( exchangeRate.source() + "-" + exchangeRate.target(), series(exchangeRate, startDate))).collect(Collectors.toList()));
 	}
 
 
-	private void assign(final Collection<ExchangeRateRetrospective> exchangeRateRetrospectives) {
-		this.exchangeRateRetrospectives.clear();
-		this.exchangeRateRetrospectives.addAll(exchangeRateRetrospectives);
-	}
+	
 	
 	
 
