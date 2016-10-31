@@ -1,6 +1,9 @@
 package de.mq.portfolio.exchangerate.support;
 
+import java.util.Collection;
 import java.util.Date;
+
+import de.mq.portfolio.share.Data;
 
 public interface ExchangeRateRetrospective {
 
@@ -15,5 +18,7 @@ public interface ExchangeRateRetrospective {
 	String name();
 
 	Double rate();
+
+	Collection<Data> exchangeRates();
 
 }
