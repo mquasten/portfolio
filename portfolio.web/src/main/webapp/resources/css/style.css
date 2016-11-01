@@ -34,3 +34,7 @@ input[type='file'] {
     background-image: url("#{resource['images/delete.png']}") !important;
 }
 
+.ui-icon-reload{
+    background-image: url("#{resource['images/refresh.png']}") !important;
+}
+

@@ -44,6 +44,9 @@ public class ExchangeRatesAO implements Serializable {
 	
 	final private  Collection<ExchangeRateRetrospective> exchangeRateRetrospectives = new ArrayList<>();
 
+	private String portfolioId;
+	
+
 	
 
 	public ExchangeRatesAO() {
@@ -126,6 +129,12 @@ public class ExchangeRatesAO implements Serializable {
 		this.exchangeRateRetrospectives.addAll(exchangeRateRetrospectives);
 	}
 
-	
+	public String getPortfolioId() {
+		return portfolioId;
+	}
+
+	public void setPortfolioId(String portfolioId) {
+		this.portfolioId = portfolioId;
+	}
 
 }

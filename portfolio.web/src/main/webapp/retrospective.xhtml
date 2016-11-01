@@ -7,255 +7,247 @@
 	xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<title>Portfolio</title>
-	
-	<f:metadata>
-			<f:viewParam name="portfolioId" value="#{retrospective.portfolioId}" />
-			<f:viewParam name="filter" value="#{retrospective.filter}" />
-			<f:viewAction action="#{retrospectiveController.init(retrospective)}" />
-	</f:metadata>
 
-</h:head>	
+	<f:metadata>
+		<f:viewParam name="portfolioId" value="#{retrospective.portfolioId}" />
+		<f:viewParam name="filter" value="#{retrospective.filter}" />
+		<f:viewAction action="#{retrospectiveController.init(retrospective)}" />
+	</f:metadata>
+	<h:outputStylesheet library="css" name="style.css" />
+</h:head>
 
 <h:body>
 
-		<h:form>
+	<h:form>
 
 
 
-			<p:chart type="line" model="#{retrospective.chartModel}"
-				style="height:700px" />
+		<p:chart type="line" model="#{retrospective.chartModel}"
+			style="height:700px" />
 
-			<h:panelGrid columns="2">
-			
+		<h:panelGrid columns="3">
+
 			<p:button value="zurück" outcome="portfolios" />
-			<h:panelGrid columns="3">
+			<p:outputLabel style="display: block; width: 15px;" />
+			<h:panelGrid columns="7">
 
 				<p:outputLabel value="Zeifunktion fiktiver Anteil" />
-
+				<p:outputLabel style="display: block; width: 15px;" />
 				<p:selectOneMenu value="#{retrospective.filter}"
 					style="width: 300px;">
 					<f:selectItem itemLabel="Alle" itemValue=".*" />
 					<f:selectItems value="#{retrospective.curves}" />
 				</p:selectOneMenu>
-				<p:commandButton value="anzeigen" process="@form" update="@form"
+				<p:outputLabel style="display: block; width: 15px;" />
+				<p:commandButton icon="ui-icon-reload" process="@form"
+					update="@form"
 					action="#{retrospectiveController.show(retrospective)}" />
 
-				
+		<p:outputLabel style="display: block; width: 15px;" />
+		
+				<p:button  value="Wechselkurse"    outcome="exchangeRatesPortfolio" disabled="#{!retrospective.committedPortfolio.exchangeRateTranslationsAware}">
+        			<f:param name="portfolioId" value="#{retrospective.portfolioId}" /> 
+        		</p:button>
 
 
 			</h:panelGrid>
-			
-			</h:panelGrid>
 
-			<h3>
-				<h:outputText
-					value="Wert der fiktiven Anteile in&nbsp;#{currencyConverter.convert(retrospective.currency)}" />
-			</h3>
-			<h:panelGrid columns="2">
+		</h:panelGrid>
 
-
-				<p:dataTable var="tcr"
-					value="#{retrospective.timeCourseRetrospectives}" lazy="true"
-					resizableColumns="true">
-
-					<p:column>
-						<f:facet name="header">
-							<h:outputText value="Anteil" />
-						</f:facet>
-
-						<h:outputText value="#{tcr.name()}" />
-					</p:column>
+		<h3>
+			<h:outputText
+				value="Wert der fiktiven Anteile in&nbsp;#{currencyConverter.convert(retrospective.currency)}" />
+		</h3>
+		<h:panelGrid columns="2">
 
 
-					<p:column>
-						<f:facet name="header">
-							<h:outputText value="#{retrospective.startDate}">
-								<f:convertDateTime type="date" dateStyle="short" />
-							</h:outputText>
-						</f:facet>
-						<h:outputText value="#{tcr.start()}">
-							<f:convertNumber pattern="#0.00" />
-						</h:outputText>
-					</p:column>
+			<p:dataTable var="tcr"
+				value="#{retrospective.timeCourseRetrospectives}" lazy="true"
+				resizableColumns="true">
+
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Anteil" />
+					</f:facet>
+
+					<h:outputText value="#{tcr.name()}" />
+				</p:column>
 
 
-					<p:column>
-						<f:facet name="header">
-							<h:outputText value="#{retrospective.endDate}">
-								<f:convertDateTime type="date" dateStyle="short" />
-							</h:outputText>
-						</f:facet>
-						<h:outputText value="#{tcr.end()}">
-							<f:convertNumber pattern="#0.00" />
-						</h:outputText>
-					</p:column>
-					<p:column>
-						<f:facet name="header">
-							<h:outputText value="Änderung [%]" />
-
-
-						</f:facet>
-						<h:outputText value="#{tcr.rate()*100}">
-							<f:convertNumber pattern="#0.00" />
-						</h:outputText>
-					</p:column>
-				</p:dataTable>
-
-			</h:panelGrid>
-
-
-			<h3>Entwicklung der Parameter</h3>
-
-			<table
-				style="border-collapse: collapse; margin-bottom: 25px; width: 100%">
-				<tr>
-					<td style="border: 1px solid black;" />
-
-					<th style="border: 1px solid black;" colspan="4"><h:outputText
-							value="#{retrospective.startDate}">
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="#{retrospective.startDate}">
 							<f:convertDateTime type="date" dateStyle="short" />
-						</h:outputText></th>
-					<th style="border: 1px solid black;" colspan="4"><h:outputText
-							value="#{retrospective.endDate}">
+						</h:outputText>
+					</f:facet>
+					<h:outputText value="#{tcr.start()}">
+						<f:convertNumber pattern="#0.00" />
+					</h:outputText>
+				</p:column>
+
+
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="#{retrospective.endDate}">
 							<f:convertDateTime type="date" dateStyle="short" />
-						</h:outputText></th>
-				</tr>
+						</h:outputText>
+					</f:facet>
+					<h:outputText value="#{tcr.end()}">
+						<f:convertNumber pattern="#0.00" />
+					</h:outputText>
+				</p:column>
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Änderung [%]" />
 
+
+					</f:facet>
+					<h:outputText value="#{tcr.rate()*100}">
+						<f:convertNumber pattern="#0.00" />
+					</h:outputText>
+				</p:column>
+			</p:dataTable>
+
+		</h:panelGrid>
+
+
+		<h3>Entwicklung der Parameter</h3>
+
+		<table
+			style="border-collapse: collapse; margin-bottom: 25px; width: 100%">
+			<tr>
+				<td style="border: 1px solid black;" />
+
+				<th style="border: 1px solid black;" colspan="4"><h:outputText
+						value="#{retrospective.startDate}">
+						<f:convertDateTime type="date" dateStyle="short" />
+					</h:outputText></th>
+				<th style="border: 1px solid black;" colspan="4"><h:outputText
+						value="#{retrospective.endDate}">
+						<f:convertDateTime type="date" dateStyle="short" />
+					</h:outputText></th>
+			</tr>
+
+			<tr>
+				<td style="border: 1px solid black;">Aktie</td>
+
+				<td style="border: 1px solid black;">Anteil [%]</td>
+				<td style="border: 1px solid black;">Standardabweichung [‰]</td>
+				<td style="border: 1px solid black;">Rendite [%]</td>
+				<td style="border: 1px solid black;">Dividenden [%]</td>
+
+				<td style="border: 1px solid black;">Anteil [%]</td>
+				<td style="border: 1px solid black;">Standardabweichung [‰]</td>
+				<td style="border: 1px solid black;">Rendite [%]</td>
+				<td style="border: 1px solid black;">Dividenden [%]</td>
+			</tr>
+			<ui:repeat value="#{retrospective.committedPortfolio.timeCourses}"
+				varStatus="status">
 				<tr>
-					<td style="border: 1px solid black;">Aktie</td>
+					<td style="border: 1px solid black;"><h:outputText
+							value="#{retrospective.committedPortfolio.timeCourses[status.index].name()}" /></td>
 
-					<td style="border: 1px solid black;">Anteil [%]</td>
-					<td style="border: 1px solid black;">Standardabweichung [‰]</td>
-					<td style="border: 1px solid black;">Rendite [%]</td>
-					<td style="border: 1px solid black;">Dividenden [%]</td>
-
-					<td style="border: 1px solid black;">Anteil [%]</td>
-					<td style="border: 1px solid black;">Standardabweichung [‰]</td>
-					<td style="border: 1px solid black;">Rendite [%]</td>
-					<td style="border: 1px solid black;">Dividenden [%]</td>
-				</tr>
-				<ui:repeat value="#{retrospective.committedPortfolio.timeCourses}" varStatus="status">
-					<tr>
-						<td style="border: 1px solid black;"><h:outputText
-								value="#{retrospective.committedPortfolio.timeCourses[status.index].name()}" /></td>
-
-						<td style="border: 1px solid black;"><h:outputText
-								value="#{100*retrospective.committedPortfolio.weights[retrospective.committedPortfolio.timeCourses[status.index]]}">
-								<f:convertNumber pattern="#0.00" />
-							</h:outputText></td>
-
-						<td style="border: 1px solid black;"><h:outputText
-								value="#{1000*retrospective.committedPortfolio.timeCourses[status.index].standardDeviation()}">
-								<f:convertNumber pattern="#0.00" />
-							</h:outputText></td>
-
-
-						<td style="border: 1px solid black;"><h:outputText
-								value="#{100*retrospective.committedPortfolio.timeCourses[status.index].totalRate()}">
-								<f:convertNumber pattern="#0.00" />
-							</h:outputText></td>
-
-						<td style="border: 1px solid black;"><h:outputText
-								value="#{100*retrospective.committedPortfolio.timeCourses[status.index].totalRateDividends()}">
-								<f:convertNumber pattern="#0.00" />
-							</h:outputText></td>
-
-
-
-						<td style="border: 1px solid black;"><h:outputText
-								value="#{100*retrospective.currentPortfolio.weights[retrospective.currentPortfolio.timeCourses[status.index]]}">
-								<f:convertNumber pattern="#0.00" />
-							</h:outputText></td>
-
-
-						<td style="border: 1px solid black;"><h:outputText
-								value="#{1000*retrospective.currentPortfolio.timeCourses[status.index].standardDeviation()}">
-								<f:convertNumber pattern="#0.00" />
-							</h:outputText></td>
-
-
-						<td style="border: 1px solid black;"><h:outputText
-								value="#{100*retrospective.currentPortfolio.timeCourses[status.index].totalRate()}">
-								<f:convertNumber pattern="#0.00" />
-							</h:outputText></td>
-
-						<td style="border: 1px solid black;"><h:outputText
-								value="#{100*retrospective.currentPortfolio.timeCourses[status.index].totalRateDividends()}">
-								<f:convertNumber pattern="#0.00" />
-							</h:outputText></td>
-
-					</tr>
-				</ui:repeat>
-
-				<tr>
-					<td style="border: 1px solid black;" />
-					<td style="border: 1px solid black;" />
-
-
-
-					<th style="border: 1px solid black;"><h:outputText
-							value="#{1000*retrospective.committedPortfolio.minStandardDeviation}">
+					<td style="border: 1px solid black;"><h:outputText
+							value="#{100*retrospective.committedPortfolio.weights[retrospective.committedPortfolio.timeCourses[status.index]]}">
 							<f:convertNumber pattern="#0.00" />
-						</h:outputText></th>
+						</h:outputText></td>
 
-					<th style="border: 1px solid black;"><h:outputText
-							value="#{100*retrospective.committedPortfolio.totalRate}">
+					<td style="border: 1px solid black;"><h:outputText
+							value="#{1000*retrospective.committedPortfolio.timeCourses[status.index].standardDeviation()}">
 							<f:convertNumber pattern="#0.00" />
-						</h:outputText></th>
-						
-						
-					
-
-					<th style="border: 1px solid black;"><h:outputText
-							value="#{100*retrospective.committedPortfolio.totalRateDividends}">
-							<f:convertNumber pattern="#0.00" />
-						</h:outputText></th>
+						</h:outputText></td>
 
 
-					<td style="border: 1px solid black;" />
+					<td style="border: 1px solid black;"><h:outputText
+							value="#{100*retrospective.committedPortfolio.timeCourses[status.index].totalRate()}">
+							<f:convertNumber pattern="#0.00" />
+						</h:outputText></td>
 
-					<th style="border: 1px solid black;">
-					<h:outputText value="#{1000*retrospective.currentPortfolio.minStandardDeviation}">
+					<td style="border: 1px solid black;"><h:outputText
+							value="#{100*retrospective.committedPortfolio.timeCourses[status.index].totalRateDividends()}">
 							<f:convertNumber pattern="#0.00" />
-						</h:outputText>
-						/
-						<h:outputText value="#{1000*retrospective.standardDeviation}">
-							<f:convertNumber pattern="#0.00" />
-						</h:outputText>
-						
-						
-						
-						
-						</th>
+						</h:outputText></td>
 
-					<th style="border: 1px solid black;"><h:outputText
-							value="#{100*retrospective.currentPortfolio.totalRate}">
+
+
+					<td style="border: 1px solid black;"><h:outputText
+							value="#{100*retrospective.currentPortfolio.weights[retrospective.currentPortfolio.timeCourses[status.index]]}">
 							<f:convertNumber pattern="#0.00" />
-						</h:outputText>
-						/
-						<h:outputText
-							value="#{100*retrospective.totalRate}">
+						</h:outputText></td>
+
+
+					<td style="border: 1px solid black;"><h:outputText
+							value="#{1000*retrospective.currentPortfolio.timeCourses[status.index].standardDeviation()}">
 							<f:convertNumber pattern="#0.00" />
-						</h:outputText>
-						</th>
-					<th style="border: 1px solid black;"><h:outputText
-							value="#{100*retrospective.currentPortfolio.totalRateDividends}">
+						</h:outputText></td>
+
+
+					<td style="border: 1px solid black;"><h:outputText
+							value="#{100*retrospective.currentPortfolio.timeCourses[status.index].totalRate()}">
 							<f:convertNumber pattern="#0.00" />
-						</h:outputText>
-					/
-					
-					<h:outputText
-							value="#{100*retrospective.totalRateDividends}">
+						</h:outputText></td>
+
+					<td style="border: 1px solid black;"><h:outputText
+							value="#{100*retrospective.currentPortfolio.timeCourses[status.index].totalRateDividends()}">
 							<f:convertNumber pattern="#0.00" />
-					</h:outputText>	
-					</th>
-						
+						</h:outputText></td>
 
 				</tr>
-			</table>
+			</ui:repeat>
 
-		</h:form>
+			<tr>
+				<td style="border: 1px solid black;" />
+				<td style="border: 1px solid black;" />
+
+
+
+				<th style="border: 1px solid black;"><h:outputText
+						value="#{1000*retrospective.committedPortfolio.minStandardDeviation}">
+						<f:convertNumber pattern="#0.00" />
+					</h:outputText></th>
+
+				<th style="border: 1px solid black;"><h:outputText
+						value="#{100*retrospective.committedPortfolio.totalRate}">
+						<f:convertNumber pattern="#0.00" />
+					</h:outputText></th>
+
+
+
+
+				<th style="border: 1px solid black;"><h:outputText
+						value="#{100*retrospective.committedPortfolio.totalRateDividends}">
+						<f:convertNumber pattern="#0.00" />
+					</h:outputText></th>
+
+
+				<td style="border: 1px solid black;" />
+
+				<th style="border: 1px solid black;"><h:outputText
+						value="#{1000*retrospective.currentPortfolio.minStandardDeviation}">
+						<f:convertNumber pattern="#0.00" />
+					</h:outputText> / <h:outputText value="#{1000*retrospective.standardDeviation}">
+						<f:convertNumber pattern="#0.00" />
+					</h:outputText></th>
+
+				<th style="border: 1px solid black;"><h:outputText
+						value="#{100*retrospective.currentPortfolio.totalRate}">
+						<f:convertNumber pattern="#0.00" />
+					</h:outputText> / <h:outputText value="#{100*retrospective.totalRate}">
+						<f:convertNumber pattern="#0.00" />
+					</h:outputText></th>
+				<th style="border: 1px solid black;"><h:outputText
+						value="#{100*retrospective.currentPortfolio.totalRateDividends}">
+						<f:convertNumber pattern="#0.00" />
+					</h:outputText> / <h:outputText value="#{100*retrospective.totalRateDividends}">
+						<f:convertNumber pattern="#0.00" />
+					</h:outputText></th>
+
+
+			</tr>
+		</table>
+
+	</h:form>
 
 </h:body>
-	
+
 </html>

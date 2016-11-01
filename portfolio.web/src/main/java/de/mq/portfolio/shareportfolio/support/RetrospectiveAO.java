@@ -145,6 +145,9 @@ public class RetrospectiveAO implements Serializable {
 		ratesSeries.add(startLine);
 
 		assign(ratesSeries);
+		
+		
+		
 
 	}
 

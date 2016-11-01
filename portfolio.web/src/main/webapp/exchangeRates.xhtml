@@ -4,9 +4,11 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:er="http://java.sun.com/jsf/composite/exchangerates"
+	
 	xmlns:p="http://primefaces.org/ui">
 <ui:composition template="template.xhtml">
-	<ui:param name="headline" value="Wechselkurse anzeigen" />
+	<ui:param name="headline" value="#{message.exchangerates_title}" />
 
 <ui:define name="meta">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -22,98 +24,16 @@
 
 <ui:define name="content">
 
-<h:form> 
-
-
-<p:chart type="line" model="#{exchangeRates.chartModel}"  style="height:700px"  />
-		
-			<h:panelGrid columns="4">
-
-				<p:outputLabel value="Wechselkurs" />
-
-				<p:selectOneMenu value="#{exchangeRates.filter}"  style="width: 150px;" >
-					<f:selectItem itemLabel="Alle" itemValue=".*" />
-					<f:selectItems value="#{exchangeRates.curves}" />
-					
-				</p:selectOneMenu>
-				
-				
-				<p:selectOneMenu value="#{exchangeRates.period}"  style="width: 150px;" >
-					<f:selectItem itemLabel="Alles" itemValue="99999" />
-					<f:selectItem itemLabel="Jahr" 	itemValue="365" />
-					<f:selectItem itemLabel="Monat" itemValue="30" />
-					<f:selectItem itemLabel="Woche" itemValue="7" />
-					
-				</p:selectOneMenu>
-				
-				<p:commandButton value="anzeigen"   process="@form" update="@form"  action="#{exchangeRateController.show()}"/>
-
-			
-</h:panelGrid>
-</h:form>
-
-<h:panelGrid>
-
-<p:dataTable id="ratesTable" var="rate"
-				value="#{exchangeRates.exchangeRateRetrospectives}"  lazy="true" resizableColumns="true">
-				
-				<p:column>
-						<f:facet name="header">
-							<h:outputText value="f" />
-						</f:facet>
-
-						<h:outputText value="#{rate.name()}" />
-				</p:column>
-				
-				
-				<p:column>
-						<f:facet name="header">
-							<h:outputText value="T" />
-						</f:facet>
-
-						<h:outputText value="#{rate.startDate()}" >
-							<f:convertDateTime type="date" dateStyle="short" />
-						</h:outputText> -
-						<h:outputText value="#{rate.endDate()}" >
-							<f:convertDateTime type="date" dateStyle="short" />
-						</h:outputText>
-				</p:column>
-				
-				<p:column>
-						<f:facet name="header">
-							<h:outputText value="f(0)" />
-						</f:facet>
-
-						<h:outputText value="#{rate.startValue()}" >
-						<f:convertNumber pattern="#0.0000" />
-						</h:outputText>
-				</p:column>
-				<p:column>
-						<f:facet name="header">
-							<h:outputText value="f(T)" />
-						</f:facet>
-
-						<h:outputText value="#{rate.endValue()}" >
-						 <f:convertNumber pattern="#0.0000" />
-						</h:outputText>
-				</p:column>
-				
-				<p:column>
-						<f:facet name="header">
-							<h:outputText value="Änderung [%]" />
-						</f:facet>
-
-						<h:outputText value="#{100*rate.rate()}" >
-						   <f:convertNumber pattern="#0.00" />
-						</h:outputText>
-				</p:column>
-
-
-</p:dataTable>
-
-
-</h:panelGrid>
-
+<er:chart
+		chartModel="#{exchangeRates.chartModel}"
+    	filter="#{exchangeRates.filter}"
+    	curves="#{exchangeRates.curves}"
+    	period="#{exchangeRates.period}"
+    	showAction="#{exchangeRateController.show()}" />
+    	
+<h3 style="text-align: center;"> <h:outputText value="#{message.exchangerates_retrospective}" /></h3>
+<er:retrospective retrospectives="#{exchangeRates.exchangeRateRetrospectives}"  />
+    	
 </ui:define>
 
 </ui:composition>

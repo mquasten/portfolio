@@ -46,6 +46,8 @@ public class PortfolioAO implements Serializable {
 	private String currency;
 
 	private Double totalRateDividends;
+	
+	private boolean exchangeRateTranslationsAware=false;
 
 	public String getName() {
 		return name;
@@ -80,7 +82,7 @@ public class PortfolioAO implements Serializable {
 		this.totalRate = sharePortfolio.totalRate(exchangeRateCalculator.get());
 
 		this.totalRateDividends = sharePortfolio.totalRateDividends(exchangeRateCalculator.get());
-
+		exchangeRateTranslationsAware=!sharePortfolio.exchangeRateTranslations().isEmpty();
 	}
 
 	public SharePortfolio getSharePortfolio() {
@@ -136,6 +138,10 @@ public class PortfolioAO implements Serializable {
 
 	public String getCurrency() {
 		return currency;
+	}
+	
+	public boolean getExchangeRateTranslationsAware() {
+		return exchangeRateTranslationsAware;
 	}
 
 }

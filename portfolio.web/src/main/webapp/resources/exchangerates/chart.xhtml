@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:composite="http://java.sun.com/jsf/composite">
+
+    <composite:interface>
+
+    	<composite:attribute name="chartModel" />
+    	<composite:attribute name="filter" />
+    	<composite:attribute name="curves" />
+    	<composite:attribute name="period" />
+    	
+    	
+    	<composite:attribute name="showAction"  method-signature="java.lang.String action()" />
+
+   	
+
+    </composite:interface>
+
+    <composite:implementation>
+
+	<h:form> 
+
+
+<p:chart type="line" model="#{cc.attrs.chartModel}"  style="height:700px;"  />
+		
+		
+			<h:panelGrid columns="7"  >
+
+				<p:outputLabel value="f" style="display: block; width: 15px;" />
+
+				<p:selectOneMenu value="#{cc.attrs.filter}"  style="width: 150px;" >
+					<f:selectItem itemLabel="#{message.cc_exchangerates_chart_filter_all}" itemValue=".*" />
+					<f:selectItems value="#{cc.attrs.curves}" />
+					
+				</p:selectOneMenu>
+				<p:outputLabel   style="display: block; width: 25px;" />
+				<p:outputLabel value="T" style="display: block; width: 15px;" />
+				<p:selectOneMenu value="#{cc.attrs.period}"  style="width: 150px;" >
+					<f:selectItem itemLabel="#{message.cc_exchangerates_chart_period_all}" itemValue="99999" />
+					<f:selectItem itemLabel="#{message.cc_exchangerates_chart_period_year}" 	itemValue="365" />
+					<f:selectItem itemLabel="#{message.cc_exchangerates_chart_period_month}" itemValue="30" />
+					<f:selectItem itemLabel="#{message.cc_exchangerates_chart_period_week}" itemValue="7" />
+					
+				</p:selectOneMenu>
+				<p:outputLabel   style="display: block; width: 25px;" />
+				<p:commandButton icon="ui-icon-reload"   process="@form" update="@form"  action="#{cc.attrs.showAction}" />
+
+			
+</h:panelGrid>
+
+
+</h:form>
+
+    </composite:implementation>
+
+</html>
