@@ -19,4 +19,6 @@ public interface ExchangeRateService {
 
 	Collection<ExchangeRate> exchangeRates();
 
+	Collection<ExchangeRate> exchangeRates(Collection<ExchangeRate> exchangeRates);
+
 }

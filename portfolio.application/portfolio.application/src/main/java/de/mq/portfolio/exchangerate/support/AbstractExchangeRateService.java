@@ -78,6 +78,17 @@ abstract class AbstractExchangeRateService implements ExchangeRateService {
 	public final ExchangeRateCalculator exchangeRateCalculator() {
 		return newBuilder().withExchangeRates(exchangeRateDatebaseRepository.exchangerates()).build();
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.exchangerate.support.ExchangeRateService#exchangeRates(java.util.Collection)
+	 */
+	@Override
+	public final Collection<ExchangeRate> exchangeRates(Collection<ExchangeRate> exchangeRates) {
+		return exchangeRateDatebaseRepository.exchangerates(exchangeRates);
+	}
+	
+
 
 	@Lookup
 	abstract ExchangeRateCalculatorBuilder newBuilder();

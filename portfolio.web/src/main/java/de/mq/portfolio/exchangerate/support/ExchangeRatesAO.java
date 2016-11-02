@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 public class ExchangeRatesAO implements Serializable {
 
 	private static final String DEFAULT_FILTER = ".*";
-	private static final int DEFAULT_PERIOD = 365;
+	private static final int DEFAULT_PERIOD = 99999;
 	/**
 	 * Stone age (JSF) ...
 	 */

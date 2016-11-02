@@ -5,7 +5,7 @@ import java.util.Collection;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
-interface SharePortfolioRetrospective {
+public interface SharePortfolioRetrospective {
 
 	SharePortfolio committedSharePortfolio();
 

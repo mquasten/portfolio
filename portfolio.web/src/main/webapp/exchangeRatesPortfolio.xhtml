@@ -5,35 +5,48 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:er="http://java.sun.com/jsf/composite/exchangerates"
-	
 	xmlns:p="http://primefaces.org/ui">
 
 
 <h:head>
 	<title>Portfolio</title>
-	
-	
-<f:metadata>
-  <f:viewParam name="portfolioId" value="#{exchangeRates.portfolioId}" />
- 
-    
-</f:metadata>
-	
-	<h:outputStylesheet library="css" name="style.css"  />
+
+
+	<f:metadata>
+		<f:viewParam name="portfolioId" value="#{exchangeRates.portfolioId}" />
+		<f:viewParam name="filter" value="#{exchangeRates.filter}" />
+		<f:viewParam name="period" value="#{exchangeRates.period}" />
+		<f:viewAction action="#{exchangeRateController.init()}" />
+
+	</f:metadata>
+
+	<h:outputStylesheet library="css" name="style.css" />
 </h:head>
 
 <h:body>
-<h3 style="text-align:center;"> <h:outputText value="Wechselkurse Portfolio" /> </h3>
+	<h3 style="text-align: center;">
+		<h:outputText value="Wechselkurse Portfolio" />
+	</h3>
 
- <h:panelGrid style="width: 100%;">
-         <h:panelGroup style="display:block; text-align:center">
-            <p:button  value="zurück" outcome="retrospective"  >
-            
-            <f:param name="portfolioId"   value="#{exchangeRates.portfolioId}" />
-            </p:button>
-         </h:panelGroup>
-     
-  </h:panelGrid>
+
+	<er:chart chartModel="#{exchangeRates.chartModel}"
+		filter="#{exchangeRates.filter}" curves="#{exchangeRates.curves}"
+		period="#{exchangeRates.period}"
+		showAction="#{exchangeRateController.show()}" />
+		
+		
+	<h3 style="text-align: center;"> <h:outputText value="#{message.exchangerates_retrospective}" /></h3>
+<er:retrospective retrospectives="#{exchangeRates.exchangeRateRetrospectives}"  />	
+
+	<h:panelGrid style="width: 100%;">
+		<h:panelGroup style="display:block; text-align:center">
+			<p:button value="zurück" outcome="retrospective">
+
+				<f:param name="portfolioId" value="#{exchangeRates.portfolioId}" />
+			</p:button>
+		</h:panelGroup>
+
+	</h:panelGrid>
 
 </h:body>
 </html>
