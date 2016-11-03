@@ -25,7 +25,10 @@
 
 <h:body>
 	<h3 style="text-align: center;">
-		<h:outputText value="Wechselkurse Portfolio" />
+	
+	<h:outputFormat value="#{message.exchangerates_portfolio_title}">
+		<f:param value="#{exchangeRates.portfolioName}" />
+	</h:outputFormat>
 	</h3>
 
 
@@ -35,7 +38,13 @@
 		showAction="#{exchangeRateController.show()}" />
 		
 		
-	<h3 style="text-align: center;"> <h:outputText value="#{message.exchangerates_retrospective}" /></h3>
+	<h3 style="text-align: center;"> 
+	<h:outputFormat value="#{message.exchangerates_portfolio_retrospective}">
+		<f:param value="#{exchangeRates.portfolioName}" />
+	</h:outputFormat>
+	
+	
+	</h3>
 <er:retrospective retrospectives="#{exchangeRates.exchangeRateRetrospectives}"  />	
 
 	<h:panelGrid style="width: 100%;">

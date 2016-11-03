@@ -26,7 +26,8 @@ import org.springframework.stereotype.Component;
 public class ExchangeRatesAO implements Serializable {
 
 	private static final String DEFAULT_FILTER = ".*";
-	private static final int DEFAULT_PERIOD = 99999;
+
+	static final int PERIOD_FOREVER = 99999;
 	/**
 	 * Stone age (JSF) ...
 	 */
@@ -38,16 +39,15 @@ public class ExchangeRatesAO implements Serializable {
 
 	private String filter = DEFAULT_FILTER;
 
-	private Integer period = DEFAULT_PERIOD;
+	private Integer period = PERIOD_FOREVER;
 
 	private final Collection<SelectItem> curves = new ArrayList<>();
-	
-	final private  Collection<ExchangeRateRetrospective> exchangeRateRetrospectives = new ArrayList<>();
+
+	final private Collection<ExchangeRateRetrospective> exchangeRateRetrospectives = new ArrayList<>();
 
 	private String portfolioId;
-	
 
-	
+	private String portfolioName;
 
 	public ExchangeRatesAO() {
 
@@ -109,22 +109,27 @@ public class ExchangeRatesAO implements Serializable {
 		try {
 			this.period = Integer.parseInt(period);
 		} catch (final NumberFormatException nf) {
-			this.period = DEFAULT_PERIOD;
+			this.period = PERIOD_FOREVER;
 		}
 	}
-	
-	
-	
+
+	public String getPortfolioName() {
+		return portfolioName;
+	}
+
+	void setPortfolioName(final String portfolioName) {
+		this.portfolioName = portfolioName;
+	}
 
 	int period() {
 		return period;
 	}
-	
+
 	public Collection<ExchangeRateRetrospective> getExchangeRateRetrospectives() {
 		return exchangeRateRetrospectives;
 	}
-	
-	void  setExchangeRateRetrospectives(final Collection<ExchangeRateRetrospective> exchangeRateRetrospectives) {
+
+	void setExchangeRateRetrospectives(final Collection<ExchangeRateRetrospective> exchangeRateRetrospectives) {
 		this.exchangeRateRetrospectives.clear();
 		this.exchangeRateRetrospectives.addAll(exchangeRateRetrospectives);
 	}
