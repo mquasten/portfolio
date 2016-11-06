@@ -97,4 +97,22 @@ public class ExchangeRateServiceTest {
 	    Assert.assertEquals(exchangeRateDatebaseRepository, results.get(ExchangeRateDatebaseRepository.class));
 	}
 	
+	@Test
+	public final void exchangeRates() {
+		Mockito.when(exchangeRateDatebaseRepository.exchangerates()).thenReturn(exchangeRates);
+		
+		Assert.assertEquals(exchangeRates, exchangeRateService.exchangeRates());
+		
+		Mockito.verify(exchangeRateDatebaseRepository).exchangerates();
+	}
+	
+	
+	@Test
+	public final void exchangeRates2() {
+		Mockito.when(exchangeRateDatebaseRepository.exchangerates(exchangeRates)).thenReturn(exchangeRates);
+		Assert.assertEquals(exchangeRates, exchangeRateService.exchangeRates(exchangeRates));
+		Mockito.verify(exchangeRateDatebaseRepository).exchangerates(exchangeRates);
+	}
+	
+	
 }
