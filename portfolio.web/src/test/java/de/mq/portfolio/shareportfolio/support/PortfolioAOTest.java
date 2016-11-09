@@ -1,6 +1,7 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
@@ -42,6 +44,7 @@ public class PortfolioAOTest {
 	private final Map<String, Double> corelations02 = new HashMap<>();
 
 	private final Map<TimeCourse, Double> weights = new HashMap<>();
+	private final ExchangeRate exchangeRate = Mockito.mock(ExchangeRate.class);
 
 	@Before
 	public final void setup() {
@@ -75,6 +78,8 @@ public class PortfolioAOTest {
 		Mockito.when(sharePortfolio.totalRate(exchangeRateCalculator)).thenReturn(TOTAL_RATE);
 
 		Mockito.when(sharePortfolio.totalRateDividends(exchangeRateCalculator)).thenReturn(TOTAL_RATE_DIVIDENTS);
+		
+		Mockito.when(sharePortfolio.exchangeRateTranslations()).thenReturn(Arrays.asList(exchangeRate));
 	}
 
 	@Test
@@ -113,6 +118,11 @@ public class PortfolioAOTest {
 		Mockito.when(sharePortfolio.isCommitted()).thenReturn(false);
 		portfolioAO.setSharePortfolio(sharePortfolio, Optional.of(exchangeRateCalculator));
 		Assert.assertTrue(portfolioAO.getEditable());
+		
+		Assert.assertTrue(portfolioAO.getExchangeRateTranslationsAware());
+		Mockito.when(sharePortfolio.exchangeRateTranslations()).thenReturn(new ArrayList<>());
+		portfolioAO.setSharePortfolio(sharePortfolio, Optional.of(exchangeRateCalculator));
+		Assert.assertFalse(portfolioAO.getExchangeRateTranslationsAware());
 	}
 
 	@Test
