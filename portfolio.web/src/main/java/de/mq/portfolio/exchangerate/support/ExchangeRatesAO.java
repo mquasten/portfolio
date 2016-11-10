@@ -25,6 +25,10 @@ import org.springframework.stereotype.Component;
 @Scope("view")
 public class ExchangeRatesAO implements Serializable {
 
+	static final String ORDINATE_TITLE = "Wechselkurs";
+
+	static final String DATE_AXIS_TITLE = "t";
+
 	private static final String DEFAULT_FILTER = ".*";
 
 	static final int PERIOD_FOREVER = 99999;
@@ -33,7 +37,7 @@ public class ExchangeRatesAO implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private final LineChartModel chartModel = new LineChartModel();
-	final DateAxis axis = new DateAxis("t");
+	final DateAxis axis = new DateAxis(DATE_AXIS_TITLE);
 	static final String TICKFORMAT = "%b %#d, %y";
 	static final String LEGEGEND_POSITION = "e";
 
@@ -56,7 +60,7 @@ public class ExchangeRatesAO implements Serializable {
 		chartModel.setLegendPosition(LEGEGEND_POSITION);
 		chartModel.setLegendPlacement(LegendPlacement.OUTSIDEGRID);
 
-		chartModel.getAxis(AxisType.Y).setLabel("Wechselkurs");
+		chartModel.getAxis(AxisType.Y).setLabel(ORDINATE_TITLE);
 
 	}
 
@@ -73,11 +77,14 @@ public class ExchangeRatesAO implements Serializable {
 
 	private void addDummyIfEmpty() {
 		if (chartModel.getSeries().stream().mapToInt(s -> s.getData().size()).sum() == 0) {
-			final LineChartSeries empty = new LineChartSeries(" ");
-			empty.set(new Date().getTime(), 0);
-			chartModel.addSeries(empty);
-
+			chartModel.addSeries(dummyEntry());
 		}
+	}
+
+	private LineChartSeries dummyEntry() {
+		final LineChartSeries empty = new LineChartSeries(" ");
+		empty.set(new Date().getTime(), 0);
+		return empty;
 	}
 
 	public ChartModel getChartModel() {
