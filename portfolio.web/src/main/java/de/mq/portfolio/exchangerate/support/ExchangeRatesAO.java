@@ -29,7 +29,7 @@ public class ExchangeRatesAO implements Serializable {
 
 	static final String DATE_AXIS_TITLE = "t";
 
-	private static final String DEFAULT_FILTER = ".*";
+	static final String DEFAULT_FILTER = ".*";
 
 	static final int PERIOD_FOREVER = 99999;
 	/**
