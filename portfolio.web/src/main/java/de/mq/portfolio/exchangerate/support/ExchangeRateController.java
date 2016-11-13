@@ -37,6 +37,8 @@ public abstract class ExchangeRateController {
 
 	static final String REDIRECT_PATTERN = "exchangeRates?filter=%s&period=%s&faces-redirect=true";
 	static final String REDIRECT_PATTERN_PORTFOLIO = "exchangeRatesPortfolio?portfolioId=%s&filter=%s&period=%s&faces-redirect=true";
+	
+	
 
 	@Autowired
 	ExchangeRateController(final ExchangeRateService exchangeRateService, final SharePortfolioService sharePortfolioService, @Qualifier("currencyConverter") final Converter<String, String> currencyConverter) {
@@ -52,6 +54,7 @@ public abstract class ExchangeRateController {
 
 		dates.add(Date.from(LocalDateTime.now().minusDays(exchangeRatesAO.period()).truncatedTo(ChronoUnit.DAYS).atZone(ZoneId.systemDefault()).toInstant()));
 
+		
 		final Collection<ExchangeRate> rates = new ArrayList<>();
 		rates(exchangeRatesAO, rates, dates);
 		exchangeRatesAO.setExchangeRateRetrospectives(
