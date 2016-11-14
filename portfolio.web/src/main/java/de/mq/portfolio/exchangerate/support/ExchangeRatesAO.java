@@ -64,7 +64,7 @@ public class ExchangeRatesAO implements Serializable {
 
 	}
 
-	public final void assign(final Collection<Entry<String, ChartSeries>> charts) {
+	public  void assign(final Collection<Entry<String, ChartSeries>> charts) {
 		
 	
 		chartModel.clear();

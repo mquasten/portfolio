@@ -57,8 +57,10 @@ public abstract class ExchangeRateController {
 		
 		final Collection<ExchangeRate> rates = new ArrayList<>();
 		rates(exchangeRatesAO, rates, dates);
+		
+	
 		exchangeRatesAO.setExchangeRateRetrospectives(
-				rates.stream().map(rate -> exchangeRateRetrospectiveBuilder().withName(currencyConverter.convert(rate.source()) + "-" + currencyConverter.convert(rate.target())).withStartDate(Collections.max(dates)).withExchangeRates(rate.rates()).build()).collect(Collectors.toList()));
+				rates.stream().map(rate ->  exchangeRateRetrospectiveBuilder().withName(currencyConverter.convert(rate.source()) + "-" + currencyConverter.convert(rate.target())).withStartDate(Collections.max(dates)).withExchangeRates(rate.rates()).build()).collect(Collectors.toList()));
 
 		exchangeRatesAO.assign(rates.stream().map(exchangeRate -> new AbstractMap.SimpleImmutableEntry<>(exchangeRate.source() + "-" + exchangeRate.target(), series(exchangeRate, Collections.max(dates)))).collect(Collectors.toList()));
 	}
@@ -68,17 +70,24 @@ public abstract class ExchangeRateController {
 			rates.addAll(exchangeRateService.exchangeRates());
 			return;
 		}
+		
 		final SharePortfolioRetrospective sharePortfolioRetrospective = sharePortfolioService.retrospective(exchangeRatesAO.getPortfolioId());
+		
+		
+		
+		
 		rates.addAll(exchangeRateService.exchangeRates(sharePortfolioRetrospective.committedSharePortfolio().exchangeRateTranslations()));
 		dates.add(sharePortfolioRetrospective.initialRateWithExchangeRate().date());
+		
 		exchangeRatesAO.setPortfolioName(sharePortfolioRetrospective.committedSharePortfolio().name());
 
 	}
 
 	private ChartSeries series(final ExchangeRate exchangeRate, final Date startDate) {
-		final ExchangeRateRetrospective exchangeRateRetrospective = exchangeRateRetrospectiveBuilder().withName(currencyConverter.convert(exchangeRate.source()) + " - " + currencyConverter.convert(exchangeRate.target())).withStartDate(startDate).withExchangeRates(exchangeRate.rates()).build();
+		final ExchangeRateRetrospective exchangeRateRetrospective = exchangeRateRetrospectiveBuilder().withName(currencyConverter.convert(exchangeRate.source()) + "-" + currencyConverter.convert(exchangeRate.target())).withStartDate(startDate).withExchangeRates(exchangeRate.rates()).build();
 		final LineChartSeries series = new LineChartSeries(exchangeRateRetrospective.name());
 		series.setShowMarker(false);
+		
 		exchangeRateRetrospective.exchangeRates().forEach(data -> series.set(data.date().getTime(), Double.valueOf(data.value())));
 		return series;
 	}
