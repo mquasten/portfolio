@@ -139,4 +139,34 @@ public class ExchangeRateControllerTest {
 		
 		Assert.assertEquals(INITIAL_VALUE, result.getValue().getData().entrySet().stream().findAny().get().getValue());
 	}
+	
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public final void initWithoutPortfolio() {
+		Mockito.when(exchangeRatesAO.getPortfolioId()).thenReturn(null);
+		Date date = Date.from(LocalDateTime.now().minusDays(exchangeRatesAO.period()).truncatedTo(ChronoUnit.DAYS).atZone(ZoneId.systemDefault()).toInstant());
+		Mockito.when(exchangeRateRetrospectiveBuilder.withStartDate(date)).thenReturn(exchangeRateRetrospectiveBuilder);
+		Mockito.when(exchangeRateService.exchangeRates()).thenReturn(Arrays.asList(exchangeRate));
+		exchangeRateController.init();
+		
+		Mockito.verify(exchangeRatesAO).setExchangeRateRetrospectives(Arrays.asList(exchangeRateRetrospective));
+		Mockito.verify(exchangeRateService).exchangeRates();
+		Mockito.verify(exchangeRateService, Mockito.never()).exchangeRates(Mockito.any());
+		
+		Mockito.verify(sharePortfolioService, Mockito.never()).retrospective(PORTFOLIO_ID);
+		Mockito.verify(exchangeRatesAO, Mockito.never()).setPortfolioName(PORTFOLIO_NAME);
+		Mockito.verify(exchangeRatesAO).assign(entriesCaptor.capture());
+		
+		Assert.assertEquals(1, entriesCaptor.getValue().size());
+		
+		final Entry<String,LineChartSeries> result = (Entry<String, LineChartSeries>) entriesCaptor.getValue().stream().findFirst().get();
+		
+		Assert.assertEquals("EUR-USD", result.getKey());
+		Assert.assertEquals(1, result.getValue().getData().entrySet().size());
+		
+		Assert.assertEquals(initialDate.getTime(), result.getValue().getData().entrySet().stream().findAny().get().getKey());
+		
+		Assert.assertEquals(INITIAL_VALUE, result.getValue().getData().entrySet().stream().findAny().get().getValue());
+	}
 }
