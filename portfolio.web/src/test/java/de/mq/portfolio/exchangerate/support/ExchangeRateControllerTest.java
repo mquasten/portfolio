@@ -1,5 +1,7 @@
 package de.mq.portfolio.exchangerate.support;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -19,6 +21,7 @@ import org.mockito.Mockito;
 
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
+
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -168,5 +171,39 @@ public class ExchangeRateControllerTest {
 		Assert.assertEquals(initialDate.getTime(), result.getValue().getData().entrySet().stream().findAny().get().getKey());
 		
 		Assert.assertEquals(INITIAL_VALUE, result.getValue().getData().entrySet().stream().findAny().get().getValue());
+	}
+	
+	@Test
+	public final void show() {
+		Mockito.when(exchangeRatesAO.getFilter()).thenReturn(ExchangeRatesAO.DEFAULT_FILTER);
+		Mockito.when(exchangeRatesAO.getPeriod()).thenReturn(""+ ExchangeRatesAO.PERIOD_FOREVER);
+		
+		Assert.assertEquals(String.format(ExchangeRateController.REDIRECT_PATTERN_PORTFOLIO, PORTFOLIO_ID,ExchangeRatesAO.DEFAULT_FILTER, ExchangeRatesAO.PERIOD_FOREVER ), exchangeRateController.show());
+	}
+	
+	@Test
+	public final void showAll() {
+		Mockito.when(exchangeRatesAO.getPortfolioId()).thenReturn(null);
+		Mockito.when(exchangeRatesAO.getFilter()).thenReturn(ExchangeRatesAO.DEFAULT_FILTER);
+		Mockito.when(exchangeRatesAO.getPeriod()).thenReturn(""+ ExchangeRatesAO.PERIOD_FOREVER);
+		Assert.assertEquals(String.format(ExchangeRateController.REDIRECT_PATTERN, ExchangeRatesAO.DEFAULT_FILTER, ExchangeRatesAO.PERIOD_FOREVER), exchangeRateController.show());
+	}
+	
+	@Test
+	public final void dependencies() throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		
+		final Map<Class<?>, Object> dependencies = new HashMap<>();
+		final Constructor<? extends ExchangeRateController> constructor =  Mockito.mock(ExchangeRateController.class).getClass().getDeclaredConstructor(ExchangeRateService.class, SharePortfolioService.class, Converter.class);
+	   
+		final ExchangeRateController exchangeRateController = constructor.newInstance(exchangeRateService, sharePortfolioService, currencyConverter);
+		
+		Arrays.asList(ExchangeRateController.class.getDeclaredFields()).stream().forEach(field  ->dependencies.put(field.getType(), ReflectionTestUtils.getField(exchangeRateController, field.getName())));
+		
+		
+		Assert.assertEquals(exchangeRateService, dependencies.get(ExchangeRateService.class));
+		Assert.assertEquals(sharePortfolioService, dependencies.get(SharePortfolioService.class));
+		Assert.assertEquals(currencyConverter, dependencies.get(Converter.class));
+		
+		
 	}
 }
