@@ -23,6 +23,8 @@ public class SerialisationUtilTest {
 	private final Pageable pageable = new ClosedIntervalPageRequest(50, Mockito.mock(Sort.class), 5000);
 	
 	private final SimpleSerialisationUtilImpl serialisationUtil = new SimpleSerialisationUtilImpl();
+	
+	private static final String STATE = "rO0ABXNyABFqYXZhLnV0aWwuSGFzaE1hcAUH2sHDFmDRAwACRgAKbG9hZEZhY3RvckkACXRocmVzaG9sZHhwP0AAAAAAAAx3CAAAABAAAAABdAAEcGFnZXNyABFqYXZhLmxhbmcuSW50ZWdlchLioKT3gYc4AgABSQAFdmFsdWV4cgAQamF2YS5sYW5nLk51bWJlcoaslR0LlOCLAgAAeHAAAAAqeA==";
 	@Test
 	public final void toMap() {
 		
@@ -39,7 +41,29 @@ public class SerialisationUtilTest {
 	public final void serialize() throws IOException {
 		final Map<String,Object> results = new HashMap<>();
 		results.put(PAGE, PAGE_NUMBER);
-		System.out.println(serialisationUtil.serialize(results));
+		Assert.assertEquals(STATE, serialisationUtil.serialize(results));
 	}
-
+	
+	@Test
+	public final void deSerialize() {
+		final Map<String,Object> results = serialisationUtil.deSerialize(STATE);
+		Assert.assertEquals(1, results.size());
+		Assert.assertEquals(PAGE, results.keySet().stream().findAny().get());
+		Assert.assertEquals(PAGE_NUMBER,  results.values().stream().findAny().get());
+	}
+	
+	@Test
+	public final void toBean() {
+		final Pageable pageable = new ClosedIntervalPageRequest(50, Mockito.mock(Sort.class), 5000);
+		
+		Assert.assertEquals(0, pageable.getPageNumber());
+		Assert.assertFalse(pageable.hasPrevious());
+		final Map<String,Object> map = new HashMap<>();
+		map.put(PAGE, PAGE_NUMBER);
+		serialisationUtil.toBean(map, pageable);
+		
+		Assert.assertEquals(PAGE_NUMBER, pageable.getPageNumber());
+		Assert.assertTrue(pageable.hasPrevious());
+	
+	}
 }
