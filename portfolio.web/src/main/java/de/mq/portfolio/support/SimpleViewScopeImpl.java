@@ -9,6 +9,8 @@ import org.springframework.beans.factory.config.Scope;
 
 class SimpleViewScopeImpl implements Scope {
 
+	
+	@Override
 	public final Object get(final String name, final ObjectFactory<?> objectFactory) {
 		
 		final Map<String, Object> viewMap = viewMap();
@@ -17,6 +19,7 @@ class SimpleViewScopeImpl implements Scope {
 			return viewMap.get(name);
 		} else {
 			Object object = objectFactory.getObject();
+			
 			viewMap.put(name, object);
 
 			return object;
@@ -32,18 +35,23 @@ class SimpleViewScopeImpl implements Scope {
 		return FacesContext.getCurrentInstance();
 	}
 
+	@Override
 	public final Object remove(String name) {
+		
 		return viewMap().remove(name);
 	}
 
+	@Override
 	public final String getConversationId() {
 		return null;
 	}
 
+	@Override
 	public final void registerDestructionCallback(String name, Runnable callback) {
-		// Not supported
+		
 	}
 
+	@Override
 	public final Object resolveContextualObject(String key) {
 		return null;
 	}

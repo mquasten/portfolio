@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import javax.annotation.PreDestroy;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -45,7 +47,7 @@ public class SharesSearchAO implements Serializable {
 	private String index;
 	
 	private String state; 
-
+	
 	
 
 	public  Share getSearch() {
