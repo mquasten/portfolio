@@ -43,6 +43,10 @@ public class SharesSearchAO implements Serializable {
 	private String code;
 
 	private String index;
+	
+	private String state; 
+
+	
 
 	public  Share getSearch() {
 		return new ShareImpl(code, name, index, null, null);
@@ -147,5 +151,13 @@ public class SharesSearchAO implements Serializable {
 
 	public void setSelectedPortfolioItem(final String selectedPortfolioItem) {
 		this.selectedPortfolioItem = selectedPortfolioItem;
+	}
+	
+	public String getState() {
+		return state;
+	}
+
+	void setState(String state) {
+		this.state = state;
 	}
 }

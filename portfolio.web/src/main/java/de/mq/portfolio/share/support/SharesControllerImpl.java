@@ -3,6 +3,7 @@ package de.mq.portfolio.share.support;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.shareportfolio.support.SharePortfolioService;
+import de.mq.portfolio.support.SerialisationUtil;
 import de.mq.portfolio.support.UserModel;
 
 
@@ -38,17 +40,20 @@ public class SharesControllerImpl {
 	private final ShareService shareService;
 	private final SharePortfolioService sharePortfolioService;
 	private final Map<String,Sort> orderBy = new HashMap<>();
+	private final SerialisationUtil serialisationUtil;
 	
 	@Autowired
-	SharesControllerImpl(final ShareService shareService, final SharePortfolioService sharePortfolioService) {
+	SharesControllerImpl(final ShareService shareService, final SharePortfolioService sharePortfolioService, final SerialisationUtil serialisationUtil) {
 		this.shareService = shareService;
 		this.sharePortfolioService=sharePortfolioService;
+		this.serialisationUtil=serialisationUtil;
 		orderBy.put(ID_FIELD_NAME, new Sort(ID_FIELD_NAME));
 		orderBy.put(NAME_FIELD_NAME, new Sort( SHARE_FIELDS_NAME + "." + NAME_FIELD_NAME, ID_FIELD_NAME));
 		orderBy.put(MEAN_RATE_FRIELDE_NAME, new Sort(Direction.DESC, MEAN_RATE_FRIELDE_NAME ,ID_FIELD_NAME));
 		orderBy.put(TOTAL_RATE_FIELD_NAME, new Sort(Direction.DESC, TOTAL_RATE_FIELD_NAME ,ID_FIELD_NAME));
 		orderBy.put(TOTAL_RATE_DIVIDENDS_FIELD_NAME, new Sort(Direction.DESC, TOTAL_RATE_DIVIDENDS_FIELD_NAME ,ID_FIELD_NAME));
 		orderBy.put(STANDARD_DEVIATION_FIELD_NAME, new Sort(STANDARD_DEVIATION_FIELD_NAME ,ID_FIELD_NAME));
+		
 	}
 
 	
@@ -79,6 +84,19 @@ public class SharesControllerImpl {
 	public final void page(final SharesSearchAO sharesSearchAO) {
 		sharesSearchAO.setPageable(shareService.pageable(sharesSearchAO.getSearch(),orderBy.get(sharesSearchAO.getSelectedSort()), 10));
 		refreshTimeCourses(sharesSearchAO);
+		
+		assignState(sharesSearchAO);
+		
+		
+	}
+
+
+	private void assignState(final SharesSearchAO sharesSearchAO) {
+		final Map<String,Object> state = new HashMap<>();
+		state.putAll(serialisationUtil.toMap(sharesSearchAO.getSearch(), Arrays.asList("code", "name" , "index")));
+		state.putAll(serialisationUtil.toMap(sharesSearchAO, Arrays.asList("selectedSort")));
+		state.putAll(serialisationUtil.toMap(sharesSearchAO.getPageable(), Arrays.asList("page")));
+		sharesSearchAO.setState(serialisationUtil.serialize(state));
 	}
 
 	

@@ -142,6 +142,7 @@
         <f:facet name="footer">
         		<p:button  value="anzeigen"  disabled="#{sharesSearch.selectedTimeCourse==null}"  outcome="chart">
         			<f:param name="shareCode" value="#{sharesSearch.selectedTimeCourse.key.code()}" /> 
+        			<f:param name="state" value="#{sharesSearch.state}" /> 
         		</p:button>
         
         </f:facet>
