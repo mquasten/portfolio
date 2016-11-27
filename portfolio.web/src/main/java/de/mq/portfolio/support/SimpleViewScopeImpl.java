@@ -10,6 +10,7 @@ import org.springframework.beans.factory.config.Scope;
 class SimpleViewScopeImpl implements Scope {
 
 	public final Object get(final String name, final ObjectFactory<?> objectFactory) {
+		
 		final Map<String, Object> viewMap = viewMap();
 
 		if (viewMap.containsKey(name)) {

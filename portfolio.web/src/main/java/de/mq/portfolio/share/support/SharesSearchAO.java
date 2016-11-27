@@ -157,7 +157,7 @@ public class SharesSearchAO implements Serializable {
 		return state;
 	}
 
-	void setState(String state) {
+	public void setState(String state) {
 		this.state = state;
 	}
 }

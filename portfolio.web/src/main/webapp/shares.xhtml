@@ -11,7 +11,7 @@
 <ui:define name="meta">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<f:metadata>
-			
+			<f:viewParam name="state" value="#{sharesSearch.state}" />
 			<f:viewAction action="#{sharesController.init(sharesSearch, userModel)}" />
 
 		</f:metadata>
