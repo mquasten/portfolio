@@ -165,7 +165,7 @@ public class SharesControllerTest {
 
 	@Test
 	public final void page() {
-		sharesController.page(sharesSearchAO);
+		sharesController.page(sharesSearchAO, true);
 
 		Mockito.verify(sharesSearchAO).setPageable(pageable);
 

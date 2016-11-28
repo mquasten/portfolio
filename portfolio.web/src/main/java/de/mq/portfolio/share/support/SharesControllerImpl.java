@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Component;
@@ -63,24 +62,38 @@ public class SharesControllerImpl {
 	
 	public final void init(final SharesSearchAO sharesSearchAO, UserModel userModel) {
 	
-		if( StringUtils.hasText(sharesSearchAO.getState()) ){
-			final Map<String,Object> values = serialisationUtil.deSerialize(sharesSearchAO.getState());
-			
-			serialisationUtil.toBean(values, sharesSearchAO);
-		}
+		final boolean likeAVirgin = sharesSearchAO.getPageable()==null;
 		
 		refreshPortfolioList(sharesSearchAO, userModel);
 		sharesSearchAO.setIndexes(shareService.indexes());
 	
+		page(sharesSearchAO, false);
 		
-		page(sharesSearchAO);
-		
-		
-	
+		if( likeAVirgin ){
+			handleState(sharesSearchAO);
+		}
 	}
 
 
-	
+	void handleState(final SharesSearchAO sharesSearchAO ) {
+		
+		if( ! StringUtils.hasText(sharesSearchAO.getState())) {
+			return;
+		}
+		
+		//:toDo JSF is f ..., most f...ing shit ever !!!! 
+		if( sharesSearchAO.getState().equals("null")) {
+			return;
+		}
+		final Map <String,Object> stateMap = serialisationUtil.deSerialize(sharesSearchAO.getState());
+		
+		
+		serialisationUtil.toBean(stateMap, sharesSearchAO);
+		//sharesSearchAO.setPageable(shareService.pageable(sharesSearchAO.getSearch(),orderBy.get(sharesSearchAO.getSelectedSort()), 10));
+		serialisationUtil.toBean(stateMap, sharesSearchAO.getPageable());
+		refreshTimeCourses(sharesSearchAO, true);
+		
+	}
 
 
 	private void refreshPortfolioList(final SharesSearchAO sharesSearchAO, UserModel userModel) {
@@ -96,45 +109,33 @@ public class SharesControllerImpl {
 		sharesSearchAO.setPortfolio(portfolio);
 	}
 	
-	public final void page(final SharesSearchAO sharesSearchAO) {
-		
-		Pageable likeAVirgin = sharesSearchAO.getPageable();
-		sharesSearchAO.setPageable(shareService.pageable(sharesSearchAO.getSearch(),orderBy.get(sharesSearchAO.getSelectedSort()), 10));
-		
-		if( StringUtils.hasText(sharesSearchAO.getState())&&(likeAVirgin==null) ){
-			final Map<String,Object> values = serialisationUtil.deSerialize(sharesSearchAO.getState());
-			serialisationUtil.toBean(values, sharesSearchAO.getPageable());
-		}
-		
-		
-		refreshTimeCourses(sharesSearchAO);
-		
-	
-		
-		
+	public final void page(final SharesSearchAO sharesSearchAO, final boolean serialize) {
+		sharesSearchAO.setPageable(shareService.pageable(sharesSearchAO.getSearch(),orderBy.get(sharesSearchAO.getSelectedSort()), 10));		
+		refreshTimeCourses(sharesSearchAO, serialize);
 	}
 
 
 	private void assignState(final SharesSearchAO sharesSearchAO) {
 		final Map<String,Object> state = new HashMap<>();
-		state.putAll(serialisationUtil.toMap(sharesSearchAO, Arrays.asList("code", "name" , "index")));
-		state.putAll(serialisationUtil.toMap(sharesSearchAO, Arrays.asList("selectedSort")));
-		state.putAll(serialisationUtil.toMap(sharesSearchAO.getPageable(), Arrays.asList("page")));
-		
+		state.putAll(serialisationUtil.toMap(sharesSearchAO, Arrays.asList("code", "name" , "index", "selectedSort")));
+		state.putAll(serialisationUtil.toMap(sharesSearchAO.getPageable(), Arrays.asList("page", "counter", "sort")));
+	
 		sharesSearchAO.setState(serialisationUtil.serialize(state));
 	}
 
 	
 	
 
-	private void refreshTimeCourses(final SharesSearchAO sharesSearchAO) {
+	private void refreshTimeCourses(final SharesSearchAO sharesSearchAO, boolean serialize) {
 		sharesSearchAO.setSelectedTimeCourse(null);
 		
 		
 		
 		
 		sharesSearchAO.setTimeCorses(shareService.timeCourses(sharesSearchAO.getPageable(), sharesSearchAO.getSearch()));
-		assignState(sharesSearchAO);
+		if( serialize) {
+			assignState(sharesSearchAO);
+		}
 	}
 	
 	
@@ -145,7 +146,7 @@ public class SharesControllerImpl {
 		}
 		
 		sharesSearchAO.setPageable(sharesSearchAO.getPageable().next());
-		refreshTimeCourses(sharesSearchAO);
+		refreshTimeCourses(sharesSearchAO,true);
 	}
 	
 	public final void previous(final SharesSearchAO sharesSearchAO) {
@@ -156,7 +157,7 @@ public class SharesControllerImpl {
 		
 	
 		sharesSearchAO.setPageable(((ClosedIntervalPageRequest)sharesSearchAO.getPageable()).previous());
-		refreshTimeCourses(sharesSearchAO);
+		refreshTimeCourses(sharesSearchAO,true);
 	}
 	
 	public final void first(final SharesSearchAO sharesSearchAO) {
@@ -165,7 +166,7 @@ public class SharesControllerImpl {
 			return;
 		}
 		sharesSearchAO.setPageable(sharesSearchAO.getPageable().first());
-		refreshTimeCourses(sharesSearchAO);
+		refreshTimeCourses(sharesSearchAO,true);
 		
 	}
 	
@@ -175,7 +176,7 @@ public class SharesControllerImpl {
 			return;
 		}
 		sharesSearchAO.setPageable(((ClosedIntervalPageRequest)sharesSearchAO.getPageable()).last());
-		refreshTimeCourses(sharesSearchAO);
+		refreshTimeCourses(sharesSearchAO,true);
 		
 	}
 	

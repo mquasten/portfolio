@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import javax.annotation.PreDestroy;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Pageable;
@@ -46,7 +45,7 @@ public class SharesSearchAO implements Serializable {
 
 	private String index;
 	
-	private String state; 
+	private  String  state; 
 	
 	
 
@@ -144,6 +143,7 @@ public class SharesSearchAO implements Serializable {
 	}
 
 	public void setSelectedTimeCourse(Entry<Share, TimeCourse> selectedTimeCourse) {
+		
 		this.selectedTimeCourse = selectedTimeCourse;
 	}
 
