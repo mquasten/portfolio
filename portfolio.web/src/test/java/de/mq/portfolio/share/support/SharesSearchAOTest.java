@@ -136,6 +136,9 @@ public class SharesSearchAOTest {
 		
 		@SuppressWarnings("unchecked")
 		final Entry<Share,TimeCourse> timeCourseEntry  = Mockito.mock(Entry.class);
+		TimeCourse timeCourse = Mockito.mock(TimeCourse.class);
+		Mockito.when(timeCourse.code()).thenReturn(CODE);
+		Mockito.when(timeCourseEntry.getValue()).thenReturn(timeCourse);
 		
 		sharesSearchAO.setSelectedTimeCourse(timeCourseEntry);
 		Assert.assertEquals(timeCourseEntry, sharesSearchAO.getSelectedTimeCourse());

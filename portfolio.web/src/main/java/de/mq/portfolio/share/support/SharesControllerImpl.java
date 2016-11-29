@@ -91,6 +91,7 @@ public class SharesControllerImpl {
 		serialisationUtil.toBean(stateMap, sharesSearchAO);
 		//sharesSearchAO.setPageable(shareService.pageable(sharesSearchAO.getSearch(),orderBy.get(sharesSearchAO.getSelectedSort()), 10));
 		serialisationUtil.toBean(stateMap, sharesSearchAO.getPageable());
+		
 		refreshTimeCourses(sharesSearchAO, true);
 		
 	}
@@ -115,11 +116,10 @@ public class SharesControllerImpl {
 	}
 
 
-	private void assignState(final SharesSearchAO sharesSearchAO) {
+	public void assignState(final SharesSearchAO sharesSearchAO) {
 		final Map<String,Object> state = new HashMap<>();
-		state.putAll(serialisationUtil.toMap(sharesSearchAO, Arrays.asList("code", "name" , "index", "selectedSort")));
+		state.putAll(serialisationUtil.toMap(sharesSearchAO, Arrays.asList("code", "name" , "index", "selectedSort", "selectedTimeCourseCode")));
 		state.putAll(serialisationUtil.toMap(sharesSearchAO.getPageable(), Arrays.asList("page", "counter", "sort")));
-	
 		sharesSearchAO.setState(serialisationUtil.serialize(state));
 	}
 
@@ -127,12 +127,18 @@ public class SharesControllerImpl {
 	
 
 	private void refreshTimeCourses(final SharesSearchAO sharesSearchAO, boolean serialize) {
+		
+		final String selectedTimeCourseCode = sharesSearchAO.getSelectedTimeCourseCode();
+		
+	
 		sharesSearchAO.setSelectedTimeCourse(null);
 		
 		
-		
-		
 		sharesSearchAO.setTimeCorses(shareService.timeCourses(sharesSearchAO.getPageable(), sharesSearchAO.getSearch()));
+		
+		sharesSearchAO.getTimeCourses().stream().filter(tc ->tc.getValue().code().equals(selectedTimeCourseCode)).findAny().ifPresent(selected ->sharesSearchAO.setSelectedTimeCourse(selected) );
+		
+		
 		if( serialize) {
 			assignState(sharesSearchAO);
 		}

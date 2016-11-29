@@ -1,5 +1,6 @@
 package de.mq.portfolio.share.support;
 
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -26,6 +27,8 @@ import de.mq.portfolio.support.UserModel;
 import junit.framework.Assert;
 
 public class SharesControllerTest {
+
+	//private  final ArrayList<Entry<Share, TimeCourse>> emptyList = new ArrayList<>();
 
 	private static final String SHARE_NAME = "SAP AG";
 
@@ -180,6 +183,7 @@ public class SharesControllerTest {
 
 		Mockito.when(pageable.next()).thenReturn(newPageable);
 
+		
 		sharesController.next(sharesSearchAO);
 
 		Mockito.verify(pageable).next();

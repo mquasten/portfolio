@@ -93,7 +93,7 @@
  <p:dataTable id="sharesTable" var="entry" value="#{sharesSearch.timeCourses}" selection="#{sharesSearch.selectedTimeCourse}" rowKey="#{entry.key.code()}"  lazy="true"    resizableColumns="true"     >
        
         <p:column selectionMode="single" style="width:16px;text-align:center"/>
-         <p:ajax event="rowSelectRadio" process="@this" update="@form" />
+         <p:ajax event="rowSelectRadio" process="@this" update="@form" listener="#{sharesController.assignState(sharesSearch)}"/>
         <p:column headerText="Name">
             <h:outputText value="#{entry.key.name()}" />
         </p:column>

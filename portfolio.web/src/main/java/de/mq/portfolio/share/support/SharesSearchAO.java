@@ -47,7 +47,13 @@ public class SharesSearchAO implements Serializable {
 	
 	private  String  state; 
 	
+	private String selectedTimeCourseCode;
 	
+	
+
+	public String getSelectedTimeCourseCode() {
+		return selectedTimeCourseCode;
+	}
 
 	public  Share getSearch() {
 		return new ShareImpl(code, name, index, null, null);
@@ -94,7 +100,7 @@ public class SharesSearchAO implements Serializable {
 		return (1 + pageable.getPageNumber()) + "/" + +(1 + ((ClosedIntervalPageRequest) pageable).maxPage());
 	}
 
-	public final Collection<Entry<Share, TimeCourse>> getTimeCourses() {
+	public  Collection<Entry<Share, TimeCourse>> getTimeCourses() {
 		return timeCourses;
 	}
 
@@ -143,6 +149,11 @@ public class SharesSearchAO implements Serializable {
 	}
 
 	public void setSelectedTimeCourse(Entry<Share, TimeCourse> selectedTimeCourse) {
+		selectedTimeCourseCode=null;
+		
+		if( selectedTimeCourse != null) {
+			selectedTimeCourseCode=selectedTimeCourse.getValue().code();
+		}
 		
 		this.selectedTimeCourse = selectedTimeCourse;
 	}
