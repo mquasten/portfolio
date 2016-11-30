@@ -60,7 +60,7 @@ public class SharesControllerImpl {
 	}
 
 	
-	public final void init(final SharesSearchAO sharesSearchAO, UserModel userModel) {
+	public  void init(final SharesSearchAO sharesSearchAO, UserModel userModel) {
 	
 		final boolean likeAVirgin = sharesSearchAO.getPageable()==null;
 		
@@ -92,8 +92,10 @@ public class SharesControllerImpl {
 		//sharesSearchAO.setPageable(shareService.pageable(sharesSearchAO.getSearch(),orderBy.get(sharesSearchAO.getSelectedSort()), 10));
 		serialisationUtil.toBean(stateMap, sharesSearchAO.getPageable());
 		
-		refreshTimeCourses(sharesSearchAO, true);
+		final String selectedTimeCourseCode = sharesSearchAO.getSelectedTimeCourseCode();
 		
+		refreshTimeCourses(sharesSearchAO, true);
+		sharesSearchAO.getTimeCourses().stream().filter(tc ->tc.getValue().code().equals(selectedTimeCourseCode)).findAny().ifPresent(selected ->sharesSearchAO.setSelectedTimeCourse(selected) );
 	}
 
 
@@ -110,7 +112,7 @@ public class SharesControllerImpl {
 		sharesSearchAO.setPortfolio(portfolio);
 	}
 	
-	public final void page(final SharesSearchAO sharesSearchAO, final boolean serialize) {
+	public  void page(final SharesSearchAO sharesSearchAO, final boolean serialize) {
 		sharesSearchAO.setPageable(shareService.pageable(sharesSearchAO.getSearch(),orderBy.get(sharesSearchAO.getSelectedSort()), 10));		
 		refreshTimeCourses(sharesSearchAO, serialize);
 	}
@@ -128,7 +130,7 @@ public class SharesControllerImpl {
 
 	private void refreshTimeCourses(final SharesSearchAO sharesSearchAO, boolean serialize) {
 		
-		final String selectedTimeCourseCode = sharesSearchAO.getSelectedTimeCourseCode();
+		
 		
 	
 		sharesSearchAO.setSelectedTimeCourse(null);
@@ -136,7 +138,7 @@ public class SharesControllerImpl {
 		
 		sharesSearchAO.setTimeCorses(shareService.timeCourses(sharesSearchAO.getPageable(), sharesSearchAO.getSearch()));
 		
-		sharesSearchAO.getTimeCourses().stream().filter(tc ->tc.getValue().code().equals(selectedTimeCourseCode)).findAny().ifPresent(selected ->sharesSearchAO.setSelectedTimeCourse(selected) );
+		
 		
 		
 		if( serialize) {
@@ -145,7 +147,7 @@ public class SharesControllerImpl {
 	}
 	
 	
-	public final void next(final SharesSearchAO sharesSearchAO) {
+	public  void next(final SharesSearchAO sharesSearchAO) {
 		if( sharesSearchAO.getPageable() == null ) {
 			
 			return;
@@ -155,7 +157,7 @@ public class SharesControllerImpl {
 		refreshTimeCourses(sharesSearchAO,true);
 	}
 	
-	public final void previous(final SharesSearchAO sharesSearchAO) {
+	public  void previous(final SharesSearchAO sharesSearchAO) {
 		if( sharesSearchAO.getPageable() == null ) {
 			
 			return;	
@@ -166,7 +168,7 @@ public class SharesControllerImpl {
 		refreshTimeCourses(sharesSearchAO,true);
 	}
 	
-	public final void first(final SharesSearchAO sharesSearchAO) {
+	public  void first(final SharesSearchAO sharesSearchAO) {
 		if( sharesSearchAO.getPageable() == null ) {
 			
 			return;
@@ -176,7 +178,7 @@ public class SharesControllerImpl {
 		
 	}
 	
-	public final void last(final SharesSearchAO sharesSearchAO) {
+	public  void last(final SharesSearchAO sharesSearchAO) {
 		if( sharesSearchAO.getPageable() == null ) {
 			
 			return;
@@ -186,7 +188,7 @@ public class SharesControllerImpl {
 		
 	}
 	
-	public final void  add2Portfolio(final SharesSearchAO sharesSearchAO, final UserModel userModel) {
+	public  void  add2Portfolio(final SharesSearchAO sharesSearchAO, final UserModel userModel) {
 	
 		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(userModel.getPortfolioId());
 		sharePortfolio.assign(sharesSearchAO.getSelectedTimeCourse().getValue());
@@ -194,7 +196,7 @@ public class SharesControllerImpl {
 		refreshPortfolioList(sharesSearchAO, userModel);
 	}
 	
-	public final void removeFromPortfolio(final SharesSearchAO sharesSearchAO, final UserModel userModel) {
+	public  void removeFromPortfolio(final SharesSearchAO sharesSearchAO, final UserModel userModel) {
 		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(userModel.getPortfolioId());
 		final Optional<TimeCourse> toBeRemoved = sharePortfolio.timeCourses().stream().filter(tc -> tc.id().equals(sharesSearchAO.getSelectedPortfolioItem())).findFirst();
 		if ( !toBeRemoved.isPresent()) {
