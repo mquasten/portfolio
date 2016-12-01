@@ -51,7 +51,7 @@
             <p:message for="sorting"  />
             <f:facet name="footer">
          <h:panelGrid  columns="2" >
-            <p:commandButton id="searchButton" value="Suchen"  process="searchGrid" update="@form" action="#{sharesController.page(sharesSearch, 'true')}" />
+            <p:commandButton id="searchButton" value="Suchen"  process="searchGrid" update="@form" action="#{sharesController.page(sharesSearch)}" />
           	<h:panelGrid columns="5" >
             <p:commandButton icon="ui-icon-next"   action="#{sharesController.next(sharesSearch)}"  process="@this"  update="@form"  disabled="#{!sharesSearch.pageable.hasNext()}" />
             <p:commandButton icon="ui-icon-last" action="#{sharesController.last(sharesSearch)}"  process="@this"     update="@form"  disabled="#{sharesSearch.pageable.isLast()}"  />
