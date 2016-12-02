@@ -152,5 +152,29 @@ public class SharesSearchAOTest {
 		Assert.assertEquals(ID, sharesSearchAO.getSelectedPortfolioItem());
 	}
 	
+	@Test
+	public void isNew() {
+		Assert.assertTrue(sharesSearchAO.isNew());
+		sharesSearchAO.setUsed();
+		Assert.assertFalse(sharesSearchAO.isNew());
+	}
+	
+	@Test
+	public void getSelectedTimeCourseCode() {
+		Assert.assertNull(sharesSearchAO.getSelectedTimeCourseCode());
+		
+		@SuppressWarnings("unchecked")
+		final Entry<Share,TimeCourse> timeCourseEntry  = Mockito.mock(Entry.class);
+		TimeCourse timeCourse = Mockito.mock(TimeCourse.class);
+		Mockito.when(timeCourse.code()).thenReturn(CODE);
+		Mockito.when(timeCourseEntry.getValue()).thenReturn(timeCourse);
+		
+		sharesSearchAO.setSelectedTimeCourse(timeCourseEntry);
+		Assert.assertEquals(CODE, sharesSearchAO.getSelectedTimeCourseCode());
+		
+		sharesSearchAO.setSelectedTimeCourse(null);
+		Assert.assertNull(sharesSearchAO.getSelectedTimeCourseCode());
+	}
+	
 	
 }

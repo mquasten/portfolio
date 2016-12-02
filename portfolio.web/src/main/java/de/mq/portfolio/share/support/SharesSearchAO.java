@@ -49,7 +49,7 @@ public class SharesSearchAO implements Serializable {
 	
 	private String selectedTimeCourseCode;
 	
-	
+	private boolean newBean=true; 
 
 	public String getSelectedTimeCourseCode() {
 		return selectedTimeCourseCode;
@@ -172,5 +172,13 @@ public class SharesSearchAO implements Serializable {
 
 	public void setState(String state) {
 		this.state = state;
+	}
+	
+	void setUsed() {
+		newBean=false;
+	}
+	
+	boolean isNew() {
+		return newBean;
 	}
 }

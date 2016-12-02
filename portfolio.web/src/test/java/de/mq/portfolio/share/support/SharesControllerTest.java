@@ -22,7 +22,6 @@ import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.shareportfolio.support.SharePortfolioService;
-import de.mq.portfolio.support.SerialisationUtil;
 import de.mq.portfolio.support.UserModel;
 import junit.framework.Assert;
 
@@ -42,9 +41,8 @@ public class SharesControllerTest {
 
 	private final SharePortfolioService sharePortfolioService = Mockito.mock(SharePortfolioService.class);
 	
-	private final SerialisationUtil serialisationUtil = Mockito.mock(SerialisationUtil.class);
 
-	private final SharesControllerImpl sharesController = new SharesControllerImpl(shareService, sharePortfolioService, serialisationUtil);
+	private final SharesControllerImpl sharesController = new SharesControllerImpl(shareService, sharePortfolioService);
 
 	private final SharesSearchAO sharesSearchAO = Mockito.mock(SharesSearchAO.class);
 
@@ -303,6 +301,14 @@ public class SharesControllerTest {
 
 		Mockito.verify(sharePortfolioService, Mockito.never()).save(sharePortfolio);
 		Mockito.verify(sharesSearchAO, Mockito.never()).setSelectedPortfolioItem(null);
+	}
+	
+	@Test
+	public final void assignState() {
+		Mockito.reset(sharesSearchAO);
+		sharesController.assignState(sharesSearchAO);
+		
+		Mockito.verifyZeroInteractions(sharesSearchAO);
 	}
 
 }
