@@ -17,7 +17,8 @@ class UserImpl implements User {
 	private String login;
 
 	private String password;
-
+	
+	
 	UserImpl(final String login, final String password) {
 		this.login = login;
 		this.password = password;
@@ -40,4 +41,5 @@ class UserImpl implements User {
 
 	}
 
+	
 }

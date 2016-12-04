@@ -12,7 +12,6 @@
 	
 <f:metadata>
   <f:viewParam name="shareCode" value="#{chart.code}" />
-  <f:viewParam name="state" value="#{chart.state}" />
   <f:viewAction action="#{chartController.init(chart)}" />
     
 </f:metadata>
@@ -38,9 +37,8 @@
       
       
          <h:panelGroup style="display:block; text-align:center">
-            <p:button  value="zurück" outcome="shares"  >
-              <f:param name="state" value="#{chart.state}" />
-            </p:button>
+            <p:button  value="zurück" outcome="shares"  />
+          
          </h:panelGroup>
      
   </h:panelGrid>

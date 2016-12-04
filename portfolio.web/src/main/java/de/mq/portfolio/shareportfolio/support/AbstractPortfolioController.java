@@ -24,11 +24,12 @@ import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
+import de.mq.portfolio.support.Serialize;
 import de.mq.portfolio.support.UserModel;
 
 @Component("portfolioController")
 @Scope("singleton")
-public abstract class AbstractPortfolioController {
+public  abstract  class AbstractPortfolioController {
 
 	static final String DISPOSITION_PATTERN = "attachment; filename=\"%s.pdf\"";
 	static final String HEADER_CONTENT_DISPOSITION = "Content-Disposition";
@@ -59,8 +60,10 @@ public abstract class AbstractPortfolioController {
 			portfolioSearchAO.setPortfolioName(sharePortfolioService.sharePortfolio(userModel.getPortfolioId()).name());
 		}
 		portfolioSearchAO.setExchangeRateCalculator(exchangeRateService.exchangeRateCalculator());
+		
 	}
 
+	@Serialize
 	public void page(final PortfolioSearchAO portfolioSearchAO) {
 		portfolioSearchAO.setPageable(sharePortfolioService.pageable(portfolioSearchAO.criteria(), DEFAULT_SORT, DEFAULT_PAGE_SIZE));
 
@@ -90,6 +93,7 @@ public abstract class AbstractPortfolioController {
 	}
 
 	public void init(final PortfolioAO portfolioAO) {
+		
 		if (portfolioAO.getId() == null) {
 			portfolioAO.setSharePortfolio(BeanUtils.instantiateClass(SharePortfolioImpl.class), Optional.empty());
 			return;
@@ -100,7 +104,7 @@ public abstract class AbstractPortfolioController {
 
 	}
 
-	public final void pdf(final PortfolioAO portfolioAO) {
+	public  void pdf(final PortfolioAO portfolioAO) {
 
 		final HttpServletResponse response = (HttpServletResponse) facesContext().getExternalContext().getResponse();
 		response.reset();
@@ -119,18 +123,18 @@ public abstract class AbstractPortfolioController {
 		facesContext().responseComplete();
 	}
 
-	public final String commit(final String portfolioName) {
+	public  String commit(final String portfolioName) {
 		final SharePortfolio sharePortfolio = sharePortfolioService.committedPortfolio(portfolioName);
 		return String.format(REDIRECT_PATTERN, sharePortfolio.id());
 
 	}
 
-	public final String delete(final String portfolioId) {
+	public  String delete(final String portfolioId) {
 		sharePortfolioService.delete(portfolioId);
 		return REDIRECT_TO_PORTFOLIOS_PAGE;
 	}
 
-	public final String deleteTimeCourse(final String sharePortfolioId, final String timeCourseCode) {
+	public String deleteTimeCourse(final String sharePortfolioId, final String timeCourseCode) {
 
 		final Optional<TimeCourse> timeCourse = shareService.timeCourse(timeCourseCode);
 		if (!timeCourse.isPresent()) {
@@ -146,7 +150,11 @@ public abstract class AbstractPortfolioController {
 
 	}
 
+	
+
+	
 	@Lookup
-	abstract FacesContext facesContext();
+	 abstract FacesContext facesContext();
+	
 
 }

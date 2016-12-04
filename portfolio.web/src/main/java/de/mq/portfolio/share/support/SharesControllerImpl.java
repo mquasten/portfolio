@@ -26,7 +26,7 @@ import de.mq.portfolio.support.UserModel;
 
 @Component("sharesController")
 @Scope("singleton")
-public class SharesControllerImpl {
+public  class SharesControllerImpl {
 
 	static final String SHARE_FIELDS_NAME = "share";
 	static final String STANDARD_DEVIATION_FIELD_NAME = "standardDeviation";
@@ -160,5 +160,8 @@ public class SharesControllerImpl {
 		refreshPortfolioList(sharesSearchAO, userModel);
 
 	}
+	
+
+	
 
 }

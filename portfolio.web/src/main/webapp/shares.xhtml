@@ -11,7 +11,6 @@
 <ui:define name="meta">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<f:metadata>
-			<f:viewParam name="state" value="#{sharesSearch.state}" />
 			<f:viewAction action="#{sharesController.init(sharesSearch, userModel)}" />
 
 		</f:metadata>
@@ -142,7 +141,6 @@
         <f:facet name="footer">
         		<p:button  value="anzeigen"  disabled="#{sharesSearch.selectedTimeCourse==null}"  outcome="chart">
         			<f:param name="shareCode" value="#{sharesSearch.selectedTimeCourse.key.code()}" /> 
-        			<f:param name="state" value="#{sharesSearch.state}" /> 
         		</p:button>
         
         </f:facet>

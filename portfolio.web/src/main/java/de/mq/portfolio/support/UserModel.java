@@ -13,6 +13,11 @@ public interface UserModel {
 	Locale getLocale();
 	
 	void setLocale(Locale locale);
+	
+	void assign(final String view, final String state);
+	
+	String state(final String view);
+
 
 	
 	
