@@ -35,7 +35,7 @@
 					<f:facet name="footer">
 						<h:panelGrid columns="2">
 							<p:commandButton id="searchButton" value="Suchen"
-								process="searchGrid" update="searchGrid,portfolioTable"
+								process="searchGrid" update="searchGrid,portfolioTable,portfolioGrid"
 								action="#{portfolioController.page(portfolioSearch)}" />
 
 						</h:panelGrid>
@@ -67,7 +67,7 @@
 
 				<p:column selectionMode="single"
 					style="width:16px;text-align:center" />
-				<p:ajax event="rowSelectRadio" process="@this" update="@form" />
+				<p:ajax event="rowSelectRadio" process="@this" update="@form"  listener="#{portfolioController.assignState(portfolioSearch)}"/>
 				<p:column headerText="Name">
 					<h:outputText value="#{portfolio.name()}" />
 				</p:column>

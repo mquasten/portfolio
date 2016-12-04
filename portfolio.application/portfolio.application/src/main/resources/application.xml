@@ -2,21 +2,20 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
-	xmlns:aop="http://www.springframework.org/schema/aop"
+	
 	xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:repository="http://www.springframework.org/schema/data/repository"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
 		http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo-1.2.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
-		http://www.springframework.org/schema/aop
-		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd 
+		
 		http://www.springframework.org/schema/data/repository http://www.springframework.org/schema/data/repository/spring-repository-1.6.xsd">
 
 
 	<mongo:mongo host="127.0.0.1" port="27017" />
 	<mongo:db-factory dbname="portfolio" />
-	<aop:aspectj-autoproxy  proxy-target-class="true"/>
+
 	<context:component-scan
 		base-package="de.mq.portfolio.share.support,de.mq.portfolio.shareportfolio.support,de.mq.portfolio.user.support,de.mq.portfolio.exchangerate.support" />
 

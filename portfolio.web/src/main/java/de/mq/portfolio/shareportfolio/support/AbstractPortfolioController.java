@@ -24,6 +24,7 @@ import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
+import de.mq.portfolio.support.DeSerialize;
 import de.mq.portfolio.support.Serialize;
 import de.mq.portfolio.support.UserModel;
 
@@ -54,6 +55,7 @@ public  abstract  class AbstractPortfolioController {
 		this.pdfConverter = pdfConverter;
 	}
 
+	@DeSerialize
 	public void init(final PortfolioSearchAO portfolioSearchAO, final UserModel userModel) {
 		page(portfolioSearchAO);
 		if (userModel.getPortfolioId() != null) {
@@ -66,9 +68,13 @@ public  abstract  class AbstractPortfolioController {
 	@Serialize
 	public void page(final PortfolioSearchAO portfolioSearchAO) {
 		portfolioSearchAO.setPageable(sharePortfolioService.pageable(portfolioSearchAO.criteria(), DEFAULT_SORT, DEFAULT_PAGE_SIZE));
-
+		portfolioSearchAO.setSelectedPortfolio(null);
 		portfolioSearchAO.setSharePortfolios(sharePortfolioService.portfolios(portfolioSearchAO.getPageable(), portfolioSearchAO.criteria()));
 
+	}
+	
+	@Serialize
+	public  void assignState(final PortfolioSearchAO portfolioSearchAO) {
 	}
 
 	public void activate(final PortfolioSearchAO portfolioSearchAO, final UserModel userModel) {

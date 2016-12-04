@@ -276,6 +276,8 @@ public class PortfolioControllerTest {
 			FacesContext facesContext() {
 				return facesContext;
 			}
+
+			
 		};
 		final Map<Class<?>, Object> dependencies = new HashMap<>();
 

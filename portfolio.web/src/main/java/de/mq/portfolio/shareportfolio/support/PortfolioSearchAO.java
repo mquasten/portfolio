@@ -27,6 +27,7 @@ public class PortfolioSearchAO implements Serializable {
 	private Pageable pageable;
 
 	private String share;
+	
 
 	private String portfolioName;
 
@@ -35,6 +36,9 @@ public class PortfolioSearchAO implements Serializable {
 	private String name;
 
 	private SharePortfolio selectedPortfolio;
+	private String selectedPortfolioId;
+
+	private boolean newBean = true;
 
 	public SharePortfolio getSelectedPortfolio() {
 		return selectedPortfolio;
@@ -58,7 +62,11 @@ public class PortfolioSearchAO implements Serializable {
 	}
 
 	public void setSelectedPortfolio(SharePortfolio selectedPortfolio) {
+		this.selectedPortfolioId=null;
 		this.selectedPortfolio = selectedPortfolio;
+		if( selectedPortfolio!= null){
+			this.selectedPortfolioId=selectedPortfolio.id();
+		}
 	}
 
 	public String getName() {
@@ -106,6 +114,14 @@ public class PortfolioSearchAO implements Serializable {
 		this.portfolioName = portfolioName;
 	}
 
+	boolean isNew() {
+		return newBean;
+	}
+	
+	void setUsed() {
+		this.newBean=false;
+	}
+	
 	public ExchangeRateCalculator getExchangeRateCalculator() {
 		Assert.isTrue(exchangeRateCalculator.isPresent(), "ExchangeRateCalculator is missing.");
 		return exchangeRateCalculator.get();
@@ -113,6 +129,10 @@ public class PortfolioSearchAO implements Serializable {
 
 	public void setExchangeRateCalculator(ExchangeRateCalculator exchangeRateCalculator) {
 		this.exchangeRateCalculator = Optional.ofNullable(exchangeRateCalculator);
+	}
+	
+	String getSelectedPortfolioId() {
+		return selectedPortfolioId;
 	}
 
 }
