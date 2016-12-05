@@ -5,15 +5,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResourceAccessException;
 
 @Service
@@ -80,5 +85,28 @@ abstract class AbstractSerialisationUtil implements SerialisationUtil {
 	
 	@Lookup
 	abstract ExceptionTranslationBuilder<? extends Object, ? extends AutoCloseable> builder() ; 
+	
+	final <T> Object value(final T  bean, final String   property){
+		Assert.notNull(bean);
+		StringUtils.hasText(property);
+		final List<String> values =new ArrayList<>(Arrays.asList(property.split("[.]")));
+	
+		final Field field = ReflectionUtils.findField(bean.getClass(), values.get(0));
+		Assert.notNull(field, "Field not found class:  "+  bean.getClass().getName() + " field:" + values.get(0));
+		field.setAccessible(true);
+	
+		final Object result = ReflectionUtils.getField(field,bean);
+		values.remove(0);
+		if( result == null){
+			return null;
+		}
+		
+		if( ! values.isEmpty()){
+			return value(result, StringUtils.collectionToDelimitedString(values, "."));
+		}
+		
+		return result;
+		
+	}
 
 }

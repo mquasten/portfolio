@@ -1,14 +1,17 @@
 package de.mq.portfolio.support;
 
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.IntStream;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
@@ -17,11 +20,21 @@ import junit.framework.Assert;
 
 public class SerialisationUtilTest {
 	
+	private static final String KEY = "paging";
+
+	private static final int SIZE = 50;
+
+	private static final int COUNTER = 5000;
+
+	private static final Sort SORT = Mockito.mock(Sort.class);
+
 	private static final String PAGE = "page";
 
 	private static final int PAGE_NUMBER = 42;
+	
+	private Entry<String,Pageable> entry; 
 
-	private final Pageable pageable = new ClosedIntervalPageRequest(50, Mockito.mock(Sort.class), 5000);
+	private final Pageable pageable = new ClosedIntervalPageRequest(SIZE, SORT, COUNTER);
 	
 	private final AbstractSerialisationUtil serialisationUtil =  Mockito.mock(AbstractSerialisationUtil.class, Mockito.CALLS_REAL_METHODS);
 	
@@ -31,6 +44,11 @@ public class SerialisationUtilTest {
 	@Before
 	public final void setup() {
 		Mockito.when(serialisationUtil.builder()).thenReturn(new ExceptionTranslationBuilderImpl<>());
+		final Pageable[] pageable = {this.pageable};
+		IntStream.range(0, PAGE_NUMBER).forEach( i -> pageable[0]=pageable[0].next());
+		
+		entry= new AbstractMap.SimpleImmutableEntry<>(KEY, pageable[0]); 
+		Assert.assertNotNull(entry);
 	}
 	
 	@Test
@@ -62,7 +80,7 @@ public class SerialisationUtilTest {
 	
 	@Test
 	public final void toBean() {
-		final Pageable pageable = new ClosedIntervalPageRequest(50, Mockito.mock(Sort.class), 5000);
+		final Pageable pageable = new ClosedIntervalPageRequest(50, SORT, 5000);
 		
 		Assert.assertEquals(0, pageable.getPageNumber());
 		Assert.assertFalse(pageable.hasPrevious());
@@ -73,5 +91,38 @@ public class SerialisationUtilTest {
 		Assert.assertEquals(PAGE_NUMBER, pageable.getPageNumber());
 		Assert.assertTrue(pageable.hasPrevious());
 	
+	}
+	
+	@Test
+	public final void value() {
+		Assert.assertEquals(PAGE_NUMBER, ((Number) ((AbstractSerialisationUtil)serialisationUtil).value(this, "entry.value.page")).intValue());
+		
+		Assert.assertEquals(SORT, (Sort) ((AbstractSerialisationUtil)serialisationUtil).value(this, "entry.value.sort"));
+		
+		Assert.assertEquals(COUNTER, ((Number) ((AbstractSerialisationUtil)serialisationUtil).value(this, "entry.value.counter")).intValue());
+		
+		Assert.assertEquals(SIZE, ((Number) ((AbstractSerialisationUtil)serialisationUtil).value(this, "entry.value.size")).intValue());
+		
+		Assert.assertEquals(KEY,  ((AbstractSerialisationUtil)serialisationUtil).value(this, "entry.key"));
+		
+	}
+	
+	@Test
+	public final void valueNull() {
+		this.entry= new AbstractMap.SimpleImmutableEntry<>(KEY,null); 
+		Assert.assertNull(this.entry.getValue());
+		Assert.assertNull(((AbstractSerialisationUtil)serialisationUtil).value(this, "entry.value.page"));
+	}
+	
+	@Test
+	public final void valueFlat() {
+		Assert.assertEquals(PAGE_NUMBER, ((Number) ((AbstractSerialisationUtil)serialisationUtil).value(this.entry.getValue(), "page")).intValue());
+		
+		Assert.assertEquals(SORT, (Sort) ((AbstractSerialisationUtil)serialisationUtil).value(this.entry.getValue(), "sort"));
+		
+		Assert.assertEquals(COUNTER, ((Number) ((AbstractSerialisationUtil)serialisationUtil).value(this.entry.getValue(), "counter")).intValue());
+		
+		Assert.assertEquals(SIZE, ((Number) ((AbstractSerialisationUtil)serialisationUtil).value(this.entry.getValue(), "size")).intValue());
+		Assert.assertEquals(KEY,  ((AbstractSerialisationUtil)serialisationUtil).value(this.entry, "key"));
 	}
 }
