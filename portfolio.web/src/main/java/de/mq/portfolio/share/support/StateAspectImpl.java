@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Component;
 
 import de.mq.portfolio.support.SerialisationUtil;
+import de.mq.portfolio.support.Serialize;
 import de.mq.portfolio.support.UserModel;
 
 @Component
@@ -51,12 +52,11 @@ abstract class  StateAspectImpl {
 		sharesSearchAO.getTimeCourses().stream().filter(tc ->tc.getValue().code().equals(selectedTimeCourseCode)).findAny().ifPresent(selected ->sharesSearchAO.setSelectedTimeCourse(selected) );
 	 }
 	 
-	 @After("execution(* de.mq.portfolio.share.support.SharesControllerImpl.*(..)) && @annotation(de.mq.portfolio.support.Serialize) && args(sharesSearchAO,..))")
-	 void serialize(final SharesSearchAO sharesSearchAO)  {
-		
+	 @After("execution(* de.mq.portfolio.share.support.SharesControllerImpl.*(..)) && @annotation(de.mq.portfolio.support.Serialize) && args(sharesSearchAO,..) && @annotation(serialize))")
+	 void serialize(final SharesSearchAO sharesSearchAO, final Serialize serialize)  {		 
 			final Map<String,Object> state = new HashMap<>();
-			state.putAll(serialisationUtil.toMap(sharesSearchAO, Arrays.asList("code", "name" , "index", "selectedSort", "selectedTimeCourseCode")));
-			state.putAll(serialisationUtil.toMap(sharesSearchAO.getPageable(), Arrays.asList("page", "counter", "sort")));
+			state.putAll(serialisationUtil.toMap(sharesSearchAO, Arrays.asList(serialize.fields()), Arrays.asList(serialize.mappings())));
+		//	state.putAll(serialisationUtil.toMap(sharesSearchAO.getPageable(), Arrays.asList("page", "counter", "sort")));
 			
 			userModel().assign(facesContext().getViewRoot().getViewId(), serialisationUtil.serialize(state));
 	 }

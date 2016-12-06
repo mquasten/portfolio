@@ -65,7 +65,7 @@ public  abstract  class AbstractPortfolioController {
 		
 	}
 
-	@Serialize
+	@Serialize(fields={"name", "selectedPortfolioId"})
 	public void page(final PortfolioSearchAO portfolioSearchAO) {
 		portfolioSearchAO.setPageable(sharePortfolioService.pageable(portfolioSearchAO.criteria(), DEFAULT_SORT, DEFAULT_PAGE_SIZE));
 		portfolioSearchAO.setSelectedPortfolio(null);
@@ -73,7 +73,7 @@ public  abstract  class AbstractPortfolioController {
 
 	}
 	
-	@Serialize
+	@Serialize(fields={"name", "selectedPortfolioId"})
 	public  void assignState(final PortfolioSearchAO portfolioSearchAO) {
 	}
 

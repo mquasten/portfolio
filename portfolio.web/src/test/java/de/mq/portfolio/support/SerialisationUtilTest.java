@@ -58,7 +58,7 @@ public class SerialisationUtilTest {
 	
 		IntStream.range(0, PAGE_NUMBER).forEach( i -> pageable[0]=pageable[0].next());
 		
-		final Map<String,Object> results = serialisationUtil.toMap(pageable[0], Arrays.asList(PAGE));
+		final Map<String,Object> results = serialisationUtil.toMap(pageable[0], Arrays.asList(PAGE), Arrays.asList());
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals(PAGE_NUMBER, results.get(PAGE));
 	}

@@ -25,13 +25,21 @@ import org.springframework.web.client.ResourceAccessException;
 abstract class AbstractSerialisationUtil implements SerialisationUtil {
 	
 	
-	/* (non-Javadoc)
-	 * @see de.mq.portfolio.support.SerialisationUtil#toMap(T, java.util.Collection)
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.support.SerialisationUtil#toMap(java.lang.Object, java.util.Collection, java.util.Collection)
 	 */
 	@Override
-	public final <T> Map<String,Object> toMap(final T  bean, final Collection<?>   properties) {
+	public final <T> Map<String,Object> toMap(final T  bean, final Collection<String>   properties, final Collection<String> mapping) {
+		final Map<String,String> mappings = new HashMap<>();
+		mapping.stream().filter(m -> m.split("[=]").length==2).forEach(m ->mappings.put( m.split("[=]")[0].trim(),  m.split("[=]")[1].trim()));
+		
+		
 		final Map<String,Object> results = new HashMap<>();
-		ReflectionUtils.doWithFields(bean.getClass(), field -> {field.setAccessible(true); results.put(field.getName(), ReflectionUtils.getField(field, bean));}, field -> properties.contains(field.getName()));
+		//ReflectionUtils.doWithFields(bean.getClass(), field -> {field.setAccessible(true); results.put(field.getName(), ReflectionUtils.getField(field, bean));}, field -> properties.contains(field.getName()));
+		
+		properties.forEach(property -> results.put( mappings.containsKey(property)? mappings.get(property) : property, this.value(bean, property)));
+		
 		return results;
 		
 	}
@@ -108,5 +116,7 @@ abstract class AbstractSerialisationUtil implements SerialisationUtil {
 		return result;
 		
 	}
+
+	
 
 }

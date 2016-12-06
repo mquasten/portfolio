@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Component;
 
 import de.mq.portfolio.support.SerialisationUtil;
+import de.mq.portfolio.support.Serialize;
 import de.mq.portfolio.support.UserModel;
 
 @Component
@@ -20,9 +21,9 @@ abstract class StateAspectImpl {
 	@Autowired
 	private SerialisationUtil serialisationUtil;
 
-	@After("execution(* de.mq.portfolio.shareportfolio.support.AbstractPortfolioController.*(..)) && @annotation(de.mq.portfolio.support.Serialize) && args(portfolioSearchAO, ..))")
-	void serialize(final PortfolioSearchAO portfolioSearchAO) {
-		userModel().assign(facesContext().getViewRoot().getViewId(), serialisationUtil.serialize(serialisationUtil.toMap(portfolioSearchAO, Arrays.asList("name", "selectedPortfolioId"))));
+	@After("execution(* de.mq.portfolio.shareportfolio.support.AbstractPortfolioController.*(..)) && @annotation(de.mq.portfolio.support.Serialize) && args(portfolioSearchAO, ..) && @annotation(serialize))")
+	void serialize(final PortfolioSearchAO portfolioSearchAO, final Serialize serialize) {
+		userModel().assign(facesContext().getViewRoot().getViewId(), serialisationUtil.serialize(serialisationUtil.toMap(portfolioSearchAO, Arrays.asList(serialize.fields()), Arrays.asList(serialize.mappings()))));
 	}
 
 	@After("execution(* de.mq.portfolio.shareportfolio.support.AbstractPortfolioController.*(..))&& @annotation(de.mq.portfolio.support.DeSerialize)&& args(portfolioSearchAO,..) && target(controller)")
