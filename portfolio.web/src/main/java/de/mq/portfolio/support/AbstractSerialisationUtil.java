@@ -116,6 +116,36 @@ abstract class AbstractSerialisationUtil implements SerialisationUtil {
 		return result;
 		
 	}
+	
+	final <T> void assign(final T  bean, final String   property, final Object value){
+		Assert.notNull(bean);
+		StringUtils.hasText(property);
+		final List<String> values =new ArrayList<>(Arrays.asList(property.split("[.]")));
+	
+		final Field field = ReflectionUtils.findField(bean.getClass(), values.get(0));
+		Assert.notNull(field, "Field not found class:  "+  bean.getClass().getName() + " field:" + values.get(0));
+		field.setAccessible(true);
+	
+		values.remove(0);
+		
+		
+		if( values.isEmpty()){
+			ReflectionUtils.setField(field, bean, value);
+			return;
+			
+		}
+		
+		
+		final Object result = ReflectionUtils.getField(field,bean);
+		if( result == null){
+			return;
+		} 
+		assign(result, StringUtils.collectionToDelimitedString(values, "."), value);
+		
+		
+		
+		
+	}
 
 	
 
