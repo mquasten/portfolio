@@ -1,6 +1,7 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Component;
 
+import de.mq.portfolio.support.DeSerialize;
 import de.mq.portfolio.support.SerialisationUtil;
 import de.mq.portfolio.support.Serialize;
 import de.mq.portfolio.support.UserModel;
@@ -26,8 +28,8 @@ abstract class StateAspectImpl {
 		userModel().assign(facesContext().getViewRoot().getViewId(), serialisationUtil.serialize(serialisationUtil.toMap(portfolioSearchAO, Arrays.asList(serialize.fields()), Arrays.asList(serialize.mappings()))));
 	}
 
-	@After("execution(* de.mq.portfolio.shareportfolio.support.AbstractPortfolioController.*(..))&& @annotation(de.mq.portfolio.support.DeSerialize)&& args(portfolioSearchAO,..) && target(controller)")
-	void deSerialize(final PortfolioSearchAO portfolioSearchAO, final AbstractPortfolioController controller) {
+	@After("execution(* de.mq.portfolio.shareportfolio.support.AbstractPortfolioController.*(..))&& @annotation(de.mq.portfolio.support.DeSerialize)&& args(portfolioSearchAO,..) && target(controller)  && @annotation(deSerialize)  )")
+	void deSerialize(final PortfolioSearchAO portfolioSearchAO, final AbstractPortfolioController controller, final DeSerialize deSerialize) {
 
 		if (!portfolioSearchAO.isNew()) {
 
@@ -37,7 +39,10 @@ abstract class StateAspectImpl {
 			return;
 		}
 
-		serialisationUtil.toBean(serialisationUtil.deSerialize(userModel().state(facesContext().getViewRoot().getViewId())), portfolioSearchAO);
+		
+		
+		final Map<String, Object> stateMap = serialisationUtil.deSerialize(userModel().state(facesContext().getViewRoot().getViewId()));
+		serialisationUtil.toBean(stateMap, portfolioSearchAO, Arrays.asList(deSerialize.mappings()));
 
 		final String selectedPortfolioId = portfolioSearchAO.getSelectedPortfolioId();
 

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Component;
 
+import de.mq.portfolio.support.DeSerialize;
 import de.mq.portfolio.support.SerialisationUtil;
 import de.mq.portfolio.support.Serialize;
 import de.mq.portfolio.support.UserModel;
@@ -26,8 +27,8 @@ abstract class  StateAspectImpl {
 	
 	
 	
-	 @After("execution(* de.mq.portfolio.share.support.SharesControllerImpl.*(..))&& @annotation(de.mq.portfolio.support.DeSerialize)&& args(sharesSearchAO,..) && target(controller)")
-	 void deSerialize(final SharesSearchAO sharesSearchAO, final SharesControllerImpl controller)  {
+	 @After("execution(* de.mq.portfolio.share.support.SharesControllerImpl.*(..))&& @annotation(de.mq.portfolio.support.DeSerialize) && args(sharesSearchAO,..) && target(controller) && @annotation(deSerialize)  )")
+	 void deSerialize(final SharesSearchAO sharesSearchAO, final SharesControllerImpl controller, DeSerialize deSerialize)  {
 		
 		if( ! sharesSearchAO.isNew()) {
 			return;
@@ -42,9 +43,11 @@ abstract class  StateAspectImpl {
 		final Map <String,Object> stateMap = serialisationUtil.deSerialize(userModel().state(facesContext().getViewRoot().getViewId()));
 		
 		
-		serialisationUtil.toBean(stateMap, sharesSearchAO);
-		//sharesSearchAO.setPageable(shareService.pageable(sharesSearchAO.getSearch(),orderBy.get(sharesSearchAO.getSelectedSort()), 10));
-		serialisationUtil.toBean(stateMap, sharesSearchAO.getPageable());
+	/*	serialisationUtil.toBean(stateMap, sharesSearchAO);
+		
+		serialisationUtil.toBean(stateMap, sharesSearchAO.getPageable()); */
+		
+		serialisationUtil.toBean(stateMap, sharesSearchAO, Arrays.asList(deSerialize.mappings()));
 		
 		final String selectedTimeCourseCode = sharesSearchAO.getSelectedTimeCourseCode();
 		

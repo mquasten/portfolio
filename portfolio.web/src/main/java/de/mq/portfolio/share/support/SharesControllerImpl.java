@@ -52,7 +52,7 @@ public  class SharesControllerImpl {
 
 	}
 
-	@DeSerialize
+	@DeSerialize(mappings={"page=pageable.page", "counter=pageable.counter", "sort=pageable.sort"})
 	public void init(final SharesSearchAO sharesSearchAO, UserModel userModel) {
 
 		refreshPortfolioList(sharesSearchAO, userModel);

@@ -11,7 +11,9 @@ public interface SerialisationUtil {
 
 	Map<String, Object> deSerialize(String value);
 
-	<T> void toBean(Map<String, Object> map, T target);
+	<T> void toBean(Map<String, Object> map, T target, final Collection<String> mapping);
+
+	
 
 	
 

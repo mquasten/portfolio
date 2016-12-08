@@ -84,12 +84,27 @@ abstract class AbstractSerialisationUtil implements SerialisationUtil {
 	 * @see de.mq.portfolio.support.SerialisationUtil#toBean(java.util.Map, T)
 	 */
 	@Override
-	public final <T>  void toBean(final Map<String,Object> map, T target) {
-		ReflectionUtils.doWithFields(target.getClass(), field -> {
+	public final <T>  void toBean(final Map<String,Object> map, final T target, final Collection<String> mapping ) {
+		final Map<String,String> mappings = new HashMap<>();
+		mapping.stream().filter(m -> m.split("[=]").length==2).forEach(m ->mappings.put( m.split("[=]")[0].trim(),  m.split("[=]")[1].trim()));
+		
+		
+		map.keySet().stream().forEach(key -> {
+		final String fieldName = mappings.containsKey(key) ? mappings.get(key) : key;
+		
+			assign(target, fieldName, map.get(key));
+		
+		});
+		
+	
+		
+	/*	ReflectionUtils.doWithFields(target.getClass(), field -> {
 			field.setAccessible(true);
 			ReflectionUtils.setField(field, target, map.get(field.getName()));
-		}, field -> map.containsKey(field.getName()));
+		}, field -> map.containsKey(field.getName())); */
 	}
+	
+	
 	
 	@Lookup
 	abstract ExceptionTranslationBuilder<? extends Object, ? extends AutoCloseable> builder() ; 

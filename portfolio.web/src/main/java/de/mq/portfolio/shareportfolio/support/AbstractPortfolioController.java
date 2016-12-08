@@ -55,7 +55,7 @@ public  abstract  class AbstractPortfolioController {
 		this.pdfConverter = pdfConverter;
 	}
 
-	@DeSerialize
+	@DeSerialize(mappings={"x=y" , "a=b"})
 	public void init(final PortfolioSearchAO portfolioSearchAO, final UserModel userModel) {
 		page(portfolioSearchAO);
 		if (userModel.getPortfolioId() != null) {

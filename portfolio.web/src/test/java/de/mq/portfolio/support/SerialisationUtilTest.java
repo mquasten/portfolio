@@ -86,7 +86,7 @@ public class SerialisationUtilTest {
 		Assert.assertFalse(pageable.hasPrevious());
 		final Map<String,Object> map = new HashMap<>();
 		map.put(PAGE, PAGE_NUMBER);
-		serialisationUtil.toBean(map, pageable);
+		serialisationUtil.toBean(map, pageable, Arrays.asList());
 		
 		Assert.assertEquals(PAGE_NUMBER, pageable.getPageNumber());
 		Assert.assertTrue(pageable.hasPrevious());
