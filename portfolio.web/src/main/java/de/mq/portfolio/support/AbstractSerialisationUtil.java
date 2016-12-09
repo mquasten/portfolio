@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
@@ -88,8 +89,9 @@ abstract class AbstractSerialisationUtil implements SerialisationUtil {
 		final Map<String,String> mappings = new HashMap<>();
 		mapping.stream().filter(m -> m.split("[=]").length==2).forEach(m ->mappings.put( m.split("[=]")[0].trim(),  m.split("[=]")[1].trim()));
 		
-		
-		map.keySet().stream().forEach(key -> {
+		final Collection<String> blackList =  mapping.stream().filter(m -> m.split("[=]").length==1 || (m.split("[=]").length==2&&!StringUtils.hasText(m.split("[=]")[1]))).map(m -> m.split("[=]")[0].trim()).collect(Collectors.toSet());
+			
+		map.keySet().stream().filter(key -> ! blackList.contains(key)).forEach(key -> {
 		final String fieldName = mappings.containsKey(key) ? mappings.get(key) : key;
 		
 			assign(target, fieldName, map.get(key));
@@ -98,10 +100,7 @@ abstract class AbstractSerialisationUtil implements SerialisationUtil {
 		
 	
 		
-	/*	ReflectionUtils.doWithFields(target.getClass(), field -> {
-			field.setAccessible(true);
-			ReflectionUtils.setField(field, target, map.get(field.getName()));
-		}, field -> map.containsKey(field.getName())); */
+	
 	}
 	
 	

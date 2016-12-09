@@ -42,7 +42,7 @@ abstract class  StateAspectImpl {
 	
 		final Map <String,Object> stateMap = serialisationUtil.deSerialize(userModel().state(facesContext().getViewRoot().getViewId()));
 		
-		
+		System.out.println(stateMap);
 	/*	serialisationUtil.toBean(stateMap, sharesSearchAO);
 		
 		serialisationUtil.toBean(stateMap, sharesSearchAO.getPageable()); */
