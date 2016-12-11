@@ -2,8 +2,10 @@ package de.mq.portfolio.support;
 
 import java.io.IOException;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.IntStream;
@@ -28,7 +30,7 @@ public class SerialisationUtilTest {
 
 	private static final Sort SORT = Mockito.mock(Sort.class);
 
-	private static final String PAGE = "page";
+	static final String PAGE = "page";
 
 	private static final int PAGE_NUMBER = 42;
 	
@@ -183,4 +185,34 @@ public class SerialisationUtilTest {
 		Assert.assertEquals(KEY, entry.getKey());
 		
 	}
+	
+	@Test
+	public final void execute() {
+		
+		final Controller controller = new Controller();
+		final Map<String,Object> params = new HashMap<>();
+		params.put(Parameter.DEFAULT_PARAMETER, this);
+		params.put(PAGE , PAGE_NUMBER);
+		((AbstractSerialisationUtil)serialisationUtil).execute(controller, ".*" , params);
+		
+		Assert.assertEquals(2, controller.getParameter().size());
+		Assert.assertEquals(this,  controller.getParameter().get(0));
+		Assert.assertEquals(PAGE_NUMBER, controller.getParameter().get(1));
+	}
+	
+	
+}
+
+class Controller {
+	final List<Object> parameter = new ArrayList<>();
+	final List<Object> getParameter() {
+		return parameter;
+	}
+	void method(@Parameter  final Object bean, @Parameter(SerialisationUtilTest.PAGE) final Number value) {
+		
+		parameter.add(bean);
+		parameter.add(value);
+		
+	}
+	
 }

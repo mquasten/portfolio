@@ -6,10 +6,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,7 +162,23 @@ abstract class AbstractSerialisationUtil implements SerialisationUtil {
 		
 		
 	}
+	
+	
+	void execute(final Object controller, final String regex, final Map<String,Object> params) {
+		
+		ReflectionUtils.doWithMethods(controller.getClass(), m -> {
+			m.setAccessible(true);
+			ReflectionUtils.invokeMethod(m, controller, arguments(m).stream().map(a -> params.get(a)).collect(Collectors.toList()).toArray());
+		},  m -> m.getName().matches(regex) && arguments(m).size() == m.getParameterCount() &&  m.getParameterCount() > 0  && m.getReturnType().equals(void.class) );
+		
+	}
+
+	private Collection<String> arguments(final Method m) {
+		final Collection<String> results = new ArrayList<>();
+		Arrays.asList(m.getParameterAnnotations()).forEach(  array -> Arrays.asList(array).stream().filter(a -> a.annotationType().equals(Parameter.class)).map(a -> ((Parameter) a).value() ).filter(name -> ! results.contains(name)).forEach(name -> results.add(name)));
+	    return Collections.unmodifiableCollection(results);
+	}
 
 	
-
+	//&& Arrays.asList(m.getParameterTypes()).stream().allMatch(p -> p.isAnnotationPresent(Parameter.class))
 }

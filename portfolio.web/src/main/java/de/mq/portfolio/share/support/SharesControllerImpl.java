@@ -61,6 +61,11 @@ public  class SharesControllerImpl {
 		page(sharesSearchAO);
 
 	}
+	
+	
+	public void select() {
+		
+	}
 
 	private void refreshPortfolioList(final SharesSearchAO sharesSearchAO, UserModel userModel) {
 		final Collection<Entry<String, String>> portfolio = new ArrayList<>();
