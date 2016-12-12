@@ -163,8 +163,12 @@ abstract class AbstractSerialisationUtil implements SerialisationUtil {
 		
 	}
 	
-	
-	void execute(final Object controller, final String regex, final Map<String,Object> params) {
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.support.SerialisationUtil#execute(java.lang.Object, java.lang.String, java.util.Map)
+	 */
+	@Override
+	public final void execute(final Object controller, final String regex, final Map<String,Object> params) {
 		
 		ReflectionUtils.doWithMethods(controller.getClass(), m -> {
 			m.setAccessible(true);

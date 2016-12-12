@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Component;
 
 import de.mq.portfolio.support.DeSerialize;
+import de.mq.portfolio.support.Parameter;
 import de.mq.portfolio.support.SerialisationUtil;
 import de.mq.portfolio.support.Serialize;
 import de.mq.portfolio.support.UserModel;
@@ -28,7 +29,7 @@ abstract class  StateAspectImpl {
 	
 	
 	 @After("execution(* de.mq.portfolio.share.support.SharesControllerImpl.*(..))&& @annotation(de.mq.portfolio.support.DeSerialize) && args(sharesSearchAO,..) && target(controller) && @annotation(deSerialize)  )")
-	 void deSerialize(final SharesSearchAO sharesSearchAO, final SharesControllerImpl controller, DeSerialize deSerialize)  {
+	 void deSerialize(final SharesSearchAO sharesSearchAO, final Object controller, DeSerialize deSerialize)  {
 		
 		if( ! sharesSearchAO.isNew()) {
 			return;
@@ -42,17 +43,21 @@ abstract class  StateAspectImpl {
 	
 		final Map <String,Object> stateMap = serialisationUtil.deSerialize(userModel().state(facesContext().getViewRoot().getViewId()));
 		
-		System.out.println(stateMap);
+		
+		
 	/*	serialisationUtil.toBean(stateMap, sharesSearchAO);
 		
 		serialisationUtil.toBean(stateMap, sharesSearchAO.getPageable()); */
 		
 		serialisationUtil.toBean(stateMap, sharesSearchAO, Arrays.asList(deSerialize.mappings()));
 		
-		final String selectedTimeCourseCode = sharesSearchAO.getSelectedTimeCourseCode();
+		stateMap.put(Parameter.DEFAULT_PARAMETER, sharesSearchAO);
+		serialisationUtil.execute(controller, deSerialize.methodRegex(), stateMap);
+		/*final String selectedTimeCourseCode = sharesSearchAO.getSelectedTimeCourseCode();
 		
 		controller.refreshTimeCourses(sharesSearchAO);
 		sharesSearchAO.getTimeCourses().stream().filter(tc ->tc.getValue().code().equals(selectedTimeCourseCode)).findAny().ifPresent(selected ->sharesSearchAO.setSelectedTimeCourse(selected) );
+	    */
 	 }
 	 
 	 @After("execution(* de.mq.portfolio.share.support.SharesControllerImpl.*(..)) && @annotation(de.mq.portfolio.support.Serialize) && args(sharesSearchAO,..) && @annotation(serialize))")
@@ -60,6 +65,8 @@ abstract class  StateAspectImpl {
 			final Map<String,Object> state = new HashMap<>();
 			state.putAll(serialisationUtil.toMap(sharesSearchAO, Arrays.asList(serialize.fields()), Arrays.asList(serialize.mappings())));
 		//	state.putAll(serialisationUtil.toMap(sharesSearchAO.getPageable(), Arrays.asList("page", "counter", "sort")));
+			
+			
 			
 			userModel().assign(facesContext().getViewRoot().getViewId(), serialisationUtil.serialize(state));
 	 }

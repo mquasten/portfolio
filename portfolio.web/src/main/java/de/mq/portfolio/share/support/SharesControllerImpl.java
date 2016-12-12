@@ -21,6 +21,7 @@ import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.shareportfolio.support.SharePortfolioService;
 import de.mq.portfolio.support.DeSerialize;
+import de.mq.portfolio.support.Parameter;
 import de.mq.portfolio.support.Serialize;
 import de.mq.portfolio.support.UserModel;
 
@@ -52,7 +53,7 @@ public  class SharesControllerImpl {
 
 	}
 
-	@DeSerialize(mappings={"page=pageable.page", "counter=pageable.counter", "sort=pageable.sort"})
+	@DeSerialize(mappings={"page=pageable.page", "counter=pageable.counter", "sort=pageable.sort", "selectedTimeCourseCode=" }, methodRegex="restoreState")
 	public void init(final SharesSearchAO sharesSearchAO, UserModel userModel) {
 
 		refreshPortfolioList(sharesSearchAO, userModel);
@@ -63,8 +64,9 @@ public  class SharesControllerImpl {
 	}
 	
 	
-	public void select() {
-		
+	void restoreState(@Parameter final SharesSearchAO sharesSearchAO, @Parameter("selectedTimeCourseCode") final  String selectedTimeCourseCode ) {
+		refreshTimeCourses(sharesSearchAO);
+		sharesSearchAO.getTimeCourses().stream().filter(tc ->tc.getValue().code().equals(selectedTimeCourseCode)).findAny().ifPresent(selected ->sharesSearchAO.setSelectedTimeCourse(selected) );
 	}
 
 	private void refreshPortfolioList(final SharesSearchAO sharesSearchAO, UserModel userModel) {
@@ -80,14 +82,14 @@ public  class SharesControllerImpl {
 		sharesSearchAO.setPortfolio(portfolio);
 	}
 
-	@Serialize(mappings={"pageable.page=page", "pageable.counter=counter", "pageable.sort=sort"}, fields={"code", "name" , "index", "selectedSort", "selectedTimeCourseCode",  "pageable.page", "pageable.counter", "pageable.sort"})
+	@Serialize(mappings={"pageable.page=page", "pageable.counter=counter", "pageable.sort=sort", "selectedTimeCourse.value.code=selectedTimeCourseCode"}, fields={"code", "name" , "index", "selectedSort", "selectedTimeCourse.value.code",  "pageable.page", "pageable.counter", "pageable.sort"})
 	public void page(final SharesSearchAO sharesSearchAO) {
 
 		sharesSearchAO.setPageable(shareService.pageable(sharesSearchAO.getSearch(), orderBy.get(sharesSearchAO.getSelectedSort()), 10));
 		refreshTimeCourses(sharesSearchAO);
 	}
 
-	@Serialize(mappings={"pageable.page=page", "pageable.counter=counter", "pageable.sort=sort"}, fields={"code", "name" , "index", "selectedSort", "selectedTimeCourseCode",  "pageable.page", "pageable.counter", "pageable.sort"})
+	@Serialize(mappings={"pageable.page=page", "pageable.counter=counter", "pageable.sort=sort", "selectedTimeCourse.value.code=selectedTimeCourseCode"}, fields={"code", "name" , "index", "selectedSort", "selectedTimeCourse.value.code",  "pageable.page", "pageable.counter", "pageable.sort"})
 	public void assignState(final SharesSearchAO sharesSearchAO) {
 
 	}
@@ -100,7 +102,7 @@ public  class SharesControllerImpl {
 
 	}
 
-	@Serialize(mappings={"pageable.page=page", "pageable.counter=counter", "pageable.sort=sort"},  fields={"code", "name" , "index", "selectedSort", "selectedTimeCourseCode",  "pageable.page", "pageable.counter", "pageable.sort"})
+	@Serialize(mappings={"pageable.page=page", "pageable.counter=counter", "pageable.sort=sort", "selectedTimeCourse.value.code=selectedTimeCourseCode"}, fields={"code", "name" , "index", "selectedSort", "selectedTimeCourse.value.code",  "pageable.page", "pageable.counter", "pageable.sort"})
 	public void next(final SharesSearchAO sharesSearchAO) {
 		if (sharesSearchAO.getPageable() == null) {
 
@@ -111,7 +113,7 @@ public  class SharesControllerImpl {
 		refreshTimeCourses(sharesSearchAO);
 	}
 
-	@Serialize(mappings={"pageable.page=page", "pageable.counter=counter", "pageable.sort=sort"}, fields={"code", "name" , "index", "selectedSort", "selectedTimeCourseCode",  "pageable.page", "pageable.counter", "pageable.sort"})
+	@Serialize(mappings={"pageable.page=page", "pageable.counter=counter", "pageable.sort=sort", "selectedTimeCourse.value.code=selectedTimeCourseCode"}, fields={"code", "name" , "index", "selectedSort", "selectedTimeCourse.value.code",  "pageable.page", "pageable.counter", "pageable.sort"})
 	public void previous(final SharesSearchAO sharesSearchAO) {
 		if (sharesSearchAO.getPageable() == null) {
 
@@ -122,7 +124,7 @@ public  class SharesControllerImpl {
 		refreshTimeCourses(sharesSearchAO);
 	}
 
-	@Serialize(mappings={"pageable.page=page", "pageable.counter=counter", "pageable.sort=sort"}, fields={"code", "name" , "index", "selectedSort", "selectedTimeCourseCode",  "pageable.page", "pageable.counter", "pageable.sort"})
+	@Serialize(mappings={"pageable.page=page", "pageable.counter=counter", "pageable.sort=sort", "selectedTimeCourse.value.code=selectedTimeCourseCode"}, fields={"code", "name" , "index", "selectedSort", "selectedTimeCourse.value.code",  "pageable.page", "pageable.counter", "pageable.sort"})
 	public void first(final SharesSearchAO sharesSearchAO) {
 		if (sharesSearchAO.getPageable() == null) {
 
@@ -133,7 +135,7 @@ public  class SharesControllerImpl {
 
 	}
 
-	@Serialize(mappings={"pageable.page=page", "pageable.counter=counter", "pageable.sort=sort"}, fields={"code", "name" , "index", "selectedSort", "selectedTimeCourseCode",  "pageable.page", "pageable.counter", "pageable.sort"})
+	@Serialize(mappings={"pageable.page=page", "pageable.counter=counter", "pageable.sort=sort", "selectedTimeCourse.value.code=selectedTimeCourseCode"}, fields={"code", "name" , "index", "selectedSort", "selectedTimeCourse.value.code",  "pageable.page", "pageable.counter", "pageable.sort"})
 	public void last(final SharesSearchAO sharesSearchAO) {
 		if (sharesSearchAO.getPageable() == null) {
 

@@ -46,13 +46,9 @@ public class SharesSearchAO implements Serializable {
 	private String index;
 	
 	
-	private String selectedTimeCourseCode;
-	
 	private boolean newBean=true; 
 
-	public String getSelectedTimeCourseCode() {
-		return selectedTimeCourseCode;
-	}
+	
 
 	public  Share getSearch() {
 		return new ShareImpl(code, name, index, null, null);
@@ -147,13 +143,7 @@ public class SharesSearchAO implements Serializable {
 		return selectedTimeCourse;
 	}
 
-	public void setSelectedTimeCourse(Entry<Share, TimeCourse> selectedTimeCourse) {
-		selectedTimeCourseCode=null;
-		
-		if( selectedTimeCourse != null) {
-			selectedTimeCourseCode=selectedTimeCourse.getValue().code();
-		}
-		
+	public void setSelectedTimeCourse(Entry<Share, TimeCourse> selectedTimeCourse) {	
 		this.selectedTimeCourse = selectedTimeCourse;
 	}
 

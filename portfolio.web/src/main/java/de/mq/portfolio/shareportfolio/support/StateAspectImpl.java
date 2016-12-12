@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Component;
 
 import de.mq.portfolio.support.DeSerialize;
+import de.mq.portfolio.support.Parameter;
 import de.mq.portfolio.support.SerialisationUtil;
 import de.mq.portfolio.support.Serialize;
 import de.mq.portfolio.support.UserModel;
@@ -44,11 +45,14 @@ abstract class StateAspectImpl {
 		final Map<String, Object> stateMap = serialisationUtil.deSerialize(userModel().state(facesContext().getViewRoot().getViewId()));
 		serialisationUtil.toBean(stateMap, portfolioSearchAO, Arrays.asList(deSerialize.mappings()));
 
-		final String selectedPortfolioId = portfolioSearchAO.getSelectedPortfolioId();
+		stateMap.put(Parameter.DEFAULT_PARAMETER, portfolioSearchAO);
+		serialisationUtil.execute(controller, deSerialize.methodRegex(), stateMap);
+		
+	/*	final String selectedPortfolioId = portfolioSearchAO.getSelectedPortfolioId();
 
 		controller.page(portfolioSearchAO);
 
-		portfolioSearchAO.getSharePortfolios().stream().filter(p -> p.id().equals(selectedPortfolioId)).findAny().ifPresent(selected -> portfolioSearchAO.setSelectedPortfolio(selected));
+		portfolioSearchAO.getSharePortfolios().stream().filter(p -> p.id().equals(selectedPortfolioId)).findAny().ifPresent(selected -> portfolioSearchAO.setSelectedPortfolio(selected)); */
 
 	}
 

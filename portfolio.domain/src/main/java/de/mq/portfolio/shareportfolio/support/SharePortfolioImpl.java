@@ -36,7 +36,7 @@ class SharePortfolioImpl implements SharePortfolio {
 	static final String DEFAULT_CURRENCY = "EUR";
 
 	@Id
-	private String id11;
+	private String id;
 
 	@Indexed(unique = true)
 	private final String name;

@@ -25,6 +25,7 @@ import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.support.DeSerialize;
+import de.mq.portfolio.support.Parameter;
 import de.mq.portfolio.support.Serialize;
 import de.mq.portfolio.support.UserModel;
 
@@ -55,7 +56,7 @@ public  abstract  class AbstractPortfolioController {
 		this.pdfConverter = pdfConverter;
 	}
 
-	@DeSerialize(mappings={"x=y" , "a=b"})
+	@DeSerialize( methodRegex="restoreState", mappings={"selectedPortfolioId="})
 	public void init(final PortfolioSearchAO portfolioSearchAO, final UserModel userModel) {
 		page(portfolioSearchAO);
 		if (userModel.getPortfolioId() != null) {
@@ -64,8 +65,17 @@ public  abstract  class AbstractPortfolioController {
 		portfolioSearchAO.setExchangeRateCalculator(exchangeRateService.exchangeRateCalculator());
 		
 	}
+	
+	void restoreState(@Parameter final PortfolioSearchAO portfolioSearchAO, @Parameter("selectedPortfolioId") final String selectedPortfolioId) {
 
-	@Serialize(fields={"name", "selectedPortfolioId"})
+
+		page(portfolioSearchAO);
+
+		portfolioSearchAO.getSharePortfolios().stream().filter(p -> p.id().equals(selectedPortfolioId)).findAny().ifPresent(selected -> portfolioSearchAO.setSelectedPortfolio(selected)); 
+
+	}
+		
+	@Serialize( mappings={"selectedPortfolio.id=selectedPortfolioId"},  fields={"name", "selectedPortfolio.id"})
 	public void page(final PortfolioSearchAO portfolioSearchAO) {
 		portfolioSearchAO.setPageable(sharePortfolioService.pageable(portfolioSearchAO.criteria(), DEFAULT_SORT, DEFAULT_PAGE_SIZE));
 		portfolioSearchAO.setSelectedPortfolio(null);
@@ -73,7 +83,7 @@ public  abstract  class AbstractPortfolioController {
 
 	}
 	
-	@Serialize(fields={"name", "selectedPortfolioId"})
+	@Serialize(mappings={"selectedPortfolio.id=selectedPortfolioId"}, fields={"name", "selectedPortfolio.id"})
 	public  void assignState(final PortfolioSearchAO portfolioSearchAO) {
 	}
 

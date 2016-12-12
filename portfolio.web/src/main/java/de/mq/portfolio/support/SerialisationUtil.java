@@ -13,6 +13,8 @@ public interface SerialisationUtil {
 
 	<T> void toBean(Map<String, Object> map, T target, final Collection<String> mapping);
 
+	void execute(Object controller, String regex, Map<String, Object> params);
+
 	
 
 	
