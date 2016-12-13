@@ -15,6 +15,8 @@ public interface SerialisationUtil {
 
 	void execute(Object controller, String regex, Map<String, Object> params);
 
+	<T> long getAndIncVersion(T bean);
+
 	
 
 	

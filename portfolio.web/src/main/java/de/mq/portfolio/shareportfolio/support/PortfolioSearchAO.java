@@ -36,7 +36,7 @@ public class PortfolioSearchAO implements Serializable {
 	private String name;
 
 	private SharePortfolio selectedPortfolio;
-	private String selectedPortfolioId;
+	
 
 	private boolean newBean = true;
 
@@ -62,11 +62,7 @@ public class PortfolioSearchAO implements Serializable {
 	}
 
 	public void setSelectedPortfolio(SharePortfolio selectedPortfolio) {
-		this.selectedPortfolioId=null;
 		this.selectedPortfolio = selectedPortfolio;
-		if( selectedPortfolio!= null){
-			this.selectedPortfolioId=selectedPortfolio.id();
-		}
 	}
 
 	public String getName() {
@@ -131,8 +127,6 @@ public class PortfolioSearchAO implements Serializable {
 		this.exchangeRateCalculator = Optional.ofNullable(exchangeRateCalculator);
 	}
 	
-	String getSelectedPortfolioId() {
-		return selectedPortfolioId;
-	}
+	
 
 }

@@ -15,9 +15,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Lookup;
+import org.springframework.data.annotation.Version;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -173,7 +175,7 @@ abstract class AbstractSerialisationUtil implements SerialisationUtil {
 		ReflectionUtils.doWithMethods(controller.getClass(), m -> {
 			m.setAccessible(true);
 			ReflectionUtils.invokeMethod(m, controller, arguments(m).stream().map(a -> params.get(a)).collect(Collectors.toList()).toArray());
-		},  m -> m.getName().matches(regex) && arguments(m).size() == m.getParameterCount() &&  m.getParameterCount() > 0  && m.getReturnType().equals(void.class) );
+		},  m -> m.getName().matches(regex) && arguments(m).size() == m.getParameterCount() &&  m.getParameterCount() > 0  );
 		
 	}
 
@@ -183,6 +185,20 @@ abstract class AbstractSerialisationUtil implements SerialisationUtil {
 	    return Collections.unmodifiableCollection(results);
 	}
 
+	@Override
+	public final <T> long getAndIncVersion(final T  bean) {
+		
+		final Optional<Field> versionField = Arrays.asList(bean.getClass().getDeclaredFields()).stream().filter(field -> field.isAnnotationPresent(Version.class)&&(field.getType().equals(Long.class)||field.getType().equals(long.class))).findAny();
+		if( ! versionField.isPresent()) {
+			return 0;
+		}
+		versionField.get().setAccessible(true);
+		Long result = (Long) ReflectionUtils.getField(versionField.get(), bean);
+	    if( result == null){
+	    	result = 0L;
+	    }
+		ReflectionUtils.setField(versionField.get(), bean, result+1);
+		return result;
+	}
 	
-	//&& Arrays.asList(m.getParameterTypes()).stream().allMatch(p -> p.isAnnotationPresent(Parameter.class))
 }

@@ -33,7 +33,7 @@ abstract class StateAspectImpl {
 	void deSerialize(final PortfolioSearchAO portfolioSearchAO, final AbstractPortfolioController controller, final DeSerialize deSerialize) {
 
 		if (!portfolioSearchAO.isNew()) {
-
+			return;
 		}
 		portfolioSearchAO.setUsed();
 		if (userModel().state(facesContext().getViewRoot().getViewId()) == null) {

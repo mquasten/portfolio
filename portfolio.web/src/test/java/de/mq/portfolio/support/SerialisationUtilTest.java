@@ -13,6 +13,7 @@ import java.util.stream.IntStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -33,6 +34,9 @@ public class SerialisationUtilTest {
 	static final String PAGE = "page";
 
 	private static final int PAGE_NUMBER = 42;
+	
+	@Version
+	private  final Long version = null ;
 	
 	private Entry<String,Pageable> entry; 
 
@@ -199,9 +203,20 @@ public class SerialisationUtilTest {
 		Assert.assertEquals(this,  controller.getParameter().get(0));
 		Assert.assertEquals(PAGE_NUMBER, controller.getParameter().get(1));
 	}
-	
+
+	@Test
+	public final void getAndIncVersion() {
+		Assert.assertNull(this.version);
+		Assert.assertEquals(0, serialisationUtil.getAndIncVersion(this));
+		
+		Assert.assertEquals(1, (long) this.version);
+		Assert.assertEquals(1, serialisationUtil.getAndIncVersion(this));
+		Assert.assertEquals(2, (long) this.version);
+	}
 	
 }
+
+
 
 class Controller {
 	final List<Object> parameter = new ArrayList<>();
