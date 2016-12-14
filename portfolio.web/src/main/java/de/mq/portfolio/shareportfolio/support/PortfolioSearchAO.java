@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -37,8 +38,9 @@ public class PortfolioSearchAO implements Serializable {
 
 	private SharePortfolio selectedPortfolio;
 	
-
-	private boolean newBean = true;
+	@Version
+	private final Long version = 0L;
+	
 
 	public SharePortfolio getSelectedPortfolio() {
 		return selectedPortfolio;
@@ -110,13 +112,7 @@ public class PortfolioSearchAO implements Serializable {
 		this.portfolioName = portfolioName;
 	}
 
-	boolean isNew() {
-		return newBean;
-	}
 	
-	void setUsed() {
-		this.newBean=false;
-	}
 	
 	public ExchangeRateCalculator getExchangeRateCalculator() {
 		Assert.isTrue(exchangeRateCalculator.isPresent(), "ExchangeRateCalculator is missing.");

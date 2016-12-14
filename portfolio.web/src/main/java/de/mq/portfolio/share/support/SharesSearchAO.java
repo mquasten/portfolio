@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
@@ -45,8 +46,8 @@ public class SharesSearchAO implements Serializable {
 
 	private String index;
 	
-	
-	private boolean newBean=true; 
+	@Version
+	private final Long version = 0L;
 
 	
 
@@ -155,11 +156,5 @@ public class SharesSearchAO implements Serializable {
 		this.selectedPortfolioItem = selectedPortfolioItem;
 	}
 	
-	void setUsed() {
-		newBean=false;
-	}
 	
-	boolean isNew() {
-		return newBean;
-	}
 }

@@ -152,12 +152,7 @@ public class SharesSearchAOTest {
 		Assert.assertEquals(ID, sharesSearchAO.getSelectedPortfolioItem());
 	}
 	
-	@Test
-	public void isNew() {
-		Assert.assertTrue(sharesSearchAO.isNew());
-		sharesSearchAO.setUsed();
-		Assert.assertFalse(sharesSearchAO.isNew());
-	}
+	
 	
 	
 	
