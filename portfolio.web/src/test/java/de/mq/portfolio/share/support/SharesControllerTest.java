@@ -1,6 +1,7 @@
 package de.mq.portfolio.share.support;
 
 
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -28,6 +29,8 @@ import junit.framework.Assert;
 public class SharesControllerTest {
 
 	//private  final ArrayList<Entry<Share, TimeCourse>> emptyList = new ArrayList<>();
+
+	private static final String SELECTED_CODE = "JNJ";
 
 	private static final String SHARE_NAME = "SAP AG";
 
@@ -310,5 +313,29 @@ public class SharesControllerTest {
 		
 		Mockito.verifyZeroInteractions(sharesSearchAO);
 	}
-
+	
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public final void restoreState() {
+		
+		Mockito.when(sharesSearchAO.getTimeCourses()).thenReturn(Arrays.asList(new AbstractMap.SimpleImmutableEntry<>(share, timecourse)));
+		
+		Mockito.when(timecourse.code()).thenReturn(SELECTED_CODE);
+		
+		sharesController.restoreState(sharesSearchAO, SELECTED_CODE);
+		
+		Mockito.verify(sharesSearchAO).setSelectedTimeCourse(null);
+		
+		
+		Mockito.verify(sharesSearchAO).setTimeCorses(Arrays.asList(timecourse));
+		@SuppressWarnings("rawtypes")
+		final ArgumentCaptor<Entry> entry = ArgumentCaptor.forClass(Entry.class);
+		Mockito.verify(sharesSearchAO, Mockito.times(2)).setSelectedTimeCourse(entry.capture());
+		
+		Assert.assertNull(entry.getAllValues().get(0));
+		Assert.assertEquals(share, entry.getAllValues().get(1).getKey());
+		Assert.assertEquals(timecourse, entry.getAllValues().get(1).getValue());
+	
+	}
 }

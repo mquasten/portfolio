@@ -66,7 +66,8 @@ public  class SharesControllerImpl {
 	
 	void restoreState(@Parameter final SharesSearchAO sharesSearchAO, @Parameter("selectedTimeCourseCode") final  String selectedTimeCourseCode ) {
 		refreshTimeCourses(sharesSearchAO);
-		sharesSearchAO.getTimeCourses().stream().filter(tc ->tc.getValue().code().equals(selectedTimeCourseCode)).findAny().ifPresent(selected ->sharesSearchAO.setSelectedTimeCourse(selected) );
+		
+		sharesSearchAO.getTimeCourses().stream().filter(tc -> tc.getValue().code().equals(selectedTimeCourseCode)).findAny().ifPresent(selected ->sharesSearchAO.setSelectedTimeCourse(selected) );
 	}
 
 	private void refreshPortfolioList(final SharesSearchAO sharesSearchAO, UserModel userModel) {
