@@ -23,6 +23,8 @@ import junit.framework.Assert;
 
 public class SerialisationUtilTest {
 	
+	private static final String ENTRY_PAGE = "entry.page";
+
 	private static final String KEY = "paging";
 
 	private static final int SIZE = 50;
@@ -68,6 +70,25 @@ public class SerialisationUtilTest {
 		Assert.assertEquals(1, results.size());
 		Assert.assertEquals(PAGE_NUMBER, results.get(PAGE));
 	}
+	
+	
+	
+	
+	@Test
+	public final void toMapWithMapping() {
+		final Pageable[] pageable = {this.pageable};
+		
+		IntStream.range(0, PAGE_NUMBER).forEach( i -> pageable[0]=pageable[0].next());
+		final Map<String,Object> results = serialisationUtil.toMap(pageable[0], Arrays.asList(PAGE), Arrays.asList(String.format("%s=%s", PAGE, ENTRY_PAGE),  PAGE));
+		Assert.assertEquals(1, results.size());
+		Assert.assertEquals(ENTRY_PAGE, results.keySet().stream().findAny().get());
+		
+		Assert.assertEquals(PAGE_NUMBER, results.values().stream().findAny().get());
+		System.out.println(results);
+		
+	}
+	
+	
 	
 	@Test
 	public final void serialize() throws IOException {

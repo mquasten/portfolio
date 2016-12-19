@@ -1,5 +1,7 @@
 package de.mq.portfolio.shareportfolio.support;
 
+
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Modifier;
@@ -289,6 +291,29 @@ public class PortfolioControllerTest {
 		Assert.assertEquals(shareService, dependencies.get(ShareService.class));
 		Assert.assertEquals(exchangeRateService, dependencies.get(ExchangeRateService.class));
 		Assert.assertEquals(pdfConverter, dependencies.get(Converter.class));
+	}
+	
+	
+	@Test
+	public final void restoreState() {
+		Mockito.when(portfolioSearchAO.getSharePortfolios()).thenReturn(Arrays.asList(sharePortfolio, criteria));
+	
+		portfolioController.restoreState(portfolioSearchAO, PORTFOLIO_ID);
+		
+		Mockito.verify(portfolioSearchAO).setSelectedPortfolio(null);
+		Mockito.verify(portfolioSearchAO).setPageable(pageable);
+		Mockito.verify(portfolioSearchAO).setSharePortfolios(Arrays.asList(sharePortfolio, criteria));
+		
+		Mockito.verify(portfolioSearchAO).setSelectedPortfolio(sharePortfolio); 
+		
+		
+	}
+	
+	@Test
+	public final void assignState() {
+		Mockito.reset(portfolioSearchAO);
+		portfolioController.assignState(portfolioSearchAO);
+		Mockito.verifyZeroInteractions(portfolioSearchAO);
 	}
 
 }
