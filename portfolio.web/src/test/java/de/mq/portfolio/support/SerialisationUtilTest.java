@@ -84,7 +84,7 @@ public class SerialisationUtilTest {
 		Assert.assertEquals(ENTRY_PAGE, results.keySet().stream().findAny().get());
 		
 		Assert.assertEquals(PAGE_NUMBER, results.values().stream().findAny().get());
-		System.out.println(results);
+		
 		
 	}
 	
