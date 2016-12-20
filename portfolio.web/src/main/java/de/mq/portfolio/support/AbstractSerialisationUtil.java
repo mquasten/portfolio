@@ -92,8 +92,8 @@ abstract class AbstractSerialisationUtil implements SerialisationUtil {
 	public final <T>  void toBean(final Map<String,Object> map, final T target, final Collection<String> mapping ) {
 		final Map<String,String> mappings = new HashMap<>();
 		mapping.stream().filter(m -> m.split("[=]").length==2).forEach(m ->mappings.put( m.split("[=]")[0].trim(),  m.split("[=]")[1].trim()));
-		
-		final Collection<String> blackList =  mapping.stream().filter(m -> m.split("[=]").length==1 || (m.split("[=]").length==2&&!StringUtils.hasText(m.split("[=]")[1]))).map(m -> m.split("[=]")[0].trim()).collect(Collectors.toSet());
+	
+		final Collection<String> blackList =  mapping.stream().filter(m -> (m.split("[=]").length==1 || !StringUtils.hasText(m.split("[=]")[1]))).map(m -> m.split("[=]")[0].trim()).collect(Collectors.toSet());
 			
 		map.keySet().stream().filter(key -> ! blackList.contains(key)).forEach(key -> {
 		final String fieldName = mappings.containsKey(key) ? mappings.get(key) : key;
@@ -106,9 +106,7 @@ abstract class AbstractSerialisationUtil implements SerialisationUtil {
 		
 	
 	}
-	
-	
-	
+
 	@Lookup
 	abstract ExceptionTranslationBuilder<? extends Object, ? extends AutoCloseable> builder() ; 
 	

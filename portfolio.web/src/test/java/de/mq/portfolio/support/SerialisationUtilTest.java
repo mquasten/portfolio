@@ -23,6 +23,12 @@ import junit.framework.Assert;
 
 public class SerialisationUtilTest {
 	
+	private static final String INVALID = "dontLetMeGetMe";
+
+	private static final String ENTRY_VALUE_PAGE = "entry.value.page";
+
+	private static final String SORT_KEY = "sort";
+
 	private static final String ENTRY_PAGE = "entry.page";
 
 	private static final String KEY = "paging";
@@ -113,6 +119,7 @@ public class SerialisationUtilTest {
 		Assert.assertFalse(pageable.hasPrevious());
 		final Map<String,Object> map = new HashMap<>();
 		map.put(PAGE, PAGE_NUMBER);
+		
 		serialisationUtil.toBean(map, pageable, Arrays.asList());
 		
 		Assert.assertEquals(PAGE_NUMBER, pageable.getPageNumber());
@@ -120,9 +127,39 @@ public class SerialisationUtilTest {
 	
 	}
 	
+	
+	@Test
+	public final void toBeanMapping() {
+		
+		
+		
+		
+		final Pageable pageable = new ClosedIntervalPageRequest(50, SORT, 5000);
+		
+		
+		
+		entry= new AbstractMap.SimpleImmutableEntry<>(KEY, pageable); 
+		
+		Assert.assertEquals(0, this.entry.getValue().getPageNumber());
+		Assert.assertFalse( this.entry.getValue().hasPrevious());
+		
+		
+		final Map<String,Object> map = new HashMap<>();
+		map.put(SORT_KEY, SORT);
+		map.put(PAGE, PAGE_NUMBER);
+	
+		map.put(INVALID, INVALID);
+		serialisationUtil.toBean(map, this, Arrays.asList(String.format("%s=%s", PAGE, ENTRY_VALUE_PAGE), String.format("%s=", SORT_KEY) , String.format("%s= ", INVALID)));
+		
+		Assert.assertEquals(PAGE_NUMBER,this.entry.getValue().getPageNumber());
+	
+	}
+	
+	
+	
 	@Test
 	public final void value() {
-		Assert.assertEquals(PAGE_NUMBER, ((Number) ((AbstractSerialisationUtil)serialisationUtil).value(this, "entry.value.page")).intValue());
+		Assert.assertEquals(PAGE_NUMBER, ((Number) ((AbstractSerialisationUtil)serialisationUtil).value(this, ENTRY_VALUE_PAGE)).intValue());
 		
 		Assert.assertEquals(SORT, (Sort) ((AbstractSerialisationUtil)serialisationUtil).value(this, "entry.value.sort"));
 		
@@ -138,14 +175,14 @@ public class SerialisationUtilTest {
 	public final void valueNull() {
 		this.entry= new AbstractMap.SimpleImmutableEntry<>(KEY,null); 
 		Assert.assertNull(this.entry.getValue());
-		Assert.assertNull(((AbstractSerialisationUtil)serialisationUtil).value(this, "entry.value.page"));
+		Assert.assertNull(((AbstractSerialisationUtil)serialisationUtil).value(this, ENTRY_VALUE_PAGE));
 	}
 	
 	@Test
 	public final void valueFlat() {
 		Assert.assertEquals(PAGE_NUMBER, ((Number) ((AbstractSerialisationUtil)serialisationUtil).value(this.entry.getValue(), "page")).intValue());
 		
-		Assert.assertEquals(SORT, (Sort) ((AbstractSerialisationUtil)serialisationUtil).value(this.entry.getValue(), "sort"));
+		Assert.assertEquals(SORT, (Sort) ((AbstractSerialisationUtil)serialisationUtil).value(this.entry.getValue(), SORT_KEY));
 		
 		Assert.assertEquals(COUNTER, ((Number) ((AbstractSerialisationUtil)serialisationUtil).value(this.entry.getValue(), "counter")).intValue());
 		
@@ -162,7 +199,7 @@ public class SerialisationUtilTest {
 		Assert.assertNull(entry.getValue().getSort());
 		Assert.assertEquals(0L,ReflectionTestUtils.getField(entry.getValue(), "counter"));
 		
-		((AbstractSerialisationUtil)serialisationUtil).assign(this, "entry.value.page", PAGE_NUMBER);
+		((AbstractSerialisationUtil)serialisationUtil).assign(this, ENTRY_VALUE_PAGE, PAGE_NUMBER);
 		((AbstractSerialisationUtil)serialisationUtil).assign(this, "entry.value.sort", SORT);
 		((AbstractSerialisationUtil)serialisationUtil).assign(this, "entry.value.counter", COUNTER);
 		((AbstractSerialisationUtil)serialisationUtil).assign(this, "entry.value.size", SIZE);
@@ -182,7 +219,7 @@ public class SerialisationUtilTest {
 	public final void setValueNull() {
 		this.entry= new AbstractMap.SimpleImmutableEntry<>(KEY,null); 
 		Assert.assertNull(this.entry.getValue());
-		((AbstractSerialisationUtil)serialisationUtil).assign(this, "entry.value.page", PAGE);
+		((AbstractSerialisationUtil)serialisationUtil).assign(this, ENTRY_VALUE_PAGE, PAGE);
 		Assert.assertNull(this.entry.getValue());
 	}
 	
@@ -196,7 +233,7 @@ public class SerialisationUtilTest {
 		Assert.assertEquals(0L,ReflectionTestUtils.getField(entry.getValue(), "counter"));
 		
 		((AbstractSerialisationUtil)serialisationUtil).assign(entry.getValue(), "page", PAGE_NUMBER);
-		((AbstractSerialisationUtil)serialisationUtil).assign(entry.getValue(), "sort", SORT);
+		((AbstractSerialisationUtil)serialisationUtil).assign(entry.getValue(), SORT_KEY, SORT);
 		((AbstractSerialisationUtil)serialisationUtil).assign(entry.getValue(), "counter", COUNTER);
 		((AbstractSerialisationUtil)serialisationUtil).assign(entry.getValue(), "size", SIZE);
 		((AbstractSerialisationUtil)serialisationUtil).assign(entry, "key", KEY);
