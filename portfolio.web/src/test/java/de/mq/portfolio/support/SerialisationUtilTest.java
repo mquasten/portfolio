@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,9 +14,11 @@ import java.util.stream.IntStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.Param;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import de.mq.portfolio.share.support.ClosedIntervalPageRequest;
@@ -261,6 +264,21 @@ public class SerialisationUtilTest {
 		Assert.assertEquals(this,  controller.getParameter().get(0));
 		Assert.assertEquals(PAGE_NUMBER, controller.getParameter().get(1));
 	}
+	
+	@Test
+	public final void  executeNotMatching() {
+		final Controller controller = new Controller();
+		final Map<String,Object> params = new HashMap<>();
+		params.put(Parameter.DEFAULT_PARAMETER, this);
+		params.put(PAGE , PAGE_NUMBER);
+		((AbstractSerialisationUtil)serialisationUtil).execute(controller, INVALID , params);
+		
+		Assert.assertEquals(0, controller.getParameter().size());
+		
+	}
+	
+	
+	
 
 	@Test
 	public final void getAndIncVersion() {
@@ -272,6 +290,35 @@ public class SerialisationUtilTest {
 		Assert.assertEquals(2, (long) this.version);
 	}
 	
+	@Test
+	public final void getAndIncVersionWithoutVersionField() {
+		final Date bean = new Date();
+		IntStream.range(0, 10).forEach(i -> Assert.assertEquals(0,serialisationUtil.getAndIncVersion(bean)));
+		
+		
+	}
+	
+	@Test
+	public final void getAndIncVersionPrimitive() {
+		final VersionAware bean = new VersionAware();
+		IntStream.range(0, 10).forEach( i -> Assert.assertEquals(i, serialisationUtil.getAndIncVersion(bean)));
+		
+		
+	} 
+	
+	@Test
+	public final void getAndIncVersionWrongType() {
+		final VersionAwareInt bean = new VersionAwareInt();
+		IntStream.range(0, 10).forEach( i -> Assert.assertEquals(0, serialisationUtil.getAndIncVersion(bean)));
+		
+		
+	} 
+	
+	@Test
+	public final void create() {
+		Assert.assertNotNull(BeanUtils.instantiate(serialisationUtil.getClass()));
+	}
+	
 }
 
 
@@ -281,11 +328,42 @@ class Controller {
 	final List<Object> getParameter() {
 		return parameter;
 	}
-	void method(@Parameter  final Object bean, @Parameter(SerialisationUtilTest.PAGE) final Number value) {
+	protected void method(@Parameter  final Object bean, @Parameter(SerialisationUtilTest.PAGE) final Number value) {
 		
 		parameter.add(bean);
 		parameter.add(value);
 		
 	}
 	
+	
+	
+	
+}
+
+
+
+ class Controller2  {
+	
+	 boolean executed=false;
+	
+	
+	protected void  method(@Parameter  final Object bean, @Param(SerialisationUtilTest.PAGE) final Number value) {
+		executed=true;
+		System.out.println("+++");
+		
+	}
+	
+
+	
+}
+ 
+ class VersionAware {
+	 	@Version
+		private   long version = 0L ;
+ }
+ 
+ 
+ class VersionAwareInt {
+	 	@Version
+		private   Integer version = null ;
 }
