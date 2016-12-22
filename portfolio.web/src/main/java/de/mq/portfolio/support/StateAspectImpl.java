@@ -33,13 +33,8 @@ abstract class  StateAspectImpl {
 		if( userModel().state(facesContext().getViewRoot().getViewId())==null) {
 			return ;
 		}
-		
 	
 		final Map <String,Object> stateMap = serialisationUtil.deSerialize(userModel().state(facesContext().getViewRoot().getViewId()));
-		
-		
-		
-	
 		
 		serialisationUtil.toBean(stateMap, sharesSearchAO, Arrays.asList(deSerialize.mappings()));
 		
