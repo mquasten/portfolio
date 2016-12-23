@@ -11,6 +11,7 @@ import javax.faces.context.FacesContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.BeanUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -18,7 +19,9 @@ import junit.framework.Assert;
 
 public class StateAspectTest {
 	
-	 private static final String METHOD_REGEX = "methodRegEx";
+	 private static final String[] FIELDS = new String[] {"field"};
+
+	private static final String METHOD_REGEX = "methodRegEx";
 
 	private static final String MAPPING = "mapping=mapping";
 
@@ -45,7 +48,9 @@ public class StateAspectTest {
 	 
 	 private final UIViewRoot viewRoot = Mockito.mock(UIViewRoot.class);
 	 
-	 final Map<String,Object> stateMap = new HashMap<>();
+	 private final Map<String,Object> stateMap = new HashMap<>();
+	 
+	 private Serialize serialize = Mockito.mock(Serialize.class);
 	 
 	 @Before
 	 public final void setup() {
@@ -66,6 +71,9 @@ public class StateAspectTest {
 		 
 		 Mockito.when(serialisationUtil.deSerialize(STATE_STRING)).thenReturn(stateMap);
 		 ReflectionUtils.doWithFields(stateAspect.getClass(), field -> ReflectionTestUtils.setField(stateAspect, field.getName(), serialisationUtil), field-> field.getType().equals(SerialisationUtil.class));
+	 
+	    Mockito.when(serialize.fields()).thenReturn(FIELDS);
+	    Mockito.when(serialize.mappings()).thenReturn(new String [] {MAPPING});
 	 }
 	 
 	 @Test
@@ -105,6 +113,22 @@ public class StateAspectTest {
 		 Mockito.verify(serialisationUtil, Mockito.never()).toBean(Mockito.any(), Mockito.any(), Mockito.any());
 	 
 		 Mockito.verify(serialisationUtil, Mockito.never()).execute(Mockito.any(), Mockito.any(), Mockito.any());
+	 }
+	 
+	 
+	 @Test
+	 public final void serialize() {
+		 
+		 Mockito.when(serialisationUtil.toMap(backingBean, Arrays.asList(FIELDS), Arrays.asList(serialize.mappings()))).thenReturn(stateMap);
+		 Mockito.when(serialisationUtil.serialize(stateMap)).thenReturn(STATE_STRING);
+		 stateAspect.serialize(backingBean, serialize);
+		 
+		 Mockito.verify(userModel).assign(VIEW_ID, STATE_STRING);
+	 }
+	 
+	 @Test
+	 public final void createInstance() {
+		 Assert.assertNotNull(BeanUtils.instantiate(stateAspect.getClass()));
 	 }
 
 }
