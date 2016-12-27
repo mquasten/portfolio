@@ -1,5 +1,7 @@
 package de.mq.portfolio.shareportfolio.support;
 
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -11,7 +13,7 @@ public class SharePortfolioListenerTest {
 	private static final double[][] COVARIANCES = new double[][] { new double[] { 0.1 } };
 	private static final double[][] CORRELATIONS = new double[][] { new double[] { 0.2 } };
 	private static final double[] VARIANCES = new double[] { 1e-3 };
-	private final SharePortfolioListenerImpl listener = new SharePortfolioListenerImpl();
+	private final SharePortfolioListenerImpl listener = new SharePortfolioListenerImpl(Arrays.asList());
 	private final SharePortfolioImpl sharePortfolio = Mockito.mock(SharePortfolioImpl.class);
 	private final DBObject dbo = Mockito.mock(DBObject.class);
 
