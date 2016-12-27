@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
+
 
 import de.mq.portfolio.IdentifierAware;
 import de.mq.portfolio.exchangerate.ExchangeRate;
@@ -22,8 +22,6 @@ public interface SharePortfolio  extends IdentifierAware<String>{
 	void commit();
 
 	String name();
-
-	Optional<PortfolioOptimisation> minVariance();
 
 
 	

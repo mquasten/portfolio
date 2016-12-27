@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import de.mq.portfolio.share.TimeCourse;
-import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 public interface SharePortfolioService {
@@ -17,22 +16,11 @@ public interface SharePortfolioService {
 	Collection<double[]> samples(SharePortfolio sharePortfolio, Number size);
 
 
-	PortfolioOptimisation variance(final SharePortfolio sharePortfolio, final double[] samples);
-
-
-	
-
-
-	void create(final PortfolioOptimisation portfolioOptimisation);
-
-
-	SharePortfolio assign(final PortfolioOptimisation portfolioOptimisation);
-
 
 	void save(final SharePortfolio sharePortfolio);
 
 
-	PortfolioOptimisation minVariance(final String portfolioName);
+
 
 
 	Collection<SharePortfolio> portfolios(final Pageable pageable, final SharePortfolio share);

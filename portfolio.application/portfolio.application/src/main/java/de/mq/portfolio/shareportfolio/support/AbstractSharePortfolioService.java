@@ -1,10 +1,6 @@
 package de.mq.portfolio.shareportfolio.support;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -14,12 +10,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.share.support.ShareRepository;
-import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @Service("sharePortfolioService")
@@ -129,32 +123,8 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 		return result;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.mq.portfolio.shareportfolio.support.SharePortfolioService#risk(de.mq
-	 * .portfolio.shareportfolio.SharePortfolio, double[])
-	 */
-	@Override
-	public final PortfolioOptimisation variance(final SharePortfolio sharePortfolio, final double[] samples) {
-		Assert.notNull(sharePortfolio);
-		Assert.notNull(samples);
-		final double variance = sharePortfolio.risk(samples);
-		return new PortfolioOptimisationImpl(sharePortfolio.name(), samples, variance, 1L);
-	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.mq.portfolio.shareportfolio.support.SharePortfolioService#save(de.mq
-	 * .portfolio.shareportfolio.PortfolioOptimisation)
-	 */
-	@Override
-	public final void create(final PortfolioOptimisation portfolioOptimisation) {
-		sharePortfolioRepository.save(portfolioOptimisation);
-	}
+
 
 	/*
 	 * (non-Javadoc)
@@ -169,24 +139,7 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 		sharePortfolioRepository.save(sharePortfolio);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.mq.portfolio.shareportfolio.support.SharePortfolioService#assign(de
-	 * .mq.portfolio.shareportfolio.PortfolioOptimisation)
-	 */
-	@Override
-	public final SharePortfolio assign(final PortfolioOptimisation portfolioOptimisation) {
-		Assert.notNull(portfolioOptimisation, "PortfolioOptimisation should be given.");
-		final SharePortfolio result = sharePortfolioRepository.portfolio(portfolioOptimisation.portfolio());
-		ReflectionUtils.doWithFields(result.getClass(), field -> {
-			field.setAccessible(true);
-			ReflectionUtils.setField(field, result, portfolioOptimisation);
-		}, field -> field.getType().isAssignableFrom(PortfolioOptimisation.class));
 
-		return result;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -204,24 +157,7 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 		sharePortfolioRepository.save(existing);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.mq.portfolio.shareportfolio.support.SharePortfolioService#minVariance
-	 * (java.lang.String)
-	 */
-	@Override
-	public final PortfolioOptimisation minVariance(final String portfolioName) {
-		final Optional<PortfolioOptimisation> result = sharePortfolioRepository.minVariance(portfolioName);
-
-		if (!result.isPresent()) {
-			throw new IllegalArgumentException(String.format("No Results found for Portfolio %s.", portfolioName));
-		}
-		return result.get();
-
-	}
-
+	
 	final String status(final String status, final Long counter, final Long limit) {
 
 		final long max = (limit == null) ? 0 : limit;
@@ -249,19 +185,7 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 
 	}
 
-	final Collection<PortfolioOptimisation> aggregate(final Collection<PortfolioOptimisation> portfolioOptimisations) {
-		final List<PortfolioOptimisation> results = new ArrayList<>();
-		portfolioOptimisations.stream().reduce((y, x) -> x.variance() < y.variance() ? x : y).ifPresent(r -> {
-
-			ReflectionUtils.doWithFields(r.getClass(), field -> {
-				field.setAccessible(true);
-				ReflectionUtils.setField(field, r, new Long(portfolioOptimisations.size()));
-			}, field -> field.getName().equals("samples"));
-			results.add(r);
-		});
-		return Collections.unmodifiableList(results);
-	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 

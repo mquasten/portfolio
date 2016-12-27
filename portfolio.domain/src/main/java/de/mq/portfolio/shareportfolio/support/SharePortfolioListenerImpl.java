@@ -1,6 +1,7 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
+
 import org.springframework.stereotype.Component;
 
 import com.mongodb.DBObject;
@@ -27,6 +28,14 @@ public class SharePortfolioListenerImpl extends AbstractMongoEventListener<Share
 		dbo.put(COVARIANCES, sharePortfolio.covariances());
 		dbo.put(CORRELATIONS, sharePortfolio.correlations());
 
+	}
+	
+	
+	
+	@Override
+	public void onAfterLoad(final DBObject  entity) {
+		
+		// DI, touched for the very first time ...
 	}
 
 }

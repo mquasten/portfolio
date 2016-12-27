@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
+
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -27,7 +27,7 @@ import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
-import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
+
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @Document(collection = "Portfolio")
@@ -40,8 +40,6 @@ class SharePortfolioImpl implements SharePortfolio {
 
 	@Indexed(unique = true)
 	private final String name;
-
-	private PortfolioOptimisation minVariance;
 
 	@Reference
 	private final List<TimeCourse> timeCourses = new ArrayList<>();
@@ -185,10 +183,10 @@ class SharePortfolioImpl implements SharePortfolio {
 		this.committed = true;
 	}
 
-	@Override
+/*	@Override
 	public Optional<PortfolioOptimisation> minVariance() {
 		return Optional.ofNullable(minVariance);
-	}
+	} */
 
 
 	@Override
@@ -219,7 +217,7 @@ class SharePortfolioImpl implements SharePortfolio {
 			array[timeCourses.size()][i] = 1;
 		});
 		array[timeCourses.size()][timeCourses.size()] = 0d;
-		/* seien ein Vektor und eine Matrix ... */
+	
 		final Matrix matrix = new Matrix(array);
 		final Matrix vectorAsMatrix = new Matrix(timeCourses.size() + 1, 1, 0d);
 		vectorAsMatrix.set(timeCourses.size(), 0, 1d);
@@ -229,12 +227,14 @@ class SharePortfolioImpl implements SharePortfolio {
 		// vector.print(15,10);
 		final Matrix result = matrix.solve(vector);
 		// result.print(15, 10);
+		
+		
 
 		IntStream.range(0, timeCourses.size()).forEach(i -> weights.put(timeCourses.get(i), result.get(i, 0)));
 
 		return Collections.unmodifiableMap(weights);
 
-	}
+	} 
 
 	@Override
 	public  double[] minWeights() {

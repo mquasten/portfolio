@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
@@ -15,15 +14,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
-import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import junit.framework.Assert;
 
@@ -53,7 +48,6 @@ public class SharePortfolioRepositoryTest {
 
 	private final SharePortfolio sharePortfolio = Mockito.mock(SharePortfolio.class);
 
-	private final PortfolioOptimisation portfolioOptimisation = Mockito.mock(PortfolioOptimisation.class);
 
 	private final TimeCourse timeCourse = Mockito.mock(TimeCourse.class);
 
@@ -84,43 +78,9 @@ public class SharePortfolioRepositoryTest {
 		Mockito.verify(mongoOperations).save(sharePortfolio);
 	}
 
-	@Test
-	public final void savePortfolioOptimisation() {
-		sharePortfolioRepository.save(portfolioOptimisation);
-		Mockito.verify(mongoOperations).save(portfolioOptimisation);
-	}
+	
 
-	@SuppressWarnings("unchecked")
-	@Test
-	public final void minVariance() {
-
-		@SuppressWarnings("rawtypes")
-		ArgumentCaptor<TypedAggregation> aggregationCaptor = ArgumentCaptor.forClass(TypedAggregation.class);
-		@SuppressWarnings("rawtypes")
-		final ArgumentCaptor<Class> outputTypeCaptor = ArgumentCaptor.forClass(Class.class);
-		final List<PortfolioOptimisation> aggregationResultRows = new ArrayList<>();
-		Mockito.when(portfolioOptimisation.samples()).thenReturn(1000L);
-		Mockito.when(portfolioOptimisation.variance()).thenReturn(1e-3);
-		aggregationResultRows.add(portfolioOptimisation);
-		final List<PortfolioOptimisationImpl> rows = new ArrayList<>();
-		final PortfolioOptimisationImpl row = BeanUtils.instantiateClass(PortfolioOptimisationImpl.class);
-		rows.add(row);
-		Mockito.when(mongoOperations.find(new Query(Criteria.where(SharePortfolioRepositoryImpl.VARIANCE_FIELD).lte(portfolioOptimisation.variance())), PortfolioOptimisationImpl.class)).thenReturn(rows);
-
-		final AggregationResults<PortfolioOptimisation> aggregationResults = Mockito.mock(AggregationResults.class);
-		Mockito.when(aggregationResults.getMappedResults()).thenReturn(aggregationResultRows);
-		Mockito.when(mongoOperations.aggregate(aggregationCaptor.capture(), classCaptor.capture(), outputTypeCaptor.capture())).thenReturn(aggregationResults);
-
-		final Optional<PortfolioOptimisation> result = sharePortfolioRepository.minVariance(NAME);
-		Assert.assertTrue(result.isPresent());
-
-		Assert.assertEquals(1000L, (long) result.get().samples());
-		Assert.assertEquals(row, result.get());
-
-		Assert.assertEquals(PortfolioOptimisationImpl.class, outputTypeCaptor.getValue());
-		Assert.assertEquals(PortfolioOptimisationImpl.class, classCaptor.getValue());
-
-	}
+	
 
 	@Test
 	public final void portfolios() {

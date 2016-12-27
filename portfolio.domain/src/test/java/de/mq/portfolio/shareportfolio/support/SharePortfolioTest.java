@@ -27,7 +27,7 @@ import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
-import de.mq.portfolio.shareportfolio.PortfolioOptimisation;
+
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import junit.framework.Assert;
 
@@ -43,7 +43,6 @@ public class SharePortfolioTest {
 
 	private static final String NEW_SHARE_NAME = "Coca Cola";
 
-	private static final String MIN_VARIANCE_FIELD = "minVariance";
 
 	static final String VARIANCES_FIELD = "variances";
 
@@ -79,7 +78,6 @@ public class SharePortfolioTest {
 	final ExchangeRate exchangeRateUSDEuro = new ExchangeRateImpl(CURRENCY_USD, SharePortfolioImpl.DEFAULT_CURRENCY);
 	final ExchangeRate exchangeRateEuroEuro = new ExchangeRateImpl(SharePortfolioImpl.DEFAULT_CURRENCY, SharePortfolioImpl.DEFAULT_CURRENCY);
 
-	private final PortfolioOptimisation portfolioOptimisation = Mockito.mock(PortfolioOptimisation.class);
 
 	private Date startDate = Mockito.mock(Date.class);
 	private Date endDate = Mockito.mock(Date.class);
@@ -125,7 +123,7 @@ public class SharePortfolioTest {
 		ReflectionTestUtils.setField(sharePortfolio, COVARIANCES_FIELD, covariances);
 		ReflectionTestUtils.setField(sharePortfolio, CORRELATIONS_FIELD, correlations);
 
-		ReflectionTestUtils.setField(sharePortfolio, MIN_VARIANCE_FIELD, portfolioOptimisation);
+	
 
 		// page 38 Performancemessung example results
 		minWeights.put(timeCourse1, 54.50d);
@@ -186,10 +184,10 @@ public class SharePortfolioTest {
 		new SharePortfolioImpl(NAME, new ArrayList<>()).commit();
 	}
 
-	@Test
+/*	@Test
 	public final void minVariance() {
 		Assert.assertEquals(Optional.of(portfolioOptimisation), sharePortfolio.minVariance());
-	}
+	} */
 
 	@Test
 	public final void timeCourses() {
