@@ -1,17 +1,19 @@
 package de.mq.portfolio.shareportfolio.support;
 
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
-
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 
 import com.mongodb.DBObject;
 
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 
 @Component
 public class SharePortfolioListenerImpl extends AbstractMongoEventListener<SharePortfolioImpl> {
@@ -21,14 +23,13 @@ public class SharePortfolioListenerImpl extends AbstractMongoEventListener<Share
 	static final String VARIANCES = "variances";
 	
 	
-	private  Collection<OptimisationAlgorithm> algorithms = new ArrayList<>();
+	private  Map<OptimisationAlgorithm.AlgorithmType, OptimisationAlgorithm> algorithms = new HashMap<>();
 	
 	
 	
 	@Autowired
 	SharePortfolioListenerImpl(final Collection<OptimisationAlgorithm> algorithms) {
-		
-		this.algorithms.addAll(algorithms);
+		algorithms.forEach(a -> this.algorithms.put(a.algorithmType(), a));
 	}
 
 
@@ -53,9 +54,11 @@ public class SharePortfolioListenerImpl extends AbstractMongoEventListener<Share
 	
 	
 	@Override
-	public void onAfterLoad(final DBObject  entity) {
-		System.out.println("*" + algorithms.size() +"*");
-		// DI, touched for the very first time ...
+	public void onAfterConvert(final DBObject dbo, final SharePortfolioImpl sharePortfolio) {
+		System.out.println(sharePortfolio.id());
+		final OptimisationAlgorithm algorithm = algorithms.get(AlgorithmType.MVP);
+		System.out.println(algorithm);
+		ReflectionUtils.doWithFields(sharePortfolio.getClass(), field -> ReflectionUtils.setField(field, sharePortfolio, algorithm), field -> field.getType().equals(OptimisationAlgorithm.class) );
 	}
 
 }

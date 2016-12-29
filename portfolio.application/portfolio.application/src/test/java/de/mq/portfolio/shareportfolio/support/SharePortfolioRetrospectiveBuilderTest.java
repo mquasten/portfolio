@@ -26,6 +26,7 @@ import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.share.support.DataImpl;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import junit.framework.Assert;
 
@@ -61,6 +62,8 @@ public class SharePortfolioRetrospectiveBuilderTest {
 	private TimeCourse timeCourse = Mockito.mock(TimeCourse.class);
 
 	private final Share share = Mockito.mock(Share.class);
+	
+	private OptimisationAlgorithm  optimisationAlgorithm = Mockito.mock(OptimisationAlgorithm.class);
 
 	@Test
 	public final void withExchangeRateCalculator() {
@@ -204,6 +207,8 @@ public class SharePortfolioRetrospectiveBuilderTest {
 		// Mockito.mock(ExchangeRate.class);
 		Mockito.when(sharePortfolio.exchangeRate(tc01)).thenReturn(er01);
 		Mockito.when(sharePortfolio.exchangeRate(tc02)).thenReturn(er02);
+		
+		Mockito.when(sharePortfolio.optimisationAlgorithm()).thenReturn(optimisationAlgorithm);
 
 		Mockito.when(exchangeRateCalculator.factor(er01, tc01.end())).thenReturn(1D);
 		Mockito.when(exchangeRateCalculator.factor(er02, tc02.end())).thenReturn(1.25D);
@@ -259,6 +264,8 @@ public class SharePortfolioRetrospectiveBuilderTest {
 		
 		Assert.assertEquals(5.6d/56d, result.totalRateDividends());
 		
+		
+		Assert.assertEquals(optimisationAlgorithm, result.currentSharePortfolio().optimisationAlgorithm());
 
 	}
 

@@ -144,7 +144,7 @@ class SharePortfolioRetrospectiveBuilderImpl implements SharePortfolioRetrospect
 
 		final List<TimeCourse> newTimeCourses = new ArrayList<>();
 		committedSharePortfolio.timeCourses().stream().map(tc -> tc.code()).forEach(code -> newTimeCourses.add(timeCourses.get(code)));
-		final SharePortfolio currentSharePortfolio = new SharePortfolioImpl(committedSharePortfolio.name(), newTimeCourses);
+		final SharePortfolio currentSharePortfolio = new SharePortfolioImpl(committedSharePortfolio.name(), newTimeCourses , committedSharePortfolio.optimisationAlgorithm());
 		ReflectionUtils.doWithMethods(currentSharePortfolio.getClass(), m -> invokeBeforePersist(currentSharePortfolio, m), prePersistMethodFilter());
 
 		final Double standardDeviation = currentSharePortfolio.standardDeviation(committedSharePortfolio.minWeights());

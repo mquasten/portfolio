@@ -9,25 +9,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Reference;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
-import Jama.Matrix;
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
-
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @Document(collection = "Portfolio")
@@ -51,6 +50,9 @@ class SharePortfolioImpl implements SharePortfolio {
 	private double[][] correlations;
 
 	private boolean committed;
+	
+	@Transient
+	private OptimisationAlgorithm optimisationAlgorithm;
 
 	@SuppressWarnings("unused")
 	private SharePortfolioImpl() {
@@ -60,6 +62,12 @@ class SharePortfolioImpl implements SharePortfolio {
 	SharePortfolioImpl(final String name, final List<TimeCourse> timeCourses) {
 		this.name = name;
 		this.timeCourses.addAll(timeCourses);
+	}
+	
+	SharePortfolioImpl(final String name, final List<TimeCourse> timeCourses, OptimisationAlgorithm optimisationAlgorithm) {
+		this(name, timeCourses);
+		Assert.notNull(optimisationAlgorithm);
+		this.optimisationAlgorithm=optimisationAlgorithm;
 	}
 
 	/*
@@ -208,6 +216,13 @@ class SharePortfolioImpl implements SharePortfolio {
 		Assert.isTrue(variances.length == timeCourses.size() , "Variances and timecourses didn't match.");
 		IntStream.range(0, timeCourses.size()).mapToLong(i -> CollectionUtils.arrayToList( covariances[i]).size()).forEach(length -> Assert.isTrue(length == timeCourses.size(), "Covariances and timecourses didn't match." ));
 		
+		Assert.notNull(optimisationAlgorithm);
+		
+		final double[]  results = optimisationAlgorithm.weights(this);
+		
+		IntStream.range(0, timeCourses.size()).forEach(i -> weights.put(timeCourses.get(i), results[i]));
+		
+		/*
 		final double[][] array = new double[timeCourses.size() + 1][timeCourses.size() + 1];
 		IntStream.range(0, timeCourses.size()).forEach(i -> IntStream.range(0, timeCourses.size()).filter(j -> j != i).forEach(j -> array[i][j] = covariances[i][j]));
 
@@ -231,7 +246,7 @@ class SharePortfolioImpl implements SharePortfolio {
 		
 
 		IntStream.range(0, timeCourses.size()).forEach(i -> weights.put(timeCourses.get(i), result.get(i, 0)));
-
+*/
 		return Collections.unmodifiableMap(weights);
 
 	} 
@@ -374,6 +389,11 @@ class SharePortfolioImpl implements SharePortfolio {
 	@Override
 	public final Collection<ExchangeRate> exchangeRateTranslations() {
 		return timeCourses.stream().filter(tc -> !currency().equals(tc.share().currency())).map(tc -> new ExchangeRateImpl(currency(), tc.share().currency())).collect(Collectors.toSet());
+	}
+
+	@Override
+	public OptimisationAlgorithm optimisationAlgorithm() {
+		return optimisationAlgorithm;
 	}
 
 }

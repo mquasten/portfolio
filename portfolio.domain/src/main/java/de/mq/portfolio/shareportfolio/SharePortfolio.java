@@ -59,5 +59,7 @@ public interface SharePortfolio  extends IdentifierAware<String>{
 
 	Double standardDeviation(double[] weights);
 	
+	
+	OptimisationAlgorithm optimisationAlgorithm() ; 
 
 }
