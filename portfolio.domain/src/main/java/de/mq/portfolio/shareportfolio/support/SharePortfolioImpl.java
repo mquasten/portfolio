@@ -64,7 +64,7 @@ class SharePortfolioImpl implements SharePortfolio {
 		this.timeCourses.addAll(timeCourses);
 	}
 	
-	SharePortfolioImpl(final String name, final List<TimeCourse> timeCourses, OptimisationAlgorithm optimisationAlgorithm) {
+	SharePortfolioImpl(final String name, final List<TimeCourse> timeCourses, final OptimisationAlgorithm optimisationAlgorithm) {
 		this(name, timeCourses);
 		Assert.notNull(optimisationAlgorithm);
 		this.optimisationAlgorithm=optimisationAlgorithm;

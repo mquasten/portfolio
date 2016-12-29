@@ -27,7 +27,7 @@ import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
-
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import junit.framework.Assert;
 
@@ -81,6 +81,8 @@ public class SharePortfolioTest {
 
 	private Date startDate = Mockito.mock(Date.class);
 	private Date endDate = Mockito.mock(Date.class);
+	
+	private final OptimisationAlgorithm optimisationAlgorithm = Mockito.mock(OptimisationAlgorithm.class);
 
 	// page 38 Performancemessung example results
 	private final double standardDerivation = Math.round(100 * 10.81 / Math.sqrt(12)) / 100d;
@@ -88,6 +90,7 @@ public class SharePortfolioTest {
 	@Before
 	public void setup() {
 
+		
 		Mockito.when(share.name()).thenReturn(NEW_SHARE_NAME);
 		Mockito.when(share.code()).thenReturn(CODE);
 		Mockito.when(timeCourse.share()).thenReturn(share);
@@ -129,6 +132,12 @@ public class SharePortfolioTest {
 		minWeights.put(timeCourse1, 54.50d);
 		minWeights.put(timeCourse2, 44.29d);
 		minWeights.put(timeCourse, 1.21d);
+		
+		
+		Mockito.when(optimisationAlgorithm.weights(sharePortfolio)).thenReturn(new double [] {1e-2* minWeights.get(timeCourse1), 1e-2 *minWeights.get(timeCourse2), 1e-2 *minWeights.get(timeCourse)});
+		
+		ReflectionUtils.doWithFields(SharePortfolioImpl.class, field -> ReflectionTestUtils.setField(sharePortfolio, field.getName(), optimisationAlgorithm), field -> field.getType().equals(OptimisationAlgorithm.class));
+		
 	}
 
 	private void randomId(TimeCourse timeCourse) {
@@ -184,10 +193,6 @@ public class SharePortfolioTest {
 		new SharePortfolioImpl(NAME, new ArrayList<>()).commit();
 	}
 
-/*	@Test
-	public final void minVariance() {
-		Assert.assertEquals(Optional.of(portfolioOptimisation), sharePortfolio.minVariance());
-	} */
 
 	@Test
 	public final void timeCourses() {
@@ -554,8 +559,10 @@ public class SharePortfolioTest {
 		// ugly, nasty, dirrrrrrrrty ...
 		final SharePortfolio mock = Mockito.spy(sharePortfolio);
 
-		Mockito.when(mock.minWeights()).thenReturn(weights);
+		//Mockito.when(mock.minWeights()).thenReturn(weights);
 
+		Mockito.doAnswer(a-> weights).when(mock).minWeights();
+		
 		Assert.assertEquals(percentRound(47d / 14d / 9d), percentRound(mock.totalRate(exchangeRateCalculator)));
 	}
 
@@ -615,7 +622,10 @@ public class SharePortfolioTest {
 		// ugly, nasty, dirrrrrrrrty ...
 		final SharePortfolio mock = Mockito.spy(sharePortfolio);
 
-		Mockito.when(mock.minWeights()).thenReturn(weights);
+		
+		Mockito.doAnswer(a -> weights).when(mock).minWeights();
+		
+		//Mockito.when(mock.minWeights()).thenReturn(weights);
 		Assert.assertEquals(percentRound(11d / 70d), percentRound(mock.totalRateDividends(exchangeRateCalculator)));
 	}
 
@@ -631,6 +641,14 @@ public class SharePortfolioTest {
 		Assert.assertEquals(SharePortfolioImpl.DEFAULT_CURRENCY, result.source());
 
 		Assert.assertEquals(CURRENCY_USD, result.target());
+	}
+	
+	@Test
+	public final void create() {
+		final SharePortfolio sharePortfolio = new SharePortfolioImpl(NAME, Arrays.asList(timeCourse1, timeCourse2, timeCourse), optimisationAlgorithm);
+	    Assert.assertEquals(optimisationAlgorithm, sharePortfolio.optimisationAlgorithm());
+	    Assert.assertEquals(NAME, sharePortfolio.name());
+	    Assert.assertEquals(Arrays.asList(timeCourse1, timeCourse2, timeCourse), sharePortfolio.timeCourses());
 	}
 
 }
