@@ -395,6 +395,13 @@ class SharePortfolioImpl implements SharePortfolio {
 	public OptimisationAlgorithm optimisationAlgorithm() {
 		return optimisationAlgorithm;
 	}
+	
+	double[][] varianceMatrix() {
+		final double[][] results = new double [variances.length][variances.length];
+		IntStream.range(0, variances.length).forEach( i -> IntStream.range(0, variances.length).forEach(j -> results[i][j]= i !=j ? covariances[i][j] : variances[i]));
+		return results;
+		
+	}
 
 }
 

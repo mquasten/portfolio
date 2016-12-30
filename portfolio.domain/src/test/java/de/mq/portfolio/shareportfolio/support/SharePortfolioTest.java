@@ -58,11 +58,11 @@ public class SharePortfolioTest {
 
 	private SharePortfolio sharePortfolio;
 
-	private final double[] variances = new double[] { 1d / 144d, 1d / (24d * 24d) };
+	private double[] variances = new double[] { 1d / 144d, 1d / (24d * 24d) };
 
-	private final double[][] covariances = new double[2][2];
+	private double[][] covariances = new double[2][2];
 
-	private final double[][] correlations = new double[2][2];
+	private double[][] correlations = new double[2][2];
 
 	private final TimeCourse timeCourse1 = Mockito.mock(TimeCourse.class);
 	private final TimeCourse timeCourse2 = Mockito.mock(TimeCourse.class);
@@ -439,8 +439,8 @@ public class SharePortfolioTest {
 
 		// page 37, 38 Performancemessung
 		sharePortfolio.assign(timeCourse);
-		final double[][] covariances = new double[3][3];
-		final double[] variances = new double[] { 0.0014023, 0.0015854, 0.0028889 };
+		covariances = new double[3][3];
+		variances = new double[]  {0.0014023, 0.0015854, 0.0028889 };
 		IntStream.range(0, 3).forEach(i -> covariances[i][i] = variances[i]);
 		covariances[0][1] = 0.0004629;
 		covariances[0][2] = 0.0004031;
@@ -649,6 +649,19 @@ public class SharePortfolioTest {
 	    Assert.assertEquals(optimisationAlgorithm, sharePortfolio.optimisationAlgorithm());
 	    Assert.assertEquals(NAME, sharePortfolio.name());
 	    Assert.assertEquals(Arrays.asList(timeCourse1, timeCourse2, timeCourse), sharePortfolio.timeCourses());
+	}
+	
+	@Test
+	public final void varianceMatrix() {
+		preparePortfolioForMinWeightTest();
+		double[][] results =  ((SharePortfolioImpl)sharePortfolio).varianceMatrix();
+		Assert.assertEquals(covariances.length, results.length);
+		Assert.assertEquals(covariances.length, results.length);
+		IntStream.range(0, variances.length).forEach(i -> Assert.assertEquals(variances.length, results[i].length));
+	
+		IntStream.range(0, variances.length).forEach(i -> Assert.assertEquals(variances[i], results[i][i]));
+		
+		IntStream.range(0, variances.length).forEach(i -> IntStream.range(0,variances.length).filter(j -> i != j).forEach(j-> Assert.assertEquals(covariances[i][j], results[i][j])));
 	}
 
 }
