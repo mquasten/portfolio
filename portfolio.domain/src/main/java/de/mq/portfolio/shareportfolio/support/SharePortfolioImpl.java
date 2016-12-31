@@ -218,7 +218,7 @@ class SharePortfolioImpl implements SharePortfolio {
 		
 		Assert.notNull(optimisationAlgorithm);
 		
-		final double[]  results = optimisationAlgorithm.weights(this);
+		final double[]  results = optimisationAlgorithm.weights(this.varianceMatrix());
 		
 		IntStream.range(0, timeCourses.size()).forEach(i -> weights.put(timeCourses.get(i), results[i]));
 		

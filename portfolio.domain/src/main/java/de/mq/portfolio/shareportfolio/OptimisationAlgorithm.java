@@ -1,5 +1,7 @@
 package de.mq.portfolio.shareportfolio;
 
+import java.util.Collection;
+
 public interface  OptimisationAlgorithm {
 	
 	public enum AlgorithmType {
@@ -9,8 +11,12 @@ public interface  OptimisationAlgorithm {
 	}
 	
 	
-	double[] weights(final SharePortfolio sharePortfolio);
+	
 	
 	AlgorithmType algorithmType();
+
+	double[] weights(double[][] varianceMatrix, final AlgorithmParameter ... params);
+
+	Collection<Enum<?>> params();
 
 }
