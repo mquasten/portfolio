@@ -1,10 +1,15 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.BeanUtils;
@@ -23,6 +28,7 @@ import org.springframework.web.client.ResourceAccessException;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.support.DeSerialize;
 import de.mq.portfolio.support.Parameter;
@@ -47,13 +53,16 @@ public  abstract  class AbstractPortfolioController {
 	private final Converter<PortfolioAO, byte[]> pdfConverter;
 
 	private final ShareService shareService;
+	
+	private Collection<OptimisationAlgorithm> algorithms = new ArrayList<>();
 
 	@Autowired
-	AbstractPortfolioController(final SharePortfolioService sharePortfolioService, final ShareService shareService, final ExchangeRateService exchangeRateService, final @Qualifier("portfolio2PdfConverter") Converter<PortfolioAO, byte[]> pdfConverter) {
+	AbstractPortfolioController(final SharePortfolioService sharePortfolioService, final ShareService shareService, final ExchangeRateService exchangeRateService, final @Qualifier("portfolio2PdfConverter") Converter<PortfolioAO, byte[]> pdfConverter, final Collection<OptimisationAlgorithm> algorithms) {
 		this.sharePortfolioService = sharePortfolioService;
 		this.shareService = shareService;
 		this.exchangeRateService = exchangeRateService;
 		this.pdfConverter = pdfConverter;
+		this.algorithms.addAll(algorithms);
 	}
 
 	@DeSerialize( methodRegex="restoreState", mappings={"selectedPortfolioId="})
@@ -94,7 +103,7 @@ public  abstract  class AbstractPortfolioController {
 	}
 
 	public String save(final SharePortfolio sharePortfolio, final String existsMessage) {
-		try {
+		try {	
 			sharePortfolioService.save(sharePortfolio);
 			return REDIRECT_TO_PORTFOLIOS_PAGE;
 		} catch (final DuplicateKeyException de) {
@@ -166,7 +175,9 @@ public  abstract  class AbstractPortfolioController {
 
 	}
 
-	
+	public Collection<SelectItem> supportedAlgorithmns() {
+		return Collections.unmodifiableCollection(algorithms.stream().map(algorithm -> new SelectItem(algorithm.algorithmType(),algorithm.algorithmType().name())).collect(Collectors.toList()));
+	}
 
 	
 	@Lookup

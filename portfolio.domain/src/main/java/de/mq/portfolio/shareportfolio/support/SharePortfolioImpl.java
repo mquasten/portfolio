@@ -27,6 +27,7 @@ import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @Document(collection = "Portfolio")
@@ -51,23 +52,36 @@ class SharePortfolioImpl implements SharePortfolio {
 
 	private boolean committed;
 	
+	private final OptimisationAlgorithm.AlgorithmType algorithmType;
+	
+	
+
 	@Transient
 	private OptimisationAlgorithm optimisationAlgorithm;
 
 	@SuppressWarnings("unused")
 	private SharePortfolioImpl() {
 		name = null;
+		algorithmType=AlgorithmType.MVP;
 	}
 
 	SharePortfolioImpl(final String name, final List<TimeCourse> timeCourses) {
-		this.name = name;
-		this.timeCourses.addAll(timeCourses);
+		this(name, timeCourses,AlgorithmType.MVP);
 	}
 	
 	SharePortfolioImpl(final String name, final List<TimeCourse> timeCourses, final OptimisationAlgorithm optimisationAlgorithm) {
-		this(name, timeCourses);
+		this(name, timeCourses, optimisationAlgorithm.algorithmType());
 		Assert.notNull(optimisationAlgorithm);
 		this.optimisationAlgorithm=optimisationAlgorithm;
+	
+	}
+	
+	SharePortfolioImpl(final String name, final List<TimeCourse> timeCourses, final AlgorithmType algorithmType) {
+		this.name = name;
+		this.timeCourses.addAll(timeCourses);
+		Assert.notNull(algorithmType);
+		this.algorithmType=algorithmType;
+	
 	}
 
 	/*
@@ -401,6 +415,11 @@ class SharePortfolioImpl implements SharePortfolio {
 		IntStream.range(0, variances.length).forEach( i -> IntStream.range(0, variances.length).forEach(j -> results[i][j]= i !=j ? covariances[i][j] : variances[i]));
 		return results;
 		
+	}
+	
+	@Override
+	public OptimisationAlgorithm.AlgorithmType algorithmType() {
+		return  algorithmType;
 	}
 
 }

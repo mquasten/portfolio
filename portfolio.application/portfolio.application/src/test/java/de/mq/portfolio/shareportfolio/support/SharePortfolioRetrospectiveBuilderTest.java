@@ -27,6 +27,7 @@ import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.share.support.DataImpl;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import junit.framework.Assert;
 
@@ -207,6 +208,8 @@ public class SharePortfolioRetrospectiveBuilderTest {
 		// Mockito.mock(ExchangeRate.class);
 		Mockito.when(sharePortfolio.exchangeRate(tc01)).thenReturn(er01);
 		Mockito.when(sharePortfolio.exchangeRate(tc02)).thenReturn(er02);
+		
+		Mockito.when(optimisationAlgorithm.algorithmType()).thenReturn(AlgorithmType.MVP);
 		
 		Mockito.when(sharePortfolio.optimisationAlgorithm()).thenReturn(optimisationAlgorithm);
 

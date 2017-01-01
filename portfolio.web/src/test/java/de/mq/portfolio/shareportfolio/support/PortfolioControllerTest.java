@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -32,6 +33,7 @@ import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.support.UserModel;
 import junit.framework.Assert;
@@ -273,7 +275,8 @@ public class PortfolioControllerTest {
 
 	@Test
 	public final void constructor() {
-		final AbstractPortfolioController portfolioController = new AbstractPortfolioController(sharePortfolioService, shareService, exchangeRateService, pdfConverter) {
+		OptimisationAlgorithm optimisationAlgorithm = Mockito.mock(OptimisationAlgorithm.class);
+		final AbstractPortfolioController portfolioController = new AbstractPortfolioController(sharePortfolioService, shareService, exchangeRateService, pdfConverter, Arrays.asList(optimisationAlgorithm)) {
 			@Override
 			FacesContext facesContext() {
 				return facesContext;
@@ -285,12 +288,14 @@ public class PortfolioControllerTest {
 
 		ReflectionUtils.doWithFields(AbstractPortfolioController.class, field -> dependencies.put(field.getType(), ReflectionTestUtils.getField(portfolioController, field.getName())), field -> !Modifier.isStatic(field.getModifiers()));
 
-		Assert.assertEquals(4, dependencies.size());
+		Assert.assertEquals(5, dependencies.size());
 
 		Assert.assertEquals(sharePortfolioService, dependencies.get(SharePortfolioService.class));
 		Assert.assertEquals(shareService, dependencies.get(ShareService.class));
 		Assert.assertEquals(exchangeRateService, dependencies.get(ExchangeRateService.class));
 		Assert.assertEquals(pdfConverter, dependencies.get(Converter.class));
+		
+		Assert.assertEquals(Arrays.asList(optimisationAlgorithm), dependencies.get(Collection.class));
 	}
 	
 	

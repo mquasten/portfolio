@@ -10,6 +10,7 @@ import de.mq.portfolio.IdentifierAware;
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 
 public interface SharePortfolio  extends IdentifierAware<String>{
 
@@ -60,6 +61,8 @@ public interface SharePortfolio  extends IdentifierAware<String>{
 	Double standardDeviation(double[] weights);
 	
 	
-	OptimisationAlgorithm optimisationAlgorithm() ; 
+	OptimisationAlgorithm optimisationAlgorithm() ;
+
+	AlgorithmType algorithmType(); 
 
 }

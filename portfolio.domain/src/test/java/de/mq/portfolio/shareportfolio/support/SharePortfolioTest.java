@@ -29,6 +29,7 @@ import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import junit.framework.Assert;
 
@@ -93,6 +94,7 @@ public class SharePortfolioTest {
 	@Before
 	public void setup() {
 
+		Mockito.when(optimisationAlgorithm.algorithmType()).thenReturn(AlgorithmType.MVP);
 		
 		Mockito.when(share.name()).thenReturn(NEW_SHARE_NAME);
 		Mockito.when(share.code()).thenReturn(CODE);

@@ -17,6 +17,8 @@ import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @Component("sharePortfolio")
@@ -48,6 +50,10 @@ public class PortfolioAO implements Serializable {
 	private Double totalRateDividends;
 	
 	private boolean exchangeRateTranslationsAware=false;
+	
+	private OptimisationAlgorithm.AlgorithmType algorithmType;
+
+	
 
 	public String getName() {
 		return name;
@@ -60,6 +66,9 @@ public class PortfolioAO implements Serializable {
 	public  void setSharePortfolio(final SharePortfolio sharePortfolio, final Optional<ExchangeRateCalculator> exchangeRateCalculator) {
 		this.name = sharePortfolio.name();
 		this.currency = sharePortfolio.currency();
+		this.algorithmType=sharePortfolio.algorithmType() ;
+		
+		
 		this.timeCourses.clear();
 		timeCourses.addAll(sharePortfolio.timeCourses());
 
@@ -86,7 +95,7 @@ public class PortfolioAO implements Serializable {
 	}
 
 	public SharePortfolio getSharePortfolio() {
-		final SharePortfolio result = new SharePortfolioImpl(name, timeCourses);
+		final SharePortfolio result = new SharePortfolioImpl(name, timeCourses, getAlgorithmType());
 		ReflectionUtils.doWithFields(result.getClass(), field -> {
 			/* "...touched for the very first time." mdna (like a virgin **/ field.setAccessible(true);
 			ReflectionUtils.setField(field, result, id);
@@ -142,6 +151,14 @@ public class PortfolioAO implements Serializable {
 	
 	public boolean getExchangeRateTranslationsAware() {
 		return exchangeRateTranslationsAware;
+	}
+	
+	public OptimisationAlgorithm.AlgorithmType getAlgorithmType() {
+		return algorithmType==null ?  AlgorithmType.MVP  : algorithmType;
+	}
+
+	public void setAlgorithmType(OptimisationAlgorithm.AlgorithmType algorithmType) {
+		this.algorithmType = algorithmType;
 	}
 
 }
