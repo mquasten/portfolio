@@ -2,6 +2,7 @@ package de.mq.portfolio.shareportfolio.support;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.annotation.Id;
 import org.springframework.stereotype.Component;
@@ -53,7 +55,13 @@ public class PortfolioAO implements Serializable {
 	
 	private OptimisationAlgorithm.AlgorithmType algorithmType;
 
-	
+	private  Map<AlgorithmType, OptimisationAlgorithm> optimisationAlgorithms = new HashMap<>();
+
+	@Autowired
+	void setOptimisationAlgorithms(Collection<OptimisationAlgorithm> optimisationAlgorithms) {
+		this.optimisationAlgorithms.clear();
+		optimisationAlgorithms.forEach( a -> this.optimisationAlgorithms.put(a.algorithmType(), a));
+	}
 
 	public String getName() {
 		return name;
@@ -67,7 +75,7 @@ public class PortfolioAO implements Serializable {
 		this.name = sharePortfolio.name();
 		this.currency = sharePortfolio.currency();
 		this.algorithmType=sharePortfolio.algorithmType() ;
-		
+	
 		
 		this.timeCourses.clear();
 		timeCourses.addAll(sharePortfolio.timeCourses());
@@ -95,7 +103,10 @@ public class PortfolioAO implements Serializable {
 	}
 
 	public SharePortfolio getSharePortfolio() {
-		final SharePortfolio result = new SharePortfolioImpl(name, timeCourses, getAlgorithmType());
+		
+		System.out.println("*****");
+		System.out.println(getAlgorithmType());
+		final SharePortfolio result = new SharePortfolioImpl(name, timeCourses, optimisationAlgorithms.get(getAlgorithmType()));
 		ReflectionUtils.doWithFields(result.getClass(), field -> {
 			/* "...touched for the very first time." mdna (like a virgin **/ field.setAccessible(true);
 			ReflectionUtils.setField(field, result, id);
@@ -158,6 +169,7 @@ public class PortfolioAO implements Serializable {
 	}
 
 	public void setAlgorithmType(OptimisationAlgorithm.AlgorithmType algorithmType) {
+		System.out.println(">>>" + algorithmType);
 		this.algorithmType = algorithmType;
 	}
 

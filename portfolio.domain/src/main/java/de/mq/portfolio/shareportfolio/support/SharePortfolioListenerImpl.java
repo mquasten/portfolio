@@ -13,7 +13,6 @@ import org.springframework.util.ReflectionUtils;
 import com.mongodb.DBObject;
 
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
-import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 
 @Component
 public class SharePortfolioListenerImpl extends AbstractMongoEventListener<SharePortfolioImpl> {
@@ -55,9 +54,7 @@ public class SharePortfolioListenerImpl extends AbstractMongoEventListener<Share
 	
 	@Override
 	public void onAfterConvert(final DBObject dbo, final SharePortfolioImpl sharePortfolio) {
-		System.out.println(sharePortfolio.id());
-		final OptimisationAlgorithm algorithm = algorithms.get(AlgorithmType.MVP);
-		System.out.println(algorithm);
+		final OptimisationAlgorithm algorithm = algorithms.get(sharePortfolio.algorithmType());
 		ReflectionUtils.doWithFields(sharePortfolio.getClass(), field -> ReflectionUtils.setField(field, sharePortfolio, algorithm), field -> field.getType().equals(OptimisationAlgorithm.class) );
 	}
 

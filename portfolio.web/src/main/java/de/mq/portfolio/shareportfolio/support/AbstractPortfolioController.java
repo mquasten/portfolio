@@ -128,6 +128,12 @@ public  abstract  class AbstractPortfolioController {
 		portfolioAO.setSharePortfolio(sharePortfolio, Optional.of(exchangeRateService.exchangeRateCalculator(sharePortfolio.exchangeRateTranslations())));
 
 	}
+	
+	public void refresh(final PortfolioAO portfolioAO) {
+		final SharePortfolio sharePortfolio = portfolioAO.getSharePortfolio();
+		portfolioAO.setSharePortfolio(sharePortfolio, Optional.of(exchangeRateService.exchangeRateCalculator(sharePortfolio.exchangeRateTranslations())));
+		
+	}
 
 	public  void pdf(final PortfolioAO portfolioAO) {
 
@@ -178,6 +184,8 @@ public  abstract  class AbstractPortfolioController {
 	public Collection<SelectItem> supportedAlgorithmns() {
 		return Collections.unmodifiableCollection(algorithms.stream().map(algorithm -> new SelectItem(algorithm.algorithmType(),algorithm.algorithmType().name())).collect(Collectors.toList()));
 	}
+	
+	
 
 	
 	@Lookup

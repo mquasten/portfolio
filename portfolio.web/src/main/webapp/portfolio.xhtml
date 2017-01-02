@@ -26,7 +26,7 @@
 	<p:outputLabel  for="name"  value="Name"   />
 	
 	<h:panelGrid columns="2">
-	<p:inputText id="name" value="#{sharePortfolio.name}" required="true"  validatorMessage="5 bis 30 Zeichen [Buchstaben,Ziffern-_]" requiredMessage="Mußfeld"  readonly="#{!sharePortfolio.editable}" >
+	<p:inputText id="name" value="#{sharePortfolio.name}" required="true"  validatorMessage="5 bis 30 Zeichen [Buchstaben,Ziffern-_]" requiredMessage="Mußfeld"  readonly="#{!sharePortfolio.editable}"   >
 	
 	<f:validateRegex pattern="[a-z,A-Z,0-9-_]{5,30}"  />
 	
@@ -38,12 +38,13 @@
 	
 	<p:outputLabel  for="currency"  value="Währung"  />
          
-	<p:inputText id="currency" readonly="true"  value="#{currencyConverter.convert(sharePortfolio.currency)}" />
+	<p:inputText id="currency" readonly="true"  value="#{currencyConverter.convert(sharePortfolio.currency)}"  />
 	
 	
 	<p:outputLabel  for="algorithm"  value="Optimierung"  />
-	<p:selectOneMenu id="algorithm"  value="#{sharePortfolio.algorithmType}">
-		<f:selectItems value="#{portfolioController.supportedAlgorithmns()}" />
+	<p:selectOneMenu id="algorithm"  value="#{sharePortfolio.algorithmType}"  style="width:100%" >
+		<p:ajax event="valueChange" update="@form"  listener="#{portfolioController.refresh(sharePortfolio)}"/>
+		<f:selectItems value="#{portfolioController.supportedAlgorithmns()}"  />
 	</p:selectOneMenu>
 	
 	<p:outputLabel  for="commited"  value="geschlossen"  />

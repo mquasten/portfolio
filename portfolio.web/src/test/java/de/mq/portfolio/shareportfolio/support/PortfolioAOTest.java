@@ -15,6 +15,8 @@ import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import junit.framework.Assert;
 
@@ -46,9 +48,15 @@ public class PortfolioAOTest {
 	private final Map<TimeCourse, Double> weights = new HashMap<>();
 	private final ExchangeRate exchangeRate = Mockito.mock(ExchangeRate.class);
 
+	private final OptimisationAlgorithm optimisationAlgorithm = Mockito.mock(OptimisationAlgorithm.class);
+	
 	@Before
 	public final void setup() {
 
+		Mockito.when(optimisationAlgorithm.algorithmType()).thenReturn(AlgorithmType.MVP);
+		portfolioAO.setOptimisationAlgorithms(Arrays.asList(optimisationAlgorithm));
+		
+		
 		corelations01.put(SHARE_NAME01, 1D);
 		corelations01.put(SHARE_NAME02, 0.5D);
 
