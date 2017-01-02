@@ -54,8 +54,7 @@ public class SharePortfolioListenerImpl extends AbstractMongoEventListener<Share
 	
 	@Override
 	public void onAfterConvert(final DBObject dbo, final SharePortfolioImpl sharePortfolio) {
-		final OptimisationAlgorithm algorithm = algorithms.get(sharePortfolio.algorithmType());
-		ReflectionUtils.doWithFields(sharePortfolio.getClass(), field -> ReflectionUtils.setField(field, sharePortfolio, algorithm), field -> field.getType().equals(OptimisationAlgorithm.class) );
+		ReflectionUtils.doWithFields(sharePortfolio.getClass(), field ->{ field.setAccessible(true);ReflectionUtils.setField(field, sharePortfolio, algorithms.get(sharePortfolio.algorithmType())); }, field -> field.getType().equals(OptimisationAlgorithm.class) );
 	}
 
 }

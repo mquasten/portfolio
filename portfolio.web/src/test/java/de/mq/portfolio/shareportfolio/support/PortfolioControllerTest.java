@@ -14,6 +14,7 @@ import java.util.Optional;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
@@ -34,6 +35,7 @@ import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.support.UserModel;
 import junit.framework.Assert;
@@ -52,6 +54,7 @@ public class PortfolioControllerTest {
 	@SuppressWarnings("unchecked")
 	private final Converter<PortfolioAO, byte[]> pdfConverter = Mockito.mock(Converter.class);
 
+	private final OptimisationAlgorithm optimisationAlgorithm = Mockito.mock(OptimisationAlgorithm.class);
 	private final AbstractPortfolioController portfolioController = Mockito.mock(AbstractPortfolioController.class, Mockito.CALLS_REAL_METHODS);
 
 	private final UserModel userModel = Mockito.mock(UserModel.class);
@@ -130,11 +133,16 @@ public class PortfolioControllerTest {
 		dependencies.put(ShareService.class, shareService);
 		dependencies.put(ExchangeRateService.class, exchangeRateService);
 		dependencies.put(Converter.class, pdfConverter);
+		dependencies.put(Collection.class, Arrays.asList(optimisationAlgorithm));
+		Mockito.when(optimisationAlgorithm.algorithmType()).thenReturn(AlgorithmType.RiskGainPreference);
+		
 
 		ReflectionUtils.doWithFields(AbstractPortfolioController.class, field -> ReflectionTestUtils.setField(portfolioController, field.getName(), dependencies.get(field.getType())), field -> dependencies.containsKey(field.getType()));
 
 		Mockito.doAnswer(a -> facesContext).when(portfolioController).facesContext();
 
+	
+		
 	}
 
 	@Test
@@ -275,7 +283,7 @@ public class PortfolioControllerTest {
 
 	@Test
 	public final void constructor() {
-		OptimisationAlgorithm optimisationAlgorithm = Mockito.mock(OptimisationAlgorithm.class);
+		
 		final AbstractPortfolioController portfolioController = new AbstractPortfolioController(sharePortfolioService, shareService, exchangeRateService, pdfConverter, Arrays.asList(optimisationAlgorithm)) {
 			@Override
 			FacesContext facesContext() {
@@ -319,6 +327,21 @@ public class PortfolioControllerTest {
 		Mockito.reset(portfolioSearchAO);
 		portfolioController.assignState(portfolioSearchAO);
 		Mockito.verifyZeroInteractions(portfolioSearchAO);
+	}
+	
+	@Test
+	public final void supportedAlgorithms() {
+		final Collection<SelectItem> results = portfolioController.supportedAlgorithms();
+		Assert.assertEquals(1, results.size());
+		Assert.assertTrue(results.stream().findAny().isPresent());
+		Assert.assertEquals(AlgorithmType.RiskGainPreference, results.stream().findAny().get().getValue());
+		Assert.assertEquals(AlgorithmType.RiskGainPreference.name(), results.stream().findAny().get().getLabel());
+	}
+	
+	@Test
+	public final void  refresh() {
+		portfolioController.refresh(portfolioAO);
+		Mockito.verify(portfolioAO, Mockito.times(1)).setSharePortfolio(sharePortfolio, Optional.of(exchangeRateCalculator));
 	}
 
 }

@@ -158,12 +158,24 @@ public class PortfolioAOTest {
 	@Test
 	public final void getSharePortfolio() {
 		portfolioAO.setId(ID);
+		portfolioAO.setName(NAME);
 		final SharePortfolio sharePortfolio = portfolioAO.getSharePortfolio();
 
 		Assert.assertEquals(ID, sharePortfolio.id());
 
-		sharePortfolio.timeCourses().forEach(tc -> System.out.println(tc.name() + ":" + tc.share().name()));
+		Assert.assertEquals(NAME, sharePortfolio.name());
 
+		Assert.assertEquals(AlgorithmType.MVP, sharePortfolio.algorithmType());
+		Assert.assertEquals(optimisationAlgorithm, sharePortfolio.optimisationAlgorithm());
+	}
+	
+	@Test
+	public final void algorithmType() {
+		Assert.assertEquals(AlgorithmType.MVP, portfolioAO.getAlgorithmType());
+		
+		portfolioAO.setAlgorithmType(AlgorithmType.RiskGainPreference);
+		
+		Assert.assertEquals(AlgorithmType.RiskGainPreference, portfolioAO.getAlgorithmType());
 	}
 
 }

@@ -44,7 +44,7 @@
 	<p:outputLabel  for="algorithm"  value="Optimierung"   disabled="#{!sharePortfolio.editable}" />
 	<p:selectOneMenu id="algorithm"  value="#{sharePortfolio.algorithmType}"  style="width:100%" >
 		<p:ajax event="valueChange" update="@form"  listener="#{portfolioController.refresh(sharePortfolio)}"/>
-		<f:selectItems value="#{portfolioController.supportedAlgorithmns()}"  />
+		<f:selectItems value="#{portfolioController.supportedAlgorithms()}"  />
 	</p:selectOneMenu>
 	
 	<p:outputLabel  for="commited"  value="geschlossen"  />

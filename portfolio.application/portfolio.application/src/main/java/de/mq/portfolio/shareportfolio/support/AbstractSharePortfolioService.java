@@ -2,7 +2,6 @@ package de.mq.portfolio.shareportfolio.support;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -90,39 +89,7 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 		return sharePortfolioRepository.pageable(sharePortfolio, sort, size);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.mq.portfolio.shareportfolio.support.SharePortfolioService#samples(de
-	 * .mq.portfolio.shareportfolio.SharePortfolio)
-	 */
-	@Override
-	public final Collection<double[]> samples(final SharePortfolio sharePortfolio, final Number size) {
-		Assert.notNull(sharePortfolio);
-		Assert.notNull(size);
-		Assert.isTrue(size.intValue() > 1);
-		final int n = sharePortfolio.timeCourses().size();
-		Assert.isTrue(n > 2, "Al least 2 Timecourses must be present.");
-		return IntStream.range(0, size.intValue()).mapToObj(i -> sample(n)).collect(Collectors.toList());
-	}
-
-	private double[] sample(final int n) {
-		final double[] result = new double[n];
-		final double sum[] = { 0 };
-		IntStream.range(0, n).forEach(i -> {
-			final double x = Math.random();
-			result[i] = x;
-			sum[0] = sum[0] + x;
-
-		});
-
-		IntStream.range(0, n).forEach(i -> {
-			result[i] = result[i] / sum[0];
-		});
-		return result;
-	}
-
+	
 
 
 

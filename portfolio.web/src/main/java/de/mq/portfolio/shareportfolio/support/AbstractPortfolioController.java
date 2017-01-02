@@ -181,7 +181,7 @@ public  abstract  class AbstractPortfolioController {
 
 	}
 
-	public Collection<SelectItem> supportedAlgorithmns() {
+	public Collection<SelectItem> supportedAlgorithms() {
 		return Collections.unmodifiableCollection(algorithms.stream().map(algorithm -> new SelectItem(algorithm.algorithmType(),algorithm.algorithmType().name())).collect(Collectors.toList()));
 	}
 	

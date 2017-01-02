@@ -18,7 +18,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
@@ -39,7 +38,7 @@ public class SharePortfolioServiceTest {
 	private static final String STATUS_STPPED = "STOPPED";
 	private static final Long LIMIT = 10L;
 	private static final Long COUNTER = 1L;
-	private static final int SAMPLES_SIZE = 100;
+
 	private static final String NAME = "mq-test";
 
 	
@@ -94,28 +93,7 @@ public class SharePortfolioServiceTest {
 		Mockito.verify(sharePortfolioRepository, Mockito.never()).save(sharePortfolio);
 	}
 	
-	@SuppressWarnings("unchecked")
-	@Test
-	public final void samples() {
-		
-		final List<TimeCourse> timeCourses = Mockito.mock(List.class);
-		Mockito.when(timeCourses.size()).thenReturn(10);
-		Mockito.when(sharePortfolio.timeCourses()).thenReturn(timeCourses);
-		final Collection<double[]> results = sharePortfolioService.samples(sharePortfolio, SAMPLES_SIZE);
-		Assert.assertEquals(100, results.size());
-		results.stream().forEach(samples -> Assert.assertTrue(Math.abs( 1 -((Collection<Double>) CollectionUtils.arrayToList(samples)).stream().reduce((a,b) -> a+b).get())< 1e-15));
-	}
 	
-	@Test(expected=IllegalArgumentException.class)
-	public final void samplesWrongSize(){
-		 sharePortfolioService.samples(sharePortfolio, 0);
-	}
-	
-	@Test(expected=IllegalArgumentException.class)
-	public final void samplesWrongSizeTimeCourses(){
-		 sharePortfolioService.samples(sharePortfolio,SAMPLES_SIZE);
-	}
-
 	
 	
 	

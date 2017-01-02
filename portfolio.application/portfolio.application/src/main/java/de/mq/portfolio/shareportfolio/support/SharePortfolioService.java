@@ -12,11 +12,6 @@ public interface SharePortfolioService {
 
 	SharePortfolio committedPortfolio(String name);
 
-
-	Collection<double[]> samples(SharePortfolio sharePortfolio, Number size);
-
-
-
 	void save(final SharePortfolio sharePortfolio);
 
 
