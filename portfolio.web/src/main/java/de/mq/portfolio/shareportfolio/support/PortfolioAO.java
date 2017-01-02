@@ -104,8 +104,6 @@ public class PortfolioAO implements Serializable {
 
 	public SharePortfolio getSharePortfolio() {
 		
-		System.out.println("*****");
-		System.out.println(getAlgorithmType());
 		final SharePortfolio result = new SharePortfolioImpl(name, timeCourses, optimisationAlgorithms.get(getAlgorithmType()));
 		ReflectionUtils.doWithFields(result.getClass(), field -> {
 			/* "...touched for the very first time." mdna (like a virgin **/ field.setAccessible(true);
@@ -168,8 +166,7 @@ public class PortfolioAO implements Serializable {
 		return algorithmType==null ?  AlgorithmType.MVP  : algorithmType;
 	}
 
-	public void setAlgorithmType(OptimisationAlgorithm.AlgorithmType algorithmType) {
-		System.out.println(">>>" + algorithmType);
+	public void setAlgorithmType(final OptimisationAlgorithm.AlgorithmType algorithmType) {
 		this.algorithmType = algorithmType;
 	}
 
