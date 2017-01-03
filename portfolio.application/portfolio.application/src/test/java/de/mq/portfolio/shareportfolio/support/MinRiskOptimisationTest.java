@@ -16,10 +16,6 @@ public class MinRiskOptimisationTest {
 	private final OptimisationAlgorithm optimisationAlgorithm = new MinRiskOptimisationImpl();
 	
 	private final static double[] WEIGHTS = {54.50d, 44.29d , 1.21d};
-	static final String VARIANCES_FIELD = "variances";
-
-	static final String COVARIANCES_FIELD = "covariances";
-	
 	
 	private double[][]  matrix;
 	
