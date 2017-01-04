@@ -3,22 +3,21 @@ package de.mq.portfolio.shareportfolio.support;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-
 import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 
 import Jama.Matrix;
-import de.mq.portfolio.shareportfolio.AlgorithmParameter;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
+import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @Service
 class MinRiskOptimisationImpl implements OptimisationAlgorithm {
 
 	@Override
-	public double[] weights(final double[][] varianceMatrix, final AlgorithmParameter ... params) {
+	public double[] weights(SharePortfolio sharePortfolio) {
 		
-
+		final double[][] varianceMatrix = sharePortfolio.varianceMatrix();
 		final double[][] array = new double[varianceMatrix.length + 1][varianceMatrix.length + 1];
 		IntStream.range(0, varianceMatrix.length).forEach(i -> IntStream.range(0, varianceMatrix.length).forEach(j -> array[i][j] = varianceMatrix[i][j]));
 

@@ -6,19 +6,32 @@ import java.util.Collections;
 import java.util.stream.IntStream;
 
 import Jama.Matrix;
-import de.mq.portfolio.shareportfolio.AlgorithmParameter;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
+import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 public class RiskGainPreferenceOptimisationImpl implements OptimisationAlgorithm {
 
+	
+	enum ParameterType {
+		TargetRate;
+	}
+	
 	@Override
 	public AlgorithmType algorithmType() {
 		return AlgorithmType.RiskGainPreference;
 	}
 
 	@Override
-	public double[] weights(final double[][] varianceMatrix, final AlgorithmParameter... params) {
-		final double[] gain = new double[] { 0.0139178 ,0.0130860 ,  0.0249126 };
+	public double[] weights(final SharePortfolio sharePortfolio) {
+		
+		
+		
+		final double[][] varianceMatrix= sharePortfolio.varianceMatrix();
+		final double[] gain=  new double[sharePortfolio.timeCourses().size()];
+		
+		final double targetRate = sharePortfolio.param(ParameterType.TargetRate);
+		IntStream.range(0, gain.length).forEach(i -> gain[i]=sharePortfolio.timeCourses().get(i).totalRate());
+		
 		final double[][] gainVector = new double[varianceMatrix.length][1]; 
 		
 		IntStream.range(0, gain.length).forEach(i -> gainVector[i][0]=gain[i] );
@@ -53,10 +66,10 @@ public class RiskGainPreferenceOptimisationImpl implements OptimisationAlgorithm
 		
 		final double totalGainMVP = IntStream.range(0, varianceMatrix.length).mapToDouble(i -> weightsMVP[i]*gain[i]).sum();
 		
-		
+	
 	
 		
-		final double theta = (0.018769 - totalGainMVP)/ke;
+		final double theta = (targetRate - totalGainMVP)/ke;
 		
 		
 		final double[] results = new double[varianceMatrix.length];
@@ -66,7 +79,7 @@ public class RiskGainPreferenceOptimisationImpl implements OptimisationAlgorithm
 
 	@Override
 	public Collection<Enum<?>> params() {
-		return Collections.unmodifiableCollection(Arrays.asList());
+		return Collections.unmodifiableCollection(Arrays.asList(ParameterType.values()));
 	}
 
 }

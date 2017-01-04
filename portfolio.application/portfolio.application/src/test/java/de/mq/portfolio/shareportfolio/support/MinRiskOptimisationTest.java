@@ -4,9 +4,11 @@ import java.util.stream.IntStream;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
+import de.mq.portfolio.shareportfolio.SharePortfolio;
 import junit.framework.Assert;
 
 public class MinRiskOptimisationTest {
@@ -14,6 +16,7 @@ public class MinRiskOptimisationTest {
 
 	
 	private final OptimisationAlgorithm optimisationAlgorithm = new MinRiskOptimisationImpl();
+	private final SharePortfolio sharePortfolio = Mockito.mock(SharePortfolio.class); 
 	
 	private final static double[] WEIGHTS = {54.50d, 44.29d , 1.21d};
 	
@@ -36,12 +39,12 @@ public class MinRiskOptimisationTest {
 		matrix[2][0] = 0.0004031;
 		matrix[2][1] = 0.0016245;
 
-		
+		Mockito.when(sharePortfolio.varianceMatrix()).thenReturn(matrix);
 	}
 	
 	@Test
 	public final void resolve() {
-		final  double[] results = optimisationAlgorithm.weights(matrix);
+		final  double[] results = optimisationAlgorithm.weights(sharePortfolio);
 		Assert.assertEquals(WEIGHTS.length, results.length);
 		IntStream.range(0, results.length).forEach(i -> Assert.assertEquals(WEIGHTS[i], percentRound(results[i])));
 		

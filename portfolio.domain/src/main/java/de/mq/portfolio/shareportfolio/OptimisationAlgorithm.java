@@ -15,7 +15,7 @@ public interface  OptimisationAlgorithm {
 	
 	AlgorithmType algorithmType();
 
-	double[] weights(double[][] varianceMatrix, final AlgorithmParameter ... params);
+	double[] weights(final SharePortfolio sharePortfolio);
 
 	Collection<Enum<?>> params();
 

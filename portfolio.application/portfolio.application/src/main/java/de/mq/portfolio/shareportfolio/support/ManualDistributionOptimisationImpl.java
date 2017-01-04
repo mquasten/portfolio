@@ -6,10 +6,9 @@ import java.util.Collections;
 import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
-import de.mq.portfolio.shareportfolio.AlgorithmParameter;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
+import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @Service
 class ManualDistributionOptimisationImpl implements OptimisationAlgorithm {
@@ -22,10 +21,8 @@ class ManualDistributionOptimisationImpl implements OptimisationAlgorithm {
 
 	
 	@Override
-	public double[] weights(final double[][] varianceMatrix, final AlgorithmParameter ... params) {
-		final double[] results =  Arrays.asList(params).stream().filter(param -> param.type()== ParameterType.Weights).map(p -> (double[]) p.value()).findAny().orElse(weights(varianceMatrix.length)); 
-	    Assert.isTrue(varianceMatrix.length == results.length, String.format("WeightingsVector has wrong size, expected: %s, size: %s", varianceMatrix.length , results.length));
-		return results;
+	public double[] weights(SharePortfolio sharePortfolio) {
+		return weights(sharePortfolio.varianceMatrix().length);
 	}
 
 	private double[] weights(final int size) {

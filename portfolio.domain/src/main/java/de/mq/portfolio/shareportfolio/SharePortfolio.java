@@ -63,6 +63,10 @@ public interface SharePortfolio  extends IdentifierAware<String>{
 	
 	OptimisationAlgorithm optimisationAlgorithm() ;
 
-	AlgorithmType algorithmType(); 
+	AlgorithmType algorithmType();
+
+	double[][] varianceMatrix();
+
+	<T> T param(final Enum<?> param); 
 
 }

@@ -225,6 +225,17 @@ class SharePortfolioImpl implements SharePortfolio {
 		if (covariances == null) {
 			return Collections.unmodifiableMap(weights);
 		}
+		preparedForOptimisationGuard();
+		
+		final double[]  results = optimisationAlgorithm.weights(this);
+		
+		IntStream.range(0, timeCourses.size()).forEach(i -> weights.put(timeCourses.get(i), results[i]));
+
+		return Collections.unmodifiableMap(weights);
+
+	}
+
+	private void preparedForOptimisationGuard() {
 		variancesExistsGuard();
 		covariancesExistsGuard();
 		Assert.isTrue(covariances.length == timeCourses.size(), "Covariances and timecourses didn't match.");
@@ -232,38 +243,6 @@ class SharePortfolioImpl implements SharePortfolio {
 		IntStream.range(0, timeCourses.size()).mapToLong(i -> CollectionUtils.arrayToList( covariances[i]).size()).forEach(length -> Assert.isTrue(length == timeCourses.size(), "Covariances and timecourses didn't match." ));
 		
 		Assert.notNull(optimisationAlgorithm);
-		
-		final double[]  results = optimisationAlgorithm.weights(this.varianceMatrix());
-		
-		IntStream.range(0, timeCourses.size()).forEach(i -> weights.put(timeCourses.get(i), results[i]));
-		
-		/*
-		final double[][] array = new double[timeCourses.size() + 1][timeCourses.size() + 1];
-		IntStream.range(0, timeCourses.size()).forEach(i -> IntStream.range(0, timeCourses.size()).filter(j -> j != i).forEach(j -> array[i][j] = covariances[i][j]));
-
-		IntStream.range(0, timeCourses.size()).forEach(i -> {
-			array[i][i] = variances[i];
-			array[i][timeCourses.size()] = 1;
-			array[timeCourses.size()][i] = 1;
-		});
-		array[timeCourses.size()][timeCourses.size()] = 0d;
-	
-		final Matrix matrix = new Matrix(array);
-		final Matrix vectorAsMatrix = new Matrix(timeCourses.size() + 1, 1, 0d);
-		vectorAsMatrix.set(timeCourses.size(), 0, 1d);
-		final Matrix vector = vectorAsMatrix;
-		// matrix.print(15, 10);
-
-		// vector.print(15,10);
-		final Matrix result = matrix.solve(vector);
-		// result.print(15, 10);
-		
-		
-
-		IntStream.range(0, timeCourses.size()).forEach(i -> weights.put(timeCourses.get(i), result.get(i, 0)));
-*/
-		return Collections.unmodifiableMap(weights);
-
 	} 
 
 	@Override
@@ -411,7 +390,9 @@ class SharePortfolioImpl implements SharePortfolio {
 		return optimisationAlgorithm;
 	}
 	
-	double[][] varianceMatrix() {
+	@Override
+	public double[][] varianceMatrix() {
+		preparedForOptimisationGuard();
 		final double[][] results = new double [variances.length][variances.length];
 		IntStream.range(0, variances.length).forEach( i -> IntStream.range(0, variances.length).forEach(j -> results[i][j]= i !=j ? covariances[i][j] : variances[i]));
 		return results;
@@ -421,6 +402,12 @@ class SharePortfolioImpl implements SharePortfolio {
 	@Override
 	public OptimisationAlgorithm.AlgorithmType algorithmType() {
 		return  algorithmType;
+	}
+	
+	@Override
+	public <T> T param(final Enum<?> param) {
+		return null;
+		
 	}
 
 }

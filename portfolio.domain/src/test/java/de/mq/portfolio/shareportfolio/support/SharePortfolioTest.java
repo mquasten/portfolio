@@ -14,7 +14,6 @@ import java.util.stream.IntStream;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
@@ -77,7 +76,7 @@ public class SharePortfolioTest {
 	private final Share share2 = Mockito.mock(Share.class);
 	private final Map<TimeCourse, Double> minWeights = new HashMap<>();
 	
-	private ArgumentCaptor<double[][]> varianceMatrixCaptor = ArgumentCaptor.forClass(double[][].class);
+	
 
 	final ExchangeRate exchangeRateUSDEuro = new ExchangeRateImpl(CURRENCY_USD, SharePortfolioImpl.DEFAULT_CURRENCY);
 	final ExchangeRate exchangeRateEuroEuro = new ExchangeRateImpl(SharePortfolioImpl.DEFAULT_CURRENCY, SharePortfolioImpl.DEFAULT_CURRENCY);
@@ -131,7 +130,6 @@ public class SharePortfolioTest {
 		ReflectionTestUtils.setField(sharePortfolio, COVARIANCES_FIELD, covariances);
 		ReflectionTestUtils.setField(sharePortfolio, CORRELATIONS_FIELD, correlations);
 
-	
 
 		// page 38 Performancemessung example results
 		minWeights.put(timeCourse1, 54.50d);
@@ -139,10 +137,10 @@ public class SharePortfolioTest {
 		minWeights.put(timeCourse, 1.21d);
 		
 		
-		Mockito.when(optimisationAlgorithm.weights(varianceMatrixCaptor.capture())).thenReturn(new double [] {1e-2* minWeights.get(timeCourse1), 1e-2 *minWeights.get(timeCourse2), 1e-2 *minWeights.get(timeCourse)});
-		
 		ReflectionUtils.doWithFields(SharePortfolioImpl.class, field -> ReflectionTestUtils.setField(sharePortfolio, field.getName(), optimisationAlgorithm), field -> field.getType().equals(OptimisationAlgorithm.class));
-		
+
+		Mockito.when(optimisationAlgorithm.weights(sharePortfolio)).thenReturn(new double [] {1e-2* minWeights.get(timeCourse1), 1e-2 *minWeights.get(timeCourse2), 1e-2 *minWeights.get(timeCourse)});
+
 	}
 
 	private void randomId(TimeCourse timeCourse) {
@@ -334,6 +332,8 @@ public class SharePortfolioTest {
 
 		preparePortfolioForMinWeightTest();
 
+
+		
 		final Map<TimeCourse, Double> results = sharePortfolio.min();
 
 		Assert.assertEquals(timeCourses.size() + 1, results.size());
@@ -345,16 +345,7 @@ public class SharePortfolioTest {
 		Assert.assertEquals(minWeights.get(timeCourse2), percentRound(results.get(timeCourse2)));
 		Assert.assertEquals(minWeights.get(timeCourse), percentRound(results.get(timeCourse)));
 		
-		final double[][] matrix =  varianceMatrixCaptor.getValue();
 		
-		Assert.assertEquals(covariances.length, matrix.length);
-	
-		IntStream.range(0, variances.length).forEach(i -> Assert.assertEquals(variances.length, matrix[i].length));
-	
-		IntStream.range(0, variances.length).forEach(i -> Assert.assertEquals(variances[i], matrix[i][i]));
-		
-		IntStream.range(0, variances.length).forEach(i -> IntStream.range(0,variances.length).filter(j -> i != j).forEach(j-> Assert.assertEquals(covariances[i][j], matrix[i][j])));
-
 	}
 
 	@Test
@@ -664,6 +655,19 @@ public class SharePortfolioTest {
 	    Assert.assertEquals(optimisationAlgorithm, sharePortfolio.optimisationAlgorithm());
 	    Assert.assertEquals(NAME, sharePortfolio.name());
 	    Assert.assertEquals(Arrays.asList(timeCourse1, timeCourse2, timeCourse), sharePortfolio.timeCourses());
+	}
+	
+	@Test
+	public final void varianceMatrix() {
+		preparePortfolioForMinWeightTest();
+		final double[][] results = sharePortfolio.varianceMatrix();
+		Assert.assertEquals(variances.length, results.length);
+		IntStream.range(0, variances.length).forEach(i -> Assert.assertEquals(variances.length, results[i].length) );
+		
+	
+		IntStream.range(0, variances.length).forEach(i -> Assert.assertEquals(variances[i], results[i][i]));
+		
+		IntStream.range(0, variances.length).forEach(i -> IntStream.range(0, variances.length).filter(j -> i != j).forEach(j -> Assert.assertEquals(covariances[i][j], results[i][j]))); 
 	}
 	
 	
