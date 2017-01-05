@@ -1,0 +1,4 @@
+scheiss yahoo ersetzen ?!
+https://www.google.com/finance/historical?q=NYSE:VZ&output=csv&startdate=11-Jan-2016
+https://www.google.com/finance/historical?q=FRA:SAP&output=csv
+
