@@ -49,12 +49,19 @@ public class PortfolioAOTest {
 	private final ExchangeRate exchangeRate = Mockito.mock(ExchangeRate.class);
 
 	private final OptimisationAlgorithm optimisationAlgorithm = Mockito.mock(OptimisationAlgorithm.class);
+	private final OptimisationAlgorithm optimisationAlgorithm2 = Mockito.mock(OptimisationAlgorithm.class);
 	
 	@Before
 	public final void setup() {
 
 		Mockito.when(optimisationAlgorithm.algorithmType()).thenReturn(AlgorithmType.MVP);
-		portfolioAO.setOptimisationAlgorithms(Arrays.asList(optimisationAlgorithm));
+		Mockito.when(optimisationAlgorithm2.algorithmType()).thenReturn(AlgorithmType.RiskGainPreference);
+		portfolioAO.setOptimisationAlgorithms(Arrays.asList(optimisationAlgorithm, optimisationAlgorithm2));
+		
+		Mockito.when(optimisationAlgorithm.params()).thenReturn(Arrays.asList());
+		
+		
+		Mockito.when(optimisationAlgorithm2.params()).thenReturn(Arrays.asList());
 		
 		
 		corelations01.put(SHARE_NAME01, 1D);

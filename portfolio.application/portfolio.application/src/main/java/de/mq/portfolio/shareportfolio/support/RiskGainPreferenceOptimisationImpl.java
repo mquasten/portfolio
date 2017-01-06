@@ -5,13 +5,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.IntStream;
 
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import Jama.Matrix;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
-public class RiskGainPreferenceOptimisationImpl implements OptimisationAlgorithm {
+@Service
+class RiskGainPreferenceOptimisationImpl implements OptimisationAlgorithm {
 
 	
 	enum ParameterType {

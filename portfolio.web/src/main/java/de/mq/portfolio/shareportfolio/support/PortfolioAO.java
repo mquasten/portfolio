@@ -1,6 +1,7 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.io.Serializable;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -56,6 +57,7 @@ public class PortfolioAO implements Serializable {
 	private OptimisationAlgorithm.AlgorithmType algorithmType;
 
 	private  Map<AlgorithmType, OptimisationAlgorithm> optimisationAlgorithms = new HashMap<>();
+	private List<Entry<Enum<?>,Double>> parameters = new ArrayList<>();
 
 	@Autowired
 	void setOptimisationAlgorithms(Collection<OptimisationAlgorithm> optimisationAlgorithms) {
@@ -165,9 +167,19 @@ public class PortfolioAO implements Serializable {
 	public OptimisationAlgorithm.AlgorithmType getAlgorithmType() {
 		return algorithmType==null ?  AlgorithmType.MVP  : algorithmType;
 	}
+	
+	
+	
 
 	public void setAlgorithmType(final OptimisationAlgorithm.AlgorithmType algorithmType) {
+		parameters.clear();	
+		
+		parameters.addAll(optimisationAlgorithms.get(algorithmType).params().stream().map(p -> new AbstractMap.SimpleImmutableEntry<Enum<?>,Double>(p, null)).collect(Collectors.toList()));
 		this.algorithmType = algorithmType;
+	}
+	
+	public Collection<Entry<Enum<?>,Double>> getParameters() {
+		return parameters;
 	}
 
 }
