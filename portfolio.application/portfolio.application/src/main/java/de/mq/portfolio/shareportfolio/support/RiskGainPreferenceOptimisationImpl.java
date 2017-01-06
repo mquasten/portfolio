@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.IntStream;
 
+import org.springframework.util.Assert;
+
 import Jama.Matrix;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -13,7 +15,7 @@ public class RiskGainPreferenceOptimisationImpl implements OptimisationAlgorithm
 
 	
 	enum ParameterType {
-		TargetRate;
+		TargetRate, RateRatio;
 	}
 	
 	@Override
@@ -29,7 +31,10 @@ public class RiskGainPreferenceOptimisationImpl implements OptimisationAlgorithm
 		final double[][] varianceMatrix= sharePortfolio.varianceMatrix();
 		final double[] gain=  new double[sharePortfolio.timeCourses().size()];
 		
-		final double targetRate = sharePortfolio.param(ParameterType.TargetRate);
+		final Double targetRate = sharePortfolio.param(ParameterType.TargetRate);
+		final Double rateRatio = sharePortfolio.param(ParameterType.RateRatio);
+		
+		
 		IntStream.range(0, gain.length).forEach(i -> gain[i]=sharePortfolio.timeCourses().get(i).totalRate());
 		
 		final double[][] gainVector = new double[varianceMatrix.length][1]; 
@@ -68,13 +73,28 @@ public class RiskGainPreferenceOptimisationImpl implements OptimisationAlgorithm
 		
 	
 	
-		
-		final double theta = (targetRate - totalGainMVP)/ke;
-		
+		final double theta = theta(targetRate, rateRatio, ke, totalGainMVP);
+		Assert.isTrue(theta >= 0 , "Θ should be >= 0.");
 		
 		final double[] results = new double[varianceMatrix.length];
 		IntStream.range(0, varianceMatrix.length).forEach(i -> results[i]=weightsMVP[i] + theta*d.get(i,0) );
+		
+		
+		
+	
 		return results;
+	}
+
+	private double theta(final Double targetRate, final Double rateRatio, final double ke, final double totalGainMVP) {
+		
+		if( targetRate != null ){
+			return  (targetRate - totalGainMVP)/ke;
+		}
+		
+		if( rateRatio != null ) {
+			return  totalGainMVP*(rateRatio - 1)/ke;
+		}
+		return 0;
 	}
 
 	@Override
