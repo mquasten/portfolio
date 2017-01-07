@@ -188,13 +188,28 @@
 </ui:fragment>
 
 <ui:fragment rendered="#{sharePortfolio.parameters.size() > 0}">
-<table style="border-collapse: collapse; margin-bottom: 25px;" >
-	<tr><th style="border: 1px solid black;">Parameter</th><th style="border: 1px solid black;">Wert</th></tr>
-	<ui:repeat value="#{sharePortfolio.parameters}" var="parameter">
-	<tr><td style="border: 1px solid black;"><h:outputText value="#{parameter.key}" /> </td><td style="border: 1px solid black;"> <h:outputText value="#{parameter.value}" /> </td></tr>
-	</ui:repeat>
+	<table style="border-collapse: collapse; margin-bottom: 25px;" >
+		<tr>
+			<th colspan="2" style="border: 1px solid black;">Parameter Algorithmus</th> 
+			
+			
+		</tr>
+		<ui:repeat value="#{sharePortfolio.parameters.entrySet().toArray()}" var="parameter">
+		<tr>
+			<td style="border: 1px solid black;">  <h:outputText value="#{parameter.key}" /></td>
+			<td style="border: 1px solid black;">   
+			 <p:inputText value="#{sharePortfolio.parameters[parameter.key]}" >
+        	<p:ajax  event="valueChange"  update="@form"   listener="#{portfolioController.refresh(sharePortfolio)}" />
+        </p:inputText>
+			
+			</td>
+		</tr>
+		</ui:repeat>
+		
 </table>
+
 </ui:fragment>
+
 
 <h:panelGrid >
 <p:messages id="messages" showDetail="false" globalOnly="true" />

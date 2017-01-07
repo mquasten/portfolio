@@ -1,7 +1,6 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.io.Serializable;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -56,8 +55,8 @@ public class PortfolioAO implements Serializable {
 	
 	private OptimisationAlgorithm.AlgorithmType algorithmType;
 
-	private  Map<AlgorithmType, OptimisationAlgorithm> optimisationAlgorithms = new HashMap<>();
-	private List<Entry<Enum<?>,Double>> parameters = new ArrayList<>();
+	private  final Map<AlgorithmType, OptimisationAlgorithm> optimisationAlgorithms = new HashMap<>();
+	private final Map<String,String> parameters = new HashMap<>();
 
 	@Autowired
 	void setOptimisationAlgorithms(Collection<OptimisationAlgorithm> optimisationAlgorithms) {
@@ -105,6 +104,8 @@ public class PortfolioAO implements Serializable {
 	}
 
 	public SharePortfolio getSharePortfolio() {
+		
+		System.out.println("***" + this.parameters +"***");
 		
 		final SharePortfolio result = new SharePortfolioImpl(name, timeCourses, optimisationAlgorithms.get(getAlgorithmType()));
 		ReflectionUtils.doWithFields(result.getClass(), field -> {
@@ -174,12 +175,19 @@ public class PortfolioAO implements Serializable {
 	public void setAlgorithmType(final OptimisationAlgorithm.AlgorithmType algorithmType) {
 		parameters.clear();	
 		
-		parameters.addAll(optimisationAlgorithms.get(algorithmType).params().stream().map(p -> new AbstractMap.SimpleImmutableEntry<Enum<?>,Double>(p, null)).collect(Collectors.toList()));
+		optimisationAlgorithms.get(algorithmType).params().forEach(p -> parameters.put(p.name(), ""));
 		this.algorithmType = algorithmType;
 	}
 	
-	public Collection<Entry<Enum<?>,Double>> getParameters() {
-		return parameters;
+	public Map<String,String> getParameters() {
+		
+		return parameters ;
 	}
+
+	
+
+	
+	
+	
 
 }
