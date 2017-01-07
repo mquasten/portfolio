@@ -16,6 +16,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.share.TimeCourse;
@@ -76,7 +77,10 @@ public class PortfolioAO implements Serializable {
 		this.name = sharePortfolio.name();
 		this.currency = sharePortfolio.currency();
 		this.algorithmType=sharePortfolio.algorithmType() ;
+		parameters.clear();
 	
+	
+		optimisationAlgorithms.get(getAlgorithmType()).params().forEach(p -> parameters.put(p.name(), sharePortfolio.param(p)));
 		
 		this.timeCourses.clear();
 		timeCourses.addAll(sharePortfolio.timeCourses());
@@ -107,7 +111,11 @@ public class PortfolioAO implements Serializable {
 		
 		System.out.println("***" + this.parameters +"***");
 		
+	
+		
 		final SharePortfolio result = new SharePortfolioImpl(name, timeCourses, optimisationAlgorithms.get(getAlgorithmType()));
+		
+		optimisationAlgorithms.get(getAlgorithmType()).params().stream().filter(p -> StringUtils.hasText(parameters.get(p.name())) ).forEach(p -> result.assign(p, Double.valueOf(parameters.get(p.name())) ));
 		ReflectionUtils.doWithFields(result.getClass(), field -> {
 			/* "...touched for the very first time." mdna (like a virgin **/ field.setAccessible(true);
 			ReflectionUtils.setField(field, result, id);
@@ -175,7 +183,9 @@ public class PortfolioAO implements Serializable {
 	public void setAlgorithmType(final OptimisationAlgorithm.AlgorithmType algorithmType) {
 		parameters.clear();	
 		
-		optimisationAlgorithms.get(algorithmType).params().forEach(p -> parameters.put(p.name(), ""));
+		if(optimisationAlgorithms.containsKey(algorithmType) ) {
+			optimisationAlgorithms.get(algorithmType).params().forEach(p -> parameters.put(p.name(), null));
+		}
 		this.algorithmType = algorithmType;
 	}
 	

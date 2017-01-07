@@ -198,10 +198,11 @@
 		<tr>
 			<td style="border: 1px solid black;">  <h:outputText value="#{parameter.key}" /></td>
 			<td style="border: 1px solid black;">   
-			 <p:inputText value="#{sharePortfolio.parameters[parameter.key]}" >
+			 <p:inputText id="doubleInputField" value="#{sharePortfolio.parameters[parameter.key]}" validatorMessage="real number expected"  >
+			 <f:validateDoubleRange />
         	<p:ajax  event="valueChange"  update="@form"   listener="#{portfolioController.refresh(sharePortfolio)}" />
         </p:inputText>
-			
+			<h:message for="doubleInputField" style="color:red"/>
 			</td>
 		</tr>
 		</ui:repeat>

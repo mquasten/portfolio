@@ -67,6 +67,12 @@ public interface SharePortfolio  extends IdentifierAware<String>{
 
 	double[][] varianceMatrix();
 
-	<T> T param(final Enum<?> param); 
+	
+
+
+
+	<T> T param(Enum<?> key);
+
+	void assign(Enum<?> key, double value); 
 
 }
