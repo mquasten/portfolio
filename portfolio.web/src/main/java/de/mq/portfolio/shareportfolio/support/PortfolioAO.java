@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -58,6 +59,10 @@ public class PortfolioAO implements Serializable {
 
 	private  final Map<AlgorithmType, OptimisationAlgorithm> optimisationAlgorithms = new HashMap<>();
 	private final Map<String,String> parameters = new HashMap<>();
+	
+	private  String response; 
+
+	
 
 	@Autowired
 	void setOptimisationAlgorithms(Collection<OptimisationAlgorithm> optimisationAlgorithms) {
@@ -80,7 +85,7 @@ public class PortfolioAO implements Serializable {
 		parameters.clear();
 	
 	
-		optimisationAlgorithms.get(getAlgorithmType()).params().forEach(p -> parameters.put(p.name(), sharePortfolio.param(p)));
+		optimisationAlgorithms.get(getAlgorithmType()).params().forEach(p -> parameters.put(p.name(), doubleAsString(sharePortfolio, p)));
 		
 		this.timeCourses.clear();
 		timeCourses.addAll(sharePortfolio.timeCourses());
@@ -107,20 +112,38 @@ public class PortfolioAO implements Serializable {
 		exchangeRateTranslationsAware=!sharePortfolio.exchangeRateTranslations().isEmpty();
 	}
 
+	private String doubleAsString(final SharePortfolio sharePortfolio, Enum<?> p) {
+		final Double result =  sharePortfolio.param(p);
+		if(result == null){
+			return null ;
+		}
+		return "" + result;
+	}
+
 	public SharePortfolio getSharePortfolio() {
-		
-		System.out.println("***" + this.parameters +"***");
-		
-	
 		
 		final SharePortfolio result = new SharePortfolioImpl(name, timeCourses, optimisationAlgorithms.get(getAlgorithmType()));
 		
-		optimisationAlgorithms.get(getAlgorithmType()).params().stream().filter(p -> StringUtils.hasText(parameters.get(p.name())) ).forEach(p -> result.assign(p, Double.valueOf(parameters.get(p.name())) ));
+		optimisationAlgorithms.get(getAlgorithmType()).params().stream().filter(p -> StringUtils.hasText(parameters.get(p.name())) ).forEach(p -> result.assign(p, Double.valueOf(parameters.get(p.name()).trim()) ));
+		
+		
+		
+		
 		ReflectionUtils.doWithFields(result.getClass(), field -> {
 			/* "...touched for the very first time." mdna (like a virgin **/ field.setAccessible(true);
 			ReflectionUtils.setField(field, result, id);
 		}, field -> field.isAnnotationPresent(Id.class));
 		((SharePortfolioImpl) result).onBeforeSave();
+		response="";
+		try {
+			final double[] results = result.minWeights();
+			if( IntStream.range(0, results.length).mapToDouble(i -> results[i]).filter(x -> x < 0 ).count() > 0 ) {
+				response="Die Lösung beinhaltet Leerverkäufe!";
+			}
+		} catch(final Exception ex) {
+			result.clearParameter();
+			response=ex.getMessage();
+		}
 		return result;
 
 	}
@@ -194,7 +217,9 @@ public class PortfolioAO implements Serializable {
 		return parameters ;
 	}
 
-	
+	public String getResponse() {
+		return response;
+	}
 
 	
 	

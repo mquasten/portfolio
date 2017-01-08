@@ -206,14 +206,15 @@
 			</td>
 		</tr>
 		</ui:repeat>
-		
 </table>
 
 </ui:fragment>
 
 
 <h:panelGrid >
+<h:outputText value="#{sharePortfolio.response}"  style="color:red;"/>
 <p:messages id="messages" showDetail="false" globalOnly="true" />
+
 <h:panelGrid columns="6" >
  	<p:button  value="abbrechen" outcome="portfolios"  />
  	<p:commandButton value="pdf"  ajax="false"  action="#{portfolioController.pdf(sharePortfolio)}"  rendered="#{sharePortfolio.timeCourses.size() >= 2 }" />

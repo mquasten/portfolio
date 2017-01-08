@@ -54,7 +54,7 @@ class SharePortfolioImpl implements SharePortfolio {
 	
 	private final OptimisationAlgorithm.AlgorithmType algorithmType;
 	
-	private final Map<Enum<?>,Object > parameters = new HashMap<>();
+	private final Map<String,Object > parameters = new HashMap<>();
 	
 	
 
@@ -409,13 +409,18 @@ class SharePortfolioImpl implements SharePortfolio {
 	@SuppressWarnings("unchecked")
 	@Override
 	public<T> T param(Enum<?> key) {
-		return (T) parameters.get(key);
+		return (T) parameters.get(key.name());
 		
 	}
 	
 	@Override
 	public final void assign(final Enum<?> key  , final double value){
-		parameters.put(key,  value);
+		parameters.put(key.name(),  value);
+	}
+	
+	@Override
+	public final void clearParameter() {
+		parameters.clear();
 	}
 
 }

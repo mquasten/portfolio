@@ -31,17 +31,18 @@ class RiskGainPreferenceOptimisationImpl implements OptimisationAlgorithm {
 		
 		
 		final double[][] varianceMatrix= sharePortfolio.varianceMatrix();
-		final double[] gain=  new double[sharePortfolio.timeCourses().size()];
+		
 		
 		final Double targetRate = sharePortfolio.param(ParameterType.TargetRate);
 		final Double rateRatio = sharePortfolio.param(ParameterType.RateRatio);
 		
 		
-		IntStream.range(0, gain.length).forEach(i -> gain[i]=sharePortfolio.timeCourses().get(i).totalRate());
 		
-		final double[][] gainVector = new double[varianceMatrix.length][1]; 
+		Assert.isTrue(! (targetRate != null && rateRatio != null), "TargetRate and RateRatio are mutuall exclusive");
 		
-		IntStream.range(0, gain.length).forEach(i -> gainVector[i][0]=gain[i] );
+		
+		
+		
 		final double[][] array = new double[varianceMatrix.length + 1][varianceMatrix.length + 1];
 		IntStream.range(0, varianceMatrix.length).forEach(i -> IntStream.range(0, varianceMatrix.length).forEach(j -> array[i][j] = varianceMatrix[i][j]));
 
@@ -57,8 +58,8 @@ class RiskGainPreferenceOptimisationImpl implements OptimisationAlgorithm {
 		 final Matrix m = new Matrix(varianceMatrix.length, varianceMatrix.length);
 		 IntStream.range(0, varianceMatrix.length).forEach(i -> IntStream.range(0,varianceMatrix.length).forEach(j -> m.set(i, j, inverseMatrix.get(i, j))));
 	
-		
-	
+		 final double[] gain = gain(sharePortfolio);
+		 final double[][] gainVector = gainVector(varianceMatrix, gain);
 		final Matrix d = m.times(new Matrix(gainVector));
 		
 		
@@ -85,6 +86,20 @@ class RiskGainPreferenceOptimisationImpl implements OptimisationAlgorithm {
 		
 	
 		return results;
+	}
+
+	private double[][] gainVector(final double[][] varianceMatrix, final double[] gain) {
+		final double[][] gainVector = new double[varianceMatrix.length][1]; 
+		
+		IntStream.range(0, gain.length).forEach(i -> gainVector[i][0]=gain[i] );
+		return gainVector;
+	}
+
+	private double[] gain(final SharePortfolio sharePortfolio) {
+		
+		final double[] gain=  new double[sharePortfolio.timeCourses().size()];
+		IntStream.range(0, gain.length).forEach(i -> gain[i]=sharePortfolio.timeCourses().get(i).totalRate());
+		return gain;
 	}
 
 	private double theta(final Double targetRate, final Double rateRatio, final double ke, final double totalGainMVP) {
