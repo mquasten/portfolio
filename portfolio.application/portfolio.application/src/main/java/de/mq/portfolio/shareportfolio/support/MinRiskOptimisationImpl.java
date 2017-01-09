@@ -8,6 +8,7 @@ import java.util.stream.IntStream;
 import org.springframework.stereotype.Service;
 
 import Jama.Matrix;
+import de.mq.portfolio.shareportfolio.AlgorithmParameter;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
@@ -48,7 +49,7 @@ class MinRiskOptimisationImpl implements OptimisationAlgorithm {
 	}
 
 	@Override
-	public Collection<Enum<?>> params() {
+	public Collection<AlgorithmParameter> params() {
 		return Collections.unmodifiableList(Arrays.asList());
 	}
 	

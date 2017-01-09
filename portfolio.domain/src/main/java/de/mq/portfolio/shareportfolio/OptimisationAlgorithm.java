@@ -17,6 +17,6 @@ public interface  OptimisationAlgorithm {
 
 	double[] weights(final SharePortfolio sharePortfolio);
 
-	Collection<Enum<?>> params();
+	Collection<AlgorithmParameter> params();
 
 }

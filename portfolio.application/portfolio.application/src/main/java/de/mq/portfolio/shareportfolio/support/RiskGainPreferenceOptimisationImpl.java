@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import Jama.Matrix;
+import de.mq.portfolio.shareportfolio.AlgorithmParameter;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
@@ -16,8 +17,15 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 class RiskGainPreferenceOptimisationImpl implements OptimisationAlgorithm {
 
 	
-	enum ParameterType {
+	enum ParameterType implements AlgorithmParameter  {
 		TargetRate, RateRatio;
+
+		@Override
+		public boolean isVector() {
+			return false;
+		}
+
+		
 	}
 	
 	@Override
@@ -115,7 +123,7 @@ class RiskGainPreferenceOptimisationImpl implements OptimisationAlgorithm {
 	}
 
 	@Override
-	public Collection<Enum<?>> params() {
+	public Collection<AlgorithmParameter> params() {
 		return Collections.unmodifiableCollection(Arrays.asList(ParameterType.values()));
 	}
 

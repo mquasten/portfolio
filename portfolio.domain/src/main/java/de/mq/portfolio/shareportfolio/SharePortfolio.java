@@ -71,9 +71,9 @@ public interface SharePortfolio  extends IdentifierAware<String>{
 
 
 
-	<T> T param(Enum<?> key);
+	<T> T param(AlgorithmParameter key);
 
-	void assign(Enum<?> key, double value);
+	void assign(AlgorithmParameter key, double value);
 
 	void clearParameter(); 
 

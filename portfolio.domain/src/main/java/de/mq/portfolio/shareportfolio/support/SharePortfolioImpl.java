@@ -26,6 +26,7 @@ import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.shareportfolio.AlgorithmParameter;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -408,13 +409,13 @@ class SharePortfolioImpl implements SharePortfolio {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public<T> T param(Enum<?> key) {
+	public<T> T param(final AlgorithmParameter key) {
 		return (T) parameters.get(key.name());
 		
 	}
 	
 	@Override
-	public final void assign(final Enum<?> key  , final double value){
+	public final void assign(final AlgorithmParameter key  , final double value){
 		parameters.put(key.name(),  value);
 	}
 	

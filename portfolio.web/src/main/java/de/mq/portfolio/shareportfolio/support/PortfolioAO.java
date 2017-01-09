@@ -2,6 +2,7 @@ package de.mq.portfolio.shareportfolio.support;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.shareportfolio.AlgorithmParameter;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -58,7 +60,7 @@ public class PortfolioAO implements Serializable {
 	private OptimisationAlgorithm.AlgorithmType algorithmType;
 
 	private  final Map<AlgorithmType, OptimisationAlgorithm> optimisationAlgorithms = new HashMap<>();
-	private final Map<String,String> parameters = new HashMap<>();
+	private final Map<String,String[]> parameters = new HashMap<>();
 	
 	private  String response; 
 
@@ -112,19 +114,35 @@ public class PortfolioAO implements Serializable {
 		exchangeRateTranslationsAware=!sharePortfolio.exchangeRateTranslations().isEmpty();
 	}
 
-	private String doubleAsString(final SharePortfolio sharePortfolio, Enum<?> p) {
-		final Double result =  sharePortfolio.param(p);
-		if(result == null){
-			return null ;
+	private String[] doubleAsString(final SharePortfolio sharePortfolio, AlgorithmParameter p) {
+		final Object result =  sharePortfolio.param(p);
+		
+		
+		final String[] array =  new String[p.isVector()? weights.size(): 1] ;
+		
+		if( result == null){
+			return array;
 		}
-		return "" + result;
+		
+		if( ! result.getClass().isArray() ) {
+			array[0]="" + result;
+		} else {
+			IntStream.range(0,((Object[]) result).length).forEach(i -> array[i]=""+((Object[]) result)[i] );;
+		}
+		return array;
+	}
+	public boolean hasText(AlgorithmParameter algorithmParameter) {
+		final String[] value = parameters.get(algorithmParameter.name());
+	
+		return Arrays.asList(value).stream().filter(x->  StringUtils.hasText(x) ).findAny().isPresent() ;
+		
 	}
 
 	public SharePortfolio getSharePortfolio() {
 		
 		final SharePortfolio result = new SharePortfolioImpl(name, timeCourses, optimisationAlgorithms.get(getAlgorithmType()));
 		
-		optimisationAlgorithms.get(getAlgorithmType()).params().stream().filter(p -> StringUtils.hasText(parameters.get(p.name())) ).forEach(p -> result.assign(p, Double.valueOf(parameters.get(p.name()).trim()) ));
+		optimisationAlgorithms.get(getAlgorithmType()).params().stream().filter(p -> hasText(p)&& !p.isVector() ).forEach(p -> result.assign(p, Double.valueOf(parameters.get(p.name())[0]) ));
 		
 		
 		
@@ -207,12 +225,19 @@ public class PortfolioAO implements Serializable {
 		parameters.clear();	
 		
 		if(optimisationAlgorithms.containsKey(algorithmType) ) {
-			optimisationAlgorithms.get(algorithmType).params().forEach(p -> parameters.put(p.name(), null));
+			optimisationAlgorithms.get(algorithmType).params().forEach(p -> parameters.put(p.name(), newParameter(p)));
 		}
 		this.algorithmType = algorithmType;
 	}
 	
-	public Map<String,String> getParameters() {
+	private String[] newParameter(AlgorithmParameter algorithmParameter) {
+		if( algorithmParameter.isVector()){
+			return new String[weights.size()];
+		}
+		return new String[1] ;
+	}
+
+	public Map<String,String[]> getParameters() {
 		
 		return parameters ;
 	}

@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import de.mq.portfolio.shareportfolio.AlgorithmParameter;
+
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -19,14 +19,14 @@ public class ManualDistributionOptimisationTest {
 	
 	
 	private final double varianceMatrix[][] = new double[3][3];
-	private final AlgorithmParameter param = Mockito.mock(AlgorithmParameter.class);
+	//private final AlgorithmParameter param = Mockito.mock(AlgorithmParameter.class);
 	
 	private SharePortfolio sharePortfolio = Mockito.mock(SharePortfolio.class);
 	
 	@Before
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+
 	public final void setup() {
-		Mockito.when(param.type()).thenReturn((Enum) ManualDistributionOptimisationImpl.ParameterType.Weights);
+	//	Mockito.when(param.type()).thenReturn((Enum) ManualDistributionOptimisationImpl.ParameterType.Weights);
 		Mockito.when(sharePortfolio.varianceMatrix()).thenReturn(varianceMatrix);
 	}
 	
