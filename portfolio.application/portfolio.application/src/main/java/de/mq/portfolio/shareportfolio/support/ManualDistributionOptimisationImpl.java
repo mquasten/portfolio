@@ -17,6 +17,14 @@ class ManualDistributionOptimisationImpl implements OptimisationAlgorithm {
 	
 	enum ParameterType  implements AlgorithmParameter {
 		Weights;
+
+		@Override
+		public boolean isVector() {
+		
+			return true;
+		}
+		
+		
 	}
 
 

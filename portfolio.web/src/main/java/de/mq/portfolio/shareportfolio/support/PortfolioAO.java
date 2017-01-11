@@ -64,7 +64,7 @@ public class PortfolioAO implements Serializable {
 	
 	private  String response; 
 
-	
+	private boolean invalidParameters = false;
 
 	@Autowired
 	void setOptimisationAlgorithms(Collection<OptimisationAlgorithm> optimisationAlgorithms) {
@@ -84,11 +84,11 @@ public class PortfolioAO implements Serializable {
 		this.name = sharePortfolio.name();
 		this.currency = sharePortfolio.currency();
 		this.algorithmType=sharePortfolio.algorithmType() ;
-		parameters.clear();
-	
-	
-		optimisationAlgorithms.get(getAlgorithmType()).params().forEach(p -> parameters.put(p.name(), doubleAsString(sharePortfolio, p)));
 		
+		if(! invalidParameters) {
+			parameters.clear();
+			optimisationAlgorithms.get(getAlgorithmType()).params().forEach(p -> parameters.put(p.name(), doubleAsString(sharePortfolio, p)));
+		}
 		this.timeCourses.clear();
 		timeCourses.addAll(sharePortfolio.timeCourses());
 
@@ -112,6 +112,10 @@ public class PortfolioAO implements Serializable {
 
 		this.totalRateDividends = sharePortfolio.totalRateDividends(exchangeRateCalculator.get());
 		exchangeRateTranslationsAware=!sharePortfolio.exchangeRateTranslations().isEmpty();
+	}
+	
+	public boolean isVector(final String param) {
+		return optimisationAlgorithms.get(getAlgorithmType()).params().stream().filter(p -> p.name().equals(param)).findAny().orElseThrow(() -> new IllegalArgumentException("Invalid parameter: " + param )).isVector();
 	}
 
 	private String[] doubleAsString(final SharePortfolio sharePortfolio, AlgorithmParameter p) {
@@ -154,11 +158,13 @@ public class PortfolioAO implements Serializable {
 		((SharePortfolioImpl) result).onBeforeSave();
 		response="";
 		try {
+			invalidParameters=false;
 			final double[] results = result.minWeights();
 			if( IntStream.range(0, results.length).mapToDouble(i -> results[i]).filter(x -> x < 0 ).count() > 0 ) {
 				response="Die Lösung beinhaltet Leerverkäufe!";
 			}
 		} catch(final Exception ex) {
+			invalidParameters=true;
 			result.clearParameter();
 			response=ex.getMessage();
 		}

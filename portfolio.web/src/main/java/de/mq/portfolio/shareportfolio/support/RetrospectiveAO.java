@@ -20,11 +20,13 @@ import org.primefaces.model.chart.DateAxis;
 import org.primefaces.model.chart.LegendPlacement;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 
 @Component("retrospective")
 @Scope("view")
@@ -208,4 +210,10 @@ public class RetrospectiveAO implements Serializable {
 		return totalRateDividends;
 	}
 
+	
+	@Autowired
+	void setOptimisationAlgorithms(final Collection<OptimisationAlgorithm> optimisationAlgorithms) {
+		committedPortfolio.setOptimisationAlgorithms(optimisationAlgorithms);
+		currentPortfolio.setOptimisationAlgorithms(optimisationAlgorithms);
+	}
 }

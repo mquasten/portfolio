@@ -4,7 +4,9 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:p="http://primefaces.org/ui">
+	
 <h:head>
 	<title>Portfolio</title>
 	
@@ -195,18 +197,35 @@
 			
 		</tr>
 		<ui:repeat value="#{sharePortfolio.parameters.entrySet().toArray()}" var="parameter">
+		
 		<tr>
+		
 			<td style="border: 1px solid black;">  <h:outputText value="#{parameter.key}" /></td>
-			<td style="border: 1px solid black;">   
-			 <p:inputText id="doubleInputField" value="#{sharePortfolio.parameters[parameter.key][0]}" validatorMessage="real number expected"  >
-			 <f:validateDoubleRange />
-			 
-        	<p:ajax  event="valueChange"  update="@form"   listener="#{portfolioController.refresh(sharePortfolio)}" />
-        </p:inputText>
-        
-			<h:message for="doubleInputField" style="color:red"/>
-			</td>
-		</tr>
+						
+							<td style="border: 1px solid black;">
+							<p:inputText
+								rendered="#{!sharePortfolio.isVector(parameter.key)}"
+									id="doubleInputField"
+									value="#{sharePortfolio.parameters[parameter.key][0]}"
+									validatorMessage="real number expected">
+									<f:validateDoubleRange />
+
+									<p:ajax event="valueChange" update="@form"
+										listener="#{portfolioController.refresh(sharePortfolio)}" />
+								</p:inputText>
+								 <ui:fragment rendered="#{sharePortfolio.isVector(parameter.key)}">
+									<table>
+									<tr>
+									<td>SAP.DE</td>
+									<td>
+									<h:outputText value="Ich bin ein Vector ..."  />
+									</td>
+									</tr>
+									</table>
+								</ui:fragment>
+								 <h:message for="doubleInputField" style="color:red" /></td>
+						
+					</tr>
 		</ui:repeat>
 </table>
 
