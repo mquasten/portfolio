@@ -215,12 +215,24 @@
 								</p:inputText>
 								 <ui:fragment rendered="#{sharePortfolio.isVector(parameter.key)}">
 									<table>
+									
+									
+									<ui:repeat varStatus="status" var="vector" value="#{sharePortfolio.parameters[parameter.key]}">
 									<tr>
-									<td>SAP.DE</td>
 									<td>
-									<h:outputText value="Ich bin ein Vector ..."  />
+									
+										<h:outputText value="#{sharePortfolio.timeCourses[status.index].name()}" />
 									</td>
-									</tr>
+									<td>
+     									<p:inputText value="#{sharePortfolio.parameters[parameter.key][status.index]}">
+     									<p:ajax event="valueChange" update="@form"
+											listener="#{portfolioController.refresh(sharePortfolio)}" />
+     									</p:inputText>
+     								
+     								</td>
+     								</tr>			
+									</ui:repeat>
+							
 									</table>
 								</ui:fragment>
 								 <h:message for="doubleInputField" style="color:red" /></td>

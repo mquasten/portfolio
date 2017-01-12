@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.annotation.Id;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -121,8 +122,8 @@ public class PortfolioAO implements Serializable {
 	private String[] doubleAsString(final SharePortfolio sharePortfolio, AlgorithmParameter p) {
 		final Object result =  sharePortfolio.param(p);
 		
-		
-		final String[] array =  new String[p.isVector()? weights.size(): 1] ;
+	
+		final String[] array =  new String[p.isVector()? sharePortfolio.timeCourses().size() : 1] ;
 		
 		if( result == null){
 			return array;
@@ -131,7 +132,11 @@ public class PortfolioAO implements Serializable {
 		if( ! result.getClass().isArray() ) {
 			array[0]="" + result;
 		} else {
-			IntStream.range(0,((Object[]) result).length).forEach(i -> array[i]=""+((Object[]) result)[i] );;
+			
+			@SuppressWarnings("unchecked")
+			final List<Object> vector = CollectionUtils.arrayToList(result);
+			
+			IntStream.range(0,vector.size()).forEach(i -> array[i]=""+ vector.get(i));;
 		}
 		return array;
 	}
@@ -142,11 +147,25 @@ public class PortfolioAO implements Serializable {
 		
 	}
 
+	private double[] toDoubles(String[] values){
+		final double[] results = new double[values.length];
+		IntStream.range(0, values.length).forEach(i -> results[i]= StringUtils.hasText(values[i]) ? Double.valueOf(values[i]): 0d);
+		return results;
+	}
+	
+	private void assign(final SharePortfolio result, final AlgorithmParameter p) {
+		if( p.isVector()){
+			result.assign(p, toDoubles(parameters.get(p.name())));
+			return;
+		}
+		result.assign(p,  Double.valueOf(parameters.get(p.name())[0]) );
+	}
+	
 	public SharePortfolio getSharePortfolio() {
 		
 		final SharePortfolio result = new SharePortfolioImpl(name, timeCourses, optimisationAlgorithms.get(getAlgorithmType()));
 		
-		optimisationAlgorithms.get(getAlgorithmType()).params().stream().filter(p -> hasText(p)&& !p.isVector() ).forEach(p -> result.assign(p, Double.valueOf(parameters.get(p.name())[0]) ));
+		optimisationAlgorithms.get(getAlgorithmType()).params().stream().filter(p -> hasText(p)).forEach(p -> assign(result, p));
 		
 		
 		
@@ -171,6 +190,8 @@ public class PortfolioAO implements Serializable {
 		return result;
 
 	}
+
+	
 
 	public String getId() {
 		return id;

@@ -1,5 +1,7 @@
 package de.mq.portfolio.shareportfolio.support;
 
+
+
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -410,13 +412,21 @@ class SharePortfolioImpl implements SharePortfolio {
 	@SuppressWarnings("unchecked")
 	@Override
 	public<T> T param(final AlgorithmParameter key) {
-		return (T) parameters.get(key.name());
-		
+		final Object result =  parameters.get(key.name());
+		if (result instanceof List) {
+			return (T) ((List<?>) result).toArray();
+		}
+		return (T) result;
 	}
 	
 	@Override
 	public final void assign(final AlgorithmParameter key  , final double value){
 		parameters.put(key.name(),  value);
+	}
+	
+	@Override
+	public final void assign(final AlgorithmParameter key  , final double[] values){
+		parameters.put(key.name(),  values);
 	}
 	
 	@Override
