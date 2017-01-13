@@ -71,12 +71,18 @@ public interface SharePortfolio  extends IdentifierAware<String>{
 
 
 
-	<T> T param(final AlgorithmParameter key);
+	Double param(final AlgorithmParameter key);
 
 	void assign(final AlgorithmParameter key, final double value);
+	void assign(final AlgorithmParameter key, final List<Double> values);
 	
-	void assign(final AlgorithmParameter key, final double[] values);
 
-	void clearParameter(); 
+	void clearParameter();
+
+	Double param(final AlgorithmParameter key, final int index);
+
+	
+
+	
 
 }

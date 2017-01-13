@@ -59,6 +59,8 @@ private static final double[] RATES = {0.0139178,  0.0130860,  0.0249126};
 	@Test
 	public final void weightsTotalRate() {
 		
+		Mockito.when(sharePortfolio.param(RiskGainPreferenceOptimisationImpl.ParameterType.RateRatio)).thenReturn(null);
+		
 		Mockito.when(sharePortfolio.param(RiskGainPreferenceOptimisationImpl.ParameterType.TargetRate)).thenReturn(TARGET_RATE);
 		final double[] results = optimisationAlgorithm.weights(sharePortfolio);
 		
@@ -73,7 +75,7 @@ private static final double[] RATES = {0.0139178,  0.0130860,  0.0249126};
 	
 	@Test
 	public final void weightsRateRatio() {
-		
+		Mockito.when(sharePortfolio.param(RiskGainPreferenceOptimisationImpl.ParameterType.TargetRate)).thenReturn(null);
 		Mockito.when(sharePortfolio.param(RiskGainPreferenceOptimisationImpl.ParameterType.RateRatio)).thenReturn(RATE_RATIO);
 		final double[] results = optimisationAlgorithm.weights(sharePortfolio);
 		
@@ -89,7 +91,8 @@ private static final double[] RATES = {0.0139178,  0.0130860,  0.0249126};
 	
 	@Test
 	public final void weightsMVP() {
-		
+		Mockito.when(sharePortfolio.param(RiskGainPreferenceOptimisationImpl.ParameterType.TargetRate)).thenReturn(null);
+		Mockito.when(sharePortfolio.param(RiskGainPreferenceOptimisationImpl.ParameterType.RateRatio)).thenReturn(null);
 	
 		final double[] results = optimisationAlgorithm.weights(sharePortfolio);
 		

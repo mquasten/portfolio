@@ -409,15 +409,26 @@ class SharePortfolioImpl implements SharePortfolio {
 		return  algorithmType;
 	}
 	
-	@SuppressWarnings("unchecked")
+	
 	@Override
-	public<T> T param(final AlgorithmParameter key) {
-		final Object result =  parameters.get(key.name());
-		if (result instanceof List) {
-			return (T) ((List<?>) result).toArray();
-		}
-		return (T) result;
+	public Double param(final AlgorithmParameter key) {
+		
+		return (Double) parameters.get(key.name());
+		
 	}
+	
+	@Override
+	public Double param(final AlgorithmParameter key, final int index) {
+		
+		if( !parameters.containsKey(key.name())){
+			return null;
+		}
+		
+		  List<?> results = (List<?>) parameters.get(key.name());
+		  return (Double) results.get(index);
+	}
+	
+	
 	
 	@Override
 	public final void assign(final AlgorithmParameter key  , final double value){
@@ -425,7 +436,7 @@ class SharePortfolioImpl implements SharePortfolio {
 	}
 	
 	@Override
-	public final void assign(final AlgorithmParameter key  , final double[] values){
+	public final void assign(final AlgorithmParameter key  , final List<Double> values){
 		parameters.put(key.name(),  values);
 	}
 	

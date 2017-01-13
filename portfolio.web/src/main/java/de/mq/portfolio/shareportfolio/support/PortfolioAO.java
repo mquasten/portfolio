@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.annotation.Id;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -120,23 +119,18 @@ public class PortfolioAO implements Serializable {
 	}
 
 	private String[] doubleAsString(final SharePortfolio sharePortfolio, AlgorithmParameter p) {
-		final Object result =  sharePortfolio.param(p);
-		
 	
 		final String[] array =  new String[p.isVector()? sharePortfolio.timeCourses().size() : 1] ;
 		
-		if( result == null){
-			return array;
-		}
 		
-		if( ! result.getClass().isArray() ) {
-			array[0]="" + result;
+		if( ! p.isVector() ){
+			final Double param = sharePortfolio.param(p);
+			array[0]= (param!=null) ? "" +param: "";
 		} else {
-			
-			@SuppressWarnings("unchecked")
-			final List<Object> vector = CollectionUtils.arrayToList(result);
-			
-			IntStream.range(0,vector.size()).forEach(i -> array[i]=""+ vector.get(i));;
+			IntStream.range(0,array.length).forEach(i -> {
+				final Double param = sharePortfolio.param(p, i);
+				array[i]=param!=null? ""+param :"";
+			});;
 		}
 		return array;
 	}
@@ -147,9 +141,9 @@ public class PortfolioAO implements Serializable {
 		
 	}
 
-	private double[] toDoubles(String[] values){
-		final double[] results = new double[values.length];
-		IntStream.range(0, values.length).forEach(i -> results[i]= StringUtils.hasText(values[i]) ? Double.valueOf(values[i]): 0d);
+	private List<Double> toDoubles(String[] values){
+		final List<Double> results = new ArrayList<>();
+		IntStream.range(0, values.length).forEach(i -> results.add(StringUtils.hasText(values[i]) ? Double.valueOf(values[i]): null));
 		return results;
 	}
 	

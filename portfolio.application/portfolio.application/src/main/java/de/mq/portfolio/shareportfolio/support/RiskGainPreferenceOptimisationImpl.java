@@ -44,8 +44,6 @@ class RiskGainPreferenceOptimisationImpl implements OptimisationAlgorithm {
 		final Double targetRate = sharePortfolio.param(ParameterType.TargetRate);
 		final Double rateRatio = sharePortfolio.param(ParameterType.RateRatio);
 		
-		
-		
 		Assert.isTrue(! (targetRate != null && rateRatio != null), "TargetRate and RateRatio are mutuall exclusive");
 		
 		
