@@ -27,7 +27,7 @@
 <h:panelGrid columns="2" style="margin-bottom: 25px;">
 	<p:outputLabel  for="name"  value="Name"   />
 	
-	<h:panelGrid columns="2">
+	<h:panelGrid columns="2" >
 	<p:inputText id="name" value="#{sharePortfolio.name}" required="true"  validatorMessage="5 bis 30 Zeichen [Buchstaben,Ziffern-_]" requiredMessage="Mußfeld"  readonly="#{!sharePortfolio.editable}"   >
 	
 	<f:validateRegex pattern="[a-z,A-Z,0-9-_]{5,30}"  />
@@ -40,11 +40,11 @@
 	
 	<p:outputLabel  for="currency"  value="Währung"  />
          
-	<p:inputText id="currency" readonly="true"  value="#{currencyConverter.convert(sharePortfolio.currency)}"  />
+	<p:inputText id="currency" readonly="true"  value="#{currencyConverter.convert(sharePortfolio.currency)}"   />
 	
 	
 	<p:outputLabel  for="algorithm"  value="Optimierung"   disabled="#{!sharePortfolio.editable}" />
-	<p:selectOneMenu id="algorithm"  value="#{sharePortfolio.algorithmType}"  style="width:100%" >
+	<p:selectOneMenu id="algorithm"  value="#{sharePortfolio.algorithmType}"  disabled="#{!sharePortfolio.editable}" >
 		<p:ajax event="valueChange" update="@form"  listener="#{portfolioController.refresh(sharePortfolio)}"/>
 		<f:selectItems value="#{portfolioController.supportedAlgorithms()}"  />
 	</p:selectOneMenu>
@@ -224,11 +224,12 @@
 										<h:outputText value="#{sharePortfolio.timeCourses[status.index].name()}" />
 									</td>
 									<td>
-     									<p:inputText value="#{sharePortfolio.parameters[parameter.key][status.index]}">
+     									<p:inputText id="vectorInputField" value="#{sharePortfolio.parameters[parameter.key][status.index]}" validatorMessage="real number expected">
      									<p:ajax event="valueChange" update="@form"
 											listener="#{portfolioController.refresh(sharePortfolio)}" />
+											<f:validateDoubleRange />
      									</p:inputText>
-     								
+     									<h:message for="vectorInputField" style="color:red" />
      								</td>
      								</tr>			
 									</ui:repeat>
@@ -245,7 +246,9 @@
 
 
 <h:panelGrid >
-<h:outputText value="#{sharePortfolio.response}"  style="color:red;"/>
+
+<h:outputText value="#{sharePortfolio.response}"   style="color:red;"  rendered="#{sharePortfolio.invalidParameters}"/>
+<h:outputText value="#{sharePortfolio.response}"   style="color:orange;"  rendered="#{!sharePortfolio.invalidParameters}"/>
 <p:messages id="messages" showDetail="false" globalOnly="true" />
 
 <h:panelGrid columns="6" >

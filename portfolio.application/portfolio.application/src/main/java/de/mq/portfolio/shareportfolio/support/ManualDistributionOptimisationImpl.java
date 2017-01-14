@@ -3,13 +3,17 @@ package de.mq.portfolio.shareportfolio.support;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import de.mq.portfolio.shareportfolio.AlgorithmParameter;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
+
 
 @Service
 class ManualDistributionOptimisationImpl implements OptimisationAlgorithm {
@@ -31,7 +35,22 @@ class ManualDistributionOptimisationImpl implements OptimisationAlgorithm {
 	
 	@Override
 	public double[] weights(SharePortfolio sharePortfolio) {
-		return weights(sharePortfolio.varianceMatrix().length);
+		
+		final List<Double> parameters = sharePortfolio.parameterVector(ParameterType.Weights);
+		
+		if(CollectionUtils.isEmpty(parameters)){
+			return weights(sharePortfolio.varianceMatrix().length);	
+		}
+		
+
+		
+		Assert.isTrue(parameters.stream().filter(p -> p == null || p == 0d ).count() == 0, "Parameter values are mandatory and should be <> 0.");
+		Assert.isTrue(parameters.stream().mapToDouble(value -> value).sum() == 1d, "Sum of vector values must be 1.");
+		
+		
+		final double[] results = new double[parameters.size()];
+		IntStream.range(0, results.length).forEach(i -> results[i]= parameters.get(i));
+		return results;
 	}
 
 	private double[] weights(final int size) {

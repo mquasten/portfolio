@@ -137,8 +137,8 @@ public class PortfolioAO implements Serializable {
 	public boolean hasText(AlgorithmParameter algorithmParameter) {
 		final String[] value = parameters.get(algorithmParameter.name());
 	
-		return Arrays.asList(value).stream().filter(x->  StringUtils.hasText(x) ).findAny().isPresent() ;
-		
+		return Arrays.asList(value).stream().filter(x->  StringUtils.hasText(x) ).findAny().isPresent() ; 
+	
 	}
 
 	private List<Double> toDoubles(String[] values){
@@ -179,7 +179,8 @@ public class PortfolioAO implements Serializable {
 		} catch(final Exception ex) {
 			invalidParameters=true;
 			result.clearParameter();
-			response=ex.getMessage();
+			response=StringUtils.hasText(ex.getMessage()) ? ex.getMessage() : ex.getClass().getSimpleName();
+			
 		}
 		return result;
 
@@ -267,7 +268,9 @@ public class PortfolioAO implements Serializable {
 		return response;
 	}
 
-	
+	public boolean isInvalidParameters() {
+		return invalidParameters;
+	}
 	
 	
 

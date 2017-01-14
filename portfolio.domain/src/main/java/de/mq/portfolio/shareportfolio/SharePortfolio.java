@@ -81,6 +81,8 @@ public interface SharePortfolio  extends IdentifierAware<String>{
 
 	Double param(final AlgorithmParameter key, final int index);
 
+	List<Double> parameterVector(final AlgorithmParameter key);
+
 	
 
 	

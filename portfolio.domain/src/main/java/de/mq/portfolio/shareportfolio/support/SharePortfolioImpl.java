@@ -2,6 +2,7 @@ package de.mq.portfolio.shareportfolio.support;
 
 
 
+
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -211,10 +212,7 @@ class SharePortfolioImpl implements SharePortfolio {
 		this.committed = true;
 	}
 
-/*	@Override
-	public Optional<PortfolioOptimisation> minVariance() {
-		return Optional.ofNullable(minVariance);
-	} */
+
 
 
 	@Override
@@ -425,6 +423,9 @@ class SharePortfolioImpl implements SharePortfolio {
 		}
 		
 		  List<?> results = (List<?>) parameters.get(key.name());
+		  if( index >= results.size() ) {
+			  return null;
+		  }
 		  return (Double) results.get(index);
 	}
 	
@@ -443,6 +444,19 @@ class SharePortfolioImpl implements SharePortfolio {
 	@Override
 	public final void clearParameter() {
 		parameters.clear();
+	}
+	@Override
+	@SuppressWarnings("unchecked")
+	public final List<Double> parameterVector(final AlgorithmParameter key ) {
+		
+		Assert.isTrue(key.isVector(), "Parameter is not a Vector." );
+		if( !parameters.containsKey(key.name())) {
+			return Collections.unmodifiableList(Arrays.asList());
+		}
+		Assert.isTrue(parameters.get(key.name()) instanceof Collection, "Parameter is not a Vector.");
+		
+		return Collections.unmodifiableList(new ArrayList<>((Collection<Double>) parameters.get(key.name())));
+	
 	}
 
 }
