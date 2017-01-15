@@ -7,6 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
+import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
@@ -18,7 +20,9 @@ public class RiskGainPreferenceOptimisationTest {
 private static final double RATE_RATIO = 1.1107248492475688;
 private static final double TARGET_RATE = 0.018769;
 private final double[][]  matrix = new double[3][3];
-private final OptimisationAlgorithm optimisationAlgorithm = new RiskGainPreferenceOptimisationImpl();
+
+private final ExchangeRateService exchangeRateService = Mockito.mock(ExchangeRateService.class);
+private final OptimisationAlgorithm optimisationAlgorithm = new RiskGainPreferenceOptimisationImpl(exchangeRateService);
 
 private final SharePortfolio sharePortfolio = Mockito.mock(SharePortfolio.class);
 
@@ -54,6 +58,9 @@ private static final double[] RATES = {0.0139178,  0.0130860,  0.0249126};
 		
 		Mockito.when(sharePortfolio.varianceMatrix()).thenReturn(matrix);
 		Mockito.when(sharePortfolio.timeCourses()).thenReturn(Arrays.asList(timeCourses));
+		
+		Mockito.when(sharePortfolio.totalRates(Mockito.any(ExchangeRateCalculator.class))).thenReturn(RATES);
+		
 	}
 	
 	@Test

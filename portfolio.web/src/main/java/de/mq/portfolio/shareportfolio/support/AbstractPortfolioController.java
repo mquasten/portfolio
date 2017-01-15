@@ -102,7 +102,12 @@ public  abstract  class AbstractPortfolioController {
 		portfolioSearchAO.setPortfolioName(portfolioSearchAO.getSelectedPortfolio().name());
 	}
 
-	public String save(final SharePortfolio sharePortfolio, final String existsMessage) {
+	public String save(final SharePortfolio sharePortfolio, final boolean isInvalid, final String existsMessage, final String invalidMessage) {
+		if( isInvalid) {
+			facesContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, invalidMessage, null));
+			return null;
+		}
+		
 		try {	
 			sharePortfolioService.save(sharePortfolio);
 			return REDIRECT_TO_PORTFOLIOS_PAGE;
@@ -111,6 +116,8 @@ public  abstract  class AbstractPortfolioController {
 			return null;
 		}
 	}
+
+	
 
 	public String assign(final PortfolioAO portfolioAO) {
 		sharePortfolioService.assign(portfolioAO.getSharePortfolio(), portfolioAO.getTimeCourses());

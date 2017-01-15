@@ -74,6 +74,8 @@ public class PortfolioControllerTest {
 	private final FacesContext facesContext = Mockito.mock(FacesContext.class);
 
 	private final static String EXISTS_MESSAGE = "existsMessage";
+	
+	private final static String INVALID_MESSAGE = "invalidMessage";
 
 	private final ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
 	private final ArgumentCaptor<String> clientIdCaptor = ArgumentCaptor.forClass(String.class);
@@ -178,14 +180,14 @@ public class PortfolioControllerTest {
 
 	@Test
 	public final void save() {
-		Assert.assertEquals(AbstractPortfolioController.REDIRECT_TO_PORTFOLIOS_PAGE, portfolioController.save(sharePortfolio, EXISTS_MESSAGE));
+		Assert.assertEquals(AbstractPortfolioController.REDIRECT_TO_PORTFOLIOS_PAGE, portfolioController.save(sharePortfolio, false ,EXISTS_MESSAGE, INVALID_MESSAGE));
 		Mockito.verify(sharePortfolioService).save(sharePortfolio);
 	}
 
 	@Test
 	public final void saveDuplicate() {
 		Mockito.doThrow(DuplicateKeyException.class).when(sharePortfolioService).save(sharePortfolio);
-		portfolioController.save(sharePortfolio, EXISTS_MESSAGE);
+		portfolioController.save(sharePortfolio, false, EXISTS_MESSAGE, INVALID_MESSAGE);
 
 		Mockito.verify(facesContext).addMessage(clientIdCaptor.capture(), facesMessageCaptor.capture());
 

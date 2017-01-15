@@ -352,6 +352,20 @@ class SharePortfolioImpl implements SharePortfolio {
 		return totalRate(minWeights(), exchangeRateCalculator);
 	}
 
+	@Override
+	public double[] totalRates(final ExchangeRateCalculator exchangeRateCalculator) {
+		final double[] results = new double[timeCourses.size()];
+		Assert.isTrue(results.length > 0, "at least one TimeCourse must be aware." );
+		IntStream.range(0, timeCourses.size()).forEach(i -> {
+			final List<Data> rates = timeCourses.get(i).rates();
+			final ExchangeRate exchangeRate = exchangeRate(timeCourses.get(i));
+			final double richtig = rates.get(0).value() * exchangeRateCalculator.factor(exchangeRate, rates.get(0).date()) ;
+			final double falsch = rates.get(rates.size()-1).value() * exchangeRateCalculator.factor(exchangeRate, rates.get(rates.size()-1).date());
+			results[i]= (falsch - richtig) / richtig;	
+		});
+		
+		return results;
+	}
 
 	private void weightsVectorGuard(final double[] weights) {
 		Assert.isTrue(weights.length == timeCourses.size(), "Incorrects size of weightsvector");
