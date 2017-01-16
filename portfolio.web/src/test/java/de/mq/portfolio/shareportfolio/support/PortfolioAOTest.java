@@ -10,11 +10,13 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.shareportfolio.AlgorithmParameter;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -22,6 +24,9 @@ import junit.framework.Assert;
 
 public class PortfolioAOTest {
 
+	private static final String RESPONSE = "response";
+	private static final String PARAMETER_NAME = "parameterName";
+	private static final Double PARAMETER_VALUE = new Double(42);
 	private static final double TOTAL_RATE_DIVIDENTS = 0.025;
 	private static final double TOTAL_RATE = 0.05;
 	private static final double STANDARD_DERIVATION = 1.51e-8;
@@ -183,6 +188,64 @@ public class PortfolioAOTest {
 		portfolioAO.setAlgorithmType(AlgorithmType.RiskGainPreference);
 		
 		Assert.assertEquals(AlgorithmType.RiskGainPreference, portfolioAO.getAlgorithmType());
+	}
+	
+	
+	@Test
+	public final void  getParameters() {
+		final Map<String,Object> parameters = new HashMap<>();
+		parameters.put(PARAMETER_NAME, PARAMETER_VALUE);
+		Arrays.asList(portfolioAO.getClass().getDeclaredFields()).stream().filter(field -> field.getType().equals(Map.class)).forEach(field -> {
+			ReflectionTestUtils.setField(portfolioAO, field.getName(), parameters);
+		});
+		
+		Assert.assertEquals(1, portfolioAO.getParameters().size());
+		
+		Assert.assertEquals(PARAMETER_VALUE, portfolioAO.getParameters().get(PARAMETER_NAME));
+	}
+	
+	@Test
+	public final void  isInvalidParameters() {
+		
+		portfolioAO.setSharePortfolio(sharePortfolio, Optional.of(exchangeRateCalculator));
+		Assert.assertFalse(portfolioAO.isInvalidParameters());
+		
+		Assert.assertNull(portfolioAO.getResponse());
+		
+		Mockito.when(optimisationAlgorithm.algorithmType()).thenReturn(AlgorithmType.MVP);
+		
+		portfolioAO.setAlgorithmType(AlgorithmType.MVP);
+		
+		Mockito.doThrow(new IllegalArgumentException(RESPONSE)).when(optimisationAlgorithm).weights(Mockito.any());
+		
+		portfolioAO.getSharePortfolio();
+		
+		Assert.assertTrue(portfolioAO.isInvalidParameters());
+		Assert.assertEquals(RESPONSE, portfolioAO.getResponse());
+		
+		Mockito.doThrow(new IllegalArgumentException()).when(optimisationAlgorithm).weights(Mockito.any());
+		portfolioAO.getSharePortfolio();
+		Assert.assertTrue(portfolioAO.isInvalidParameters());
+		Assert.assertEquals(IllegalArgumentException.class.getSimpleName(), portfolioAO.getResponse());
+		
+		
+	}
+	
+	@Test
+	public final void isVector() {
+		
+		portfolioAO.setAlgorithmType(AlgorithmType.MVP);
+		
+		AlgorithmParameter parameter = Mockito.mock(AlgorithmParameter.class);
+		Mockito.when(parameter.isVector()).thenReturn(true);
+		Mockito.when(optimisationAlgorithm.params()).thenReturn(Arrays.asList(parameter));
+		Mockito.when(parameter.name()).thenReturn(PARAMETER_NAME);
+		Assert.assertTrue(portfolioAO.isVector(PARAMETER_NAME));
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void isVectorInvalid() {
+		portfolioAO.isVector(PARAMETER_NAME);
 	}
 
 }
