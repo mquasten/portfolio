@@ -24,6 +24,8 @@ import junit.framework.Assert;
 
 public class PortfolioAOTest {
 
+	private static final String PARAMETER_NAME_VECTOR_PARAMETER = "parameterNameVectorParameter";
+	private static final String PARAMETERS_FIELD_NAME = "parameters";
 	private static final String RESPONSE = "response";
 	private static final String PARAMETER_NAME = "parameterName";
 	private static final Double PARAMETER_VALUE = new Double(42);
@@ -179,6 +181,46 @@ public class PortfolioAOTest {
 
 		Assert.assertEquals(AlgorithmType.MVP, sharePortfolio.algorithmType());
 		Assert.assertEquals(optimisationAlgorithm, sharePortfolio.optimisationAlgorithm());
+		
+		Assert.assertTrue(portfolioAO.getParameters().isEmpty());
+	}
+	
+	@Test
+	public final void getSharePortfolioWithParameters() {
+		final Map<String,String[]> parameters = new HashMap<>();
+		parameters.put(PARAMETER_NAME, new String[] {"" + PARAMETER_VALUE});
+		
+		parameters.put(PARAMETER_NAME_VECTOR_PARAMETER, new String[] {"" + PARAMETER_VALUE, ""});
+
+	
+		ReflectionTestUtils.setField(portfolioAO,PARAMETERS_FIELD_NAME ,parameters);
+	
+		
+		AlgorithmParameter p1 = Mockito.mock(AlgorithmParameter.class);
+		Mockito.when(p1.name()).thenReturn(PARAMETER_NAME);
+		
+		
+		
+		AlgorithmParameter p2= Mockito.mock(AlgorithmParameter.class);
+		Mockito.when(p2.name()).thenReturn(PARAMETER_NAME_VECTOR_PARAMETER);
+		Mockito.when(p2.isVector()).thenReturn(true);
+		
+	
+		
+		Mockito.when(optimisationAlgorithm.params()).thenReturn(Arrays.asList(p1,p2));
+		Mockito.when( optimisationAlgorithm.algorithmType()).thenReturn(AlgorithmType.MVP);
+		
+		portfolioAO.setOptimisationAlgorithms(Arrays.asList(optimisationAlgorithm));
+		SharePortfolio result = portfolioAO.getSharePortfolio();
+		
+		Assert.assertEquals(PARAMETER_VALUE, result.param(p1));
+		Assert.assertEquals(2, result.parameterVector(p2).size());
+		
+		Assert.assertEquals(PARAMETER_VALUE, result.parameterVector(p2).get(0));
+		
+		Assert.assertNull(result.parameterVector(p2).get(1));
+
+		
 	}
 	
 	@Test
@@ -246,6 +288,23 @@ public class PortfolioAOTest {
 	@Test(expected=IllegalArgumentException.class)
 	public final void isVectorInvalid() {
 		portfolioAO.isVector(PARAMETER_NAME);
+	}
+	
+	@Test
+	public final void getSharePortfolioLeerverkäufe() {
+		Assert.assertNull(portfolioAO.getResponse());
+		portfolioAO.setSharePortfolio(sharePortfolio, Optional.of(exchangeRateCalculator));
+		
+		Mockito.when(optimisationAlgorithm.algorithmType()).thenReturn(AlgorithmType.MVP);
+		
+		portfolioAO.setAlgorithmType(AlgorithmType.MVP);
+		
+		
+		
+		Mockito.when(optimisationAlgorithm.weights(Mockito.any())).thenReturn(new double[]{1, -1});
+		
+		portfolioAO.getSharePortfolio();
+		Assert.assertEquals(PortfolioAO.SHORT_SELL_MESSAGE, portfolioAO.getResponse());
 	}
 
 }

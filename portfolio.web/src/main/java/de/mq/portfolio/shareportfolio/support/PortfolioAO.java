@@ -31,6 +31,8 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 @Scope("view")
 public class PortfolioAO implements Serializable {
 
+	static final String SHORT_SELL_MESSAGE = "Die Lösung beinhaltet Leerverkäufe!";
+
 	private static final long serialVersionUID = 1L;
 
 	private String name;
@@ -135,6 +137,8 @@ public class PortfolioAO implements Serializable {
 		return array;
 	}
 	public boolean hasText(AlgorithmParameter algorithmParameter) {
+		
+	
 		final String[] value = parameters.get(algorithmParameter.name());
 	
 		return Arrays.asList(value).stream().filter(x->  StringUtils.hasText(x) ).findAny().isPresent() ; 
@@ -159,6 +163,8 @@ public class PortfolioAO implements Serializable {
 		
 		final SharePortfolio result = new SharePortfolioImpl(name, timeCourses, optimisationAlgorithms.get(getAlgorithmType()));
 		
+		
+	
 		optimisationAlgorithms.get(getAlgorithmType()).params().stream().filter(p -> hasText(p)).forEach(p -> assign(result, p));
 		
 		
@@ -174,7 +180,7 @@ public class PortfolioAO implements Serializable {
 			invalidParameters=false;
 			final double[] results = result.minWeights();
 			if( IntStream.range(0, results.length).mapToDouble(i -> results[i]).filter(x -> x < 0 ).count() > 0 ) {
-				response="Die Lösung beinhaltet Leerverkäufe!";
+				response=SHORT_SELL_MESSAGE;
 			}
 		} catch(final Exception ex) {
 			invalidParameters=true;
