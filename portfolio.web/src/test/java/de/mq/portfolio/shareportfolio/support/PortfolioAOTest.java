@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +25,7 @@ import junit.framework.Assert;
 
 public class PortfolioAOTest {
 
+	private static final String WEIGHTS_FIELD = "weights";
 	private static final String PARAMETER_NAME_VECTOR_PARAMETER = "parameterNameVectorParameter";
 	private static final String PARAMETERS_FIELD_NAME = "parameters";
 	private static final String RESPONSE = "response";
@@ -305,6 +307,45 @@ public class PortfolioAOTest {
 		
 		portfolioAO.getSharePortfolio();
 		Assert.assertEquals(PortfolioAO.SHORT_SELL_MESSAGE, portfolioAO.getResponse());
+	}
+	
+	@Test
+	public final void setAlgorithmType() {
+		final AlgorithmParameter algorithmParameter = Mockito.mock(AlgorithmParameter.class);
+		
+		Mockito.when(algorithmParameter.name()).thenReturn(PARAMETER_NAME);
+		
+		Mockito.when(optimisationAlgorithm.params()).thenReturn(Arrays.asList(algorithmParameter));
+		
+		portfolioAO.setAlgorithmType(AlgorithmType.MVP);
+		
+		Assert.assertEquals(1, portfolioAO.getParameters().size());
+		Assert.assertEquals(PARAMETER_NAME, portfolioAO.getParameters().keySet().stream().findAny().get());
+		
+		final String[] result =  portfolioAO.getParameters().values().stream().findAny().get();
+		
+		Assert.assertEquals(1, result.length);
+		Assert.assertNull(result[0]);
+		
+		portfolioAO.setAlgorithmType(AlgorithmType.ManualDistribution);
+		
+		Assert.assertTrue(portfolioAO.getParameters().isEmpty());
+		
+		
+		ReflectionTestUtils.setField(portfolioAO, WEIGHTS_FIELD, weights);
+		Mockito.when(algorithmParameter.isVector()).thenReturn(true);
+		portfolioAO.setAlgorithmType(AlgorithmType.MVP);
+		
+		Assert.assertEquals(1, portfolioAO.getParameters().size());
+		Assert.assertEquals(PARAMETER_NAME, portfolioAO.getParameters().keySet().stream().findAny().get());
+		
+		final String[] resultVector =  portfolioAO.getParameters().values().stream().findAny().get();
+		
+		Assert.assertEquals(weights.size(), resultVector.length);
+		
+		IntStream.range(0, resultVector.length).forEach(i -> Assert.assertNull(resultVector[i]));
+		
+		
 	}
 
 }
