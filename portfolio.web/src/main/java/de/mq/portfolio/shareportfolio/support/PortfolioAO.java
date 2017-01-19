@@ -56,22 +56,22 @@ public class PortfolioAO implements Serializable {
 	private String currency;
 
 	private Double totalRateDividends;
-	
-	private boolean exchangeRateTranslationsAware=false;
-	
+
+	private boolean exchangeRateTranslationsAware = false;
+
 	private OptimisationAlgorithm.AlgorithmType algorithmType;
 
-	private  final Map<AlgorithmType, OptimisationAlgorithm> optimisationAlgorithms = new HashMap<>();
-	private final Map<String,String[]> parameters = new HashMap<>();
-	
-	private  String response; 
+	private final Map<AlgorithmType, OptimisationAlgorithm> optimisationAlgorithms = new HashMap<>();
+	private final Map<String, String[]> parameters = new HashMap<>();
+
+	private String response;
 
 	private boolean invalidParameters = false;
 
 	@Autowired
 	void setOptimisationAlgorithms(Collection<OptimisationAlgorithm> optimisationAlgorithms) {
 		this.optimisationAlgorithms.clear();
-		optimisationAlgorithms.forEach( a -> this.optimisationAlgorithms.put(a.algorithmType(), a));
+		optimisationAlgorithms.forEach(a -> this.optimisationAlgorithms.put(a.algorithmType(), a));
 	}
 
 	public String getName() {
@@ -82,13 +82,14 @@ public class PortfolioAO implements Serializable {
 		this.name = name;
 	}
 
-	public  void setSharePortfolio(final SharePortfolio sharePortfolio, final Optional<ExchangeRateCalculator> exchangeRateCalculator) {
+	public void setSharePortfolio(final SharePortfolio sharePortfolio, final Optional<ExchangeRateCalculator> exchangeRateCalculator) {
 		this.name = sharePortfolio.name();
 		this.currency = sharePortfolio.currency();
-		this.algorithmType=sharePortfolio.algorithmType() ;
-		
-		if(! invalidParameters) {
+		this.algorithmType = sharePortfolio.algorithmType();
+
+		if (!invalidParameters) {
 			parameters.clear();
+
 			optimisationAlgorithms.get(getAlgorithmType()).params().forEach(p -> parameters.put(p.name(), doubleAsString(sharePortfolio, p)));
 		}
 		this.timeCourses.clear();
@@ -113,86 +114,79 @@ public class PortfolioAO implements Serializable {
 		this.totalRate = sharePortfolio.totalRate(exchangeRateCalculator.get());
 
 		this.totalRateDividends = sharePortfolio.totalRateDividends(exchangeRateCalculator.get());
-		exchangeRateTranslationsAware=!sharePortfolio.exchangeRateTranslations().isEmpty();
+		exchangeRateTranslationsAware = !sharePortfolio.exchangeRateTranslations().isEmpty();
 	}
-	
+
 	public boolean isVector(final String param) {
-		return optimisationAlgorithms.get(getAlgorithmType()).params().stream().filter(p -> p.name().equals(param)).findAny().orElseThrow(() -> new IllegalArgumentException("Invalid parameter: " + param )).isVector();
+		return optimisationAlgorithms.get(getAlgorithmType()).params().stream().filter(p -> p.name().equals(param)).findAny().orElseThrow(() -> new IllegalArgumentException("Invalid parameter: " + param)).isVector();
 	}
 
 	private String[] doubleAsString(final SharePortfolio sharePortfolio, AlgorithmParameter p) {
-	
-		final String[] array =  new String[p.isVector()? sharePortfolio.timeCourses().size() : 1] ;
-		
-		
-		if( ! p.isVector() ){
+
+		final String[] array = new String[p.isVector() ? sharePortfolio.timeCourses().size() : 1];
+
+		if (!p.isVector()) {
 			final Double param = sharePortfolio.param(p);
-			array[0]= (param!=null) ? "" +param: "";
+			array[0] = (param != null) ? "" + param : "";
 		} else {
-			IntStream.range(0,array.length).forEach(i -> {
+			IntStream.range(0, array.length).forEach(i -> {
 				final Double param = sharePortfolio.param(p, i);
-				array[i]=param!=null? ""+param :"";
-			});;
+				array[i] = param != null ? "" + param : "";
+			});
+			;
 		}
 		return array;
 	}
+
 	public boolean hasText(AlgorithmParameter algorithmParameter) {
-		
-	
+
 		final String[] value = parameters.get(algorithmParameter.name());
-	
-		return Arrays.asList(value).stream().filter(x->  StringUtils.hasText(x) ).findAny().isPresent() ; 
-	
+
+		return Arrays.asList(value).stream().filter(x -> StringUtils.hasText(x)).findAny().isPresent();
+
 	}
 
-	private List<Double> toDoubles(String[] values){
+	private List<Double> toDoubles(String[] values) {
 		final List<Double> results = new ArrayList<>();
-		IntStream.range(0, values.length).forEach(i -> results.add(StringUtils.hasText(values[i]) ? Double.valueOf(values[i]): null));
+		IntStream.range(0, values.length).forEach(i -> results.add(StringUtils.hasText(values[i]) ? Double.valueOf(values[i]) : null));
 		return results;
 	}
-	
+
 	private void assign(final SharePortfolio result, final AlgorithmParameter p) {
-		if( p.isVector()){
+		if (p.isVector()) {
 			result.assign(p, toDoubles(parameters.get(p.name())));
 			return;
 		}
-		result.assign(p,  Double.valueOf(parameters.get(p.name())[0]) );
+		result.assign(p, Double.valueOf(parameters.get(p.name())[0]));
 	}
-	
+
 	public SharePortfolio getSharePortfolio() {
-		
+
 		final SharePortfolio result = new SharePortfolioImpl(name, timeCourses, optimisationAlgorithms.get(getAlgorithmType()));
-		
-		
-	
+
 		optimisationAlgorithms.get(getAlgorithmType()).params().stream().filter(p -> hasText(p)).forEach(p -> assign(result, p));
-		
-		
-		
-		
+
 		ReflectionUtils.doWithFields(result.getClass(), field -> {
 			/* "...touched for the very first time." mdna (like a virgin **/ field.setAccessible(true);
 			ReflectionUtils.setField(field, result, id);
 		}, field -> field.isAnnotationPresent(Id.class));
 		((SharePortfolioImpl) result).onBeforeSave();
-		response="";
+		response = "";
 		try {
-			invalidParameters=false;
+			invalidParameters = false;
 			final double[] results = result.minWeights();
-			if( IntStream.range(0, results.length).mapToDouble(i -> results[i]).filter(x -> x < 0 ).count() > 0 ) {
-				response=SHORT_SELL_MESSAGE;
+			if (IntStream.range(0, results.length).mapToDouble(i -> results[i]).filter(x -> x < 0).count() > 0) {
+				response = SHORT_SELL_MESSAGE;
 			}
-		} catch(final Exception ex) {
-			invalidParameters=true;
+		} catch (final Exception ex) {
+			invalidParameters = true;
 			result.clearParameter();
-			response=StringUtils.hasText(ex.getMessage()) ? ex.getMessage() : ex.getClass().getSimpleName();
-			
+			response = StringUtils.hasText(ex.getMessage()) ? ex.getMessage() : ex.getClass().getSimpleName();
+
 		}
 		return result;
 
 	}
-
-	
 
 	public String getId() {
 		return id;
@@ -237,37 +231,34 @@ public class PortfolioAO implements Serializable {
 	public String getCurrency() {
 		return currency;
 	}
-	
+
 	public boolean getExchangeRateTranslationsAware() {
 		return exchangeRateTranslationsAware;
 	}
-	
+
 	public OptimisationAlgorithm.AlgorithmType getAlgorithmType() {
-		return algorithmType==null ?  AlgorithmType.MVP  : algorithmType;
+		return algorithmType == null ? AlgorithmType.MVP : algorithmType;
 	}
-	
-	
-	
 
 	public void setAlgorithmType(final OptimisationAlgorithm.AlgorithmType algorithmType) {
-		parameters.clear();	
-		
-		if(optimisationAlgorithms.containsKey(algorithmType) ) {
+		parameters.clear();
+
+		if (optimisationAlgorithms.containsKey(algorithmType)) {
 			optimisationAlgorithms.get(algorithmType).params().forEach(p -> parameters.put(p.name(), newParameter(p)));
 		}
 		this.algorithmType = algorithmType;
 	}
-	
+
 	private String[] newParameter(AlgorithmParameter algorithmParameter) {
-		if( algorithmParameter.isVector()){
+		if (algorithmParameter.isVector()) {
 			return new String[weights.size()];
 		}
-		return new String[1] ;
+		return new String[1];
 	}
 
-	public Map<String,String[]> getParameters() {
-		
-		return parameters ;
+	public Map<String, String[]> getParameters() {
+
+		return parameters;
 	}
 
 	public String getResponse() {
@@ -277,7 +268,5 @@ public class PortfolioAO implements Serializable {
 	public boolean isInvalidParameters() {
 		return invalidParameters;
 	}
-	
-	
 
 }
