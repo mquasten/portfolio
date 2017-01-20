@@ -39,10 +39,31 @@ public class ManualDistributionOptimisationTest {
 	
 	}
 	
+	@Test(expected=IllegalArgumentException.class)
+	public final void resolveWeightsNullGuard() {
+	    Mockito.when(sharePortfolio.parameterVector(ManualDistributionOptimisationImpl.ParameterType.Weights)).thenReturn(Arrays.asList(null,1d));
+		optimisationAlgorithm.weights(sharePortfolio);
+	}
 	
+	@Test(expected=IllegalArgumentException.class)
+	public final void resolveWeights0Guard() {
+	    Mockito.when(sharePortfolio.parameterVector(ManualDistributionOptimisationImpl.ParameterType.Weights)).thenReturn(Arrays.asList(0d,1d));
+		optimisationAlgorithm.weights(sharePortfolio);
+	}
 	
+	@Test(expected=IllegalArgumentException.class)
+	public final void resolveSumGuard() {
+		 Mockito.when(sharePortfolio.parameterVector(ManualDistributionOptimisationImpl.ParameterType.Weights)).thenReturn(Arrays.asList(3d,6d));
+		 optimisationAlgorithm.weights(sharePortfolio);
+	}
 	
-	
+	@Test
+	public final void resolveFromParameters() {
+		final double[] results = {0.4, 0.6};
+		Mockito.when(sharePortfolio.parameterVector(ManualDistributionOptimisationImpl.ParameterType.Weights)).thenReturn(Arrays.asList(results[0], results[1]));
+		
+		IntStream.range(0, results.length).forEach(i->  Assert.assertEquals(results[i], optimisationAlgorithm.weights(sharePortfolio)[i]));
+	}
 	
 	@Test
 	public final void algorithmType() {
@@ -57,6 +78,7 @@ public class ManualDistributionOptimisationTest {
 	@Test
 	public final void  enumValues() {
 		Arrays.asList(ManualDistributionOptimisationImpl.ParameterType.values()).forEach(val -> Assert.assertEquals(val, ManualDistributionOptimisationImpl.ParameterType.valueOf(val.name()) ));
+		Assert.assertTrue(ManualDistributionOptimisationImpl.ParameterType.Weights.isVector());
 	}
 
 }

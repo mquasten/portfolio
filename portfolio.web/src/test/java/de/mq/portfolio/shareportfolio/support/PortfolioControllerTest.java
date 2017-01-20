@@ -183,6 +183,14 @@ public class PortfolioControllerTest {
 		Assert.assertEquals(AbstractPortfolioController.REDIRECT_TO_PORTFOLIOS_PAGE, portfolioController.save(sharePortfolio, false ,EXISTS_MESSAGE, INVALID_MESSAGE));
 		Mockito.verify(sharePortfolioService).save(sharePortfolio);
 	}
+	
+	@Test
+	public final void saveInvalid() {
+		Assert.assertNull(portfolioController.save(sharePortfolio, true ,EXISTS_MESSAGE, INVALID_MESSAGE));
+	    Mockito.verify(facesContext).addMessage(clientIdCaptor.capture(), facesMessageCaptor.capture());
+	    Assert.assertNull(clientIdCaptor.getValue());
+	    Assert.assertEquals(FacesMessage.SEVERITY_ERROR, facesMessageCaptor.getValue().getSeverity());
+	}
 
 	@Test
 	public final void saveDuplicate() {
@@ -345,5 +353,7 @@ public class PortfolioControllerTest {
 		portfolioController.refresh(portfolioAO);
 		Mockito.verify(portfolioAO, Mockito.times(1)).setSharePortfolio(sharePortfolio, Optional.of(exchangeRateCalculator));
 	}
+	
+
 
 }

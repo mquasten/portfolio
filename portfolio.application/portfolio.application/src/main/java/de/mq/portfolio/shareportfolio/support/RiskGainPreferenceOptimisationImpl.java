@@ -80,6 +80,7 @@ class RiskGainPreferenceOptimisationImpl implements OptimisationAlgorithm {
 		final double totalGainMVP = IntStream.range(0, varianceMatrix.length).mapToDouble(i -> weightsMVP[i] * gain[i]).sum();
 
 		final double theta = theta(targetRate, rateRatio, ke, totalGainMVP);
+		
 		Assert.isTrue(theta >= 0, "Θ should be >= 0.");
 
 		final double[] results = new double[varianceMatrix.length];
