@@ -28,4 +28,10 @@ class UserRepositoryImpl  implements UserRepository {
 		return DataAccessUtils.requiredSingleResult(mongoOperations.find(Query.query(Criteria.where(LOGIN_FIELD_NAME).is(login)), UserImpl.class));
 	}
 
+
+    @Override
+    public void save(final User user) {
+        mongoOperations.save(user);
+    }
+
 }

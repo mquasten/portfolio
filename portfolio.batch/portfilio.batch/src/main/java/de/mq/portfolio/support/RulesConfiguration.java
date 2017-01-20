@@ -19,6 +19,9 @@ import de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.support.SharesCSVLineConverterImpl;
+import de.mq.portfolio.user.User;
+import de.mq.portfolio.user.UserService;
+import de.mq.portfolio.user.support.UsersCSVLineConverterImpl;
 
 @Configuration
 @ImportResource("classpath*:application.xml")
@@ -50,6 +53,12 @@ class RulesConfiguration {
 	@Scope("prototype")
 	RulesEngine importShares(final ShareService shareService, final RulesEngineBuilder rulesEngineBuilder,  final ExceptionTranslationBuilder<Collection<Share>, BufferedReader> exceptionTranslationBuilder) {
 		return rulesEngineBuilder.withName(IMPORT_SHARES_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new SharesCSVLineConverterImpl(), exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(shareService, SPEL_SAVE_ITEM)).build();
+	}
+	
+	@Bean
+    @Scope("prototype")
+    RulesEngine importUsers(final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<User>, BufferedReader> exceptionTranslationBuilder, final UserService userService) {
+	    return rulesEngineBuilder.withName("importUsers").withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new UsersCSVLineConverterImpl(),exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(userService, "user(#item)")).withRule(new ProcessServiceRuleImpl<>(userService, SPEL_SAVE_ITEM)).build();
 	}
 
 	@Bean

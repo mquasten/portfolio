@@ -31,5 +31,23 @@ class UserServiceImpl implements UserService {
 		}
 
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.user.UserService#user(de.mq.portfolio.user.User)
+	 */
+	@Override
+	public final User user(final User user) {
+	    final Optional<User> existingUser = user(user.login());
+	    if( existingUser.isPresent()) {
+	        existingUser.get().assign(user);
+	        return existingUser.get();
+	    }
+        return user;
+	}
+	
+	public final void save(final User user) {
+	    userRepository.save(user);
+	}
 
 }

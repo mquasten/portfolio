@@ -6,4 +6,6 @@ interface UserRepository {
 	
 	User userByLogin(final String login);
 
+    void save(final User user);
+
 }

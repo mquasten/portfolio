@@ -8,4 +8,6 @@ public interface UserService {
 
 	Optional<User> user(String login);
 
+    User user(User user);
+
 }

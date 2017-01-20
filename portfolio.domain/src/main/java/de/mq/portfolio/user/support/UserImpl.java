@@ -16,14 +16,19 @@ class UserImpl implements User {
 	@Indexed(unique = true)
 	private String login;
 
-	private String password;
+	
+
+  
+
+    private String password;
 	
 	
 	UserImpl(final String login, final String password) {
 		this.login = login;
 		this.password = password;
 	}
-
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -40,6 +45,31 @@ class UserImpl implements User {
 		return this.password.equals(password);
 
 	}
+
+	@Override
+	public String login() {
+        return login;
+    }
+
+	@Override
+	public String password() {
+        return password;
+    }
+	
+
+	@Override 
+   public void assign(final User user) {
+       this.login=user.login();
+       this.password=user.password();
+   }
+
+
+    @Override
+    public String toString() {
+        return String.format("login= %s, id= %s", login, id);
+    }
+
+
 
 	
 }
