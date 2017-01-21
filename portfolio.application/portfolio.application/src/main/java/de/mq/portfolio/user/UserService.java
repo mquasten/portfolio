@@ -10,4 +10,6 @@ public interface UserService {
 
     User user(User user);
 
+	void save(User user);
+
 }

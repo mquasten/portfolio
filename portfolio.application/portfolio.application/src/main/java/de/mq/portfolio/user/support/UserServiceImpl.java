@@ -46,6 +46,11 @@ class UserServiceImpl implements UserService {
         return user;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.user.UserService#save(de.mq.portfolio.user.User)
+	 */
+	@Override
 	public final void save(final User user) {
 	    userRepository.save(user);
 	}

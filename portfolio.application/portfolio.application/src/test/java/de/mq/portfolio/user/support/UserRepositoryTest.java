@@ -18,6 +18,8 @@ import junit.framework.Assert;
 
 public class UserRepositoryTest {
 	
+	private final User user = Mockito.mock(User.class);
+
 	static final String LOGIN = "kminogue";
 
 	private final MongoOperations mongoOperations =  Mockito.mock(MongoOperations.class);
@@ -29,7 +31,7 @@ public class UserRepositoryTest {
 	@SuppressWarnings("rawtypes")
 	private final ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
 	
-	private final List<User> users = (List<User>) Arrays.asList(Mockito.mock(User.class));
+	private final List<User> users = (List<User>) Arrays.asList(user);
 	
 	@SuppressWarnings("unchecked")
 	@Before
@@ -49,4 +51,9 @@ public class UserRepositoryTest {
 		Assert.assertEquals(LOGIN,  queryCaptor.getValue().getQueryObject().get(UserRepositoryImpl.LOGIN_FIELD_NAME));
 	}
 
+	@Test
+	public final void save() {
+		userRepository.save(user);
+		Mockito.verify(mongoOperations).save(user);
+	}
 }

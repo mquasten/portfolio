@@ -27,5 +27,28 @@ public class UserServiceTest {
 		Mockito.doThrow(IncorrectResultSizeDataAccessException.class).when(userRepository).userByLogin(UserRepositoryTest.LOGIN);
 		Assert.assertFalse(userService.user(UserRepositoryTest.LOGIN).isPresent());
 	}
+	
+	@Test
+	public final void enhanceUser() {
+		Mockito.when(userRepository.userByLogin(UserRepositoryTest.LOGIN)).thenReturn(user);
+		final User changedUser = Mockito.mock(User.class);
+		Mockito.when(changedUser.login()).thenReturn(UserRepositoryTest.LOGIN);
+		Assert.assertEquals(this.user, userService.user(changedUser));
+		Mockito.verify(this.user).assign(changedUser);
+	}
+	
+	@Test
+	public final void enhanceUserNew() {
+		final User changedUser = Mockito.mock(User.class);
+		Mockito.when(changedUser.login()).thenReturn(UserRepositoryTest.LOGIN);
+		Mockito.doThrow(IncorrectResultSizeDataAccessException.class).when(userRepository).userByLogin(UserRepositoryTest.LOGIN);
+		Assert.assertEquals(changedUser, userService.user(changedUser));
+	}
+	
+	@Test
+	public final void  save() {
+		userService.save(user);
+		Mockito.verify(userRepository).save(user);
+	}
 
 }
