@@ -27,12 +27,17 @@ import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.shareportfolio.AlgorithmParameter;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import junit.framework.Assert;
 
 public class SharePortfolioTest {
+
+	private static final double PARAMETER_VALUE = 42d;
+
+	private static final String PARAMETER_NAME = "parameterName";
 
 	private static final String CURRENCY_USD = "USD";
 
@@ -76,7 +81,7 @@ public class SharePortfolioTest {
 	private final Share share2 = Mockito.mock(Share.class);
 	private final Map<TimeCourse, Double> minWeights = new HashMap<>();
 	
-	
+	private final AlgorithmParameter algorithmParameter = Mockito.mock(AlgorithmParameter.class);
 
 	final ExchangeRate exchangeRateUSDEuro = new ExchangeRateImpl(CURRENCY_USD, SharePortfolioImpl.DEFAULT_CURRENCY);
 	final ExchangeRate exchangeRateEuroEuro = new ExchangeRateImpl(SharePortfolioImpl.DEFAULT_CURRENCY, SharePortfolioImpl.DEFAULT_CURRENCY);
@@ -89,10 +94,13 @@ public class SharePortfolioTest {
 
 	// page 38 Performancemessung example results
 	private final double standardDerivation = Math.round(100 * 10.81 / Math.sqrt(12)) / 100d;
+	
+	private final static double[] TOTAL_RATES =  {25d, 42.22d};
 
 	@Before
 	public void setup() {
 
+		Mockito.when(algorithmParameter.name()).thenReturn(PARAMETER_NAME);
 		Mockito.when(optimisationAlgorithm.algorithmType()).thenReturn(AlgorithmType.MVP);
 		
 		Mockito.when(share.name()).thenReturn(NEW_SHARE_NAME);
@@ -571,6 +579,35 @@ public class SharePortfolioTest {
 		
 		Assert.assertEquals(percentRound(47d / 14d / 9d), percentRound(mock.totalRate(exchangeRateCalculator)));
 	}
+	
+	@Test
+	public final void totalRates() {
+		
+		final ExchangeRateCalculator exchangeRateCalculator = prepareForMinWeights();
+		// ugly, nasty, dirrrrrrrrty ...
+		final SharePortfolio mock = Mockito.spy(sharePortfolio);
+		Mockito.doAnswer(a-> weights).when(mock).minWeights();
+		
+		final double[] results = mock.totalRates(exchangeRateCalculator);
+		Assert.assertEquals(TOTAL_RATES.length, results.length);
+		
+		IntStream.range(0, TOTAL_RATES.length).forEach(i -> Assert.assertEquals(TOTAL_RATES[i], percentRound(results[i])));
+		
+		
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void totalRatesNoTimeCourses() {
+		final ExchangeRateCalculator exchangeRateCalculator = prepareForMinWeights();
+	
+		final SharePortfolio mock = Mockito.spy(sharePortfolio);
+		Mockito.doAnswer(a-> weights).when(mock).minWeights();
+		
+		timeCourses.forEach(ic -> mock.remove(ic));
+		
+		mock.totalRates(exchangeRateCalculator);
+	}
+	
 
 	@Test
 	public final void totalRateDividends() {
@@ -668,6 +705,51 @@ public class SharePortfolioTest {
 		IntStream.range(0, variances.length).forEach(i -> Assert.assertEquals(variances[i], results[i][i]));
 		
 		IntStream.range(0, variances.length).forEach(i -> IntStream.range(0, variances.length).filter(j -> i != j).forEach(j -> Assert.assertEquals(covariances[i][j], results[i][j]))); 
+	}
+	
+	@Test
+	public final void param() {
+		Assert.assertNull(sharePortfolio.param(algorithmParameter));
+		sharePortfolio.assign(algorithmParameter, PARAMETER_VALUE);
+		Assert.assertEquals(PARAMETER_VALUE, sharePortfolio.param(algorithmParameter));
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void paramNotScalar() {
+		Mockito.when(algorithmParameter.isVector()).thenReturn(true);
+		sharePortfolio.param(algorithmParameter);
+	}
+	
+	
+	@Test
+	public final void  paramVector() {
+		Mockito.when(algorithmParameter.isVector()).thenReturn(true);
+		Assert.assertNull(sharePortfolio.param(algorithmParameter, 0));
+		Assert.assertTrue(sharePortfolio.parameterVector(algorithmParameter).isEmpty());
+		sharePortfolio.assign(algorithmParameter, Arrays.asList(PARAMETER_VALUE, PARAMETER_VALUE));
+		
+		IntStream.range(0, 2).forEach(i -> Assert.assertEquals(PARAMETER_VALUE, sharePortfolio.param(algorithmParameter, i)));
+		
+		Assert.assertEquals(Arrays.asList(PARAMETER_VALUE, PARAMETER_VALUE), sharePortfolio.parameterVector(algorithmParameter));
+		
+		Assert.assertNull(sharePortfolio.param(algorithmParameter, Integer.MAX_VALUE));
+	}
+	
+	@Test
+	public final void  algorithmType() {
+		Assert.assertEquals(optimisationAlgorithm.algorithmType(), sharePortfolio.algorithmType());
+	}
+	
+	
+	@Test
+	public final void clearParameter() {
+		sharePortfolio.assign(algorithmParameter, PARAMETER_VALUE);
+		Assert.assertNotNull(sharePortfolio.param(algorithmParameter));
+	
+		sharePortfolio.clearParameter();
+		
+		Assert.assertNull(sharePortfolio.param(algorithmParameter));
+		
 	}
 	
 	

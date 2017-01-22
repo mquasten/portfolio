@@ -361,6 +361,8 @@ class SharePortfolioImpl implements SharePortfolio {
 			final double richtig = rates.get(0).value() * exchangeRateCalculator.factor(exchangeRate, rates.get(0).date()) ;
 			final double falsch = rates.get(rates.size()-1).value() * exchangeRateCalculator.factor(exchangeRate, rates.get(rates.size()-1).date());
 			results[i]= (falsch - richtig) / richtig;	
+			
+			
 		});
 		
 		return results;
@@ -423,19 +425,19 @@ class SharePortfolioImpl implements SharePortfolio {
 	
 	@Override
 	public Double param(final AlgorithmParameter key) {
-		
+		parameterIsScalarGuard(key);
 		return (Double) parameters.get(key.name());
 		
 	}
 	
 	@Override
 	public Double param(final AlgorithmParameter key, final int index) {
-		
+		parameterIsVectorGuard(key);
 		if( !parameters.containsKey(key.name())){
 			return null;
 		}
 		
-		  List<?> results = (List<?>) parameters.get(key.name());
+		  final List<?> results = (List<?>) parameters.get(key.name());
 		  if( index >= results.size() ) {
 			  return null;
 		  }
@@ -446,12 +448,22 @@ class SharePortfolioImpl implements SharePortfolio {
 	
 	@Override
 	public final void assign(final AlgorithmParameter key  , final double value){
+		parameterIsScalarGuard(key);
 		parameters.put(key.name(),  value);
+	}
+
+	private void parameterIsScalarGuard(final AlgorithmParameter key) {
+		Assert.isTrue(!key.isVector(), "Parameter should not be a scalar.");
 	}
 	
 	@Override
 	public final void assign(final AlgorithmParameter key  , final List<Double> values){
+		parameterIsVectorGuard(key);
 		parameters.put(key.name(),  values);
+	}
+
+	private void parameterIsVectorGuard(final AlgorithmParameter key) {
+		Assert.isTrue(key.isVector(), "Parameter should  be a vector.");
 	}
 	
 	@Override
@@ -462,7 +474,7 @@ class SharePortfolioImpl implements SharePortfolio {
 	@SuppressWarnings("unchecked")
 	public final List<Double> parameterVector(final AlgorithmParameter key ) {
 		
-		Assert.isTrue(key.isVector(), "Parameter is not a Vector." );
+		parameterIsVectorGuard(key);
 		if( !parameters.containsKey(key.name())) {
 			return Collections.unmodifiableList(Arrays.asList());
 		}
