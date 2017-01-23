@@ -10,25 +10,21 @@ import de.mq.portfolio.user.User;
 @Document(collection = "User")
 class UserImpl implements User {
 
+	static final String TO_STRING_PATTERN = "login= %s";
+
 	@Id
 	private String id;
 
 	@Indexed(unique = true)
 	private String login;
 
-	
+	private String password;
 
-  
-
-    private String password;
-	
-	
 	UserImpl(final String login, final String password) {
 		this.login = login;
 		this.password = password;
 	}
-	
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -46,30 +42,41 @@ class UserImpl implements User {
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.user.User#login()
+	 */
 	@Override
 	public String login() {
-        return login;
-    }
+		return login;
+	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.user.User#password()
+	 */
 	@Override
 	public String password() {
-        return password;
-    }
-	
+		return password;
+	}
 
-	@Override 
-   public void assign(final User user) {
-       this.login=user.login();
-       this.password=user.password();
-   }
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.user.User#assign(de.mq.portfolio.user.User)
+	 */
+	@Override
+	public void assign(final User user) {
+		this.login = user.login();
+		this.password = user.password();
+	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return String.format(TO_STRING_PATTERN, login);
+	}
 
-    @Override
-    public String toString() {
-        return String.format("login= %s, id= %s", login, id);
-    }
-
-
-
-	
 }
