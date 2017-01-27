@@ -182,6 +182,11 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 				.withTimeCourses(shareRepository.timeCourses(portfolio.timeCourses().stream().map(tc -> tc.code()).collect(Collectors.toSet()))).build();
 
 	}
+	
+	
+	public final void save(final String json){
+		sharePortfolioRepository.save(json);
+	}
 
 	@Lookup
 	abstract SharePortfolioRetrospectiveBuilder newBuilder(); 

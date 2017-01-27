@@ -19,6 +19,7 @@ import de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.support.SharesCSVLineConverterImpl;
+import de.mq.portfolio.shareportfolio.support.SharePortfolioService;
 import de.mq.portfolio.user.User;
 import de.mq.portfolio.user.UserService;
 import de.mq.portfolio.user.support.UsersCSVLineConverterImpl;
@@ -59,6 +60,12 @@ class RulesConfiguration {
     @Scope("prototype")
     RulesEngine importUsers(final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<User>, BufferedReader> exceptionTranslationBuilder, final UserService userService) {
 	    return rulesEngineBuilder.withName("importUsers").withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new UsersCSVLineConverterImpl(),exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(userService, "user(#item)")).withRule(new ProcessServiceRuleImpl<>(userService, SPEL_SAVE_ITEM)).build();
+	}
+	
+	@Bean
+    @Scope("prototype")
+    RulesEngine importPortfolios(final RulesEngineBuilder rulesEngineBuilder, final AbstractJsonInputServiceImpl importService, final SharePortfolioService sharePortfolioService) {
+		  return rulesEngineBuilder.withName("importPortfolios").withRule(new ImportServiceRuleImpl<>(importService, SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(sharePortfolioService, SPEL_SAVE_ITEM)).build();
 	}
 
 	@Bean

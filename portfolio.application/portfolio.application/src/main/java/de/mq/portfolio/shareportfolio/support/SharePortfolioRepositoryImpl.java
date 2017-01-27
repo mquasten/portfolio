@@ -9,6 +9,7 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
@@ -114,7 +115,17 @@ class SharePortfolioRepositoryImpl implements SharePortfolioRepository {
 		mongoOperations.save(sharePortfolio);
 	}
 
-	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioRepository#save(java.lang.String)
+	 */
+	@Override
+	public final void save(final String json) {
+		Assert.isTrue(SharePortfolioImpl.class.isAnnotationPresent(Document.class));
+		Assert.isTrue(StringUtils.hasText(SharePortfolioImpl.class.getAnnotation(Document.class).collection()));
+		final String docName = SharePortfolioImpl.class.getAnnotation(Document.class).collection();
+		mongoOperations.save(json,docName);
+	}
 
 	
 	
