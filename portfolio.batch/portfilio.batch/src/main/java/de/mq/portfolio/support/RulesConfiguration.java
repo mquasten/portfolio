@@ -64,7 +64,7 @@ class RulesConfiguration {
 	
 	@Bean
     @Scope("prototype")
-    RulesEngine importPortfolios(final RulesEngineBuilder rulesEngineBuilder, final AbstractJsonInputServiceImpl importService, final SharePortfolioService sharePortfolioService) {
+    RulesEngine importPortfolios(final RulesEngineBuilder rulesEngineBuilder, final AbstractJsonInputService importService, final SharePortfolioService sharePortfolioService) {
 		  return rulesEngineBuilder.withName("importPortfolios").withRule(new ImportServiceRuleImpl<>(importService, SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(sharePortfolioService, SPEL_SAVE_ITEM)).build();
 	}
 
