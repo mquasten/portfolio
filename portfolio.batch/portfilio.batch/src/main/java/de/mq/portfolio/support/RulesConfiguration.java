@@ -28,6 +28,9 @@ import de.mq.portfolio.user.support.UsersCSVLineConverterImpl;
 @ImportResource("classpath*:application.xml")
 class RulesConfiguration {
 
+	static final String IMPORT_PORTFOLIOS_RULE_ENGINE_NAME = "importPortfolios";
+	static final String SPEL_CONVERT_USER_ITEM = "user(#item)";
+	static final String IMPORT_USERS_RULE_ENGINE_NAME = "importUsers";
 	static final String IMPORT_SHARES_RULE_ENGINE_NAME = "importShares";
 	static final String IMPORT_TIME_COURSES_RULE_ENGINE_NAME = "importTimeCourses";
 	static final String IMPORT_EXCHANGE_RATES_RULE_ENGINE_NAME = "importExchangeRates";
@@ -59,13 +62,13 @@ class RulesConfiguration {
 	@Bean
     @Scope("prototype")
     RulesEngine importUsers(final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<User>, BufferedReader> exceptionTranslationBuilder, final UserService userService) {
-	    return rulesEngineBuilder.withName("importUsers").withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new UsersCSVLineConverterImpl(),exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(userService, "user(#item)")).withRule(new ProcessServiceRuleImpl<>(userService, SPEL_SAVE_ITEM)).build();
+	    return rulesEngineBuilder.withName(IMPORT_USERS_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new UsersCSVLineConverterImpl(),exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(userService, SPEL_CONVERT_USER_ITEM)).withRule(new ProcessServiceRuleImpl<>(userService, SPEL_SAVE_ITEM)).build();
 	}
 	
 	@Bean
     @Scope("prototype")
     RulesEngine importPortfolios(final RulesEngineBuilder rulesEngineBuilder, final AbstractJsonInputService importService, final SharePortfolioService sharePortfolioService) {
-		  return rulesEngineBuilder.withName("importPortfolios").withRule(new ImportServiceRuleImpl<>(importService, SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(sharePortfolioService, SPEL_SAVE_ITEM)).build();
+		  return rulesEngineBuilder.withName(IMPORT_PORTFOLIOS_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(importService, SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(sharePortfolioService, SPEL_SAVE_ITEM)).build();
 	}
 
 	@Bean

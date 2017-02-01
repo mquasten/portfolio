@@ -37,6 +37,10 @@ import de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.support.SharesCSVLineConverterImpl;
+import de.mq.portfolio.shareportfolio.support.SharePortfolioService;
+import de.mq.portfolio.user.User;
+import de.mq.portfolio.user.UserService;
+import de.mq.portfolio.user.support.UsersCSVLineConverterImpl;
 import junit.framework.Assert;
 
 
@@ -54,12 +58,19 @@ public class RulesConfigurationTest {
 	
 	private final ShareService shareService = Mockito.mock(ShareService.class);
 	
+	private final UserService userService = Mockito.mock(UserService.class);
 	
+	private final SharePortfolioService sharePortfolioService = Mockito.mock(SharePortfolioService.class);
 	
 	@SuppressWarnings("unchecked")
 	private final ExceptionTranslationBuilder<Collection<ExchangeRate>, BufferedReader> exceptionTranslationBuilderExchangeRateImport = Mockito.mock(ExceptionTranslationBuilder.class);
 	@SuppressWarnings("unchecked")
 	private final ExceptionTranslationBuilder<Collection<Share>, BufferedReader> exceptionTranslationBuilderShareImport = Mockito.mock(ExceptionTranslationBuilder.class);
+	
+	@SuppressWarnings("unchecked")
+	private final ExceptionTranslationBuilder<Collection<User>, BufferedReader> exceptionTranslationBuilderUserImport = Mockito.mock(ExceptionTranslationBuilder.class);
+	
+	private AbstractJsonInputService jsonInputService = Mockito.mock(AbstractJsonInputService.class);
 	
 	private final RulesEngineBuilder rulesEngineBuilder = Mockito.mock(RulesEngineBuilder.class);
 	private final ArgumentCaptor<Rule> ruleCapor = ArgumentCaptor.forClass(Rule.class);
@@ -105,6 +116,65 @@ public class RulesConfigurationTest {
 		Assert.assertEquals(RulesConfiguration.SPEL_SAVE_ITEM, outputExpression.getExpressionString());
 		
 		Assert.assertEquals(shareService, ReflectionTestUtils.getField(rules.get(1), TARGET_FIELD));
+		
+		
+	}
+	
+	@Test
+	public void importUsers() {
+		Assert.assertEquals(rulesEngine, rulesConfiguration.importUsers(rulesEngineBuilder, exceptionTranslationBuilderUserImport, userService));
+		
+		Assert.assertEquals(RulesConfiguration.IMPORT_USERS_RULE_ENGINE_NAME, nameCaptor.getValue());
+		
+		final List<Rule> rules = ruleCapor.getAllValues();
+		Assert.assertEquals(3, rules.size());
+		Assert.assertEquals(ImportServiceRuleImpl.class, rules.get(0).getClass());
+		final SimpleCSVInputServiceImpl<?> reader = (SimpleCSVInputServiceImpl<?>) ReflectionTestUtils.getField(rules.get(0), TARGET_FIELD);
+		
+		
+		Assert.assertEquals(exceptionTranslationBuilderUserImport, fieldValue(reader,ExceptionTranslationBuilder.class));
+		
+		Assert.assertEquals(UsersCSVLineConverterImpl.class, fieldValue(reader,Converter.class).getClass());
+		final Expression inputExpression = fieldValue(rules.get(0), Expression.class);
+		Assert.assertEquals(RulesConfiguration.SPEL_READ_FILENAME, inputExpression.getExpressionString());
+		
+		Assert.assertEquals(ProcessServiceRuleImpl.class, rules.get(1).getClass());
+		final Expression processExpression = fieldValue(rules.get(1), Expression.class);
+		Assert.assertEquals(RulesConfiguration.SPEL_CONVERT_USER_ITEM, processExpression.getExpressionString());
+		
+		Assert.assertEquals(userService, ReflectionTestUtils.getField(rules.get(1), TARGET_FIELD));
+		
+		
+		
+		Assert.assertEquals(ProcessServiceRuleImpl.class, rules.get(2).getClass());
+		final Expression outputExpression = fieldValue(rules.get(2), Expression.class);
+		Assert.assertEquals(RulesConfiguration.SPEL_SAVE_ITEM, outputExpression.getExpressionString());
+		
+		Assert.assertEquals(userService, ReflectionTestUtils.getField(rules.get(2), TARGET_FIELD)); 
+		
+		
+	}
+	
+	
+	@Test
+	public void importPortfolio() {
+		Assert.assertEquals(rulesEngine, rulesConfiguration.importPortfolios(rulesEngineBuilder, jsonInputService, sharePortfolioService));
+		
+		Assert.assertEquals(RulesConfiguration.IMPORT_PORTFOLIOS_RULE_ENGINE_NAME, nameCaptor.getValue());
+		
+		final List<Rule> rules = ruleCapor.getAllValues();
+		Assert.assertEquals(2, rules.size());
+		Assert.assertEquals(ImportServiceRuleImpl.class, rules.get(0).getClass());
+		
+	
+		final Expression inputExpression = fieldValue(rules.get(0), Expression.class);
+		Assert.assertEquals(RulesConfiguration.SPEL_READ_FILENAME, inputExpression.getExpressionString());
+		
+		Assert.assertEquals(ProcessServiceRuleImpl.class, rules.get(1).getClass());
+		final Expression outputExpression = fieldValue(rules.get(1), Expression.class);
+		Assert.assertEquals(RulesConfiguration.SPEL_SAVE_ITEM, outputExpression.getExpressionString());
+		
+		Assert.assertEquals(sharePortfolioService, ReflectionTestUtils.getField(rules.get(1), TARGET_FIELD));
 		
 		
 	}
