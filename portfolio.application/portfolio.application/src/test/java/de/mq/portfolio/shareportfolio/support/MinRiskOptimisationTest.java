@@ -56,6 +56,7 @@ public class MinRiskOptimisationTest {
 		Assert.assertEquals(AlgorithmType.MVP, optimisationAlgorithm.algorithmType());
 	}
 	
+	@Test
 	public final void params() {
 		Assert.assertTrue(optimisationAlgorithm.params().isEmpty());
 	}
@@ -64,4 +65,6 @@ public class MinRiskOptimisationTest {
 	private double percentRound(double value) {
 		return Math.round(10000 * value) / 100d;
 	}
+	
+	
 }

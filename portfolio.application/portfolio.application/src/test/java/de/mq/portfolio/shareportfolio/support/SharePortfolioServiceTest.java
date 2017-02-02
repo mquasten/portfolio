@@ -33,6 +33,7 @@ import junit.framework.Assert;
 
 public class SharePortfolioServiceTest {
 	
+	private static final String JSON_STRING = "jsonString";
 	private static final String ID = "19680528";
 	private static final long NEXT_COUNTER = 2L;
 	private static final String STATUS_STPPED = "STOPPED";
@@ -255,6 +256,13 @@ public class SharePortfolioServiceTest {
 		final Map<Class<?>, Object> results = new HashMap<>();
 		ReflectionUtils.doWithFields(sharePortfolioService.getClass(), field ->  results.put(field.getType(), ReflectionTestUtils.getField(sharePortfolioService, field.getName())), field -> dependencies.containsKey(field.getType()));
 		Assert.assertEquals(dependencies, results);
+	}
+	
+	@Test
+	public final void saveJson() {
+		((AbstractSharePortfolioService)sharePortfolioService).save(JSON_STRING);
+		Mockito.verify(sharePortfolioRepository).save(JSON_STRING);
+		
 	}
 	
 }

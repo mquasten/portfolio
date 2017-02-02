@@ -24,6 +24,10 @@ import junit.framework.Assert;
 
 public class SharePortfolioRepositoryTest {
 
+	private static final String JSON_STRING = "jsonString";
+
+	private static final String PORTFOLIO_DOCNAME = "Portfolio";
+
 	private static final String ID = "19680528";
 
 	private static final long COUNTER = 42L;
@@ -199,5 +203,11 @@ public class SharePortfolioRepositoryTest {
 		sharePortfolioRepository.delete(sharePortfolio);
 		
 		Mockito.verify(mongoOperations).remove(sharePortfolio);
+	}
+	
+	@Test
+	public final void saveJson() {
+		sharePortfolioRepository.save(JSON_STRING);
+		Mockito.verify(mongoOperations).save(JSON_STRING , PORTFOLIO_DOCNAME);
 	}
 }
