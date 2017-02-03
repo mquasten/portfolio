@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,8 @@ import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import junit.framework.Assert;
 
@@ -334,4 +337,33 @@ public class RetrospectiveAOTest {
 
 	
 
+	@Test
+	public final void setOptimisationAlgorithms() {
+		
+		final OptimisationAlgorithm optimisationAlgorithm = Mockito.mock(OptimisationAlgorithm.class);
+		Mockito.when(optimisationAlgorithm.algorithmType()).thenReturn(AlgorithmType.MVP);
+		Assert.assertTrue(getAlgorithms(retrospectiveAO.getCommittedPortfolio()).isEmpty());
+		
+		Assert.assertTrue(getAlgorithms(retrospectiveAO.getCurrentPortfolio()).isEmpty());
+		
+	
+		retrospectiveAO.setOptimisationAlgorithms(Arrays.asList(optimisationAlgorithm));
+		
+		Assert.assertFalse(getAlgorithms(retrospectiveAO.getCommittedPortfolio()).isEmpty());
+		
+		Assert.assertFalse(getAlgorithms(retrospectiveAO.getCurrentPortfolio()).isEmpty());
+		
+		Assert.assertEquals(AlgorithmType.MVP, getAlgorithms(retrospectiveAO.getCommittedPortfolio()).keySet().stream().findAny().get());
+		Assert.assertEquals(AlgorithmType.MVP, getAlgorithms(retrospectiveAO.getCurrentPortfolio()).keySet().stream().findAny().get());
+		
+		Assert.assertEquals(optimisationAlgorithm, getAlgorithms(retrospectiveAO.getCommittedPortfolio()).values().stream().findAny().get());
+		Assert.assertEquals(optimisationAlgorithm, getAlgorithms(retrospectiveAO.getCurrentPortfolio()).values().stream().findAny().get());
+		
+	}
+
+
+	@SuppressWarnings("unchecked")
+	private Map<AlgorithmType, OptimisationAlgorithm> getAlgorithms(final PortfolioAO portfolioAO) {
+		return (Map<AlgorithmType, OptimisationAlgorithm>) ReflectionTestUtils.getField(portfolioAO, "optimisationAlgorithms");
+	}
 }
