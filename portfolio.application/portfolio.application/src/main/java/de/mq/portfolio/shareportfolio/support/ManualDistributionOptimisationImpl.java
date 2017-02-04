@@ -1,5 +1,6 @@
 package de.mq.portfolio.shareportfolio.support;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,11 +43,8 @@ class ManualDistributionOptimisationImpl implements OptimisationAlgorithm {
 			return weights(sharePortfolio.varianceMatrix().length);	
 		}
 		
-
-		
 		Assert.isTrue(parameters.stream().filter(p -> p == null || p == 0d ).count() == 0, "Parameter values are mandatory and should be <> 0.");
-		Assert.isTrue(parameters.stream().mapToDouble(value -> value).sum() == 1d, "Sum of vector values must be 1.");
-		
+		Assert.isTrue(parameters.stream().map(value -> BigDecimal.valueOf(value)).reduce( BigDecimal.ZERO, (a,b) -> a.add(b)).doubleValue() == 1d, "Sum of vector values must be 1.");
 		
 		final double[] results = new double[parameters.size()];
 		IntStream.range(0, results.length).forEach(i -> results[i]= parameters.get(i));
