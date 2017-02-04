@@ -39,6 +39,9 @@ import com.lowagie.text.Table;
 
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
+import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
+import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.support.ExceptionTranslationBuilder;
 import de.mq.portfolio.support.ExceptionTranslationBuilderImpl;
 import junit.framework.Assert;
@@ -94,6 +97,8 @@ public class Portfolio2PdfConverterTest {
 
 	private static final String PORTFOLIO_NAME = "min-risk";
 
+
+
 	@SuppressWarnings("unchecked")
 	private final Converter<String, String> currencyConverter = (Converter<String, String>) Mockito.mock((Class<?>) Converter.class);
 	
@@ -136,7 +141,11 @@ public class Portfolio2PdfConverterTest {
 	
 	private final List<Entry<String, Map<String, Double>>> correlations = new ArrayList<>();
 	
-	//private final ExceptionTranslationBuilder<byte[], AutoCloseable> exceptionTranslationBuilder = new ExceptionTranslationBuilderImpl<>();
+	private final SharePortfolio sharePortfolio = Mockito.mock(SharePortfolio.class);
+	
+	private final OptimisationAlgorithm optimisationAlgorithm = Mockito.mock(OptimisationAlgorithm.class);
+	
+	
 	
 	Date asDate(LocalDateTime localDateTime) {
 	    return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
@@ -146,6 +155,9 @@ public class Portfolio2PdfConverterTest {
 	@Before
 	public final void setup() throws BadElementException {
 		
+		
+		Mockito.when(sharePortfolio.algorithmType()).thenReturn(AlgorithmType.ManualDistribution);
+		Mockito.when(sharePortfolio.optimisationAlgorithm()).thenReturn(optimisationAlgorithm);
 		
 		numberFormat.setMaximumFractionDigits(2);
 		numberFormat.setMinimumFractionDigits(2);
@@ -162,7 +174,11 @@ public class Portfolio2PdfConverterTest {
 		
 		Mockito.when(portfolioAO.getName()).thenReturn(PORTFOLIO_NAME);
 		Mockito.when(portfolioAO.getCurrency()).thenReturn(CURRENCY_CODE);
+		Mockito.when(portfolioAO.getAlgorithmType()).thenReturn(AlgorithmType.ManualDistribution);
+		Mockito.when(portfolioAO.getSharePortfolio()).thenReturn(sharePortfolio);
 		Mockito.when(currencyConverter.convert(CURRENCY_CODE)).thenReturn(CURRENCY_SYMBOL);
+		
+		
 		
 		Mockito.when(timeCourse01.end()).thenReturn(endDate);
 		Mockito.when(timeCourse01.start()).thenReturn(startDate);
@@ -236,9 +252,10 @@ public class Portfolio2PdfConverterTest {
 		
 		final List<String> headlines = elementCaptor.getAllValues().stream().filter(e -> e.getClass().equals(Paragraph.class) ).map(p -> ((Paragraph)p).getContent()).collect(Collectors.toList());
 		
-		Assert.assertEquals(2, headlines.size());
+		Assert.assertEquals(3, headlines.size());
 		Assert.assertEquals(String.format(AbstractPortfolio2PdfConverter.HEADLINE_SHARE_PATTERN, PORTFOLIO_NAME, CURRENCY_SYMBOL),headlines.get(0));
 		Assert.assertEquals(String.format(AbstractPortfolio2PdfConverter.HEADLINE_CORRELATION_PATTERN, PORTFOLIO_NAME), headlines.get(1));
+		Assert.assertEquals(String.format(AbstractPortfolio2PdfConverter.HEADLINE_ALGORITHM_PATTERN, AlgorithmType.ManualDistribution.name()), headlines.get(2));
 		
 		final List<Element> tables = elementCaptor.getAllValues().stream().filter(e -> Table.class.isInstance(e) ).collect(Collectors.toList());
 		Assert.assertEquals(2, tables.size());

@@ -6,6 +6,9 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -23,6 +26,7 @@ import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Table;
+import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 import de.mq.portfolio.support.ExceptionTranslationBuilder;
@@ -55,6 +59,8 @@ public abstract class AbstractPortfolio2PdfConverter implements Converter<Portfo
 	static final String HEADLINE_CORRELATION_PATTERN = "Korrelationen %s";
 
 	static final String HEADLINE_SHARE_PATTERN = "Aktien %s [Währung: %s]";
+	
+	static final String HEADLINE_ALGORITHM_PATTERN =  "Algorithmus: %s";
 
 	final Font headline = FontFactory.getFont(FontFactory.TIMES_BOLD, 24);
 
@@ -63,6 +69,7 @@ public abstract class AbstractPortfolio2PdfConverter implements Converter<Portfo
 
 	final NumberFormat numberFormat = NumberFormat.getInstance();
 	final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yy");
+
 
 	private final Converter<String, String> currencyConverter;
 
@@ -130,6 +137,30 @@ public abstract class AbstractPortfolio2PdfConverter implements Converter<Portfo
 		});
 		add(document, correlationTable);
 		
+		
+		add(document, new Paragraph(String.format(HEADLINE_ALGORITHM_PATTERN, portfolioAO.getSharePortfolio().algorithmType().name()), headline));
+		
+		PdfPTable parameterTable = new PdfPTable(2);
+		parameterTable.setHorizontalAlignment(Element.ALIGN_LEFT);
+		parameterTable.setWidthPercentage(WIDTH_TABLE);
+		parameterTable.setSpacingBefore(35);
+		
+	
+		
+		portfolioAO.getSharePortfolio().optimisationAlgorithm().params().forEach(parameter -> {
+			parameterTable.addCell(parameter.name());
+		
+			if( parameter.isVector() ) {
+				final List<String> names = portfolioAO.getTimeCourses().stream().map(tc -> tc.name()).collect(Collectors.toList());
+				addCell(parameterTable, portfolioAO.getSharePortfolio().parameterVector(parameter), names );
+			} else {
+				parameterTable.addCell(text(portfolioAO.getSharePortfolio().param(parameter), 1d));
+			}
+			
+		} );
+		
+		add(document, parameterTable);
+		
 		document.close();
 
 		return os.toByteArray();
@@ -149,13 +180,26 @@ public abstract class AbstractPortfolio2PdfConverter implements Converter<Portfo
 		return (Table) translator().withStatement(() -> new Table(VARIANCE_TABLE_COL_SIZE)).translate();
 	}
 
-
+	
 	Document newDocument() {
 		return new Document(PageSize.A4.rotate());
 	}
 
 	private void addCell(final Table table, final Double value, final double scale) {
 		translator().withStatement(() -> table.addCell(new Phrase(text(value, scale), tableCell))).translate();
+
+	}
+	
+	private void addCell(final PdfPTable table, final List<Double> values, final List<String> names ) {
+		
+		
+		final PdfPTable valueTable = new PdfPTable(2);
+		
+		IntStream.range(0, Math.min(values.size(), names.size())).forEach(i -> {valueTable.addCell(new Phrase(names.get(i))); valueTable.addCell(new Phrase(text(values.get(i), 1d), tableCell));});
+		
+		table.addCell(valueTable);
+			
+		
 
 	}
 
