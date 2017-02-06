@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,9 +37,11 @@ import com.lowagie.text.FontFactory;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Table;
+import com.lowagie.text.pdf.PdfPTable;
 
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.shareportfolio.AlgorithmParameter;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -49,6 +52,14 @@ import junit.framework.Assert;
 public class Portfolio2PdfConverterTest {
 	
 	
+	
+
+	private static final double SCALAR_PARAMETER_VALUE = 47.11;
+
+	private static final String VECTOR_PARAMETER_NAME = "vectorParameter";
+
+	private static final String SCALAR_PARAMETER_NAME = "scalarParameter";
+
 	private static final double CORRELATION = 0.2345;
 
 	private static final double FULL_CORRELATION = 1.0d;
@@ -68,6 +79,8 @@ public class Portfolio2PdfConverterTest {
 	private static final double STD_01 = 1.0e-3;
 	
 	
+
+	
 	
 	
 	
@@ -81,7 +94,7 @@ public class Portfolio2PdfConverterTest {
 	
 	private static final String WKN_02 = "wkn02";
 	
-	
+	private static final List<Double> WEIGHTS = Arrays.asList(Double.valueOf(WEIGHT_01),Double.valueOf(WEIGHT_02));
 
 	private static final SimpleDateFormat DATEFORMAT = new SimpleDateFormat("dd.MM.yy");
 
@@ -116,10 +129,15 @@ public class Portfolio2PdfConverterTest {
 	
 	private final ArgumentCaptor<Phrase> phraseCorrelationTableCaptor = ArgumentCaptor.forClass(Phrase.class);
 	
+	private final ArgumentCaptor<String> parameterTableStringCaptor = ArgumentCaptor.forClass(String.class);
 	
+	private final ArgumentCaptor<PdfPTable> parameterTablePdfTableCaptor = ArgumentCaptor.forClass(PdfPTable.class);
+
 	private final Table varianceTable = Mockito.mock(Table.class);
 	
 	private final Table correlationTable = Mockito.mock(Table.class);
+	
+	private final PdfPTable parameterTable = Mockito.mock(PdfPTable.class);
 	
 	
 	private final TimeCourse timeCourse01 = Mockito.mock(TimeCourse.class);
@@ -145,7 +163,8 @@ public class Portfolio2PdfConverterTest {
 	
 	private final OptimisationAlgorithm optimisationAlgorithm = Mockito.mock(OptimisationAlgorithm.class);
 	
-	
+	private AlgorithmParameter scalarParameter =  Mockito.mock(AlgorithmParameter.class);
+	private AlgorithmParameter vectorParameter =  Mockito.mock(AlgorithmParameter.class);
 	
 	Date asDate(LocalDateTime localDateTime) {
 	    return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
@@ -155,10 +174,17 @@ public class Portfolio2PdfConverterTest {
 	@Before
 	public final void setup() throws BadElementException {
 		
+		Mockito.when(scalarParameter.name()).thenReturn(SCALAR_PARAMETER_NAME);
+		Mockito.when(vectorParameter.name()).thenReturn(VECTOR_PARAMETER_NAME);
+		Mockito.when(vectorParameter.isVector()).thenReturn(true);
+	
+		Mockito.when(optimisationAlgorithm.params()).thenReturn(Arrays.asList(scalarParameter, vectorParameter));
 		
 		Mockito.when(sharePortfolio.algorithmType()).thenReturn(AlgorithmType.ManualDistribution);
 		Mockito.when(sharePortfolio.optimisationAlgorithm()).thenReturn(optimisationAlgorithm);
+		Mockito.when(sharePortfolio.param(scalarParameter)).thenReturn(SCALAR_PARAMETER_VALUE);
 		
+		Mockito.when(sharePortfolio.parameterVector(vectorParameter)).thenReturn(WEIGHTS);
 		numberFormat.setMaximumFractionDigits(2);
 		numberFormat.setMinimumFractionDigits(2);
 		
@@ -166,7 +192,7 @@ public class Portfolio2PdfConverterTest {
 		Mockito.when(portfolio2PdfConverter.newDocument()).thenReturn(document);
 		Mockito.when(portfolio2PdfConverter.newVarianceTable()).thenReturn(varianceTable);
 		Mockito.when(portfolio2PdfConverter.newCorrelationTable(shares.size()+1)).thenReturn(correlationTable);
-		
+		Mockito.when(portfolio2PdfConverter.newParameterTable()).thenReturn(parameterTable, new PdfPTable(2));
 	
 		
 		Mockito.when(portfolioAO.getShares()).thenReturn(shares);
@@ -328,6 +354,25 @@ public class Portfolio2PdfConverterTest {
 		Assert.assertEquals(numberFormat.format(100 * FULL_CORRELATION), correlationTableCells.get(8));
 		
 		Mockito.verify(document).close();
+		
+		
+		final List<Element> pdfTables = elementCaptor.getAllValues().stream().filter(e -> PdfPTable.class.isInstance(e) ).collect(Collectors.toList());
+		Assert.assertEquals(1, pdfTables.size());
+		
+		Mockito.verify(parameterTable, Mockito.atLeastOnce()).addCell(parameterTableStringCaptor.capture());
+		Mockito.verify(parameterTable, Mockito.atLeastOnce()).addCell(parameterTablePdfTableCaptor.capture());
+		
+		Assert.assertEquals(3, parameterTableStringCaptor.getAllValues().size());
+		Assert.assertEquals(SCALAR_PARAMETER_NAME, parameterTableStringCaptor.getAllValues().get(0));
+		Assert.assertEquals(VECTOR_PARAMETER_NAME, parameterTableStringCaptor.getAllValues().get(2));
+		Assert.assertEquals(numberFormat.format(SCALAR_PARAMETER_VALUE), parameterTableStringCaptor.getAllValues().get(1));
+		
+		Assert.assertEquals(WEIGHTS.size(), parameterTablePdfTableCaptor.getValue().getRows().size());
+		Assert.assertEquals(WEIGHTS.size(), portfolioAO.getTimeCourses().size());
+		
+		IntStream.range(0, portfolioAO.getTimeCourses().size()).forEach(i -> Assert.assertEquals(portfolioAO.getTimeCourses().get(i).share().name(), parameterTablePdfTableCaptor.getValue().getRow(i).getCells()[0].getPhrase().getContent()));
+		IntStream.range(0,WEIGHTS.size()).forEach(i -> Assert.assertEquals(numberFormat.format(WEIGHTS.get(i)), parameterTablePdfTableCaptor.getValue().getRow(i).getCells()[1].getPhrase().getContent()));
+		
 		
 	}
 	

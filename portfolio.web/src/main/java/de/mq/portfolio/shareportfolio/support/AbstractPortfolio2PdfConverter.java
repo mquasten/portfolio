@@ -140,7 +140,7 @@ public abstract class AbstractPortfolio2PdfConverter implements Converter<Portfo
 		
 		add(document, new Paragraph(String.format(HEADLINE_ALGORITHM_PATTERN, portfolioAO.getSharePortfolio().algorithmType().name()), headline));
 		
-		PdfPTable parameterTable = new PdfPTable(2);
+		PdfPTable parameterTable = newParameterTable();
 		parameterTable.setHorizontalAlignment(Element.ALIGN_LEFT);
 		parameterTable.setWidthPercentage(WIDTH_TABLE);
 		parameterTable.setSpacingBefore(35);
@@ -148,13 +148,13 @@ public abstract class AbstractPortfolio2PdfConverter implements Converter<Portfo
 	
 		
 		portfolioAO.getSharePortfolio().optimisationAlgorithm().params().forEach(parameter -> {
-			parameterTable.addCell(parameter.name());
-		
+			addCell(parameterTable, parameter.name());
+	
 			if( parameter.isVector() ) {
-				final List<String> names = portfolioAO.getTimeCourses().stream().map(tc -> tc.name()).collect(Collectors.toList());
+				final List<String> names = portfolioAO.getTimeCourses().stream().map(tc -> tc.share().name()).collect(Collectors.toList());
 				addCell(parameterTable, portfolioAO.getSharePortfolio().parameterVector(parameter), names );
 			} else {
-				parameterTable.addCell(text(portfolioAO.getSharePortfolio().param(parameter), 1d));
+				addCell(parameterTable, text(portfolioAO.getSharePortfolio().param(parameter),1d));
 			}
 			
 		} );
@@ -166,11 +166,21 @@ public abstract class AbstractPortfolio2PdfConverter implements Converter<Portfo
 		return os.toByteArray();
 	}
 
+	private void addCell(final PdfPTable parameterTable, String name) {
+		parameterTable.addCell(name);
+	}
+
+	
+
 	private void assignWriter(final Document document, final ByteArrayOutputStream os) {
 		translator().withStatement(() -> PdfWriter.getInstance(document, os)).translate();
 
 	}
 
+	PdfPTable newParameterTable() {
+		return new PdfPTable(2);
+	}
+	
 	Table newCorrelationTable(final int size) {
 
 		return (Table) translator().withStatement(() -> new Table(size)).translate();
@@ -190,10 +200,12 @@ public abstract class AbstractPortfolio2PdfConverter implements Converter<Portfo
 
 	}
 	
+	
 	private void addCell(final PdfPTable table, final List<Double> values, final List<String> names ) {
 		
 		
-		final PdfPTable valueTable = new PdfPTable(2);
+		final PdfPTable valueTable = newParameterTable();
+		
 		
 		IntStream.range(0, Math.min(values.size(), names.size())).forEach(i -> {valueTable.addCell(new Phrase(names.get(i))); valueTable.addCell(new Phrase(text(values.get(i), 1d), tableCell));});
 		
