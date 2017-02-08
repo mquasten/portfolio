@@ -25,7 +25,6 @@ import com.lowagie.text.FontFactory;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
-import com.lowagie.text.Table;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
@@ -33,6 +32,8 @@ import de.mq.portfolio.support.ExceptionTranslationBuilder;
 
 @Component("portfolio2PdfConverter")
 public abstract class AbstractPortfolio2PdfConverter implements Converter<PortfolioAO, byte[]> {
+
+	static final int SPACING_BEFORE_TABLE = 5;
 
 	static final String DATE_RANGE_PATTERN = "%s - %s";
 
@@ -91,9 +92,9 @@ public abstract class AbstractPortfolio2PdfConverter implements Converter<Portfo
 		document.open();
 		document.addTitle(portfolioAO.getName());
 		add(document, new Paragraph(String.format(HEADLINE_SHARE_PATTERN, portfolioAO.getName(), currencyConverter.convert(portfolioAO.getCurrency())), headline));
-		final Table varianceSharesTable = newVarianceTable();
-
-		varianceSharesTable.setWidth(WIDTH_TABLE);
+		final PdfPTable varianceSharesTable = newVarianceTable();
+		varianceSharesTable.setSpacingBefore(SPACING_BEFORE_TABLE);
+		varianceSharesTable.setWidthPercentage(WIDTH_TABLE);
 		addCellHeader(varianceSharesTable, VARIANCE_TABLE_SHARE_HEADER);
 		addCellHeader(varianceSharesTable, VARIANCE_TABLE_WKN_HEADER);
 		addCellHeader(varianceSharesTable, VARIANCE_TABLE_TIME_FRAME_HEADER);
@@ -102,7 +103,7 @@ public abstract class AbstractPortfolio2PdfConverter implements Converter<Portfo
 		addCellHeader(varianceSharesTable, VARIANCE_TABLE_RATE_HEADER);
 		addCellHeader(varianceSharesTable, VARIANCE_TABLE_RATE_DIVIDENDS_HEADER);
 
-		varianceSharesTable.setAlignment(Element.ALIGN_LEFT);
+		varianceSharesTable.setHorizontalAlignment(Element.ALIGN_LEFT);
 		portfolioAO.getTimeCourses().forEach(tc -> {
 			addCellHeader(varianceSharesTable, tc.share().name());
 			addCell(varianceSharesTable, tc.wkn());
@@ -126,9 +127,10 @@ public abstract class AbstractPortfolio2PdfConverter implements Converter<Portfo
 		add(document, varianceSharesTable);
 
 		add(document, new Paragraph(String.format(HEADLINE_CORRELATION_PATTERN, portfolioAO.getName()), headline));
-		final Table correlationTable = newCorrelationTable(portfolioAO.getShares().size() + 1);
-		correlationTable.setAlignment(Element.ALIGN_LEFT);
-		correlationTable.setWidth(WIDTH_TABLE);
+		final PdfPTable correlationTable = newCorrelationTable(portfolioAO.getShares().size() + 1);
+		correlationTable.setSpacingBefore(5);
+		correlationTable.setHorizontalAlignment(Element.ALIGN_LEFT);
+		correlationTable.setWidthPercentage(WIDTH_TABLE);
 		addCellHeader(correlationTable, CORRELATION_TABLE_CORRELATIONS_HEADER);
 		portfolioAO.getShares().forEach(share -> addCellHeader(correlationTable, share));
 		portfolioAO.getCorrelations().forEach(e -> {
@@ -143,7 +145,7 @@ public abstract class AbstractPortfolio2PdfConverter implements Converter<Portfo
 		PdfPTable parameterTable = newParameterTable();
 		parameterTable.setHorizontalAlignment(Element.ALIGN_LEFT);
 		parameterTable.setWidthPercentage(WIDTH_TABLE);
-		parameterTable.setSpacingBefore(35);
+		parameterTable.setSpacingBefore(5);
 		
 	
 		
@@ -167,7 +169,7 @@ public abstract class AbstractPortfolio2PdfConverter implements Converter<Portfo
 	}
 
 	private void addCell(final PdfPTable parameterTable, String name) {
-		parameterTable.addCell(name);
+		parameterTable.addCell(new Phrase(name, tableCell ));
 	}
 
 	
@@ -181,13 +183,13 @@ public abstract class AbstractPortfolio2PdfConverter implements Converter<Portfo
 		return new PdfPTable(2);
 	}
 	
-	Table newCorrelationTable(final int size) {
+	PdfPTable newCorrelationTable(final int size) {
 
-		return (Table) translator().withStatement(() -> new Table(size)).translate();
+		return  new PdfPTable(size);
 	}
 
-	Table newVarianceTable() {
-		return (Table) translator().withStatement(() -> new Table(VARIANCE_TABLE_COL_SIZE)).translate();
+	PdfPTable newVarianceTable() {
+		return  new PdfPTable(VARIANCE_TABLE_COL_SIZE);
 	}
 
 	
@@ -195,8 +197,8 @@ public abstract class AbstractPortfolio2PdfConverter implements Converter<Portfo
 		return new Document(PageSize.A4.rotate());
 	}
 
-	private void addCell(final Table table, final Double value, final double scale) {
-		translator().withStatement(() -> table.addCell(new Phrase(text(value, scale), tableCell))).translate();
+	private void addCell(final PdfPTable table, final Double value, final double scale) {
+		 table.addCell(new Phrase(text(value, scale), tableCell));
 
 	}
 	
@@ -215,10 +217,6 @@ public abstract class AbstractPortfolio2PdfConverter implements Converter<Portfo
 
 	}
 
-	private void addCell(final Table table, final String value) {
-		translator().withStatement(() -> table.addCell(new Phrase(value, tableCell))).translate();
-		
-	}
 
 	private void add(final Document document, Element element) {
 		translator().withStatement(() -> document.add(element)).translate();
@@ -231,12 +229,12 @@ public abstract class AbstractPortfolio2PdfConverter implements Converter<Portfo
 		return numberFormat.format(value * scale);
 	}
 
-	private void addCellHeader(final Table table, String text) {
-		translator().withStatement(() -> table.addCell(new Phrase(text, tableHeadline))).translate();
+	private void addCellHeader(final PdfPTable table, String text) {
+		table.addCell(new Phrase(text, tableHeadline));
 	}
 
-	private void addCellHeader(final Table table, final Double value, final double scale) {
-		translator().withStatement(() -> table.addCell(new Phrase(text(value, scale), tableHeadline))).translate();
+	private void addCellHeader(final PdfPTable table, final Double value, final double scale) {
+		table.addCell(new Phrase(text(value, scale), tableHeadline));
 	}
 
 	@SuppressWarnings("unchecked")

@@ -129,13 +129,13 @@ public class Portfolio2PdfConverterTest {
 	
 	private final ArgumentCaptor<Phrase> phraseCorrelationTableCaptor = ArgumentCaptor.forClass(Phrase.class);
 	
-	private final ArgumentCaptor<String> parameterTableStringCaptor = ArgumentCaptor.forClass(String.class);
+	private final ArgumentCaptor<Phrase> parameterTableStringCaptor = ArgumentCaptor.forClass(Phrase.class);
 	
 	private final ArgumentCaptor<PdfPTable> parameterTablePdfTableCaptor = ArgumentCaptor.forClass(PdfPTable.class);
 
-	private final Table varianceTable = Mockito.mock(Table.class);
+	private final PdfPTable varianceTable = Mockito.mock(PdfPTable.class);
 	
-	private final Table correlationTable = Mockito.mock(Table.class);
+	private final PdfPTable correlationTable = Mockito.mock(PdfPTable.class);
 	
 	private final PdfPTable parameterTable = Mockito.mock(PdfPTable.class);
 	
@@ -283,16 +283,16 @@ public class Portfolio2PdfConverterTest {
 		Assert.assertEquals(String.format(AbstractPortfolio2PdfConverter.HEADLINE_CORRELATION_PATTERN, PORTFOLIO_NAME), headlines.get(1));
 		Assert.assertEquals(String.format(AbstractPortfolio2PdfConverter.HEADLINE_ALGORITHM_PATTERN, AlgorithmType.ManualDistribution.name()), headlines.get(2));
 		
-		final List<Element> tables = elementCaptor.getAllValues().stream().filter(e -> Table.class.isInstance(e) ).collect(Collectors.toList());
-		Assert.assertEquals(2, tables.size());
+		final List<Element> tables = elementCaptor.getAllValues().stream().filter(e -> PdfPTable.class.isInstance(e) ).collect(Collectors.toList());
+		Assert.assertEquals(3, tables.size());
 		Assert.assertEquals(varianceTable, tables.get(0));
 		Assert.assertEquals(correlationTable, tables.get(1));
 		
-		Mockito.verify(varianceTable).setWidth(AbstractPortfolio2PdfConverter.WIDTH_TABLE);
+		Mockito.verify(varianceTable).setWidthPercentage(AbstractPortfolio2PdfConverter.WIDTH_TABLE);
 		
 		Mockito.verify(varianceTable, Mockito.atLeastOnce()).addCell(phraseVarianceTableCaptor.capture());
-		
-		Mockito.verify(varianceTable).setAlignment(Element.ALIGN_LEFT);
+		Mockito.verify(varianceTable).setSpacingBefore(AbstractPortfolio2PdfConverter.SPACING_BEFORE_TABLE);
+		Mockito.verify(varianceTable).setHorizontalAlignment(Element.ALIGN_LEFT);
 		Assert.assertEquals(4*AbstractPortfolio2PdfConverter.VARIANCE_TABLE_COL_SIZE, phraseVarianceTableCaptor.getAllValues().size());
 		
 		phraseVarianceTableCaptor.getAllValues().stream().map(p -> p.getFont()).forEach(f ->Assert.assertEquals(FONT, f));
@@ -332,10 +332,10 @@ public class Portfolio2PdfConverterTest {
 		Assert.assertEquals(numberFormat.format(TOTAL_RATE * 100),varianceTableCells.get(26));
 		
 		Assert.assertEquals(numberFormat.format(TOTAL_RATE_DIVIDENDS * 100), varianceTableCells.get(27));
+		Mockito.verify(correlationTable).setSpacingBefore(AbstractPortfolio2PdfConverter.SPACING_BEFORE_TABLE);;
 		
-		
-		Mockito.verify(correlationTable).setAlignment(Element.ALIGN_LEFT);
-		Mockito.verify(correlationTable).setWidth(AbstractPortfolio2PdfConverter.WIDTH_TABLE);
+		Mockito.verify(correlationTable).setHorizontalAlignment(Element.ALIGN_LEFT);
+		Mockito.verify(correlationTable).setWidthPercentage(AbstractPortfolio2PdfConverter.WIDTH_TABLE);
 		
 		Mockito.verify(correlationTable, Mockito.atLeastOnce()).addCell(phraseCorrelationTableCaptor.capture());
 		final List<String> correlationTableCells = phraseCorrelationTableCaptor.getAllValues().stream().map(p -> p.getContent()).collect(Collectors.toList());
@@ -356,16 +356,19 @@ public class Portfolio2PdfConverterTest {
 		Mockito.verify(document).close();
 		
 		
-		final List<Element> pdfTables = elementCaptor.getAllValues().stream().filter(e -> PdfPTable.class.isInstance(e) ).collect(Collectors.toList());
-		Assert.assertEquals(1, pdfTables.size());
+
 		
 		Mockito.verify(parameterTable, Mockito.atLeastOnce()).addCell(parameterTableStringCaptor.capture());
 		Mockito.verify(parameterTable, Mockito.atLeastOnce()).addCell(parameterTablePdfTableCaptor.capture());
 		
+		
+		Mockito.verify(parameterTable).setHorizontalAlignment(Element.ALIGN_LEFT);
+		Mockito.verify(parameterTable).setWidthPercentage(AbstractPortfolio2PdfConverter.WIDTH_TABLE);
+		Mockito.verify(parameterTable).setSpacingBefore(AbstractPortfolio2PdfConverter.SPACING_BEFORE_TABLE);
 		Assert.assertEquals(3, parameterTableStringCaptor.getAllValues().size());
-		Assert.assertEquals(SCALAR_PARAMETER_NAME, parameterTableStringCaptor.getAllValues().get(0));
-		Assert.assertEquals(VECTOR_PARAMETER_NAME, parameterTableStringCaptor.getAllValues().get(2));
-		Assert.assertEquals(numberFormat.format(SCALAR_PARAMETER_VALUE), parameterTableStringCaptor.getAllValues().get(1));
+		Assert.assertEquals(SCALAR_PARAMETER_NAME, parameterTableStringCaptor.getAllValues().get(0).getContent());
+		Assert.assertEquals(VECTOR_PARAMETER_NAME, parameterTableStringCaptor.getAllValues().get(2).getContent());
+		Assert.assertEquals(numberFormat.format(SCALAR_PARAMETER_VALUE), parameterTableStringCaptor.getAllValues().get(1).getContent());
 		
 		Assert.assertEquals(WEIGHTS.size(), parameterTablePdfTableCaptor.getValue().getRows().size());
 		Assert.assertEquals(WEIGHTS.size(), portfolioAO.getTimeCourses().size());
