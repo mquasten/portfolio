@@ -51,9 +51,8 @@ public  class SimpleCommandlineProcessorImpl implements ApplicationContextAware 
 
 	
 	public  void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-	
+		
 		target  = applicationContext.getBean(targetClass);
-	
 	
 		final Collection<Method> methods = new  HashSet<>();
 		ReflectionUtils.doWithMethods(targetClass,method -> methods.add(method), method -> method.isAnnotationPresent(Main.class));
@@ -78,7 +77,8 @@ public  class SimpleCommandlineProcessorImpl implements ApplicationContextAware 
 	}
 	
 	public static final void main(final String[] args) {
-		 new ExceptionTranslationBuilderImpl<Void, ConfigurableApplicationContext>().withResource(applicationContextSupplier).withStatement(ctx -> { doInApplicationContext(args); }).translate();
+		System.setProperty("spring.profiles.active", "yahooHistoryRepository");
+		new ExceptionTranslationBuilderImpl<Void, ConfigurableApplicationContext>().withResource(applicationContextSupplier).withStatement(ctx -> { doInApplicationContext(args); }).translate();
 
 	}
 

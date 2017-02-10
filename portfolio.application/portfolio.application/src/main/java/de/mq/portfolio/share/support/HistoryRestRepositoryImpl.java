@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestOperations;
 
@@ -18,6 +19,7 @@ import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 
 @Repository
+@Profile("yahooHistoryRepository")
 class HistoryRestRepositoryImpl implements HistoryRepository {
 
 	private final RestOperations restOperations;
