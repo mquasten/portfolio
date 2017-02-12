@@ -9,40 +9,19 @@
 		http://www.springframework.org/schema/data/repository http://www.springframework.org/schema/data/repository/spring-repository-1.6.xsd">
 
 
-	<mongo:mongo host="127.0.0.1" port="27017" />
-	<mongo:db-factory dbname="portfolio" />
-
-<context:component-scan base-package="de.mq.portfolio.share.support.support" />
-
-
-	<bean id="defaultMongoTypeMapper"
-		class="org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper">
-		<constructor-arg name="typeKey">
-			<null />
-		</constructor-arg>
-	</bean>
-
-	<bean id="mappingMongoConverter"
-		class="org.springframework.data.mongodb.core.convert.MappingMongoConverter">
-		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
-		<constructor-arg name="mappingContext">
-			<bean id="mappingContext"
-				class="org.springframework.data.mongodb.core.mapping.MongoMappingContext" />
-		</constructor-arg>
-		<property name="typeMapper" ref="defaultMongoTypeMapper" />
-	</bean>
-
-	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
-		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
 	
-	</bean>
+
+
+<bean id="googleHistoryRepository" class="de.mq.portfolio.share.support.HistoryGoogleRestRepositoryImpl" />
+
+<bean id="yahooHistoryRepository" class="de.mq.portfolio.share.support.HistoryRestRepositoryImpl" />
 	
 	
 	
 
-<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+<bean id="restTemplate" class="org.springframework.web.client.RestTemplate" />
    
-</bean>
+
 	
 
 

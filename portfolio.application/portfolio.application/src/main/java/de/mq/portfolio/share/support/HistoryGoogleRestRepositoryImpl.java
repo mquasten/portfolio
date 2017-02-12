@@ -22,7 +22,7 @@ import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 
-@Repository("historyGoogleRestRepository")
+@Repository()
 @Profile("googleHistoryRepository" )
 class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 	
@@ -34,7 +34,7 @@ class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 	private final int periodeInDays = 365;
 	
 	enum Index {
-		Dax("ETR" ),Dow("NYSE");
+		Dax("ETR" /*"FRA"*/ ),Dow("NYSE"), Mafia("FRA");
 		private final String stockExchange;
 		
 		Index(final String stockExchange) {
@@ -47,6 +47,12 @@ class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 			if( text.toLowerCase().startsWith("deutscher")){
 				return Dax;
 			};
+			
+			if( text.toLowerCase().startsWith("corleone")){
+				return Mafia;
+			};
+			
+			//
 			throw new IllegalArgumentException(String.format("Index not found for: '%s'", text));
 			
 		}

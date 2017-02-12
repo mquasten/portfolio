@@ -1,7 +1,15 @@
 package de.mq.portfolio.share.support;
 
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -9,23 +17,32 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/application.xml" })
-//@ActiveProfiles({"googleHistoryRepository"})
+@ContextConfiguration(locations = { "/application-test.xml" })
+
 @Ignore
-@ActiveProfiles({"yahooHistoryRepository"})
+//@ActiveProfiles({"yahooHistoryRepository", "googleHistoryRepository"})
 public class HistoryRepositoryIntegrationTest {
 	
-	@Autowired
-	private  HistoryRepository historyGoogleRestRepository; 
 	
+	
+	@Autowired
+	@Qualifier("googleHistoryRepository")
+	private  HistoryRepository   historyGoogleRestRepository; 
+	
+	
+
+	@Autowired
+	@Qualifier("yahooHistoryRepository")
+	private  HistoryRepository   historyYahooRestRepository; 
+
+
 	private final Share share = Mockito.mock(Share.class);
 	
 	@Before
@@ -38,18 +55,58 @@ public class HistoryRepositoryIntegrationTest {
 	}
 	
 	
+	
+	
 	@Test
 	public  void history() throws ParseException {
 		
-		final List<Data> results = historyGoogleRestRepository.history(share).rates();
+		System.out.println(historyGoogleRestRepository.getClass());
+		System.out.println(historyYahooRestRepository.getClass());
 		
-		results.forEach(rate -> System.out.println(rate.date() + ":" + rate.value()));
+		int max = 4;
+		@SuppressWarnings("unchecked")
+		final List<Data>[]  results = new  List[max];
+				
+				
+		results[0] = historyGoogleRestRepository.history(share).rates();
 		
-		/*final String x = new SimpleDateFormat("dd-MMM-YY").format(new Date());
+		Mockito.when(share.index()).thenReturn("corleone stock index"); 
 		
-		Date date = new SimpleDateFormat("d-MMM-yy", Locale.US).parse("12-feb-16"); 
+		results[1] = historyGoogleRestRepository.history(share).rates();
 		
-		System.out.println(date); */
+		Mockito.when(share.index()).thenReturn("dow"); 
+		results[2] = historyGoogleRestRepository.history(share).rates();
+		
+		Mockito.when(share.index()).thenReturn(null); 
+		
+		
+		results[3] = historyYahooRestRepository.history(share).rates();
+		
+		final Map<Date, Double[]> prices = new HashMap<>();
+		IntStream.range(0, max).forEach(i -> {
+			results[i].forEach(data -> {
+				prices.put(data.date(), new Double[max]);
+			});
+			
+		});
+		
+		
+		IntStream.range(0, max).forEach(i ->  {
+			results[i].forEach(data -> prices.get(data.date())[i]=data.value());
+			
+		});
+		
+		final List<Date> dates = new ArrayList<>(prices.keySet());
+		Collections.sort(dates, (d1, d2) -> (int) Math.round(d1.getTime() - d2.getTime()));
+		final DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+		dates.forEach(date -> {
+			    final Double values [] = prices.get(date);
+			    System.out.println(df.format(date) +";" +  values[0] +";" +values[1] +";" +values[2] +";" +values[3]);
+				
+		});
+		
 	}
+	
+
 
 }

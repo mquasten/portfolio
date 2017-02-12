@@ -18,7 +18,7 @@ import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 
-@Repository
+@Repository()
 @Profile("yahooHistoryRepository")
 class HistoryRestRepositoryImpl implements HistoryRepository {
 
