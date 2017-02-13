@@ -23,19 +23,26 @@ class ShareImpl implements Share {
 	private String index;
 	
 	private String currency;
-
+	
+	private StockExchange stockExchange;
+	
 	ShareImpl(final String code, final String name, final String index, final String wkn, final String currency) {
+		this(code, name, index, wkn,currency, null);
+	}
+
+	ShareImpl(final String code, final String name, final String index, final String wkn, final String currency, final StockExchange stockExchange) {
 		this.code = code;
 		this.name = name;
 		this.index = index;
 		this.wkn=wkn;
 		this.currency=currency;
+		this.stockExchange=stockExchange;
 	}
 
 	
 
 	ShareImpl(final String code) {
-		this(code, null, null, null,null);
+		this(code, null, null, null,null,null);
 	}
 
 	@SuppressWarnings("unused")
@@ -100,6 +107,13 @@ class ShareImpl implements Share {
 			return null;
 		}
 		return currency.trim().toUpperCase();
+	}
+
+
+
+	@Override
+	public StockExchange stockExchange() {
+		return stockExchange;
 	}
 
 }

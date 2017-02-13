@@ -33,34 +33,7 @@ class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 	
 	private final int periodeInDays = 365;
 	
-	enum Index {
-		Dax("ETR" /*"FRA"*/ ),Dow("NYSE"), Mafia("FRA");
-		private final String stockExchange;
-		
-		Index(final String stockExchange) {
-			this.stockExchange=stockExchange;
-		}
-		static Index from(final String text ){
-			if( text.toLowerCase().startsWith("dow")){
-				return Dow;
-			};
-			if( text.toLowerCase().startsWith("deutscher")){
-				return Dax;
-			};
-			
-			if( text.toLowerCase().startsWith("corleone")){
-				return Mafia;
-			};
-			
-			//
-			throw new IllegalArgumentException(String.format("Index not found for: '%s'", text));
-			
-		}
-		
-		final String defaultStockExchange() {
-			return stockExchange;
-		}
-	}
+	
 
 	@Autowired
 	HistoryGoogleRestRepositoryImpl(final RestOperations restOperations) {
@@ -73,9 +46,7 @@ class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 	
 		Assert.notNull(share.code(), "ShareCode is mandatory");
 		
-		final Index index = Index.from(share.index());
-		
-		final String name = index.defaultStockExchange() + ":" + share.code().replaceFirst("[.].*$", "");
+		final String name = defaultStockExchange(share) + ":" + share.code().replaceFirst("[.].*$", "");
 		
 		final String result =restOperations.getForObject(String.format(url, name, startDate()), String.class);
 		
@@ -107,6 +78,21 @@ class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 		} catch (final Exception e) {
 			throw new IllegalArgumentException(e);
 		}
+		
+	}
+	
+	private String  defaultStockExchange(final Share share ){
+		
+		if( share.stockExchange() != null) {
+			return  share.stockExchange().name();
+		}
+		if( share.index().toLowerCase().startsWith("dow")){
+			return "NYSE";
+		};
+		if(  share.index().toLowerCase().startsWith("deutscher")){
+			return "ETR";
+		};
+		throw new IllegalArgumentException(String.format("Index not found for: '%s'", share.index()));
 		
 	}
 }

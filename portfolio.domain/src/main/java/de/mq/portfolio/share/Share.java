@@ -1,6 +1,13 @@
 package de.mq.portfolio.share;
 
 public interface Share {
+	
+	public enum StockExchange {
+		ETR,
+		FRA, 
+		NYSE;
+		
+	}
 
 	public abstract String name();
 
@@ -9,6 +16,8 @@ public interface Share {
 	public abstract String code();
 
 	public abstract boolean isIndex();
+	
+	StockExchange stockExchange();
 
 	String wkn();
 
