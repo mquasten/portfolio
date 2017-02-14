@@ -42,6 +42,8 @@ public interface TimeCourse  extends IdentifierAware<String>{
 
 	String wkn();
 
+	void assign(final TimeCourse timeCourse);
+
 	
 
 }

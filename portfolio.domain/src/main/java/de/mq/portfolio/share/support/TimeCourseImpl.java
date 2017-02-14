@@ -213,6 +213,18 @@ class TimeCourseImpl implements TimeCourse {
 	}
 	
 	@Override
+	public final void assign(final TimeCourse timeCourse) {
+		if( timeCourse.rates().size() > 0) {
+			rates.clear();
+			rates.addAll(timeCourse.rates());
+		}
+		if( timeCourse.dividends().size() > 0) {
+			dividends.clear();
+			dividends.addAll(timeCourse.dividends());
+		}
+	}
+	
+	@Override
 	public Date start() {
 		if( rates==null){
 			return null;
