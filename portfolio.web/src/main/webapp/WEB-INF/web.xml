@@ -64,7 +64,7 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
 
 <context-param>
     <param-name>spring.profiles.active</param-name>
-    <param-value>yahooHistoryRepository</param-value>
+    <param-value>yahoo</param-value>
 </context-param>
 
 <!--  filter>

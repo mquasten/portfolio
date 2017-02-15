@@ -80,7 +80,6 @@ class ShareServiceImpl implements ShareService {
 	@Override
 	public final void replaceTimeCourse(final TimeCourse timeCourse) {
 	//	shareRepository.deleteTimeCourse(timeCourse.share());
-		
 		final TimeCourse toBeUpdated =  shareRepository.timeCourses(Arrays.asList(timeCourse.code())).stream().findAny().orElse(new TimeCourseImpl(timeCourse.share(), new ArrayList<>(), new ArrayList<>()));
 		toBeUpdated.assign(timeCourse);
 		shareRepository.save(toBeUpdated);

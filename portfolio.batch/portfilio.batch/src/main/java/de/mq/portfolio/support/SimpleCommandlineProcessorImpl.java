@@ -19,6 +19,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.support.ExceptionTranslationBuilder.ResourceSupplier;
 
@@ -77,7 +78,10 @@ public  class SimpleCommandlineProcessorImpl implements ApplicationContextAware 
 	}
 	
 	public static final void main(final String[] args) {
-		System.setProperty("spring.profiles.active", "yahooHistoryRepository");
+	
+		if( ! StringUtils.hasText(System.getProperty("spring.profiles.active") )) {
+			System.setProperty("spring.profiles.active", "yahoo");
+		} 
 		new ExceptionTranslationBuilderImpl<Void, ConfigurableApplicationContext>().withResource(applicationContextSupplier).withStatement(ctx -> { doInApplicationContext(args); }).translate();
 
 	}

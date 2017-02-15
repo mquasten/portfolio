@@ -19,7 +19,7 @@ import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 
 @Repository()
-@Profile("yahooHistoryRepository")
+@Profile("yahoo")
 class HistoryRestRepositoryImpl implements HistoryRepository {
 
 	private final RestOperations restOperations;
