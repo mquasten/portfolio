@@ -9,20 +9,18 @@ public interface Share {
 		
 	}
 
-	public abstract String name();
+	String name();
 
-	public abstract String index();
+	String index();
 
-	public abstract String code();
+	String code();
 
-	public abstract boolean isIndex();
+	boolean isIndex();
 	
-	StockExchange stockExchange();
-
 	String wkn();
 
 	String currency();
 	
-	
+	String code2();
 
 }

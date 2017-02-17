@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestOperations;
 
 import de.mq.portfolio.share.Data;
@@ -46,42 +47,15 @@ class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 	
 		Assert.notNull(share, "Share is mandatory.");
 	
-		Assert.notNull(share.code(), "ShareCode is mandatory");
 		
-		if( share.isIndex()){
-			
-			System.out.println("***skip ***");
+		if( ! StringUtils.hasText(share.code2())) {
 			return new TimeCourseImpl(share, new ArrayList<>(), new ArrayList<>() );
 		}
 		
-		if( share.code().equalsIgnoreCase("SDF.DE" )) {
-			return new TimeCourseImpl(share, new ArrayList<>(), new ArrayList<>() );
-		}
-		
-		String name = defaultStockExchange(share) + ":" + share.code().replaceFirst("[.].*$", "");
 		
 		
-		if( name.startsWith("NYSE:")){
-			name=name.replaceFirst("NYSE[:]", "");
-		}
-		
-		if( name.endsWith("DIS")) {
-			name="NYSE:DIS";
-		}
-		
-		if( name.endsWith("IBM")) {
-			name="NYSE:IBM";
-		}
-		
-		if( name.endsWith("MMM")) {
-			name="NYSE:MMM";
-		}
-		
-		if( name.endsWith("WMT")) {
-			name="NYSE:WMT";
-		}
-		System.out.println(String.format(url, name, startDate()));
-		final String result =restOperations.getForObject(String.format(url, name, startDate()), String.class);
+		System.out.println(String.format(url, share.code2(), startDate()));
+		final String result =restOperations.getForObject(String.format(url, share.code2(), startDate()), String.class);
 		
 		final List<Data> rates = Arrays.asList(result.split("[\n]")).stream().map(line -> line.split("[,]")).filter(cols -> cols.length >= 5 ).filter(cols -> isDate(cols[0]) ).map(cols -> toData(cols)).collect(Collectors.toList());
 		rates.sort((d1, d2) -> Long.valueOf(d1.date().getTime() - d2.date().getTime()).intValue());
@@ -114,23 +88,5 @@ class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 		
 	}
 	
-	private String  defaultStockExchange(final Share share ){
-		
-		if( share.stockExchange() != null) {
-			return  share.stockExchange().name();
-		}
-		
-		
-		System.out.println(share.index());
-		if( share.index().toLowerCase().startsWith("dow")){
-			return "NYSE";
-		};
-		
-		
-		if(  share.index().toLowerCase().startsWith("deutscher")){
-			return "ETR";
-		};
-		throw new IllegalArgumentException(String.format("Index not found for: '%s'", share.index()));
-		
-	}
+	
 }

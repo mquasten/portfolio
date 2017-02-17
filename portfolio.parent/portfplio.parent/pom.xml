@@ -140,17 +140,8 @@
   </dependencies>
   
   <repositories>
-
-
-		<repository>
-			<id>spring-milestone</id>
-			<name>spring-milestone</name>
-		
-			<url>http://repo.spring.io/milestone/</url>
-		</repository>
-
-		
-	</repositories>
+	
+  </repositories>
 	
 	
 	<build>

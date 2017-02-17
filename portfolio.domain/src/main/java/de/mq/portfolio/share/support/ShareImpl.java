@@ -24,19 +24,19 @@ class ShareImpl implements Share {
 	
 	private String currency;
 	
-	private StockExchange stockExchange;
+	private String code2;
 	
 	ShareImpl(final String code, final String name, final String index, final String wkn, final String currency) {
 		this(code, name, index, wkn,currency, null);
 	}
 
-	ShareImpl(final String code, final String name, final String index, final String wkn, final String currency, final StockExchange stockExchange) {
+	ShareImpl(final String code, final String name, final String index, final String wkn, final String currency, final String code2) {
 		this.code = code;
 		this.name = name;
 		this.index = index;
 		this.wkn=wkn;
 		this.currency=currency;
-		this.stockExchange=stockExchange;
+		this.code2=StringUtils.hasText(code2)?code2:null;
 	}
 
 	
@@ -109,11 +109,17 @@ class ShareImpl implements Share {
 		return currency.trim().toUpperCase();
 	}
 
-
-
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.share.support.support.Share#code2()
+	 */
 	@Override
-	public StockExchange stockExchange() {
-		return stockExchange;
+	public String code2() {
+		return code2;
 	}
+
+
+
+
 
 }
