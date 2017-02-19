@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -165,7 +166,7 @@ public class HistoryRepositoryIntegrationTest {
 		final int missing[] = new int[] {0};
 		dates.forEach(date -> {
 			    final Double values [] = prices.get(date);
-			    System.out.println(df.format(date) +";" +  values[0] +";" +values[1] );
+			   // System.out.println(df.format(date) +";" +  values[0] +";" +values[1] );
 			    if(  Arrays.asList(values).stream().filter(value -> value == null).count() > 0 ) {
 					   missing[0]++;
 				}
@@ -182,20 +183,86 @@ public class HistoryRepositoryIntegrationTest {
 	}
 	
 	@Test
+	public  void historyEONA()   {
+	
+		Mockito.when(share.code()).thenReturn("EOAN.DE");
+		Mockito.when(share.code2()).thenReturn("ETR:EOAN");
+		
+		int max = 2;
+		@SuppressWarnings("unchecked")
+		final List<Data>[]  results = new  List[max];
+				
+		
+		results[0] = historyGoogleRestRepository.history(share).rates();
+		results[1] = historyYahooRestRepository.history(share).rates();
+		
+		final Map<Date, Double[]> prices = new HashMap<>();
+		IntStream.range(0, max).forEach(i -> {
+			results[i].forEach(data -> {
+				prices.put(data.date(), new Double[max]);
+			});
+			
+		});
+		
+		
+		IntStream.range(0, max).forEach(i ->  {
+			results[i].forEach(data -> prices.get(data.date())[i]=data.value());
+			
+		});
+		
+		final List<Date> dates = new ArrayList<>(prices.keySet());
+		Collections.sort(dates, (d1, d2) -> (int) Math.round(d1.getTime() - d2.getTime()));
+		
+		final int missing[] = new int[] {0};
+		final int counter[] =  new int[] {0};
+		dates.stream().filter(date ->  ! date.before(new GregorianCalendar(2016, 8 , 12).getTime())).forEach(date -> {
+			    final Double values [] = prices.get(date);
+			   // System.out.println(df.format(date) +";" +  values[0] +";" +values[1] );
+			    
+			    
+			    counter[0]++;
+			    
+			    if(  values[0] != null &&  values[1] != null  )  {
+			    	Assert.assertTrue(Math.abs(Math.round(100d*values[0]) - Math.round(100d*values[1])) <= 1d );
+			    	
+			    } else {
+			    	missing[0]++;
+			    }
+			  
+			    
+				
+		});
+		
+		Assert.assertTrue(counter[0]> 110);
+	  	Assert.assertTrue( missing[0] < 5  );
+	}
+	
+	@Test
 	public final void allshares() {
 		
-		stocks.entrySet().forEach(entry -> {
+		stocks.entrySet().stream().filter(entry -> !entry.getKey().startsWith("EOAN")).forEach(entry -> {
 			final Map<Date,double[]> results = new HashMap<>();
 			Mockito.when(share.code2()).thenReturn(entry.getValue());
 			Mockito.when(share.code()).thenReturn(entry.getKey());
 			historyGoogleRestRepository.history(share).rates().forEach(rate -> addResult(results, rate,0));
 			
 			historyYahooRestRepository.history(share).rates().forEach(rate -> addResult(results, rate, 1));
-			Assert.assertTrue(results.size() > 200);
-			final Set<double[]> resultsWithBoth = results.values().stream().filter(values -> values.length == 2 ).collect(Collectors.toSet());
-			Assert.assertTrue(results.size() - resultsWithBoth.size() == 0);
+		
+			Assert.assertTrue(results.size() > 250);
 			
-			resultsWithBoth.forEach(values -> Assert.assertTrue(Math.abs(Math.round(100d*values[0]) - Math.round(100d*values[1])) <= 1d ));
+			
+			final Set<double[]> resultsWithBoth = results.values().stream().filter(values -> values[0] !=  0d && values[1] !=  0d ).collect(Collectors.toSet());
+			
+			
+			Assert.assertTrue(results.size() - resultsWithBoth.size() < 10);
+			
+			
+			
+			
+			resultsWithBoth.forEach(values ->  {
+			 	//System.out.println(values[0] + ":" + values[1]);
+				Assert.assertTrue(Math.abs(Math.round(100d*values[0]) - Math.round(100d*values[1])) <= 1d );
+				});
 		});
 	}
 

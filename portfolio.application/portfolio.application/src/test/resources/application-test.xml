@@ -22,9 +22,85 @@
    
 
 
-	<util:map  id="stocks"   key-type="java.lang.String"  value-type="java.lang.String" map-class="java.util.HashMap">
-     	<entry key="AAPL" value="NASDAQ:AAPL"/>
-    </util:map>
+	<util:map id="stocks" key-type="java.lang.String" value-type="java.lang.String"
+	map-class="java.util.HashMap">
+	<entry key="AAPL" value="NASDAQ:AAPL" />
+	<entry key="AXP" value="NYSE:AXP" />
+	<entry key="BA" value="NYSE:BA" />
+	<entry key="CAT" value="NYSE:CAT" />
+	<entry key="CSCO" value="NASDAQ:CSCO" />
+	<entry key="CVX" value="NYSE:CVX" />
+	<entry key="DD" value="NYSE:DD" />
+	<entry key="DIS" value="NYSE:DIS" />
+	<entry key="GE" value="NYSE:GE" />
+	<entry key="GS" value="NYSE:GS" />
+	<entry key="HD" value="NYSE:HD" />
+	<entry key="IBM" value="NYSE:IBM" />
+	<entry key="INTC" value="NASDAQ:INTC" />
+	<entry key="JNJ" value="NYSE:JNJ" />
+	<entry key="JPM" value="NYSE:JPM" />
+	<entry key="KO" value="NYSE:KO" />
+	<entry key="MCD" value="NYSE:MCD" />
+	<entry key="MMM" value="NYSE:MMM" />
+	<entry key="MRK" value="NYSE:MRK" />
+	<entry key="MSFT" value="NASDAQ:MSFT" />
+	<entry key="NKE" value="NYSE:NKE" />
+	<entry key="PFE" value="NYSE:PFE" />
+	<entry key="PG" value="NYSE:PG" />
+	<entry key="TRV" value="NYSE:TRV" />
+	<entry key="UNH" value="NYSE:UNH" />
+	<entry key="UTX" value="NYSE:UTX" />
+	<entry key="V" value="NYSE:V" />
+	<entry key="VZ" value="NYSE:VZ" />
+	<entry key="WMT" value="NYSE:WMT" />
+	<entry key="XOM" value="NYSE:XOM" />
+	
+	<entry key="ADS.DE" value="ETR:ADS" />
+	<entry key="ALV.DE" value="ETR:ALV" />
+	<entry key="BAS.DE" value="ETR:BAS" />
+	<entry key="BAYN.DE" value="ETR:BAYN" />
+	<entry key="BEI.DE" value="ETR:BEI" />
+	<entry key="BMW.DE" value="ETR:BMW" />
+	<entry key="CBK.DE" value="ETR:CBK" />
+	<entry key="CON.DE" value="ETR:CON" />
+	<entry key="DAI.DE" value="ETR:DAI" />
+	
+	<entry key="DBK.DE" value="ETR:DBK" />
+	
+	<entry key="DPW.DE" value="ETR:DPW" />
+	<entry key="DTE.DE" value="ETR:DTE" />
+	<entry key="FME.DE" value="ETR:FME" />
+	
+	<entry key="FRE.DE" value="ETR:FRE" />
+	<entry key="HEI.DE" value="ETR:HEI" />
+	
+	<entry key="HEN3.DE" value="ETR:HEN3" />
+	
+	<entry key="IFX.DE" value="ETR:IFX" />
+	<entry key="LHA.DE" value="ETR:LHA" />
+	
+	<entry key="LIN.DE" value="ETR:LIN" />
+	<entry key="MRK.DE" value="ETR:MRK" />
+	
+	<entry key="MUV2.DE" value="ETR:MUV2" />
+	
+	<entry key="RWE.DE" value="ETR:RWE" />
+	<entry key="SAP.DE" value="ETR:SAP" />
+	
+	<entry key="PSM.DE" value="ETR:PSM" />
+	
+	<entry key="SIE.DE" value="ETR:SIE" />
+	<entry key="TKA.DE" value="ETR:TKA" />
+	<entry key="VNA.DE" value="ETR:VNA" />
+	
+	<entry key="VOW.DE" value="ETR:VOW" />
+	<entry key="DB1.DE" value="ETR:DB1" />
+	
+	<entry key="SDF.DE" value="ETR:SDF" />
+	
+	<entry key="EOAN.DE" value="ETR:EOAN" />
+
+</util:map>
 	
 </beans>
 

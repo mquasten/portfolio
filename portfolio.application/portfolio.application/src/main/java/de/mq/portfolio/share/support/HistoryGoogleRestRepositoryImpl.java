@@ -64,9 +64,7 @@ class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 	}
 
 	private String startDate() {
-		String result =  dateFormat.format(Date.from(LocalDate.now().minusDays(periodeInDays).atStartOfDay(ZoneId.systemDefault()).toInstant()));
-		System.out.println(result);
-		return result;
+		return dateFormat.format(Date.from(LocalDate.now().minusDays(periodeInDays).atStartOfDay(ZoneId.systemDefault()).toInstant()));
 	} 
 
 	
