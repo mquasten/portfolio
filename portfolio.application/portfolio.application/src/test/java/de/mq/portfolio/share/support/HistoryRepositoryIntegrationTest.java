@@ -240,7 +240,7 @@ public class HistoryRepositoryIntegrationTest {
 	@Test
 	public final void allshares() {
 		
-		stocks.entrySet().stream().filter(entry -> !entry.getKey().startsWith("EOAN")).forEach(entry -> {
+		stocks.entrySet().stream().filter(entry -> !entry.getKey().equals("EOAN.DE")&& !entry.getKey().equals("DB11.DE")).forEach(entry -> {
 			final Map<Date,double[]> results = new HashMap<>();
 			Mockito.when(share.code2()).thenReturn(entry.getValue());
 			Mockito.when(share.code()).thenReturn(entry.getKey());
@@ -248,11 +248,11 @@ public class HistoryRepositoryIntegrationTest {
 			
 			historyYahooRestRepository.history(share).rates().forEach(rate -> addResult(results, rate, 1));
 		
+			
 			Assert.assertTrue(results.size() > 250);
 			
 			
 			final Set<double[]> resultsWithBoth = results.values().stream().filter(values -> values[0] !=  0d && values[1] !=  0d ).collect(Collectors.toSet());
-			
 			
 			Assert.assertTrue(results.size() - resultsWithBoth.size() < 10);
 			
