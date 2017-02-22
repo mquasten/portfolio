@@ -316,7 +316,7 @@ public class SharePortfolioRetrospectiveBuilderTest {
 	
 	@Test
 	public void declaredConstructorShare() {
-		Assert.assertNotNull(((SharePortfolioRetrospectiveBuilderImpl)builder).declaredConstructor(SharePortfolioRetrospectiveBuilderImpl.SHARE_PATH, String.class, String.class, String.class, String.class, String.class));
+		Assert.assertNotNull(((SharePortfolioRetrospectiveBuilderImpl)builder).declaredConstructor(SharePortfolioRetrospectiveBuilderImpl.SHARE_PATH, String.class, String.class, String.class, String.class, String.class, String.class));
 	}
 	@Test(expected=IllegalStateException.class)
 	public void declaredConstructorShareSucks() {

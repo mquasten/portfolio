@@ -21,7 +21,7 @@ public class ShareTest {
 	private static final String INDEX = "Dow";
 	private static final String NAME = "Coca Cola";
 	private static final String CODE = "KO";
-	private final Share share = new ShareImpl(CODE, NAME, INDEX, WKN, CURRENCY);
+	private final Share share = new ShareImpl(CODE, NAME, null, INDEX, WKN, CURRENCY);
 	
 	@Test
 	public final void name() {
@@ -46,7 +46,7 @@ public class ShareTest {
 	
 	@Test
 	public final void constructorCodeName() {
-		final Share share = new ShareImpl(CODE, NAME,null, WKN, CURRENCY);
+		final Share share = new ShareImpl(CODE, NAME,null,null, WKN, CURRENCY);
 		Assert.assertEquals(NAME, share.name());
 		Assert.assertEquals(CODE, share.code());
 		Assert.assertNull(share.index());

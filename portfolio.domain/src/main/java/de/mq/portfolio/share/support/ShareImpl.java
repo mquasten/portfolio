@@ -26,11 +26,8 @@ class ShareImpl implements Share {
 	
 	private String code2;
 	
-	ShareImpl(final String code, final String name, final String index, final String wkn, final String currency) {
-		this(code, name, index, wkn,currency, null);
-	}
 
-	ShareImpl(final String code, final String name, final String index, final String wkn, final String currency, final String code2) {
+	ShareImpl(final String code, final String name,final String code2, final String index, final String wkn, final String currency) {
 		this.code = code;
 		this.name = name;
 		this.index = index;

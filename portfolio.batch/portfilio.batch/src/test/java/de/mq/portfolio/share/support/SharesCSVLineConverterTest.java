@@ -1,5 +1,6 @@
 package de.mq.portfolio.share.support;
 
+
 import org.junit.Test;
 
 import de.mq.portfolio.share.Share;
@@ -23,7 +24,7 @@ public class SharesCSVLineConverterTest {
 	
 	@Test
 	public final void convert() {
-		final Share share = sharesCSVLineConverter.convert(new String[] {CODE, WKN, CURRENCY , NAME, INDEX });
+		final Share share = sharesCSVLineConverter.convert(new String[] {CODE, WKN, CURRENCY , NAME, null, INDEX });
 		Assert.assertEquals(CODE, share.code());
 		Assert.assertEquals(NAME, share.name());
 		Assert.assertEquals(WKN, share.wkn());
