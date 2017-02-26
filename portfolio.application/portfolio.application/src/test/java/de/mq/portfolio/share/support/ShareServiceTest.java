@@ -3,22 +3,21 @@ package de.mq.portfolio.share.support;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
-import junit.framework.Assert;
-
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
-import de.mq.portfolio.share.support.HistoryRepository;
-import de.mq.portfolio.share.support.ShareRepository;
+import junit.framework.Assert;
 
 public class ShareServiceTest {
 
@@ -66,14 +65,47 @@ public class ShareServiceTest {
 	}
 
 	@Test
-	@Ignore
-	public void replacetTimeCourse() {
-		Mockito.when(timeCourse.share()).thenReturn(share);
-		shareService.replaceTimeCourse(timeCourse);
+	public void replaceTimeCourse() {
+		TimeCourse newTimeCourse = Mockito.mock(TimeCourse.class);
+	
+		Mockito.when(newTimeCourse.code()).thenReturn(CODE);
+		
+		Mockito.when(shareRepository.timeCourses(Arrays.asList(CODE))).thenReturn(Arrays.asList(timeCourse));
+		
+		shareService.replaceTimeCourse(newTimeCourse);
 
-		Mockito.verify(shareRepository).deleteTimeCourse(share);
+		Mockito.verify(timeCourse).assign(newTimeCourse);
 		Mockito.verify(shareRepository).save(timeCourse);
 	}
+	
+	@Test
+	public void replaceTimeCourseNotFound() {
+		final TimeCourse newTimeCourse = Mockito.mock(TimeCourse.class);
+		Mockito.when(newTimeCourse.code()).thenReturn(CODE);
+		Mockito.when(share.code()).thenReturn(CODE);
+		Mockito.when(newTimeCourse.share()).thenReturn(share);
+	
+		final List<Data> rates = Arrays.asList(Mockito.mock(Data.class));
+		Mockito.when(newTimeCourse.rates()).thenReturn(rates);
+		final List<Data> dividends = Arrays.asList(Mockito.mock(Data.class));
+		Mockito.when(newTimeCourse.dividends()).thenReturn(dividends);
+		
+		Mockito.when(shareRepository.timeCourses(Arrays.asList(CODE))).thenReturn(Arrays.asList());
+		
+		shareService.replaceTimeCourse(newTimeCourse);
+
+		final ArgumentCaptor<TimeCourse> timeCourseCaptor = ArgumentCaptor.forClass(TimeCourse.class);
+		Mockito.verify(timeCourse, Mockito.never()).assign(Mockito.any());
+		Mockito.verify(shareRepository).save(timeCourseCaptor.capture());
+		Assert.assertEquals(TimeCourseImpl.class, timeCourseCaptor.getValue().getClass());
+		Assert.assertEquals(share, timeCourseCaptor.getValue().share());
+		
+		Assert.assertEquals(rates, timeCourseCaptor.getValue().rates());
+		Assert.assertEquals(dividends, timeCourseCaptor.getValue().dividends());
+		
+	}
+	
+	
 
 	@Test
 	public void shares() {

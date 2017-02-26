@@ -8,8 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -23,6 +21,7 @@ import org.springframework.util.ReflectionUtils;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
+import junit.framework.Assert;
 
 public class TimeCourseTest {
 
@@ -91,6 +90,7 @@ public class TimeCourseTest {
 	public final void onBeforeSave() {
 		Assert.assertEquals(0d, timeCourse.variance());
 		Assert.assertEquals(0d, timeCourse.meanRate());
+		Assert.assertEquals(0d, timeCourse.totalRate());
 
 		((TimeCourseImpl) timeCourse).onBeforeSave();
 
@@ -98,6 +98,8 @@ public class TimeCourseTest {
 		doubleEquals(1d / 144d, timeCourse.variance());
 
 		doubleEquals(1d / 12, timeCourse.standardDeviation());
+		
+		Assert.assertEquals((data3.value()  - data1.value()) / data1.value(),    timeCourse.totalRate());
 
 	}
 
@@ -252,6 +254,42 @@ public class TimeCourseTest {
 
 	private void setListToNull() {
 		ReflectionUtils.doWithFields(TimeCourseImpl.class, field -> ReflectionTestUtils.setField(timeCourse, field.getName(), null), field -> field.getType().equals(List.class));
+	}
+	
+	@Test
+	public final void assign() {
+		final TimeCourse newTimeCourse = Mockito.mock(TimeCourse.class);
+		final List<Data> newRates = Arrays.asList(data1);
+		final List<Data> newDividends = Arrays.asList(datax);
+		Mockito.when(newTimeCourse.rates()).thenReturn(newRates);
+		Mockito.when(newTimeCourse.dividends()).thenReturn(newDividends);
+		Assert.assertEquals(rates.size(), timeCourse.rates().size());
+		Assert.assertEquals(rates, timeCourse.rates());
+		Assert.assertEquals(dividends.size(), timeCourse.dividends().size());
+		Assert.assertEquals(dividends, timeCourse.dividends());
+		
+		timeCourse.assign(newTimeCourse);
+		
+		Assert.assertEquals(newRates.size(), timeCourse.rates().size());
+		Assert.assertEquals(newRates, timeCourse.rates());
+		Assert.assertEquals(newDividends.size(), timeCourse.dividends().size());
+		Assert.assertEquals(newDividends, timeCourse.dividends());
+	}
+	
+	@Test
+	public final void assignEmpty() {
+		final TimeCourse newTimeCourse = Mockito.mock(TimeCourse.class);
+		Assert.assertEquals(rates.size(), timeCourse.rates().size());
+		Assert.assertEquals(rates, timeCourse.rates());
+		Assert.assertEquals(dividends.size(), timeCourse.dividends().size());
+		Assert.assertEquals(dividends, timeCourse.dividends());
+		
+		timeCourse.assign(newTimeCourse);
+		
+		Assert.assertEquals(rates.size(), timeCourse.rates().size());
+		Assert.assertEquals(rates, timeCourse.rates());
+		Assert.assertEquals(dividends.size(), timeCourse.dividends().size());
+		Assert.assertEquals(dividends, timeCourse.dividends());
 	}
 
 }
