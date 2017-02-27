@@ -28,10 +28,10 @@ import de.mq.portfolio.share.TimeCourse;
 @Profile("google" )
 class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 	
-	private  final String url = "http://www.google.com/finance/historical?q=%s&output=csv&startdate=%s";
+	private final String url = "http://www.google.com/finance/historical?q=%s&output=csv&startdate=%s";
 	private final RestOperations restOperations;
 	
-	private DateFormat dateFormat = new SimpleDateFormat("d-MMM-yy", Locale.US );
+	private final DateFormat dateFormat = new SimpleDateFormat("d-MMM-yy", Locale.US );
 	
 	private final int periodeInDays = 365;
 	
