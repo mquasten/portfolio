@@ -8,6 +8,8 @@ import junit.framework.Assert;
 
 public class SharesCSVLineConverterTest {
 
+	private static final String CODE2 = "ETR:SAP";
+
 	private static final String CURRENCY = "EUR";
 
 	private static final String WKN = "4711DE";
@@ -24,12 +26,13 @@ public class SharesCSVLineConverterTest {
 	
 	@Test
 	public final void convert() {
-		final Share share = sharesCSVLineConverter.convert(new String[] {CODE, WKN, CURRENCY , NAME, null, INDEX });
+		final Share share = sharesCSVLineConverter.convert(new String[] {CODE, WKN, CURRENCY , NAME, CODE2, INDEX });
 		Assert.assertEquals(CODE, share.code());
 		Assert.assertEquals(NAME, share.name());
 		Assert.assertEquals(WKN, share.wkn());
 		Assert.assertEquals(INDEX, share.index());
 		Assert.assertEquals(CURRENCY, share.currency());
+		Assert.assertEquals(CODE2, share.code2());
 		
 	}
 	
@@ -39,6 +42,20 @@ public class SharesCSVLineConverterTest {
 		Assert.assertEquals(CODE, share.code());
 		Assert.assertEquals(NAME, share.name());
 		Assert.assertEquals(WKN, share.wkn());
+		Assert.assertNull(share.code2());
+		Assert.assertNull(share.index());
+		Assert.assertEquals(CURRENCY, share.currency());
+		
+	}
+	
+	@Test
+	public final void convertWithoutIndex() {
+		final Share share = sharesCSVLineConverter.convert(new String[] {CODE, WKN, CURRENCY , NAME , CODE2 });
+		
+		Assert.assertEquals(CODE, share.code());
+		Assert.assertEquals(NAME, share.name());
+		Assert.assertEquals(WKN, share.wkn());
+		Assert.assertEquals(CODE2, share.code2());
 		Assert.assertNull(share.index());
 		Assert.assertEquals(CURRENCY, share.currency());
 		
@@ -47,6 +64,11 @@ public class SharesCSVLineConverterTest {
 	@Test(expected=IllegalArgumentException.class)
 	public final void convertWrongLength() {
 		sharesCSVLineConverter.convert(new String[] {CODE, WKN, CURRENCY  });
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void convertWrongLengthToMuch() {
+		sharesCSVLineConverter.convert(new String[] {CODE, WKN, CURRENCY , NAME, CODE2, INDEX  , "xx"  });
 	}
 	
 }
