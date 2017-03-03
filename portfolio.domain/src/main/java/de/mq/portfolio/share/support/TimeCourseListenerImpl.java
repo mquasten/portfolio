@@ -1,6 +1,7 @@
 package de.mq.portfolio.share.support;
 
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
+import org.springframework.data.mongodb.core.mapping.event.BeforeSaveEvent;
 import org.springframework.stereotype.Component;
 
 import com.mongodb.DBObject;
@@ -17,7 +18,24 @@ class TimeCourseListenerImpl extends AbstractMongoEventListener<TimeCourseImpl> 
 
 	@Override
 	public void onBeforeSave(final TimeCourseImpl timeCourse, final DBObject dbo) {
-		 timeCourse.onBeforeSave();
+		 beforeSave(timeCourse, dbo);
+		 
+		 System.out.println("*** execute TimeCourse CallBack ***");
+	}
+	
+	
+
+	@Override
+	public void onBeforeSave(final BeforeSaveEvent<TimeCourseImpl> event) {
+		 beforeSave(event.getSource(), event.getDBObject());
+		 
+		 System.out.println("??? execute TimeCourse CallBack ???");
+	}
+
+
+
+	private void beforeSave(final TimeCourseImpl timeCourse, final DBObject dbo) {
+		timeCourse.onBeforeSave();
 		 dbo.put(MEAN_RATE, timeCourse.meanRate());
 		 dbo.put(VARIANCE, timeCourse.variance());
 		 dbo.put(CODE , timeCourse.share().code());
