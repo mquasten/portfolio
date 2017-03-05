@@ -37,10 +37,10 @@
 		
 		<!-- mongo-driver.version>2.12.4</mongo-driver.version-->
 		<mongo-driver.version>3.3.0</mongo-driver.version>
-		<mongo-data-mongo.version>1.6.0.RELEASE</mongo-data-mongo.version>
+		<!--  mongo-data-mongo.version>1.6.0.RELEASE</mongo-data-mongo.version-->
 		<!-- mongo-data-mongo.version>1.9.2.RELEASE</mongo-data-mogo.version-->
     
-    <!--  mongo-data-mongo.version>1.10.0.RELEASE</mongo-data-mogo.version-->
+    <mongo-data-mongo.version>1.10.0.RELEASE</mongo-data-mongo.version>
     	<et.version>0.2.0</et.version>
   </properties>
 

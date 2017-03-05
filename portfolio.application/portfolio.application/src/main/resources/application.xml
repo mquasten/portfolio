@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
-	
-	xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:repository="http://www.springframework.org/schema/data/repository"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
-		http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo-1.8.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd
-		
-		http://www.springframework.org/schema/data/repository http://www.springframework.org/schema/data/repository/spring-repository-1.6.xsd">
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
-	<mongo:mongo host="127.0.0.1" port="27017" />
-	<mongo:db-factory dbname="portfolio" />
+	<!--  mongo:mongo host="127.0.0.1" port="27017" />
+	<mongo:db-factory dbname="portfolio" /-->
+
+
+    <mongo:mongo-client id="mongoClient" host="127.0.0.1" port="27017" >
+        <mongo:client-options write-concern="SAFE" />
+    </mongo:mongo-client>
+    <mongo:db-factory id="mongoDbFactory" mongo-ref="mongoClient" dbname="portfolio"/>
+    
+    
+  
+
 
 
 
@@ -40,13 +45,20 @@
 		<property name="typeMapper" ref="defaultMongoTypeMapper" />
 	</bean>
 
-	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+	<!--bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
 		<property name="writeConcern">
 			<util:constant static-field="com.mongodb.WriteConcern.SAFE" />
 		</property>
 
+	</bean -->
+	
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
+		
+		<!--  property name="writeResultChecking" value="EXCEPTION"/-->
 	</bean>
+	
 
 
 
