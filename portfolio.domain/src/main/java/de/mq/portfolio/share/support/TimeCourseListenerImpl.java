@@ -19,8 +19,6 @@ class TimeCourseListenerImpl extends AbstractMongoEventListener<TimeCourseImpl> 
 	@Override
 	public void onBeforeSave(final TimeCourseImpl timeCourse, final DBObject dbo) {
 		 beforeSave(timeCourse, dbo);
-		 
-		 System.out.println("*** execute TimeCourse CallBack ***");
 	}
 	
 	
@@ -28,8 +26,6 @@ class TimeCourseListenerImpl extends AbstractMongoEventListener<TimeCourseImpl> 
 	@Override
 	public void onBeforeSave(final BeforeSaveEvent<TimeCourseImpl> event) {
 		 beforeSave(event.getSource(), event.getDBObject());
-		 
-		 System.out.println("??? execute TimeCourse CallBack ???");
 	}
 
 

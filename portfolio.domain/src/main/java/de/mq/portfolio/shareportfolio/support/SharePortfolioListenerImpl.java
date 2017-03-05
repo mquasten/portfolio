@@ -7,6 +7,9 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
+import org.springframework.data.mongodb.core.mapping.event.AfterConvertEvent;
+
+import org.springframework.data.mongodb.core.mapping.event.BeforeSaveEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
@@ -35,7 +38,18 @@ public class SharePortfolioListenerImpl extends AbstractMongoEventListener<Share
 
 	@Override
 	public void onBeforeSave(final SharePortfolioImpl sharePortfolio, final DBObject dbo) {
+		beforeSave(sharePortfolio, dbo);
+	}
 
+
+	@Override
+	public void onBeforeSave(final BeforeSaveEvent<SharePortfolioImpl> event) {
+		beforeSave(event.getSource(), event.getDBObject());
+	}
+
+
+
+	private void beforeSave(final SharePortfolioImpl sharePortfolio, final DBObject dbo) {
 		if (sharePortfolio.isCommitted()) {
 			return;
 		}
@@ -47,13 +61,24 @@ public class SharePortfolioListenerImpl extends AbstractMongoEventListener<Share
 		dbo.put(VARIANCES, sharePortfolio.variances());
 		dbo.put(COVARIANCES, sharePortfolio.covariances());
 		dbo.put(CORRELATIONS, sharePortfolio.correlations());
-
 	}
 	
 	
 	
 	@Override
 	public void onAfterConvert(final DBObject dbo, final SharePortfolioImpl sharePortfolio) {
+		afterConvert(sharePortfolio);
+	}
+
+
+	@Override
+	public void onAfterConvert(final AfterConvertEvent<SharePortfolioImpl> event) {
+		 afterConvert(event.getSource());
+	}
+
+
+
+	private void afterConvert(final SharePortfolioImpl sharePortfolio) {
 		ReflectionUtils.doWithFields(sharePortfolio.getClass(), field ->{ field.setAccessible(true);ReflectionUtils.setField(field, sharePortfolio, algorithms.get(sharePortfolio.algorithmType())); }, field -> field.getType().equals(OptimisationAlgorithm.class) );
 	}
 
