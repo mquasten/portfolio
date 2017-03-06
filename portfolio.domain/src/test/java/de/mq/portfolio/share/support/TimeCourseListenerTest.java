@@ -40,13 +40,6 @@ public class TimeCourseListenerTest {
 		Mockito.when(event.getSource()).thenReturn(timeCourse);
 	}
 	
-	
-	@Test
-	public void onBeforeSave() {
-		listener.onBeforeSave(timeCourse, dbo);
-		
-		verifyDBObject();
-	}
 
 
 	private void verifyDBObject() {

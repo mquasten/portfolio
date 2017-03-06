@@ -16,12 +16,6 @@ class TimeCourseListenerImpl extends AbstractMongoEventListener<TimeCourseImpl> 
 	static final String VARIANCE = "variance";
 	static final String MEAN_RATE = "meanRate";
 
-	@Override
-	public void onBeforeSave(final TimeCourseImpl timeCourse, final DBObject dbo) {
-		 beforeSave(timeCourse, dbo);
-	}
-	
-	
 
 	@Override
 	public void onBeforeSave(final BeforeSaveEvent<TimeCourseImpl> event) {

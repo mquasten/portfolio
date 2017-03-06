@@ -37,12 +37,6 @@ public class SharePortfolioListenerImpl extends AbstractMongoEventListener<Share
 
 
 	@Override
-	public void onBeforeSave(final SharePortfolioImpl sharePortfolio, final DBObject dbo) {
-		beforeSave(sharePortfolio, dbo);
-	}
-
-
-	@Override
 	public void onBeforeSave(final BeforeSaveEvent<SharePortfolioImpl> event) {
 		beforeSave(event.getSource(), event.getDBObject());
 	}
@@ -64,12 +58,6 @@ public class SharePortfolioListenerImpl extends AbstractMongoEventListener<Share
 	}
 	
 	
-	
-	@Override
-	public void onAfterConvert(final DBObject dbo, final SharePortfolioImpl sharePortfolio) {
-		afterConvert(sharePortfolio);
-	}
-
 
 	@Override
 	public void onAfterConvert(final AfterConvertEvent<SharePortfolioImpl> event) {

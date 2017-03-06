@@ -47,12 +47,12 @@ public class SharePortfolioListenerTest {
 		listener = new SharePortfolioListenerImpl(Arrays.asList(optimisationAlgorithm));
 	}
 
-	@Test
+/*	@Test
 	public final void onBeforeSave() {
 		listener.onBeforeSave(sharePortfolio, dbo);
 		
 		verifyOnBeforeSave(Mockito.times(1));
-	}
+	} */
 	
 	@Test
 	public final void onBeforeSaveEvent() {
@@ -67,14 +67,6 @@ public class SharePortfolioListenerTest {
 		Mockito.verify(dbo, verificationMode).put(SharePortfolioListenerImpl.CORRELATIONS, CORRELATIONS);
 	}
 
-	@Test
-	public final void onBeforeSaveCommitted() {
-		Mockito.when(sharePortfolio.isCommitted()).thenReturn(true);
-
-		listener.onBeforeSave(sharePortfolio, dbo);
-		
-		verifyOnBeforeSave(Mockito.never());
-	}
 	
 	@Test
 	public final void onBeforeSaveCommittedEvent() {
@@ -85,14 +77,6 @@ public class SharePortfolioListenerTest {
 		verifyOnBeforeSave(Mockito.never());
 	}
 
-	@Test
-	public final void onBeforeSaveFalse() {
-		Mockito.when(sharePortfolio.onBeforeSave()).thenReturn(false);
-
-		listener.onBeforeSave(sharePortfolio, dbo);
-
-		verifyOnBeforeSave(Mockito.never());
-	}
 	
 	@Test
 	public final void onBeforeSaveFalseEvent() {
@@ -104,16 +88,6 @@ public class SharePortfolioListenerTest {
 	}
 	
 	
-	@Test
-	public final void  onAfterConvert() {
-		final SharePortfolioImpl sharePortfolio = new SharePortfolioImpl("name", Arrays.asList(), OptimisationAlgorithm.AlgorithmType.RiskGainPreference);
-		
-		Assert.assertNull(sharePortfolio.optimisationAlgorithm());
-		
-		listener.onAfterConvert(dbo, sharePortfolio);
-		
-		Assert.assertEquals(optimisationAlgorithm, sharePortfolio.optimisationAlgorithm());
-	}
 	
 	@Test
 	public final void  onAfterConvertEvent() {
