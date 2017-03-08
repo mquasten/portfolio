@@ -26,7 +26,7 @@ import com.mscharhag.et.TryBlock;
 import de.mq.portfolio.support.ExceptionTranslationBuilder.ResourceSupplier;
 import de.mq.portfolio.support.ExceptionTranslationBuilder.ReturningTryBlockWithResource;
 import de.mq.portfolio.support.ExceptionTranslationBuilder.TryBlockWithResource;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class ExceptionTranslationBuilderTest {
 

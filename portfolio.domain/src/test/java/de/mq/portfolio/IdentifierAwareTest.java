@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.springframework.data.annotation.Id;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class IdentifierAwareTest {
 

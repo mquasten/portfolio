@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class SharePortfolioRetrospectiveTest {
 	

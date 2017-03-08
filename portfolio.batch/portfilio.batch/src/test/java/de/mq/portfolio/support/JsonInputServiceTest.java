@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class JsonInputServiceTest {
 	

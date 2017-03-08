@@ -16,7 +16,7 @@ import de.mq.portfolio.batch.RulesEngine;
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.support.AbstractServiceRule;
 import de.mq.portfolio.support.RulesConfiguration;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={RulesConfiguration.class})

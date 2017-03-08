@@ -1,6 +1,6 @@
 package de.mq.portfolio.share.support;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 import org.springframework.beans.BeanUtils;

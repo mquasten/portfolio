@@ -3,6 +3,7 @@ package de.mq.portfolio.shareportfolio.support;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -11,7 +12,7 @@ import org.mockito.Mockito;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
-import junit.framework.Assert;
+
 
 public class ManualDistributionOptimisationTest {
 	
@@ -35,7 +36,7 @@ public class ManualDistributionOptimisationTest {
 		final double[] results = optimisationAlgorithm.weights(sharePortfolio) ;
 		Assert.assertEquals(varianceMatrix.length, results.length);
 		
-		IntStream.range(0, varianceMatrix.length).forEach(i -> Assert.assertEquals(1d/varianceMatrix.length, results[i]));
+		IntStream.range(0, varianceMatrix.length).forEach(i -> Assert.assertEquals((Double) (1d/varianceMatrix.length),  (Double) results[i]));
 	
 	}
 	
@@ -62,7 +63,7 @@ public class ManualDistributionOptimisationTest {
 		final double[] results = {0.4, 0.6};
 		Mockito.when(sharePortfolio.parameterVector(ManualDistributionOptimisationImpl.ParameterType.Weights)).thenReturn(Arrays.asList(results[0], results[1]));
 		
-		IntStream.range(0, results.length).forEach(i->  Assert.assertEquals(results[i], optimisationAlgorithm.weights(sharePortfolio)[i]));
+		IntStream.range(0, results.length).forEach(i->  Assert.assertEquals((Double) results[i], (Double)optimisationAlgorithm.weights(sharePortfolio)[i]));
 	}
 	
 	@Test

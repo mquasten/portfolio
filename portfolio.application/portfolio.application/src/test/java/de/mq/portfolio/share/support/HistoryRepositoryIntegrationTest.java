@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,11 +29,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
-import junit.framework.Assert;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/application-test.xml" })
 @Ignore
-//@ActiveProfiles({"yahooHistoryRepository", "googleHistoryRepository"})
 public class HistoryRepositoryIntegrationTest {
 	
 	

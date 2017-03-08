@@ -5,7 +5,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class AlgorithmTypeTest {
 	

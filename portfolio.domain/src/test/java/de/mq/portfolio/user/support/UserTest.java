@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Optional;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -12,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.user.User;
-import junit.framework.Assert;
+
 
 public class UserTest {
 

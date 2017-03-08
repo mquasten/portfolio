@@ -16,7 +16,7 @@ import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class RiskGainPreferenceOptimisationTest {
 
@@ -77,7 +77,7 @@ public class RiskGainPreferenceOptimisationTest {
 
 		Assert.assertEquals(matrix.length, results.length);
 
-		IntStream.range(0, WEIGHTS.length).forEach(i -> Assert.assertEquals(WEIGHTS[i], percentRound(results[i])));
+		IntStream.range(0, WEIGHTS.length).forEach(i -> Assert.assertEquals((Double) WEIGHTS[i],(Double) percentRound(results[i])));
 
 	}
 
@@ -89,7 +89,7 @@ public class RiskGainPreferenceOptimisationTest {
 
 		Assert.assertEquals(matrix.length, results.length);
 
-		IntStream.range(0, WEIGHTS.length).forEach(i -> Assert.assertEquals(WEIGHTS[i], percentRound(results[i])));
+		IntStream.range(0, WEIGHTS.length).forEach(i -> Assert.assertEquals((Double) WEIGHTS[i], (Double)percentRound(results[i])));
 
 	}
 	
@@ -101,7 +101,7 @@ public class RiskGainPreferenceOptimisationTest {
 
 		Assert.assertEquals(matrix.length, results.length);
 
-		IntStream.range(0, WEIGHTS.length).forEach(i -> Assert.assertEquals(WEIGHTS[i], percentRound(results[i])));
+		IntStream.range(0, WEIGHTS.length).forEach(i -> Assert.assertEquals((Double) WEIGHTS[i],(Double) percentRound(results[i])));
 
 	}
 
@@ -114,7 +114,7 @@ public class RiskGainPreferenceOptimisationTest {
 
 		Assert.assertEquals(matrix.length, results.length);
 
-		IntStream.range(0, WEIGHTS.length).forEach(i -> Assert.assertEquals(WEIGHTS_MVP[i], percentRound(results[i])));
+		IntStream.range(0, WEIGHTS.length).forEach(i -> Assert.assertEquals((Double) WEIGHTS_MVP[i],(Double) percentRound(results[i])));
 
 	}
 
@@ -135,7 +135,7 @@ public class RiskGainPreferenceOptimisationTest {
 
 		Mockito.verify(sharePortfolio).totalRates(exchangeRateCalculatorCaptor.capture());
 
-		Assert.assertEquals(1d, exchangeRateCalculatorCaptor.getValue().factor(exchangeRate, new Date()));
+		Assert.assertEquals((Double)1d, (Double) exchangeRateCalculatorCaptor.getValue().factor(exchangeRate, new Date()));
 
 	}
 

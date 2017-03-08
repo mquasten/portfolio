@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
@@ -15,7 +16,7 @@ import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.share.Data;
-import junit.framework.Assert;
+
 
 public class ExchangeRateTest {
 

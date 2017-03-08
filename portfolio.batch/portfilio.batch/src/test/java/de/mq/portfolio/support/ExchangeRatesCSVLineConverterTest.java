@@ -5,7 +5,7 @@ import org.springframework.core.convert.converter.Converter;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class ExchangeRatesCSVLineConverterTest {
 	

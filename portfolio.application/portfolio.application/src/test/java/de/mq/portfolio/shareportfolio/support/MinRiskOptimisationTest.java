@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class MinRiskOptimisationTest {
 
@@ -46,7 +46,7 @@ public class MinRiskOptimisationTest {
 	public final void resolve() {
 		final  double[] results = optimisationAlgorithm.weights(sharePortfolio);
 		Assert.assertEquals(WEIGHTS.length, results.length);
-		IntStream.range(0, results.length).forEach(i -> Assert.assertEquals(WEIGHTS[i], percentRound(results[i])));
+		IntStream.range(0, results.length).forEach(i -> Assert.assertEquals((Double) WEIGHTS[i],(Double) percentRound(results[i])));
 		
 		
 	}

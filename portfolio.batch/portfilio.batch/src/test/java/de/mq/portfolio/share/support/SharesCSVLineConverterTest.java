@@ -1,10 +1,11 @@
 package de.mq.portfolio.share.support;
 
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.mq.portfolio.share.Share;
-import junit.framework.Assert;
+
 
 public class SharesCSVLineConverterTest {
 

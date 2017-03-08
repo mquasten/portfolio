@@ -29,7 +29,7 @@ import de.mq.portfolio.share.support.DataImpl;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class SharePortfolioRetrospectiveBuilderTest {
 
@@ -240,32 +240,32 @@ public class SharePortfolioRetrospectiveBuilderTest {
 		Assert.assertTrue(result.timeCoursesWithExchangeRate().stream().map(tcr -> tcr.name()).filter(name -> name.equals(share02.name())).findAny().isPresent());
 
 		result.timeCoursesWithExchangeRate().stream().filter(tcr -> tcr.name().equals(PORTFOLIO_NAME)).forEach(tcr -> {
-			Assert.assertEquals(55d, tcr.start());
-			Assert.assertEquals(66.25d, tcr.end());
+			Assert.assertEquals((Double) 55d, (Double)tcr.start());
+			Assert.assertEquals((Double) 66.25d, (Double) tcr.end());
 		});
 
 		result.timeCoursesWithExchangeRate().stream().filter(tcr -> tcr.name().equals(share01.name())).forEach(tcr -> {
-			Assert.assertEquals(30d, tcr.start());
-			Assert.assertEquals(35d, tcr.end());
+			Assert.assertEquals((Double) 30d, (Double) tcr.start());
+			Assert.assertEquals((Double) 35d, (Double) tcr.end());
 		});
 
 		result.timeCoursesWithExchangeRate().stream().filter(tcr -> tcr.name().equals(share02.name())).forEach(tcr -> {
-			Assert.assertEquals(25d, tcr.start());
-			Assert.assertEquals(31.25d, tcr.end());
+			Assert.assertEquals((Double) 25d, (Double) tcr.start());
+			Assert.assertEquals((Double) 31.25d, (Double) tcr.end());
 		});
 		Assert.assertEquals(date(date, 0), result.endRateWithExchangeRate().date());
-		Assert.assertEquals(66.25d, result.endRateWithExchangeRate().value());
+		Assert.assertEquals((Double) 66.25d, (Double) result.endRateWithExchangeRate().value());
 
 		Assert.assertEquals(date(date, 181), result.initialRateWithExchangeRate().date());
 
-		Assert.assertEquals(55d, result.initialRateWithExchangeRate().value());
+		Assert.assertEquals((Double) 55d, (Double) result.initialRateWithExchangeRate().value());
 		//markowitz.odt Seite 5/6
 		
-		Assert.assertEquals(Math.sqrt(0.72e-6), result.standardDeviation());
+		Assert.assertEquals((Double) Math.sqrt(0.72e-6), (Double)  result.standardDeviation());
 
-		Assert.assertEquals(11d / 56d, result.totalRate());
+		Assert.assertEquals((Double) (11d / 56d), (Double)result.totalRate());
 		
-		Assert.assertEquals(5.6d/56d, result.totalRateDividends());
+		Assert.assertEquals((Double)(5.6d/56d), result.totalRateDividends());
 		
 		
 		Assert.assertEquals(optimisationAlgorithm, result.currentSharePortfolio().optimisationAlgorithm());

@@ -10,7 +10,7 @@ import org.mockito.Mockito;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class ExchangeRateCalculatorTest {
 	
@@ -36,18 +36,18 @@ public class ExchangeRateCalculatorTest {
 	
 	@Test
 	public final void  factor() {
-		Assert.assertEquals(factor, exchangeRateCalculator.factor(new ExchangeRateImpl(CURRENCY_EUR, CURRENCY_USD), date));
+		Assert.assertEquals((Double) factor,(Double) exchangeRateCalculator.factor(new ExchangeRateImpl(CURRENCY_EUR, CURRENCY_USD), date));
 	}
 	
 	@Test
 	public final void  factorInverse() {
-		Assert.assertEquals(1d/factor, exchangeRateCalculator.factor(new ExchangeRateImpl(CURRENCY_USD,CURRENCY_EUR), date));
+		Assert.assertEquals((Double) (1d/factor),(Double) exchangeRateCalculator.factor(new ExchangeRateImpl(CURRENCY_USD,CURRENCY_EUR), date));
 	}
 	
 	@Test
 	public final void  factorSameCurrency() {
-		Assert.assertEquals(1d, exchangeRateCalculator.factor(new ExchangeRateImpl(CURRENCY_EUR, CURRENCY_EUR), date));
-		Assert.assertEquals(1d, exchangeRateCalculator.factor(new ExchangeRateImpl(CURRENCY_USD, CURRENCY_USD), date));
+		Assert.assertEquals((Double) 1d, (Double) exchangeRateCalculator.factor(new ExchangeRateImpl(CURRENCY_EUR, CURRENCY_EUR), date));
+		Assert.assertEquals((Double) 1d, (Double) exchangeRateCalculator.factor(new ExchangeRateImpl(CURRENCY_USD, CURRENCY_USD), date));
 	}
 	
 	@Test(expected=IllegalArgumentException.class)

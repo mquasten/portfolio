@@ -41,7 +41,7 @@ import de.mq.portfolio.shareportfolio.support.SharePortfolioService;
 import de.mq.portfolio.user.User;
 import de.mq.portfolio.user.UserService;
 import de.mq.portfolio.user.support.UsersCSVLineConverterImpl;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 
 public class RulesConfigurationTest {

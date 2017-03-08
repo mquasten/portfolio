@@ -8,8 +8,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import de.mq.portfolio.user.User;
 import de.mq.portfolio.user.UserService;
-import junit.framework.Assert;
-
+import org.junit.Assert;
 public class UserServiceTest {
 	private final UserRepository userRepository = Mockito.mock(UserRepository.class);
 	private final UserService userService = new UserServiceImpl(userRepository);

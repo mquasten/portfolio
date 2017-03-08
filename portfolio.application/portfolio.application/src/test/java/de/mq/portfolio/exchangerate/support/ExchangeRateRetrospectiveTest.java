@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import de.mq.portfolio.share.Data;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class ExchangeRateRetrospectiveTest {
 	
@@ -65,7 +65,7 @@ public class ExchangeRateRetrospectiveTest {
 	
 	@Test
 	public final void  rate() {
-		Assert.assertEquals((endValue-startValue)/startValue, exchangeRateRetrospective.rate());
+		Assert.assertEquals((Double) ((endValue-startValue)/startValue), exchangeRateRetrospective.rate());
 	}
 	
 	@Test

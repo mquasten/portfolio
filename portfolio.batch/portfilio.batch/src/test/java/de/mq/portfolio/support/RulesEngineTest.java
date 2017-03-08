@@ -10,7 +10,7 @@ import org.mockito.Mockito;
 
 import de.mq.portfolio.batch.Rule;
 import de.mq.portfolio.batch.RulesEngine;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class RulesEngineTest {
 	

@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import org.junit.Test;
 import org.springframework.beans.BeanUtils;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import de.mq.portfolio.share.Data;
 
 public class DataTest {
@@ -27,7 +27,7 @@ public class DataTest {
 	
 	@Test
 	public final void value(){
-		Assert.assertEquals(VALUE, data.value());
+		Assert.assertEquals((Double) VALUE, (Double) data.value());
 	}
 	
 	

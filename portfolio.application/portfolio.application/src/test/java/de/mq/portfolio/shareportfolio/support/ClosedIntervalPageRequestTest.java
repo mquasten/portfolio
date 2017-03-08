@@ -2,6 +2,7 @@ package de.mq.portfolio.shareportfolio.support;
 
 import java.lang.reflect.Constructor;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
@@ -10,7 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.share.support.ClosedIntervalPageRequest;
-import junit.framework.Assert;
+
 
 public class ClosedIntervalPageRequestTest {
 	private static final long ROW_COUNTER = 52L;

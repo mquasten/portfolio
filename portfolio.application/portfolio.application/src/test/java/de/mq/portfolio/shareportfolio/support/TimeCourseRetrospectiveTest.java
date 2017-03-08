@@ -6,7 +6,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.share.TimeCourse;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class TimeCourseRetrospectiveTest {
 	
@@ -27,12 +27,12 @@ public class TimeCourseRetrospectiveTest {
 	
 	@Test
 	public final  void end() {
-		Assert.assertEquals(END, timeCourseRetrospective.end());
+		Assert.assertEquals((Double) END, (Double) timeCourseRetrospective.end());
 	}
 	
 	@Test
 	public final  void start() {
-		Assert.assertEquals(START, timeCourseRetrospective.start());
+		Assert.assertEquals((Double) START, (Double) timeCourseRetrospective.start());
 	}
 	
 	@Test
@@ -49,7 +49,7 @@ public class TimeCourseRetrospectiveTest {
 	
 	@Test
 	public final void rate() {
-		Assert.assertEquals((END-START)/START , timeCourseRetrospective.rate());
+		Assert.assertEquals((Double) ((END-START)/START) , (Double)  timeCourseRetrospective.rate());
 	}
 	
 	@Test(expected=IllegalArgumentException.class)

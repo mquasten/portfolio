@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import org.springframework.web.client.RestOperations;
 
 import de.mq.portfolio.share.Data;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class ExchangeRateRepositoryTest {
 	
@@ -35,11 +35,11 @@ public class ExchangeRateRepositoryTest {
 		Assert.assertTrue(results.stream().findFirst().isPresent());
 		Assert.assertEquals(asDate(date), results.stream().findFirst().get().date());
 		
-		Assert.assertEquals(value, results.stream().findFirst().get().value());
+		Assert.assertEquals((Double) value, (Double) results.stream().findFirst().get().value());
 		Assert.assertTrue(results.stream().skip(1).findFirst().isPresent());
 		Assert.assertEquals(asDate(date.plusDays(1)), results.stream().skip(1).findFirst().get().date());
 		
-		Assert.assertEquals(value, results.stream().skip(1).findFirst().get().value());
+		Assert.assertEquals((Double) value, (Double) results.stream().skip(1).findFirst().get().value());
 		
 	}
 	

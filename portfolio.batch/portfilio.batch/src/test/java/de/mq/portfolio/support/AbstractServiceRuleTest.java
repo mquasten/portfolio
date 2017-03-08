@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -17,7 +18,7 @@ import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
-import junit.framework.Assert;
+
 
 public class AbstractServiceRuleTest {
 	

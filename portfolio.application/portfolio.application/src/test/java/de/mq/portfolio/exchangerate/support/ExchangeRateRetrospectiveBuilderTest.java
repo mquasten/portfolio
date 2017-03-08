@@ -16,7 +16,7 @@ import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import de.mq.portfolio.share.Data;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class ExchangeRateRetrospectiveBuilderTest {
 
@@ -70,10 +70,10 @@ public class ExchangeRateRetrospectiveBuilderTest {
 		Assert.assertEquals(START_DATE, result.startDate());
 		Assert.assertEquals(END_DATE, result.endDate());
 
-		Assert.assertEquals(end.value(), result.endValue());
-		Assert.assertEquals(start.value(), result.startValue());
+		Assert.assertEquals((Double) end.value(), result.endValue());
+		Assert.assertEquals((Double) start.value(), result.startValue());
 		Assert.assertEquals(NAME, result.name());
-		Assert.assertEquals((end.value() - start.value()) / start.value(), result.rate());
+		Assert.assertEquals((Double) ((end.value() - start.value()) / start.value()), result.rate());
 		Assert.assertEquals(2, result.exchangeRates().size());
 		Assert.assertTrue(result.exchangeRates().contains(start));
 		Assert.assertTrue(result.exchangeRates().contains(end));

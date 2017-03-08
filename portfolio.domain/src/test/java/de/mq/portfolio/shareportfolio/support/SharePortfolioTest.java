@@ -31,7 +31,7 @@ import de.mq.portfolio.shareportfolio.AlgorithmParameter;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class SharePortfolioTest {
 
@@ -158,7 +158,7 @@ public class SharePortfolioTest {
 	@Test
 	public final void variance() {
 
-		Assert.assertEquals(1d / (9d * 36d), sharePortfolio.risk(weights));
+		Assert.assertEquals((Double) (1d / (9d * 36d)), (Double) sharePortfolio.risk(weights));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -179,12 +179,12 @@ public class SharePortfolioTest {
 
 	@Test
 	public final void covariances() {
-		Assert.assertEquals(covariances, ((SharePortfolioImpl) sharePortfolio).covariances());
+		Assert.assertArrayEquals(covariances, ((SharePortfolioImpl) sharePortfolio).covariances());
 	}
 
 	@Test
 	public final void correlations() {
-		Assert.assertEquals(correlations, ((SharePortfolioImpl) sharePortfolio).correlations());
+		Assert.assertArrayEquals(correlations, ((SharePortfolioImpl) sharePortfolio).correlations());
 	}
 
 	@Test
@@ -224,24 +224,24 @@ public class SharePortfolioTest {
 
 		final double[] variances = (double[]) ReflectionTestUtils.getField(sharePortfolio, VARIANCES_FIELD);
 		Assert.assertEquals(2, variances.length);
-		Assert.assertEquals(timeCourse1.variance(), variances[0]);
-		Assert.assertEquals(timeCourse2.variance(), variances[1]);
+		Assert.assertEquals((Double) timeCourse1.variance(), (Double)  variances[0]);
+		Assert.assertEquals((Double) timeCourse2.variance(), (Double) variances[1]);
 
 		final double[][] covariances = (double[][]) ReflectionTestUtils.getField(sharePortfolio, COVARIANCES_FIELD);
 		Assert.assertEquals(2, covariances.length);
 		Assert.assertEquals(2, covariances[0].length);
 		Assert.assertEquals(2, covariances[1].length);
 
-		Assert.assertEquals(timeCourse1.covariance(timeCourse1), covariances[0][0]);
-		Assert.assertEquals(timeCourse2.covariance(timeCourse2), covariances[1][1]);
-		Assert.assertEquals(timeCourse1.covariance(timeCourse2), covariances[0][1]);
-		Assert.assertEquals(timeCourse2.covariance(timeCourse1), covariances[1][0]);
+		Assert.assertEquals((Double) timeCourse1.covariance(timeCourse1), (Double) covariances[0][0]);
+		Assert.assertEquals((Double) timeCourse2.covariance(timeCourse2), (Double) covariances[1][1]);
+		Assert.assertEquals((Double)timeCourse1.covariance(timeCourse2), (Double)covariances[0][1]);
+		Assert.assertEquals((Double)timeCourse2.covariance(timeCourse1), (Double)covariances[1][0]);
 
 		final double[][] correlations = (double[][]) ReflectionTestUtils.getField(sharePortfolio, CORRELATIONS_FIELD);
 		final int[] counter = { 0 };
 		IntStream.range(0, 2).forEach(i -> {
 			IntStream.range(0, 2).forEach(j -> {
-				Assert.assertEquals(covariances[i][j] / (Math.sqrt(variances[i]) * Math.sqrt(variances[j])), correlations[i][j]);
+				Assert.assertEquals((Double) (covariances[i][j] / (Math.sqrt(variances[i]) * Math.sqrt(variances[j]))),(Double)correlations[i][j]);
 				counter[0] = counter[0] + 1;
 			});
 
@@ -349,9 +349,9 @@ public class SharePortfolioTest {
 		timeCourses.forEach(tc -> results.containsKey(tc));
 		Assert.assertTrue(results.containsKey(timeCourse));
 
-		Assert.assertEquals(minWeights.get(timeCourse1), percentRound(results.get(timeCourse1)));
-		Assert.assertEquals(minWeights.get(timeCourse2), percentRound(results.get(timeCourse2)));
-		Assert.assertEquals(minWeights.get(timeCourse), percentRound(results.get(timeCourse)));
+		Assert.assertEquals((Double) minWeights.get(timeCourse1), (Double) percentRound(results.get(timeCourse1)));
+		Assert.assertEquals((Double) minWeights.get(timeCourse2), (Double) percentRound(results.get(timeCourse2)));
+		Assert.assertEquals((Double) minWeights.get(timeCourse), (Double) percentRound(results.get(timeCourse)));
 		
 		
 	}
@@ -404,13 +404,13 @@ public class SharePortfolioTest {
 		preparePortfolioForMinWeightTest();
 		final double[] results = sharePortfolio.minWeights();
 		Assert.assertEquals(sharePortfolio.timeCourses().size(), results.length);
-		IntStream.range(0, sharePortfolio.timeCourses().size()).forEach(i -> Assert.assertEquals(minWeights.get(sharePortfolio.timeCourses().get(i)), percentRound(results[i])));
+		IntStream.range(0, sharePortfolio.timeCourses().size()).forEach(i -> Assert.assertEquals((Double) minWeights.get(sharePortfolio.timeCourses().get(i)), (Double) percentRound(results[i])));
 	}
 
 	@Test
 	public final void standardDeviation() {
 		preparePortfolioForMinWeightTest();
-		Assert.assertEquals(standardDerivation, percentRound(sharePortfolio.standardDeviation()));
+		Assert.assertEquals((Double) standardDerivation, (Double)  percentRound(sharePortfolio.standardDeviation()));
 	}
 
 	@Test
@@ -426,7 +426,7 @@ public class SharePortfolioTest {
 	@Test
 	public final void standardDeviationWithWeights() {
 		preparePortfolioForMinWeightTest();
-		Assert.assertEquals(standardDerivation, percentRound(sharePortfolio.standardDeviation(new double[] { minWeights.get(timeCourse1) / 100d, minWeights.get(timeCourse2) / 100d, minWeights.get(timeCourse) / 100d })));
+		Assert.assertEquals((Double) standardDerivation, (Double) percentRound(sharePortfolio.standardDeviation(new double[] { minWeights.get(timeCourse1) / 100d, minWeights.get(timeCourse2) / 100d, minWeights.get(timeCourse) / 100d })));
 	}
 
 	@Test
@@ -481,8 +481,8 @@ public class SharePortfolioTest {
 
 		final List<Entry<String, Map<String, Double>>> results = sharePortfolio.correlationEntries();
 
-		Assert.assertEquals(1d, filterEntry(results, share1.name()).get(share1.name()));
-		Assert.assertEquals(correlation, filterEntry(results, share1.name()).get(share2.name()));
+		Assert.assertEquals((Double) 1d, (Double) filterEntry(results, share1.name()).get(share1.name()));
+		Assert.assertEquals((Double) correlation, (Double) filterEntry(results, share1.name()).get(share2.name()));
 		Assert.assertEquals(filterEntry(results, share1.name()), filterEntry(results, share2.name()));
 
 	}
@@ -516,7 +516,7 @@ public class SharePortfolioTest {
 		// example markowitz.pdf
 		final ExchangeRateCalculator exchangeRateCalculator = prepareForMinWeights();
 
-		Assert.assertEquals(percentRound(47d / 14d / 9d), percentRound(sharePortfolio.totalRate(weights, exchangeRateCalculator)));
+		Assert.assertEquals((Double) percentRound(47d / 14d / 9d), (Double) percentRound(sharePortfolio.totalRate(weights, exchangeRateCalculator)));
 
 	}
 
@@ -577,7 +577,7 @@ public class SharePortfolioTest {
 
 		Mockito.doAnswer(a-> weights).when(mock).minWeights();
 		
-		Assert.assertEquals(percentRound(47d / 14d / 9d), percentRound(mock.totalRate(exchangeRateCalculator)));
+		Assert.assertEquals((Double)percentRound(47d / 14d / 9d), (Double)percentRound(mock.totalRate(exchangeRateCalculator)));
 	}
 	
 	@Test
@@ -591,7 +591,7 @@ public class SharePortfolioTest {
 		final double[] results = mock.totalRates(exchangeRateCalculator);
 		Assert.assertEquals(TOTAL_RATES.length, results.length);
 		
-		IntStream.range(0, TOTAL_RATES.length).forEach(i -> Assert.assertEquals(TOTAL_RATES[i], percentRound(results[i])));
+		IntStream.range(0, TOTAL_RATES.length).forEach(i -> Assert.assertEquals((Double) TOTAL_RATES[i],(Double) percentRound(results[i])));
 		
 		
 	}
@@ -616,7 +616,7 @@ public class SharePortfolioTest {
 
 		prepareDividends(exchangeRateCalculator);
 
-		Assert.assertEquals(percentRound(11d / 70d), percentRound(sharePortfolio.totalRateDividends(weights, exchangeRateCalculator)));
+		Assert.assertEquals((Double) percentRound(11d / 70d), (Double) percentRound(sharePortfolio.totalRateDividends(weights, exchangeRateCalculator)));
 	}
 
 	@Test
@@ -669,7 +669,7 @@ public class SharePortfolioTest {
 		Mockito.doAnswer(a -> weights).when(mock).minWeights();
 		
 		//Mockito.when(mock.minWeights()).thenReturn(weights);
-		Assert.assertEquals(percentRound(11d / 70d), percentRound(mock.totalRateDividends(exchangeRateCalculator)));
+		Assert.assertEquals((Double) percentRound(11d / 70d), (Double) percentRound(mock.totalRateDividends(exchangeRateCalculator)));
 	}
 
 	@Test
@@ -702,16 +702,16 @@ public class SharePortfolioTest {
 		IntStream.range(0, variances.length).forEach(i -> Assert.assertEquals(variances.length, results[i].length) );
 		
 	
-		IntStream.range(0, variances.length).forEach(i -> Assert.assertEquals(variances[i], results[i][i]));
+		IntStream.range(0, variances.length).forEach(i -> Assert.assertEquals((Double) variances[i], (Double) results[i][i]));
 		
-		IntStream.range(0, variances.length).forEach(i -> IntStream.range(0, variances.length).filter(j -> i != j).forEach(j -> Assert.assertEquals(covariances[i][j], results[i][j]))); 
+		IntStream.range(0, variances.length).forEach(i -> IntStream.range(0, variances.length).filter(j -> i != j).forEach(j -> Assert.assertEquals((Double) covariances[i][j], (Double) results[i][j]))); 
 	}
 	
 	@Test
 	public final void param() {
 		Assert.assertNull(sharePortfolio.param(algorithmParameter));
 		sharePortfolio.assign(algorithmParameter, PARAMETER_VALUE);
-		Assert.assertEquals(PARAMETER_VALUE, sharePortfolio.param(algorithmParameter));
+		Assert.assertEquals((Double) PARAMETER_VALUE, (Double)sharePortfolio.param(algorithmParameter));
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
@@ -728,7 +728,7 @@ public class SharePortfolioTest {
 		Assert.assertTrue(sharePortfolio.parameterVector(algorithmParameter).isEmpty());
 		sharePortfolio.assign(algorithmParameter, Arrays.asList(PARAMETER_VALUE, PARAMETER_VALUE));
 		
-		IntStream.range(0, 2).forEach(i -> Assert.assertEquals(PARAMETER_VALUE, sharePortfolio.param(algorithmParameter, i)));
+		IntStream.range(0, 2).forEach(i -> Assert.assertEquals((Double) PARAMETER_VALUE, (Double) sharePortfolio.param(algorithmParameter, i)));
 		
 		Assert.assertEquals(Arrays.asList(PARAMETER_VALUE, PARAMETER_VALUE), sharePortfolio.parameterVector(algorithmParameter));
 		

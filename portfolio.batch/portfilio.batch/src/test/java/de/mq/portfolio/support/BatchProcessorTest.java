@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import de.mq.portfolio.batch.RulesEngine;
-import junit.framework.Assert;
+
 
 public class BatchProcessorTest {
 

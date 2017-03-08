@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -15,7 +16,7 @@ import org.springframework.web.client.RestOperations;
 
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
-import junit.framework.Assert;
+
 
 public class HistoryGoogleRestRepositoryTest {
 	
@@ -63,10 +64,10 @@ public class HistoryGoogleRestRepositoryTest {
 		Assert.assertEquals(share, timeCourse.share());
 		
 		Assert.assertEquals(dateFormat.parse(startDate), timeCourse.rates().get(0).date());
-		Assert.assertEquals(START_RATE, timeCourse.rates().get(0).value());
+		Assert.assertEquals((Double)START_RATE, (Double) timeCourse.rates().get(0).value());
 		
 		Assert.assertEquals(dateFormat.parse(now), timeCourse.rates().get(1).date());
-		Assert.assertEquals(CURRENT_RATE, timeCourse.rates().get(1).value());
+		Assert.assertEquals((Double) CURRENT_RATE, (Double) timeCourse.rates().get(1).value());
 		
 		Mockito.verify(restOperations).getForObject(url, String.class );
 		

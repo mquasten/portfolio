@@ -2,8 +2,7 @@ package de.mq.portfolio.share.support;
 
 import java.text.ParseException;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -51,16 +50,16 @@ public class HistoryRepositoryTest {
 		Assert.assertTrue(timeCourse.rates().stream().findAny().isPresent());
 		Assert.assertTrue(timeCourse.dividends().stream().findAny().isPresent());
 		final Data rate1= timeCourse.rates().stream().findFirst().get();
-		Assert.assertEquals(RATE1.doubleValue(), rate1.value());
+		Assert.assertEquals((Double) RATE1.doubleValue(),(Double) rate1.value());
 		Assert.assertEquals( ((HistoryRestRepositoryImpl)historyRepository).df.parseObject(DATE1), rate1.date());
 		
 		final Data rate2= timeCourse.rates().get(1);
-		Assert.assertEquals(RATE2.doubleValue(), rate2.value());
+		Assert.assertEquals((Double) RATE2.doubleValue(), (Double) rate2.value());
 		Assert.assertEquals( ((HistoryRestRepositoryImpl)historyRepository).df.parseObject(DATE2), rate2.date());
 		
 		
 		final Data dividend = timeCourse.dividends().stream().findAny().get();
-		Assert.assertEquals(DIVIDEND.doubleValue(), dividend.value());
+		Assert.assertEquals((Double) DIVIDEND.doubleValue(), (Double) dividend.value());
 		Assert.assertEquals( ((HistoryRestRepositoryImpl)historyRepository).df.parseObject(DATE1), dividend.date());
 	}
 }

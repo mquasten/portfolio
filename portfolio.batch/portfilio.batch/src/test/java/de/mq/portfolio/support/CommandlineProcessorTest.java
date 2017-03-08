@@ -14,6 +14,7 @@ import java.util.function.Function;
 
 import java.util.stream.Collectors;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
@@ -28,7 +29,7 @@ import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.support.ExceptionTranslationBuilder.ResourceSupplier;
 import de.mq.portfolio.support.SimpleCommandlineProcessorImpl.Main;
-import junit.framework.Assert;
+
 
 
 public class CommandlineProcessorTest {

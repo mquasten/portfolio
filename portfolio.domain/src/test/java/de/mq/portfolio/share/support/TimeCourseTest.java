@@ -21,7 +21,7 @@ import org.springframework.util.ReflectionUtils;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class TimeCourseTest {
 
@@ -88,9 +88,9 @@ public class TimeCourseTest {
 
 	@Test
 	public final void onBeforeSave() {
-		Assert.assertEquals(0d, timeCourse.variance());
-		Assert.assertEquals(0d, timeCourse.meanRate());
-		Assert.assertEquals(0d, timeCourse.totalRate());
+		Assert.assertEquals((Double) 0d, (Double) timeCourse.variance());
+		Assert.assertEquals((Double) 0d, (Double) timeCourse.meanRate());
+		Assert.assertEquals((Double) 0d, (Double) timeCourse.totalRate());
 
 		((TimeCourseImpl) timeCourse).onBeforeSave();
 
@@ -99,7 +99,7 @@ public class TimeCourseTest {
 
 		doubleEquals(1d / 12, timeCourse.standardDeviation());
 		
-		Assert.assertEquals((data3.value()  - data1.value()) / data1.value(),    timeCourse.totalRate());
+		Assert.assertEquals((Double) ((data3.value()  - data1.value()) / data1.value()),   (Double)  timeCourse.totalRate());
 
 	}
 
@@ -138,7 +138,7 @@ public class TimeCourseTest {
 	@Test
 	public final void covarianz() {
 		((TimeCourseImpl) timeCourse).onBeforeSave();
-		Assert.assertEquals(1d, timeCourse.covariance(timeCourse) / timeCourse.variance());
+		Assert.assertEquals((Double) 1d, (Double) (timeCourse.covariance(timeCourse) / timeCourse.variance()));
 		final TimeCourse other = other();
 
 		doubleEquals(1d / (24d * 24d), other.variance());
@@ -152,7 +152,7 @@ public class TimeCourseTest {
 	@Test
 	public final void corelation() {
 		((TimeCourseImpl) timeCourse).onBeforeSave();
-		Assert.assertEquals(1d, timeCourse.covariance(timeCourse) / timeCourse.variance());
+		Assert.assertEquals((Double) 1d, (Double) (timeCourse.covariance(timeCourse) / timeCourse.variance()));
 		final TimeCourse other = other();
 
 		doubleEquals(1d, timeCourse.correlation(other));

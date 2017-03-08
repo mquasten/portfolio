@@ -4,7 +4,7 @@ import org.junit.Test;
 
 
 import de.mq.portfolio.shareportfolio.AlgorithmParameter;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class AlgorithmParameterTest {
 	

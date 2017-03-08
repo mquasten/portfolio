@@ -5,7 +5,7 @@ import org.springframework.core.convert.converter.Converter;
 
 import de.mq.portfolio.user.User;
 import de.mq.portfolio.user.support.UsersCSVLineConverterImpl;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class UsersCSVLineConverterTest {
 	

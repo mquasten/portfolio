@@ -16,7 +16,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.share.TimeCourse;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class ImportServiceRuleTest {
 

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -29,7 +30,7 @@ import com.mongodb.DBObject;
 
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
-import junit.framework.Assert;
+
 
 public class ShareRepositoryTest {
 	
