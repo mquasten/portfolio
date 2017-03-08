@@ -22,7 +22,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import de.mq.portfolio.share.support.ClosedIntervalPageRequest;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class SerialisationUtilTest {
 	

@@ -13,7 +13,7 @@ import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.user.User;
 import de.mq.portfolio.user.UserService;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class AuthentificationManagerTest {
 	

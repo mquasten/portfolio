@@ -19,7 +19,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.share.Data;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class ChartAOTest {
 	

@@ -16,7 +16,7 @@ import org.primefaces.model.chart.LegendPlacement;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class ExchangeRatesAOTest {
 	

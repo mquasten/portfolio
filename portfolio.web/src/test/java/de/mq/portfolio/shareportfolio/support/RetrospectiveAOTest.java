@@ -29,7 +29,7 @@ import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class RetrospectiveAOTest {
 	
@@ -251,23 +251,23 @@ public class RetrospectiveAOTest {
 	
 	@Test
 	public final void standardDeviation() {
-		Assert.assertEquals(0d, retrospectiveAO.getStandardDeviation());
+		Assert.assertEquals((Double) 0d, (Double)  retrospectiveAO.getStandardDeviation());
 		ReflectionTestUtils.setField(retrospectiveAO, STANDARD_DEVIATION_FIELD, STANDARD_DEVIATION);
-		Assert.assertEquals(STANDARD_DEVIATION, retrospectiveAO.getStandardDeviation());
+		Assert.assertEquals((Double) STANDARD_DEVIATION, (Double) retrospectiveAO.getStandardDeviation());
 	}
 	
 	@Test
 	public final void totalRate() {
-		Assert.assertEquals(0d, retrospectiveAO.getTotalRate());
+		Assert.assertEquals((Double) 0d,  retrospectiveAO.getTotalRate());
 		ReflectionTestUtils.setField(retrospectiveAO, TOTAL_RATE_FIELD, TOTAL_RATE);
-		Assert.assertEquals(TOTAL_RATE, retrospectiveAO.getTotalRate());
+		Assert.assertEquals((Double) TOTAL_RATE, retrospectiveAO.getTotalRate());
 	}
 	
 	@Test
 	public final void totalRateDividends() {
-		Assert.assertEquals(0d, retrospectiveAO.getTotalRateDividends());
+		Assert.assertEquals((Double) 0d, retrospectiveAO.getTotalRateDividends());
 		ReflectionTestUtils.setField(retrospectiveAO, TOTAL_RATE_DIVIDENDS_FIELDS, TOTAL_RATE_DIVIDENDS);
-		Assert.assertEquals(TOTAL_RATE_DIVIDENDS, retrospectiveAO.getTotalRateDividends());
+		Assert.assertEquals((Double) TOTAL_RATE_DIVIDENDS, retrospectiveAO.getTotalRateDividends());
 	}
 	
 	
@@ -299,10 +299,10 @@ public class RetrospectiveAOTest {
 		Assert.assertEquals(initialDate, retrospectiveAO.getStartDate());
 		Assert.assertEquals(endDate, retrospectiveAO.getEndDate());
 		
-		Assert.assertEquals(STANDARD_DEVIATION, retrospectiveAO.getStandardDeviation());
+		Assert.assertEquals((Double) STANDARD_DEVIATION, (Double) retrospectiveAO.getStandardDeviation());
 		
-		Assert.assertEquals(TOTAL_RATE, retrospectiveAO.getTotalRate());
-		Assert.assertEquals(TOTAL_RATE_DIVIDENDS, retrospectiveAO.getTotalRateDividends());
+		Assert.assertEquals((Double) TOTAL_RATE, retrospectiveAO.getTotalRate());
+		Assert.assertEquals((Double) TOTAL_RATE_DIVIDENDS, retrospectiveAO.getTotalRateDividends());
 		
 		Assert.assertEquals(Arrays.asList(timeCourseRetrospective), retrospectiveAO.getTimeCourseRetrospectives());
 		

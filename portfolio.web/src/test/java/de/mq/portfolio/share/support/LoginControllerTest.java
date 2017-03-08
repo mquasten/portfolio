@@ -20,7 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.support.UserModel;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LoginControllerTest {

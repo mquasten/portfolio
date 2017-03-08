@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.ObjectFactory;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class SimpleViewScopeTest {
 	

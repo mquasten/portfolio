@@ -21,7 +21,7 @@ import de.mq.portfolio.shareportfolio.AlgorithmParameter;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class PortfolioAOTest {
 
@@ -133,9 +133,9 @@ public class PortfolioAOTest {
 
 		Assert.assertEquals(weights, portfolioAO.getWeights());
 		Assert.assertFalse(portfolioAO.getEditable());
-		Assert.assertEquals(STANDARD_DERIVATION, portfolioAO.getMinStandardDeviation());
-		Assert.assertEquals(TOTAL_RATE, portfolioAO.getTotalRate());
-		Assert.assertEquals(TOTAL_RATE_DIVIDENTS, portfolioAO.getTotalRateDividends());
+		Assert.assertEquals((Double) STANDARD_DERIVATION, (Double) portfolioAO.getMinStandardDeviation());
+		Assert.assertEquals((Double) TOTAL_RATE, (Double) portfolioAO.getTotalRate());
+		Assert.assertEquals((Double) TOTAL_RATE_DIVIDENTS, (Double) portfolioAO.getTotalRateDividends());
 
 		Mockito.when(sharePortfolio.isCommitted()).thenReturn(false);
 		portfolioAO.setSharePortfolio(sharePortfolio, Optional.of(exchangeRateCalculator));

@@ -3,7 +3,7 @@ package de.mq.portfolio.share.support;
 import org.junit.Test;
 import org.springframework.core.convert.converter.Converter;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class CurrencyConverterTest {
 	

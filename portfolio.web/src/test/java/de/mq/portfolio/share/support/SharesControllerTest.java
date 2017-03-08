@@ -24,7 +24,7 @@ import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.shareportfolio.support.SharePortfolioService;
 import de.mq.portfolio.support.UserModel;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class SharesControllerTest {
 

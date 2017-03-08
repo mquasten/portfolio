@@ -13,7 +13,7 @@ import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class RetrospectiveControllerTest {
 

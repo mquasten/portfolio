@@ -38,7 +38,7 @@ import de.mq.portfolio.shareportfolio.OptimisationAlgorithm;
 import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.support.UserModel;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class PortfolioControllerTest {
 

@@ -2,8 +2,7 @@ package de.mq.portfolio.share.support;
 
 import org.junit.Test;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 public class LoginAOTest {
 	
 	private static final String PASSWORD = "passwd";

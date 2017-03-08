@@ -15,7 +15,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class StateAspectTest {
 	

@@ -47,7 +47,7 @@ import de.mq.portfolio.shareportfolio.OptimisationAlgorithm.AlgorithmType;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.support.ExceptionTranslationBuilder;
 import de.mq.portfolio.support.ExceptionTranslationBuilderImpl;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class Portfolio2PdfConverterTest {
 	
@@ -339,7 +339,7 @@ public class Portfolio2PdfConverterTest {
 		
 		Mockito.verify(correlationTable, Mockito.atLeastOnce()).addCell(phraseCorrelationTableCaptor.capture());
 		final List<String> correlationTableCells = phraseCorrelationTableCaptor.getAllValues().stream().map(p -> p.getContent()).collect(Collectors.toList());
-		Assert.assertEquals(Math.pow(1+shares.size(), 2), (double) correlationTableCells.size());
+		Assert.assertEquals((Double)  Math.pow(1+shares.size(), 2),  Double.valueOf(correlationTableCells.size()));
 		
 		Assert.assertEquals(AbstractPortfolio2PdfConverter.CORRELATION_TABLE_CORRELATIONS_HEADER, correlationTableCells.get(0));
 		Assert.assertEquals(shares.get(0), correlationTableCells.get(1));

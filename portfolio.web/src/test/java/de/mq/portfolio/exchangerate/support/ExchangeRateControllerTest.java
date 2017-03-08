@@ -30,7 +30,7 @@ import de.mq.portfolio.share.Data;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import de.mq.portfolio.shareportfolio.support.SharePortfolioRetrospective;
 import de.mq.portfolio.shareportfolio.support.SharePortfolioService;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class ExchangeRateControllerTest {
 	

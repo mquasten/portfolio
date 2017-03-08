@@ -11,7 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import de.mq.portfolio.support.UserModel;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class MessageTest {
 	

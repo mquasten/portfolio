@@ -10,7 +10,7 @@ import org.mockito.Mockito;
 
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class SharesSearchAOTest {
 	

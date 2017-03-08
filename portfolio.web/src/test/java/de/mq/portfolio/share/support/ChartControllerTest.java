@@ -15,7 +15,7 @@ import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class ChartControllerTest {
 
