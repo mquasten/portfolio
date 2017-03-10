@@ -1,7 +1,9 @@
 package de.mq.portfolio.share.support;
 
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -14,6 +16,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.mq.portfolio.share.Share;
+import de.mq.portfolio.share.TimeCourse;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/application-test.xml" })
 @Ignore
@@ -32,7 +35,7 @@ public class RealTimeRateYahooRestRepositoryIntegrationTest {
 		shares.clear();
 		shares.add(newSahreMock("SAP.DE"));
 		shares.add(newSahreMock("JNJ"));
-		shares.add(newSahreMock("PD"));
+		shares.add(newSahreMock("PG"));
 		shares.add(newSahreMock("KO"));
 		shares.add(newSahreMock("VZ"));
 		
@@ -46,7 +49,11 @@ public class RealTimeRateYahooRestRepositoryIntegrationTest {
 	
 	@Test
 	public  void rates() {
-		realTimeRateRestRepository.rates(shares);
+		final List<TimeCourse> results = (List<TimeCourse>)  realTimeRateRestRepository.rates(shares);
+		results.forEach(tc -> {
+			System.out.println(tc.code() + ":"+  tc.rates().get(0).value() + ":" +tc.rates().get(1).value() + ":"+ tc.totalRate());
+			
+		});
 	}
 
 }
