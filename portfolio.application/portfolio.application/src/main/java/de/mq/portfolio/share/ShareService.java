@@ -29,6 +29,8 @@ public interface ShareService{
 
 	Optional<TimeCourse> timeCourse(String code);
 
+	Collection<TimeCourse> realTimeCourses(Collection<String> codes);
+
 
 	
 

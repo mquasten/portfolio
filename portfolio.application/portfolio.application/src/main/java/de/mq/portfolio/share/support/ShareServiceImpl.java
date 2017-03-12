@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,8 @@ class ShareServiceImpl implements ShareService {
 	private HistoryRepository historyRepository;
 
 	private ShareRepository shareRepository;
+	
+	private RealTimeRateRestRepository realTimeRateRestRepository;
 
 	@Autowired
 	ShareServiceImpl(HistoryRepository historyRepository, ShareRepository shareRepository) {
@@ -98,12 +101,25 @@ class ShareServiceImpl implements ShareService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * de.mq.portfolio.share.support.ShareService#save(de.mq.portfolio.share.
-	 * support.Share)
+	 * de.mq.portfolio.share.support.ShareService#save(de.mq.portfolio.share.support.Share)
 	 */
 	@Override
 	public final void save(final Share share) {
 		shareRepository.save(share);
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.mq.portfolio.share.support.ShareService#save(java.util.Collection)
+	 */
+	@Override
+	public final Collection<TimeCourse> realTimeCourses(Collection<String> codes){
+		final Collection<Share> shares = shareRepository.timeCourses(codes).stream().map(timeCourse -> timeCourse.share()).collect(Collectors.toList());
+		return realTimeRateRestRepository.rates(shares);
+		
+	}
+	
 
 }

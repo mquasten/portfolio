@@ -222,6 +222,9 @@ class TimeCourseImpl implements TimeCourse {
 			dividends.clear();
 			dividends.addAll(timeCourse.dividends());
 		}
+		if( timeCourse.share() != null) {
+			this.share=timeCourse.share();
+		}
 	}
 	
 	@Override

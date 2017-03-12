@@ -4,7 +4,9 @@ package de.mq.portfolio.share.support;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -12,11 +14,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
+
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/application-test.xml" })
 @Ignore
@@ -50,7 +55,10 @@ public class RealTimeRateYahooRestRepositoryIntegrationTest {
 	@Test
 	public  void rates() {
 		final List<TimeCourse> results = (List<TimeCourse>)  realTimeRateRestRepository.rates(shares);
+		Assert.assertEquals(shares.size(), results.size());
 		results.forEach(tc -> {
+			Assert.assertEquals(DataAccessUtils.requiredSingleResult(shares.stream().map(share -> share.code()).filter(code -> code.equals(tc.share().code())).collect(Collectors.toSet())),  tc.share().code());
+			
 			System.out.println(tc.code() + ":"+  tc.rates().get(0).value() + ":" +tc.rates().get(1).value() + ":"+ tc.totalRate());
 			
 		});
