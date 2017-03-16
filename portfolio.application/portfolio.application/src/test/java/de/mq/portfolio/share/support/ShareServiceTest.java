@@ -25,8 +25,10 @@ public class ShareServiceTest {
 	private static final Number PAGE_SIZE = 50;
 	HistoryRepository historyRepository = Mockito.mock(HistoryRepository.class);
 	ShareRepository shareRepository = Mockito.mock(ShareRepository.class);
+	
+	private final RealTimeRateRestRepository realTimeRateRestRepository = Mockito.mock(RealTimeRateRestRepository.class);
 
-	private final ShareService shareService = new ShareServiceImpl(historyRepository, shareRepository);
+	private final ShareService shareService = new ShareServiceImpl(historyRepository, shareRepository, realTimeRateRestRepository);
 
 	private final Share share = Mockito.mock(Share.class);
 

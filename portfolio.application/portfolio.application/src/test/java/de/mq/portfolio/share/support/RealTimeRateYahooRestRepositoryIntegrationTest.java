@@ -31,22 +31,22 @@ public class RealTimeRateYahooRestRepositoryIntegrationTest {
 	@Qualifier("yahooRealtimeRepository")
 	private  RealTimeRateRestRepository   realTimeRateRestRepository; 
 	
-
+	
 	
 	private final Collection<Share> shares = new ArrayList<>();
 	
 	@Before
 	public  final void setup() {
 		shares.clear();
-		shares.add(newSahreMock("SAP.DE"));
-		shares.add(newSahreMock("JNJ"));
-		shares.add(newSahreMock("PG"));
-		shares.add(newSahreMock("KO"));
-		shares.add(newSahreMock("VZ"));
+		shares.add(newshareMock("SAP.DE"));
+		shares.add(newshareMock("JNJ"));
+		shares.add(newshareMock("PG"));
+		shares.add(newshareMock("KO"));
+		shares.add(newshareMock("VZ"));
 		
 		
 	}
-	private Share newSahreMock(final String code) {
+	private Share newshareMock(final String code) {
 		final Share share = Mockito.mock(Share.class);
 		Mockito.when(share.code()).thenReturn(code);
 		return share;
@@ -63,5 +63,7 @@ public class RealTimeRateYahooRestRepositoryIntegrationTest {
 			
 		});
 	}
+	
+	
 
 }
