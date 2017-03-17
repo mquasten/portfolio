@@ -29,7 +29,7 @@ public class RealTimeRateYahooRestRepositoryIntegrationTest {
 	
 	@Autowired
 	@Qualifier("yahooRealtimeRepository")
-	private  RealTimeRateRestRepository   realTimeRateRestRepository; 
+	private  RealTimeRateRepository   realTimeRateRestRepository; 
 	
 	
 	

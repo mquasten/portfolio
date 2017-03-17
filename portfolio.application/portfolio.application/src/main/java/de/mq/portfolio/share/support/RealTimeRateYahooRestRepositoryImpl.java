@@ -17,7 +17,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestOperations;
@@ -27,21 +26,16 @@ import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.support.ExceptionTranslationBuilder;
 
 @Repository
-@Profile("yahhoo")
-public abstract class RealTimeRateYahooRestRepositoryImpl implements RealTimeRateRestRepository {
+public abstract class RealTimeRateYahooRestRepositoryImpl implements RealTimeRateRepository {
 	
-	private final String url = "http://finance.yahoo.com/d/quotes.csv?s=%s&f=snbaopl1";	
-	
-	
-	
+	final static String URL = "http://finance.yahoo.com/d/quotes.csv?s=%s&f=snbaopl1";	
 	
 	private final RestOperations restOperations;
 	
 	@Autowired
-	RealTimeRateYahooRestRepositoryImpl(RestOperations restOperations) {
+	RealTimeRateYahooRestRepositoryImpl(final RestOperations restOperations) {
 		this.restOperations = restOperations;
 	}
-	//restOperations.getForObject(requestUrl, String.class)
 	
 
 	/* (non-Javadoc)
@@ -51,8 +45,7 @@ public abstract class RealTimeRateYahooRestRepositoryImpl implements RealTimeRat
 	public  Collection<TimeCourse> rates(final Collection<Share> shares) {
 		final Map<String, Share> sharesMap = new HashMap<>();
 		shares.forEach(share -> sharesMap.put(share.code(), share));
-		
-		return exceptionTranslationBuilder().withResource( () ->  new BufferedReader(new StringReader(restOperations.getForObject(String.format(url, shares.stream().map(share -> share.code()).reduce("",   (a , b) ->  StringUtils.isEmpty(a ) ? b :  a+"+" +b  )), String.class)))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {return  toTimeCourses(sharesMap, bufferedReader);}).translate();
+		return exceptionTranslationBuilder().withResource( () ->  new BufferedReader(new StringReader(restOperations.getForObject(String.format(URL, shares.stream().map(share -> share.code()).reduce("",   (a , b) ->  StringUtils.isEmpty(a ) ? b :  a+"+" +b  )), String.class)))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {return  toTimeCourses(sharesMap, bufferedReader);}).translate();
 	}
 	private Collection<TimeCourse> toTimeCourses(final Map<String, Share> sharesMap, BufferedReader bufferedReader) throws IOException {
 		final List<TimeCourse> results = new ArrayList<>();

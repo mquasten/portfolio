@@ -24,10 +24,10 @@ class ShareServiceImpl implements ShareService {
 
 	private ShareRepository shareRepository;
 	
-	private RealTimeRateRestRepository realTimeRateRestRepository;
+	private RealTimeRateRepository realTimeRateRestRepository;
 
 	@Autowired
-	ShareServiceImpl(final HistoryRepository historyRepository, final ShareRepository shareRepository, final RealTimeRateRestRepository realTimeRateRestRepository) {
+	ShareServiceImpl(final HistoryRepository historyRepository, final ShareRepository shareRepository, final RealTimeRateRepository realTimeRateRestRepository) {
 		this.historyRepository = historyRepository;
 		this.shareRepository = shareRepository;
 		this.realTimeRateRestRepository=realTimeRateRestRepository;

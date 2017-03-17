@@ -5,7 +5,7 @@ import java.util.Collection;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 
-public interface RealTimeRateRestRepository {
+public interface RealTimeRateRepository {
 
 	/**
 	 * Get the RealTimeRates as a Collection of Data with entry from today and yesterday
