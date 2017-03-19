@@ -259,14 +259,19 @@ public class TimeCourseTest {
 	@Test
 	public final void assign() {
 		final TimeCourse newTimeCourse = Mockito.mock(TimeCourse.class);
+		final Share newShare = Mockito.mock(Share.class);
 		final List<Data> newRates = Arrays.asList(data1);
 		final List<Data> newDividends = Arrays.asList(datax);
 		Mockito.when(newTimeCourse.rates()).thenReturn(newRates);
 		Mockito.when(newTimeCourse.dividends()).thenReturn(newDividends);
+		Mockito.when(newTimeCourse.share()).thenReturn(newShare);
+		
 		Assert.assertEquals(rates.size(), timeCourse.rates().size());
 		Assert.assertEquals(rates, timeCourse.rates());
 		Assert.assertEquals(dividends.size(), timeCourse.dividends().size());
 		Assert.assertEquals(dividends, timeCourse.dividends());
+		Assert.assertEquals(share, timeCourse.share());
+		
 		
 		timeCourse.assign(newTimeCourse);
 		
@@ -274,6 +279,7 @@ public class TimeCourseTest {
 		Assert.assertEquals(newRates, timeCourse.rates());
 		Assert.assertEquals(newDividends.size(), timeCourse.dividends().size());
 		Assert.assertEquals(newDividends, timeCourse.dividends());
+		Assert.assertEquals(newShare, timeCourse.share());
 	}
 	
 	@Test
@@ -283,6 +289,7 @@ public class TimeCourseTest {
 		Assert.assertEquals(rates, timeCourse.rates());
 		Assert.assertEquals(dividends.size(), timeCourse.dividends().size());
 		Assert.assertEquals(dividends, timeCourse.dividends());
+		Assert.assertEquals(share, timeCourse.share());
 		
 		timeCourse.assign(newTimeCourse);
 		
@@ -290,6 +297,7 @@ public class TimeCourseTest {
 		Assert.assertEquals(rates, timeCourse.rates());
 		Assert.assertEquals(dividends.size(), timeCourse.dividends().size());
 		Assert.assertEquals(dividends, timeCourse.dividends());
+		Assert.assertEquals(share, timeCourse.share());
 	}
 
 }

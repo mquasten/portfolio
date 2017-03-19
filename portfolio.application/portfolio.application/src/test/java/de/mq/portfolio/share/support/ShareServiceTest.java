@@ -146,10 +146,26 @@ public class ShareServiceTest {
 
 	
 	@Test
-	public void timeCoursebyCode() {
+	public void timeCourseByCode() {
 		Optional<TimeCourse> result = shareService.timeCourse(CODE);
 		Assert.assertTrue(result.isPresent());
 		Assert.assertEquals(timeCourse, result.get());
 		Mockito.verify(shareRepository, Mockito.times(1)).timeCourses(Arrays.asList(CODE));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public final void realTimeCourses() {
+		
+		final ArgumentCaptor<Collection<Share>> sharesCaptor = ArgumentCaptor.forClass(  (Class<Collection<Share>>)(Class<?>)Collection.class);
+		Mockito.when(timeCourse.share()).thenReturn(share);
+		Mockito.when(realTimeRateRestRepository.rates(Arrays.asList(share))).thenReturn(Arrays.asList(timeCourse));
+		Mockito.when(shareRepository.timeCourses(Arrays.asList(CODE))).thenReturn(timeCourses);
+		
+		Assert.assertEquals(timeCourses, shareService.realTimeCourses(Arrays.asList(CODE)));
+		Mockito.verify(realTimeRateRestRepository).rates(sharesCaptor.capture());
+		
+		Assert.assertEquals(1, sharesCaptor.getValue().size());
+		Assert.assertEquals(share, sharesCaptor.getValue().stream().findAny().get());
 	}
 }
