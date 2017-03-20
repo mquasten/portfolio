@@ -43,14 +43,14 @@
      
   </h:panelGrid>
   
-  <h:panelGrid style="width:100%"  rendered="#{chart.dividends.size() > 0 }" >
+  <h:panelGrid   rendered="#{chart.dividends.size() > 0 }" >
   
    <f:facet name="header">
     <h:outputText value="Dividenden" />
    		
    </f:facet>
   	<p:dataTable  var="dividends" value="#{chart.dividends}"  lazy="true"    resizableColumns="true"    >
-  		 <p:column headerText="Datum">
+  		 <p:column headerText="Datum"    >
             <h:outputText value="#{dividends.date()}" >
             	 <f:convertDateTime  type="date" dateStyle="short"  />
             </h:outputText>
@@ -65,6 +65,48 @@
   </h:panelGrid>
   
   
+ 
+
+  
+	<h:panelGrid style="width: 100%" >
+	
+	  <f:facet name="header">
+    <h:outputText value="Kenndaten" />
+   		
+   </f:facet>
+    <p:panelGrid  columns="2"  style="width: 100%"  >
+    
+    
+  
+    	<h:outputLabel for="name" value="Name"  />
+       <h:outputText id="name" value="#{chart.name}"  />
+    			<h:outputLabel for="currency" value="Währung" />
+    			<h:outputText id="currency" value="#{currencyConverter.convert(chart.currency)}" />
+    			<h:outputLabel for="wkn" value="Wertpapierkennnummer" />
+    			<h:outputText id="wkn" value="#{chart.wkn}" />
+    			
+    			<h:outputLabel for="code" value="Yahoo-Code" />
+    			<h:outputText id="code" value="#{chart.code}" />
+    			
+    			<h:outputLabel for="code2" value="Google-Code" />
+    			<h:outputLabel id="code2" value="#{chart.code2}" />
+    			
+    			<h:outputLabel for="index" value="Index" />
+    			<h:outputLabel id="index" value="#{chart.index}" />
+    			
+    			<h:outputLabel for="course" value="aktueller Kurs" />
+    			<h:outputLabel id="course" value="" />
+    			
+    			<h:outputLabel for="delta" value="Δ" />
+    			<h:outputLabel id="delta" value="" />
+    			
+    			<h:outputLabel for="deltyPercent" value="Δ [%]" />
+    			<h:outputLabel id="deltyPercent" value="" />
+  
+    </p:panelGrid>
+
+</h:panelGrid>
+
 </h:form>
 	
 </h:body>	

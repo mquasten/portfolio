@@ -37,7 +37,9 @@ public class ChartControllerImpl {
 		chartAO.setDividends(timeCourse.get().dividends());
 		chartAO.setWkn(timeCourse.get().share().wkn());
 		chartAO.setCurrency(timeCourse.get().share().currency());
-
+		chartAO.setCode2(timeCourse.get().share().code2());
+		chartAO.setIndex(timeCourse.get().share().index());
+		
 		final Collection<LineChartSeries> ratesSeries = new ArrayList<>();
 
 		final LineChartSeries series = new LineChartSeries();
