@@ -45,9 +45,10 @@ public class ChartAO implements Serializable {
 	
 	private String index;
 	
-	
+	private Double current;
 	
 
+	
 	private List<Data> dividends = new ArrayList<>();
 
 	private final LineChartModel chartModel = new LineChartModel();
@@ -130,5 +131,14 @@ public class ChartAO implements Serializable {
 	public void setIndex(String index) {
 		this.index = index;
 	}
+	
+	public Double getCurrent() {
+		return current;
+	}
+
+	public void setCurrent(Double current) {
+		this.current = current;
+	}
+
 
 }

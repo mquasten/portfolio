@@ -51,5 +51,9 @@ public class ChartControllerImpl {
 		chartAO.assign(ratesSeries);
 
 	}
+	
+	public void refresh(final ChartAO chartAO) {
+		chartAO.setCurrent(47.11);
+	}
 
 }
