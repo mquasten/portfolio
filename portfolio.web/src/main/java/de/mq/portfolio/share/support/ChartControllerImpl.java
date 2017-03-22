@@ -3,6 +3,7 @@ package de.mq.portfolio.share.support;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -40,6 +41,10 @@ public class ChartControllerImpl {
 		chartAO.setCode2(timeCourse.get().share().code2());
 		chartAO.setIndex(timeCourse.get().share().index());
 		
+		if(chartAO.isShare()) {
+			refresh(chartAO);
+		}
+		
 		final Collection<LineChartSeries> ratesSeries = new ArrayList<>();
 
 		final LineChartSeries series = new LineChartSeries();
@@ -53,7 +58,12 @@ public class ChartControllerImpl {
 	}
 	
 	public void refresh(final ChartAO chartAO) {
-		chartAO.setCurrent(47.11);
+		final Optional<TimeCourse> timeCourse = shareService.realTimeCourses(Arrays.asList(chartAO.getCode())).stream().findAny();
+		chartAO.setRealTimeCourses(Arrays.asList());
+		if( ! timeCourse.isPresent()){
+			return;
+		}
+		chartAO.setRealTimeCourses(timeCourse.get().rates());
 	}
 
 }

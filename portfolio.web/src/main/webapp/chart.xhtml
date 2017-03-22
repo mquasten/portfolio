@@ -90,22 +90,34 @@
 				<h:outputText id="code" value="#{chart.code}" />
 
 				<h:outputLabel for="code2" value="Google-Code" />
-				<h:outputLabel id="code2" value="#{chart.code2}" />
+				<h:outputText id="code2" value="#{chart.code2}" />
 
 				<h:outputLabel for="index" value="Index" />
-				<h:outputLabel id="index" value="#{chart.index}" />
+				<h:outputText id="index" value="#{chart.index}" />
 
 				<h:outputLabel for="course" value="aktueller Kurs" />
-				<h:outputLabel id="course" value="#{chart.current}" />
-
+				<h:panelGrid id="course" columns="2" >
+				<h:outputText  value="#{chart.current}" rendered="#{chart.realTimeRateValid}" >
+				<f:convertNumber pattern="#0.00" />
+				</h:outputText>
+				<h:outputText value="#{currencyConverter.convert(chart.currency)}" rendered="#{chart.realTimeRateValid}"/>
+				</h:panelGrid>
 
 
 				<h:outputLabel for="delta" value="Δ" />
-				<h:outputLabel id="delta" value="" />
-
+				<h:panelGrid id="delta" columns="2" >
+				<h:outputText value="#{chart.current - chart.last}"  rendered="#{chart.realTimeRateValid}">
+					<f:convertNumber pattern="#0.00" />
+				</h:outputText> 
+				<h:outputText  value="#{currencyConverter.convert(chart.currency)}" rendered="#{chart.realTimeRateValid}" />
+				</h:panelGrid>
 				<h:outputLabel for="deltayPercent" value="Δ [%]" />
-				<h:outputLabel id="deltayPercent" value="" />
-
+				<h:panelGrid id="deltayPercent" columns="2">
+				<h:outputText  value="#{100 * (chart.current - chart.last) / chart.last}" rendered="#{chart.realTimeRateValid}">
+					<f:convertNumber pattern="#0.00" />
+				</h:outputText> 
+				<h:outputText  value="%" rendered="#{chart.realTimeRateValid}" />
+				</h:panelGrid>
 			</p:panelGrid>
 
 			<h:panelGrid style="width: 100%;">
@@ -113,7 +125,7 @@
 				<h:panelGroup style="display:block; text-align:center">
 					<p:commandButton action="#{chartController.refresh(chart)}"
 						value="aktualisieren" process="sharesDetails"
-						update="sharesDetails" />
+						update="sharesDetails"  disabled="#{!chart.share}"/>
 
 				</h:panelGroup>
 

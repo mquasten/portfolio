@@ -11,6 +11,7 @@ import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.share.Data;
 
@@ -47,6 +48,7 @@ public class ChartAO implements Serializable {
 	
 	private Double current;
 	
+	private Double last;
 
 	
 	private List<Data> dividends = new ArrayList<>();
@@ -136,9 +138,26 @@ public class ChartAO implements Serializable {
 		return current;
 	}
 
-	public void setCurrent(Double current) {
-		this.current = current;
+	public void setRealTimeCourses(final List<Data> rates) {
+		last=null;
+		current=null;
+		if( rates.size() != 2 ) {
+			return ;
+		}
+		last=rates.get(0).value();
+		current=rates.get(1).value();
+	}
+
+	public Double getLast() {
+		return last;
 	}
 
 
+	public boolean isRealTimeRateValid() {
+		return last != null && current != null; 
+	}
+	
+	public boolean isShare() {
+		return StringUtils.hasText(index); 
+	}
 }
