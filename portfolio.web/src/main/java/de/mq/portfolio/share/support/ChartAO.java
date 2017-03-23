@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.share.Data;
+import de.mq.portfolio.share.TimeCourse;
 
 @Component("chart")
 @Scope("view")
@@ -75,35 +76,29 @@ public class ChartAO implements Serializable {
 		return dividends;
 	}
 
-	public void setDividends(final List<Data> dividends) {
-		this.dividends = dividends;
-	}
-
+	
 	public String getCode() {
 		return code;
 	}
+
+	
+	
 
 	public void setCode(String code) {
 		this.code = code;
 	}
 
-	
-
 	public String getWkn() {
 		return wkn;
 	}
 
-	public void setWkn(String wkn) {
-		this.wkn = wkn;
-	}
+
 
 	public String getCurrency() {
 		return currency;
 	}
 
-	public void setCurrency(String currency) {
-		this.currency = currency;
-	}
+	
 
 	public LineChartModel getChartModel() {
 		return chartModel;
@@ -113,32 +108,24 @@ public class ChartAO implements Serializable {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
+	
 	public String getCode2() {
 		return code2;
 	}
 
-	public void setCode2(String code2) {
-		this.code2 = code2;
-	}
-
+	
 	
 	public String getIndex() {
 		return index;
 	}
 
-	public void setIndex(String index) {
-		this.index = index;
-	}
+	
 	
 	public Double getCurrent() {
 		return current;
 	}
 
-	public void setRealTimeCourses(final List<Data> rates) {
+	void setRealTimeRates(final List<Data> rates) {
 		last=null;
 		current=null;
 		if( rates.size() != 2 ) {
@@ -146,6 +133,16 @@ public class ChartAO implements Serializable {
 		}
 		last=rates.get(0).value();
 		current=rates.get(1).value();
+	}
+	
+	
+	void setTimeCourse(final TimeCourse timeCourse) {
+		name = timeCourse.share().name();
+		dividends = timeCourse.dividends();
+		wkn = timeCourse.share().wkn();
+		currency = timeCourse.share().currency();
+		code2 = timeCourse.share().code2();
+		index = timeCourse.share().index();
 	}
 
 	public Double getLast() {

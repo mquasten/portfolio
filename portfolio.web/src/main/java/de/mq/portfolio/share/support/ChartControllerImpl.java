@@ -34,12 +34,8 @@ public class ChartControllerImpl {
 		if (!timeCourse.isPresent()) {
 			return;
 		}
-		chartAO.setName(timeCourse.get().share().name());
-		chartAO.setDividends(timeCourse.get().dividends());
-		chartAO.setWkn(timeCourse.get().share().wkn());
-		chartAO.setCurrency(timeCourse.get().share().currency());
-		chartAO.setCode2(timeCourse.get().share().code2());
-		chartAO.setIndex(timeCourse.get().share().index());
+		chartAO.setTimeCourse(timeCourse.get());
+	
 		
 		if(chartAO.isShare()) {
 			refresh(chartAO);
@@ -59,11 +55,11 @@ public class ChartControllerImpl {
 	
 	public void refresh(final ChartAO chartAO) {
 		final Optional<TimeCourse> timeCourse = shareService.realTimeCourses(Arrays.asList(chartAO.getCode())).stream().findAny();
-		chartAO.setRealTimeCourses(Arrays.asList());
+		chartAO.setRealTimeRates(Arrays.asList());
 		if( ! timeCourse.isPresent()){
 			return;
 		}
-		chartAO.setRealTimeCourses(timeCourse.get().rates());
+		chartAO.setRealTimeRates(timeCourse.get().rates());
 	}
 
 }

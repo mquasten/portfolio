@@ -69,13 +69,9 @@ public class ChartControllerTest {
 
 		Mockito.verify(chartAO).getCode();
 
-		Mockito.verify(chartAO).setName(NAME);
+		Mockito.verify(chartAO).setTimeCourse(timeCourse);
 
-		Mockito.verify(chartAO).setDividends(timeCourse.dividends());
-
-		Mockito.verify(chartAO).setWkn(WKN);
-
-		Mockito.verify(chartAO).setCurrency(CURRENCY);
+		
 
 		Mockito.verify(chartAO).assign(chartSeries.capture());
 
@@ -101,14 +97,9 @@ public class ChartControllerTest {
 
 		Mockito.verify(chartAO).getCode();
 
-		Mockito.verify(chartAO, Mockito.never()).setName(NAME);
+		Mockito.verify(chartAO, Mockito.never()).setTimeCourse(Mockito.any());
 
-		Mockito.verify(chartAO, Mockito.never()).setDividends(timeCourse.dividends());
-
-		Mockito.verify(chartAO, Mockito.never()).setWkn(WKN);
-
-		Mockito.verify(chartAO, Mockito.never()).setCurrency(CURRENCY);
-
+		
 		Mockito.verify(chartAO, Mockito.never()).assign(Mockito.any());
 
 	}
