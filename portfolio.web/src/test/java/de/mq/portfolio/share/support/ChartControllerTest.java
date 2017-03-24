@@ -42,6 +42,12 @@ public class ChartControllerTest {
 	private final Share share = Mockito.mock(Share.class);
 
 	private Data rate = Mockito.mock(Data.class);
+	
+	private Data last = Mockito.mock(Data.class);
+	private Data current = Mockito.mock(Data.class);
+	
+	private final TimeCourse realTimeCourse = Mockito.mock(TimeCourse.class);
+	
 
 	@SuppressWarnings("rawtypes")
 	ArgumentCaptor<Collection> chartSeries = ArgumentCaptor.forClass(Collection.class);
@@ -60,6 +66,12 @@ public class ChartControllerTest {
 		Mockito.when(rate.value()).thenReturn(VALUE);
 		Mockito.when(timeCourse.rates()).thenReturn(Arrays.asList(rate));
 
+		Mockito.when(last.value()).thenReturn(47d);
+		Mockito.when(current.value()).thenReturn(47.11d);
+		Mockito.when(realTimeCourse.rates()).thenReturn(Arrays.asList(last,current));
+		Mockito.when(shareService.realTimeCourses(Arrays.asList(CODE))).thenReturn(Arrays.asList(realTimeCourse));
+		
+		
 	}
 
 	@SuppressWarnings("unchecked")
@@ -67,11 +79,12 @@ public class ChartControllerTest {
 	public final void init() {
 		chartController.init(chartAO);
 
-		Mockito.verify(chartAO).getCode();
+		Mockito.verify(chartAO, Mockito.atLeast(1)).getCode();
 
 		Mockito.verify(chartAO).setTimeCourse(timeCourse);
 
-		
+		Mockito.verify(chartAO).setRealTimeRates(Arrays.asList());
+		Mockito.verify(chartAO).setRealTimeRates(realTimeCourse.rates());
 
 		Mockito.verify(chartAO).assign(chartSeries.capture());
 
@@ -102,6 +115,24 @@ public class ChartControllerTest {
 		
 		Mockito.verify(chartAO, Mockito.never()).assign(Mockito.any());
 
+	}
+	
+	@Test
+	public final void refresh() {
+		chartController.refresh(chartAO);
+		
+		Mockito.verify(chartAO).setRealTimeRates(Arrays.asList());
+		Mockito.verify(chartAO).setRealTimeRates(realTimeCourse.rates());
+	}
+	
+	@Test
+	public final void refreshNoRealTimeCourse() {
+		Mockito.when(shareService.realTimeCourses(Mockito.any())).thenReturn(Arrays.asList());
+		
+		chartController.refresh(chartAO);
+		
+		Mockito.verify(chartAO).setRealTimeRates(Arrays.asList());
+		Mockito.verify(chartAO, Mockito.never()).setRealTimeRates(realTimeCourse.rates());
 	}
 
 }

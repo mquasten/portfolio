@@ -11,7 +11,6 @@ import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
@@ -21,19 +20,10 @@ import de.mq.portfolio.share.TimeCourse;
 public class ChartAO implements Serializable {
 
 	static final String LABEL_TIME = "t";
-
-
-
+	
 	static final String TICK_FORMAT = "%b %#d, %y";
 
-
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-
-	
 
 	private String name; 
 
@@ -50,7 +40,6 @@ public class ChartAO implements Serializable {
 	private Double current;
 	
 	private Double last;
-
 	
 	private List<Data> dividends = new ArrayList<>();
 
@@ -70,8 +59,6 @@ public class ChartAO implements Serializable {
 		ratesSeries.forEach(rs -> chartModel.addSeries(rs));
 	}
 
-	
-
 	public List<Data> getDividends() {
 		return dividends;
 	}
@@ -80,9 +67,6 @@ public class ChartAO implements Serializable {
 	public String getCode() {
 		return code;
 	}
-
-	
-	
 
 	public void setCode(String code) {
 		this.code = code;
@@ -126,11 +110,15 @@ public class ChartAO implements Serializable {
 	}
 
 	void setRealTimeRates(final List<Data> rates) {
+		
 		last=null;
 		current=null;
+		
 		if( rates.size() != 2 ) {
 			return ;
 		}
+		
+		
 		last=rates.get(0).value();
 		current=rates.get(1).value();
 	}
@@ -154,7 +142,5 @@ public class ChartAO implements Serializable {
 		return last != null && current != null; 
 	}
 	
-	public boolean isShare() {
-		return StringUtils.hasText(index); 
-	}
+	
 }

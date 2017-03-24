@@ -37,9 +37,9 @@ public class ChartControllerImpl {
 		chartAO.setTimeCourse(timeCourse.get());
 	
 		
-		if(chartAO.isShare()) {
-			refresh(chartAO);
-		}
+	
+		refresh(chartAO);
+	
 		
 		final Collection<LineChartSeries> ratesSeries = new ArrayList<>();
 

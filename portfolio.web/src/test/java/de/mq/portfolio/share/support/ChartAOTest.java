@@ -171,12 +171,7 @@ public class ChartAOTest {
 		Assert.assertTrue(!chartAO.isRealTimeRateValid());
 	}
 
-	@Test
-	public final void isShare() {
-		Assert.assertTrue(!chartAO.isShare());
-		chartAO.setTimeCourse(timeCourse);
-		Assert.assertTrue(chartAO.isShare());
-	}
+	
 
 	@Test
 	public final void chartModel() {

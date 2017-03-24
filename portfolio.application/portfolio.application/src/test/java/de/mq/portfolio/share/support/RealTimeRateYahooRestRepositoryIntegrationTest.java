@@ -2,6 +2,7 @@ package de.mq.portfolio.share.support;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,6 +63,12 @@ public class RealTimeRateYahooRestRepositoryIntegrationTest {
 			System.out.println(tc.code() + ":"+  tc.rates().get(0).value() + ":" +tc.rates().get(1).value() + ":"+ tc.totalRate());
 			
 		});
+	}
+	
+	@Test
+	public  void ratesIndex() {
+		final List<TimeCourse> results = (List<TimeCourse>)  realTimeRateRestRepository.rates(Arrays.asList(newshareMock("^DJI")));
+		Assert.assertTrue(results.isEmpty());
 	}
 	
 	

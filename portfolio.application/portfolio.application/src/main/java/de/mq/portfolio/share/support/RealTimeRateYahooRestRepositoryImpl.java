@@ -52,10 +52,14 @@ public abstract class RealTimeRateYahooRestRepositoryImpl implements RealTimeRat
 		for (String line = ""; line != null; line = bufferedReader.readLine() ) {	
 			line = line.replaceAll("[\"]", "");
 			final String[] cols = line.split("[,;]");
-			if( cols.length < 6 ) {
+			if( cols.length < 7 ) {
 			   continue;
 		    }
-		
+			
+			if( ! validDoubles(cols[5], cols[6])){
+				continue;
+			}
+			
 			final TimeCourseImpl timeCourse = new TimeCourseImpl(sharesMap.get(cols[0]), Arrays.asList(new DataImpl(dateForDaysBefore(1), Double.valueOf(cols[5])), new DataImpl(dateForDaysBefore(0), Double.valueOf(cols[6]))), Arrays.asList());
 			timeCourse.onBeforeSave();
 			results.add(timeCourse);
@@ -63,6 +67,20 @@ public abstract class RealTimeRateYahooRestRepositoryImpl implements RealTimeRat
 		return Collections.unmodifiableList(results);
 	}
 
+	
+	private boolean validDoubles(String ... values) {
+		
+		for(final String value : values) {
+			try {
+				Double.parseDouble(value);
+			} catch (final NumberFormatException nf ) {
+				return false;
+			}
+		}
+		
+		return true;
+		
+	}
 
 	private Date dateForDaysBefore(final int daysBack) {
 		return Date.from(LocalDateTime.now().plusDays(-daysBack).truncatedTo(ChronoUnit.DAYS).atZone(ZoneId.systemDefault()).toInstant());

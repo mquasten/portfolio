@@ -22,9 +22,9 @@ import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.support.ExceptionTranslationBuilderImpl;
 
-
 public class RealTimeRateRepositoryTest {
 	
+	private static final String CODE_DOW = "^DJI";
 	private static final String CODE_KO = "KO";
 	private static final String CODE_SAP = "SAP.DE";
 	private final RestOperations restOperations = Mockito.mock(RestOperations.class);
@@ -45,16 +45,17 @@ public class RealTimeRateRepositoryTest {
 		});
 		Mockito.doAnswer(a -> new   ExceptionTranslationBuilderImpl<>()).when(realTimeRateRepository).exceptionTranslationBuilder();
 	
-	   Mockito.when(restOperations.getForObject(String.format(RealTimeRateYahooRestRepositoryImpl.URL, String.format("%s+%s", CODE_SAP, CODE_KO)), String.class)).thenReturn(String.format("\"%s\",\"SAP SE O.N.\",N/A,N/A,x,%s,%s\n\"%s\",\"Coca-Cola Company (The) Common \",N/A,N/A,x,%s,%s", CODE_SAP, sapStart, sapEnd, CODE_KO, koStart, koEnd));
+	   Mockito.when(restOperations.getForObject(String.format(RealTimeRateYahooRestRepositoryImpl.URL, String.format("%s+%s+%s", CODE_SAP, CODE_KO, CODE_DOW)), String.class)).thenReturn(String.format("\"%s\",\"SAP SE O.N.\",N/A,N/A,x,%s,%s\n\"%s\",\"Coca-Cola Company (The) Common \",N/A,N/A,x,%s,%s\n\"%s\",\"Dow Jones Index \",N/A,N/A,x,N/A,N/A", CODE_SAP, sapStart, sapEnd, CODE_KO, koStart, koEnd, CODE_DOW));
 	}
 	
 	@Test
 	public final void rates() {
 		final Share sap = shareMock(CODE_SAP);
 		final Share ko= shareMock(CODE_KO);
+		final Share dow= shareMock(CODE_DOW);
 		
 		
-		final List<TimeCourse> results = new ArrayList<>(realTimeRateRepository.rates(Arrays.asList(sap,ko)));
+		final List<TimeCourse> results = new ArrayList<>(realTimeRateRepository.rates(Arrays.asList(sap,ko, dow)));
 		
 		Assert.assertEquals(2, results.size());
 		results.forEach(tc -> Assert.assertEquals(2, tc.rates().size()));
