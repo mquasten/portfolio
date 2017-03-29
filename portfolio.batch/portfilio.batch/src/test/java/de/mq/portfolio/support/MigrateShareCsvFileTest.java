@@ -18,7 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/stockcodes-test.xml" })
 @Ignore
-public class MigrateSareCsvFileTest {
+public class MigrateShareCsvFileTest {
 
 	private static final String CSV_FILE_NAME = "data/stocks.csv.bak";
 	private static final String DELIMITER = ";";

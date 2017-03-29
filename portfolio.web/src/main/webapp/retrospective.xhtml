@@ -29,7 +29,7 @@
 
 			<p:button value="zurück" outcome="portfolios" />
 			<p:outputLabel style="display: block; width: 15px;" />
-			<h:panelGrid columns="7">
+			<h:panelGrid columns="8">
 
 				<p:outputLabel value="Zeifunktion fiktiver Anteil" />
 				<p:outputLabel style="display: block; width: 15px;" />
@@ -47,6 +47,11 @@
 		
 				<p:button  value="Wechselkurse"    outcome="exchangeRatesPortfolio" disabled="#{!retrospective.committedPortfolio.exchangeRateTranslationsAware}">
         			<f:param name="portfolioId" value="#{retrospective.portfolioId}" /> 
+        		</p:button>
+        		
+        		<p:button  value="Kurse"    outcome="realtimeCourses" disabled="#{!retrospective.committedPortfolio.exchangeRateTranslationsAware}">
+        			<f:param name="portfolioId" value="#{retrospective.portfolioId}" /> 
+        			<f:param name="filter" value="#{retrospective.filter}" /> 
         		</p:button>
 
 

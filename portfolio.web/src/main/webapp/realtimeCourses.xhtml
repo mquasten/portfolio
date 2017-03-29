@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>Portfolio</title>
+
+	<f:metadata>
+		<f:viewParam name="portfolioId" value="#{realtimeCourses.portfolioId}" />
+		<f:viewParam name="filter" value="#{realtimeCourses.filter}" />
+	</f:metadata>
+	<h:outputStylesheet library="css" name="style.css" />
+</h:head>
+
+
+
+<h:body>
+<h1>aktuelle Kurse</h1>
+
+<h2>Gewinne und Verluste der Aktien</h2>
+
+<h2>Entwicklung Depot</h2>
+
+<h:form>
+
+
+
+
+<h:panelGrid columns="2" >
+ 	<p:button  value="zurück" outcome="retrospective"  >
+ 			<f:param name="portfolioId" value="#{realtimeCourses.portfolioId}" />
+ 			<f:param name="filter" value="#{realtimeCourses.filter}" />
+ 	</p:button>
+ 	<p:commandButton  value="aktualisieren" />
+</h:panelGrid >   
+
+</h:form>	
+</h:body>
+
+</html>
