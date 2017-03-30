@@ -11,6 +11,7 @@
 	<f:metadata>
 		<f:viewParam name="portfolioId" value="#{realtimeCourses.portfolioId}" />
 		<f:viewParam name="filter" value="#{realtimeCourses.filter}" />
+		 <f:viewAction action="#{realtimeCoursesController.init(realtimeCourses)}" />
 	</f:metadata>
 	<h:outputStylesheet library="css" name="style.css" />
 </h:head>
