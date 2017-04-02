@@ -23,6 +23,22 @@
 
 <h2>Gewinne und Verluste der Aktien</h2>
 
+
+<p:dataTable var="share"
+				value="#{realtimeCourses.shares}" lazy="true" resizableColumns="true">
+
+ <p:columns value="#{realtimeCourses.shareColumns}" var="shareColumn" >
+				<p:column>
+					
+					<h:outputText value="#{share[shareColumn]}" />
+				
+				</p:column>
+				
+				
+</p:columns>				
+				
+</p:dataTable>
+
 <h2>Entwicklung Depot</h2>
 
 <h:form>
