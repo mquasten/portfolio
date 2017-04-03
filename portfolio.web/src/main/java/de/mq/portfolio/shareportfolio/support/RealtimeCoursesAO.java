@@ -25,7 +25,9 @@ public class RealtimeCoursesAO  implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private Collection<Map<String,Object>> shares= new ArrayList<>(); 
+	private final Collection<Map<String,Object>> shares= new ArrayList<>(); 
+	
+	 private final Map<String, Double> factors = new HashMap<>();
 
 	
 	private final List<String> shareColumns = Arrays.asList("name", "delta", "deltaPercent");
@@ -63,6 +65,11 @@ public class RealtimeCoursesAO  implements Serializable {
 	void assign(final List<Entry<TimeCourse,List<Data>>> entries) {
 		shares.clear();
 		shares.addAll(entries.stream().map(entry ->  shareEntryToMap(entry)).collect(Collectors.toList()));
+	}
+	
+	void setFactors(final Map<String, Double> factors ) {
+		this.factors.clear();
+		this.factors.putAll(factors);
 	}
 
 	private Map<String, Object> shareEntryToMap(final Entry<TimeCourse, List<Data>> entry) {
