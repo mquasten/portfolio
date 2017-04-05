@@ -27,10 +27,27 @@ public class RealtimeCoursesAO  implements Serializable {
 	
 	private final Collection<Map<String,Object>> shares= new ArrayList<>(); 
 	
-	 private final Map<String, Double> factors = new HashMap<>();
+	
+	private final Collection<Map<String,Object>> realtimeCourses= new ArrayList<>(); 
+	
+	
+
+
+	private final Map<String, Double> factors = new HashMap<>();
 
 	
 	private final List<String> shareColumns = Arrays.asList("name", "delta", "deltaPercent");
+	
+	private final List<String> realtimeCourseColumns = Arrays.asList("name", "last" , "current");
+	
+	 public List<String> getRealtimeCourseColumns() {
+		return realtimeCourseColumns;
+	}
+
+
+	public Collection<Map<String, Object>> getRealtimeCourses() {
+			return realtimeCourses;
+		}
 	
 
 	public Collection<String> getShareColumns() {
@@ -63,6 +80,18 @@ public class RealtimeCoursesAO  implements Serializable {
 	}
 	
 	void assign(final List<Entry<TimeCourse,List<Data>>> entries) {
+		addShares(entries);
+		addRealTimeCourses(entries);
+	}
+
+
+	private void addRealTimeCourses(final List<Entry<TimeCourse, List<Data>>> entries) {
+		realtimeCourses.clear();
+		realtimeCourses.addAll(entries.stream().map(entry ->  shareEntryToRealtimeCourseMap(entry)).collect(Collectors.toList()));
+	}
+
+
+	private void addShares(final List<Entry<TimeCourse, List<Data>>> entries) {
 		shares.clear();
 		shares.addAll(entries.stream().map(entry ->  shareEntryToMap(entry)).collect(Collectors.toList()));
 	}
@@ -80,6 +109,16 @@ public class RealtimeCoursesAO  implements Serializable {
 		return values;
 	}
 	
+	
+	private Map<String, Object> shareEntryToRealtimeCourseMap(final Entry<TimeCourse, List<Data>> entry){
+		final Map<String,Object> values = new HashMap<>();
+		values.put(realtimeCourseColumns.get(0), entry.getKey().name() +" (" + entry.getKey().code() +")");
+		final double factor = factors.get(entry.getKey().code());
+		values.put(realtimeCourseColumns.get(1), entry.getValue().get(0).value() * factor);
+		values.put(realtimeCourseColumns.get(2), entry.getValue().get(1).value() * factor);
+		return values;
+		
+	}
 
 
 }

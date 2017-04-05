@@ -1,6 +1,7 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.util.AbstractMap;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,8 +60,10 @@ public class RealtimeCoursesController {
 		final Map<String, Double> factors = new HashMap<>();
 		final ExchangeRateCalculator exchangeRateCalculator = exchangeRateService.exchangeRateCalculator(sharePortfolio.exchangeRateTranslations());
 		final Map<TimeCourse,Double> weights = sharePortfolio.min();
+		final Map<String,Date> endDates = new HashMap<>();
+		sharePortfolio.timeCourses().stream().map(tc -> tc.code()).forEach(code -> endDates.put(code, shareService.timeCourse(code).get().end()));
 		
-		sharePortfolio.timeCourses().forEach(tc -> factors.put(tc.code(), exchangeRateCalculator.factor(sharePortfolio.exchangeRate(tc), tc.end()) * weights.get(tc)));
+		sharePortfolio.timeCourses().forEach(tc -> factors.put(tc.code(), exchangeRateCalculator.factor(sharePortfolio.exchangeRate(tc), endDates.get(tc.code())) * weights.get(tc)));
 	    return factors;
 	}
 

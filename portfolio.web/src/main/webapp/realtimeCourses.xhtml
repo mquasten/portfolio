@@ -41,6 +41,21 @@
 
 <h2>Entwicklung Depot</h2>
 
+<p:dataTable var="realtimeCourse"
+				value="#{realtimeCourses.realtimeCourses}" lazy="true" resizableColumns="true">
+
+ <p:columns value="#{realtimeCourses.realtimeCourseColumns}" var="realtimeCourseColumn" >
+				<p:column>
+					
+					<h:outputText value="#{realtimeCourse[realtimeCourseColumn]}" />
+				
+				</p:column>
+				
+				
+</p:columns>				
+				
+</p:dataTable>
+
 <h:form>
 
 
