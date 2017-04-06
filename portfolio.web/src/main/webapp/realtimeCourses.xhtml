@@ -27,15 +27,53 @@
 <p:dataTable var="share"
 				value="#{realtimeCourses.shares}" lazy="true" resizableColumns="true">
 
- <p:columns value="#{realtimeCourses.shareColumns}" var="shareColumn" >
+ 
 				<p:column>
 					
-					<h:outputText value="#{share[shareColumn]}" />
-				
+					<h:outputText value="#{share[realtimeCourses.nameColumn]}" />
+						
 				</p:column>
 				
+				<p:column>
+					
+					<h:outputText value="#{share[realtimeCourses.lastColumn]}" >
+					
+					<f:convertNumber pattern="#0.00"  />
+					</h:outputText>
+					&nbsp;
+					
+					<h:outputText value="#{currencyConverter.convert(share[realtimeCourses.currencyColumn])}" />	
+				</p:column>
 				
-</p:columns>				
+				<p:column>
+					
+					<h:outputText value="#{share[realtimeCourses.currentColumn]}" >
+					<f:convertNumber pattern="#0.00"  />
+					</h:outputText>
+						&nbsp;
+					<h:outputText value="#{currencyConverter.convert(share[realtimeCourses.currencyColumn])}" />	
+						
+				</p:column>
+				
+				<p:column>
+					
+					<h:outputText value="#{share[realtimeCourses.deltaColumn]}" >
+					<f:convertNumber pattern="#0.00"  />
+					</h:outputText>
+						&nbsp;
+					<h:outputText value="#{currencyConverter.convert(share[realtimeCourses.currencyColumn])}" />	
+						
+				</p:column>
+				
+				<p:column>
+					
+					<h:outputText value="#{share[realtimeCourses.deltaPercentColumn]}" >
+					<f:convertNumber pattern="#0.00"  />
+					</h:outputText>
+					&nbsp;%
+						
+				</p:column>
+				
 				
 </p:dataTable>
 
@@ -44,15 +82,39 @@
 <p:dataTable var="realtimeCourse"
 				value="#{realtimeCourses.realtimeCourses}" lazy="true" resizableColumns="true">
 
- <p:columns value="#{realtimeCourses.realtimeCourseColumns}" var="realtimeCourseColumn" >
+ 
 				<p:column>
 					
-					<h:outputText value="#{realtimeCourse[realtimeCourseColumn]}" />
+					<h:outputText value="#{realtimeCourse[realtimeCourses.nameColumn]}" />
+						
+				</p:column>
+				
+				<p:column>
+					
+					<h:outputText value="#{realtimeCourse[realtimeCourses.lastColumn]}" >
+					  <f:convertNumber pattern="#0.00"  />
+					</h:outputText>
+				</p:column>		
+				<p:column>
+					<h:outputText value="#{realtimeCourse[realtimeCourses.currentColumn]}" >
+					  <f:convertNumber pattern="#0.00"  />
+					</h:outputText>
+				</p:column>	
+				<p:column>	
+					<h:outputText value="#{realtimeCourse[realtimeCourses.deltaColumn]}" >
+					  <f:convertNumber pattern="#0.00"  />
+					</h:outputText>
 				
 				</p:column>
 				
+				<p:column>	
+					<h:outputText value="#{realtimeCourse[realtimeCourses.deltaPercentColumn]}" >
+					  <f:convertNumber pattern="#0.00"  />
+					</h:outputText>
 				
-</p:columns>				
+				</p:column>
+				
+			
 				
 </p:dataTable>
 

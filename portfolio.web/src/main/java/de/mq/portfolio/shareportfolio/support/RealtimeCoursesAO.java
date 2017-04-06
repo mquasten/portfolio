@@ -2,7 +2,7 @@ package de.mq.portfolio.shareportfolio.support;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +20,18 @@ import de.mq.portfolio.share.TimeCourse;
 @Scope("view")
 public class RealtimeCoursesAO  implements Serializable {
 	
+	private static final String DELTA_PERCENT_COLUMN = "deltaPercent";
+
+	private static final String DELTA_COLUMN = "delta";
+
+	private static final String CURRENT_COLUMN = "current";
+
+	private static final String LAST_COLUMN = "last";
+
+	private static final String NAME_COLUMN = "name";
+
+	private static final String CURRENCY_COLUMN = "currency";
+
 	/**
 	 * 
 	 */
@@ -36,13 +48,11 @@ public class RealtimeCoursesAO  implements Serializable {
 	private final Map<String, Double> factors = new HashMap<>();
 
 	
-	private final List<String> shareColumns = Arrays.asList("name", "delta", "deltaPercent");
+
 	
-	private final List<String> realtimeCourseColumns = Arrays.asList("name", "last" , "current");
+
 	
-	 public List<String> getRealtimeCourseColumns() {
-		return realtimeCourseColumns;
-	}
+	
 
 
 	public Collection<Map<String, Object>> getRealtimeCourses() {
@@ -50,8 +60,31 @@ public class RealtimeCoursesAO  implements Serializable {
 		}
 	
 
-	public Collection<String> getShareColumns() {
-		return shareColumns;
+	
+	
+	public String getCurrencyColumn() {
+		return CURRENCY_COLUMN;
+	}
+	
+	public String getNameColumn() {
+		return NAME_COLUMN;
+	}
+	
+	public String getLastColumn() {
+		return LAST_COLUMN;
+	}
+	
+	public String getCurrentColumn() {
+		return CURRENT_COLUMN;
+	}
+
+	public String getDeltaColumn() {
+		return DELTA_COLUMN;
+	}
+
+	
+	public String getDeltaPercentColumn() {
+		return DELTA_PERCENT_COLUMN;
 	}
 
 	public Collection<Map<String, Object>> getShares() {
@@ -103,19 +136,29 @@ public class RealtimeCoursesAO  implements Serializable {
 
 	private Map<String, Object> shareEntryToMap(final Entry<TimeCourse, List<Data>> entry) {
 		final Map<String,Object> values = new HashMap<>();
-		values.put(shareColumns.get(0), entry.getKey().name() +" (" + entry.getKey().code() +")");
-		values.put(shareColumns.get(1),   entry.getValue().get(1).value() - (Double) entry.getValue().get(0).value() );
-		values.put(shareColumns.get(2),   (entry.getValue().get(1).value() - (Double) entry.getValue().get(0).value()) / entry.getValue().get(0).value() );
+		values.put(NAME_COLUMN, entry.getKey().name() +" (" + entry.getKey().code() +")");
+		
+		values.put(LAST_COLUMN, entry.getValue().get(0).value());
+		values.put(CURRENT_COLUMN, entry.getValue().get(1).value());
+		values.put(DELTA_COLUMN,   entry.getValue().get(1).value() - (Double) entry.getValue().get(0).value() );
+		values.put(DELTA_PERCENT_COLUMN,   100 * (entry.getValue().get(1).value() - (Double) entry.getValue().get(0).value()) / entry.getValue().get(0).value() );
+		values.put(CURRENCY_COLUMN, entry.getKey().share().currency());
+		
 		return values;
 	}
 	
 	
 	private Map<String, Object> shareEntryToRealtimeCourseMap(final Entry<TimeCourse, List<Data>> entry){
 		final Map<String,Object> values = new HashMap<>();
-		values.put(realtimeCourseColumns.get(0), entry.getKey().name() +" (" + entry.getKey().code() +")");
+		values.put(NAME_COLUMN, entry.getKey().name() +" (" + entry.getKey().code() +")");
 		final double factor = factors.get(entry.getKey().code());
-		values.put(realtimeCourseColumns.get(1), entry.getValue().get(0).value() * factor);
-		values.put(realtimeCourseColumns.get(2), entry.getValue().get(1).value() * factor);
+		final double richtig = entry.getValue().get(0).value() * factor;
+		values.put(LAST_COLUMN, richtig);
+		final double falsch = entry.getValue().get(1).value() * factor;
+		values.put(CURRENT_COLUMN, falsch);
+		
+		values.put(DELTA_COLUMN, falsch-richtig);
+		values.put(DELTA_PERCENT_COLUMN, 100 * (falsch-richtig) / richtig);
 		return values;
 		
 	}
