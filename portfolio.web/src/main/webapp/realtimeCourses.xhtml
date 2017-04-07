@@ -21,7 +21,7 @@
 <h:body>
 <h1>aktuelle Kurse</h1>
 
-<h2>Gewinne und Verluste der Aktien</h2>
+<h2>Gewinne und Verluste der Aktien im Depot&nbsp;#{realtimeCourses.portfolioName}</h2>
 
 
 <p:dataTable var="share"
@@ -29,13 +29,17 @@
 
  
 				<p:column>
-					
+					<f:facet name="header">
+						<h:outputText value="Aktie" />
+					</f:facet>
 					<h:outputText value="#{share[realtimeCourses.nameColumn]}" />
 						
 				</p:column>
 				
 				<p:column>
-					
+					<f:facet name="header">
+						<h:outputText value="letzter Kurs" />
+					</f:facet>
 					<h:outputText value="#{share[realtimeCourses.lastColumn]}" >
 					
 					<f:convertNumber pattern="#0.00"  />
@@ -46,7 +50,9 @@
 				</p:column>
 				
 				<p:column>
-					
+					<f:facet name="header">
+						<h:outputText value="Realtime-Kurs" />
+					</f:facet>
 					<h:outputText value="#{share[realtimeCourses.currentColumn]}" >
 					<f:convertNumber pattern="#0.00"  />
 					</h:outputText>
@@ -56,7 +62,9 @@
 				</p:column>
 				
 				<p:column>
-					
+					<f:facet name="header">
+						<h:outputText value="Δ" />
+					</f:facet>
 					<h:outputText value="#{share[realtimeCourses.deltaColumn]}" >
 					<f:convertNumber pattern="#0.00"  />
 					</h:outputText>
@@ -66,41 +74,52 @@
 				</p:column>
 				
 				<p:column>
-					
+					<f:facet name="header">
+						<h:outputText value="Δ [%]" />
+					</f:facet>
 					<h:outputText value="#{share[realtimeCourses.deltaPercentColumn]}" >
 					<f:convertNumber pattern="#0.00"  />
 					</h:outputText>
-					&nbsp;%
 						
 				</p:column>
 				
 				
 </p:dataTable>
 
-<h2>Entwicklung Depot</h2>
+<h2>Entwicklung Depot&nbsp;#{realtimeCourses.portfolioName}</h2>
 
 <p:dataTable var="realtimeCourse"
 				value="#{realtimeCourses.realtimeCourses}" lazy="true" resizableColumns="true">
 
  
 				<p:column>
-					
+					<f:facet name="header">
+						<h:outputText value="Aktie" />
+					</f:facet>
 					<h:outputText value="#{realtimeCourse[realtimeCourses.nameColumn]}" />
 						
 				</p:column>
 				
 				<p:column>
-					
+					<f:facet name="header">
+						<h:outputText value="Wert (letzter Kurs) [#{currencyConverter.convert(realtimeCourses.portfolioCurrency)}]" />
+					</f:facet>
 					<h:outputText value="#{realtimeCourse[realtimeCourses.lastColumn]}" >
 					  <f:convertNumber pattern="#0.00"  />
 					</h:outputText>
 				</p:column>		
 				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Wert (Realtime) [#{currencyConverter.convert(realtimeCourses.portfolioCurrency)}]" />
+					</f:facet>
 					<h:outputText value="#{realtimeCourse[realtimeCourses.currentColumn]}" >
 					  <f:convertNumber pattern="#0.00"  />
 					</h:outputText>
 				</p:column>	
 				<p:column>	
+					<f:facet name="header">
+						<h:outputText value="Δ [#{currencyConverter.convert(realtimeCourses.portfolioCurrency)}]"/>
+					</f:facet>
 					<h:outputText value="#{realtimeCourse[realtimeCourses.deltaColumn]}" >
 					  <f:convertNumber pattern="#0.00"  />
 					</h:outputText>
@@ -108,6 +127,9 @@
 				</p:column>
 				
 				<p:column>	
+					<f:facet name="header">
+						<h:outputText value="Δ [%]" />
+					</f:facet>
 					<h:outputText value="#{realtimeCourse[realtimeCourses.deltaPercentColumn]}" >
 					  <f:convertNumber pattern="#0.00"  />
 					</h:outputText>

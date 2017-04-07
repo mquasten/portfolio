@@ -12,9 +12,11 @@ import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @Component("realtimeCourses")
 @Scope("view")
@@ -42,7 +44,26 @@ public class RealtimeCoursesAO  implements Serializable {
 	
 	private final Collection<Map<String,Object>> realtimeCourses= new ArrayList<>(); 
 	
+	private String portfolioName;
 	
+	public String getPortfolioName() {
+		return portfolioName;
+	}
+
+
+
+	
+
+
+	public String getPortfolioCurrency() {
+		return portfolioCurrency;
+	}
+
+
+
+
+
+	private String portfolioCurrency;
 
 
 	private final Map<String, Double> factors = new HashMap<>();
@@ -51,13 +72,17 @@ public class RealtimeCoursesAO  implements Serializable {
 
 	
 
-	
+	void assign(final SharePortfolio sharePortfolio) {
+		Assert.notNull(sharePortfolio, "SharePortfolio is mandatory");
+		portfolioName=sharePortfolio.name();
+		portfolioCurrency=sharePortfolio.currency();
+	}
 	
 
 
 	public Collection<Map<String, Object>> getRealtimeCourses() {
 			return realtimeCourses;
-		}
+	}
 	
 
 	

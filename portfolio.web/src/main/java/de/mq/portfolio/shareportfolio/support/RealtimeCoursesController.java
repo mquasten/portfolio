@@ -41,7 +41,7 @@ public class RealtimeCoursesController {
 	public void init(final RealtimeCoursesAO realtimeCourses) {
 	
 		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(realtimeCourses.getPortfolioId());
-		
+		realtimeCourses.assign(sharePortfolio);
 		realtimeCourses.setFactors(factors(sharePortfolio));
 		final Map<String, TimeCourse> timeCoursesMap = new HashMap<>();
 		
