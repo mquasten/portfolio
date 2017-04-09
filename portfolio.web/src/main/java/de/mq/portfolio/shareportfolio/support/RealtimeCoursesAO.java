@@ -2,7 +2,6 @@ package de.mq.portfolio.shareportfolio.support;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -146,6 +145,27 @@ public class RealtimeCoursesAO  implements Serializable {
 	private void addRealTimeCourses(final List<Entry<TimeCourse, List<Data>>> entries) {
 		realtimeCourses.clear();
 		realtimeCourses.addAll(entries.stream().map(entry ->  shareEntryToRealtimeCourseMap(entry)).collect(Collectors.toList()));
+		
+		final double lastSum = sum(entries,0);
+		final double currentSum = sum(entries,1);
+		
+		final Map<String,Object> values = new HashMap<>();
+		values.put(NAME_COLUMN, this.portfolioName);
+		
+		values.put(LAST_COLUMN,lastSum);
+		values.put(CURRENT_COLUMN,currentSum);
+		values.put(DELTA_COLUMN,   currentSum - lastSum);
+		values.put(DELTA_PERCENT_COLUMN,   100 * (currentSum - lastSum)/lastSum );
+	
+		 
+		realtimeCourses.add(values);
+	}
+
+
+
+
+	private double sum(final List<Entry<TimeCourse, List<Data>>> entries, final int index) {
+		return entries.stream().mapToDouble(entry -> entry.getValue().get(index).value() * factors.get(entry.getKey().code())).sum();
 	}
 
 
@@ -177,13 +197,13 @@ public class RealtimeCoursesAO  implements Serializable {
 		final Map<String,Object> values = new HashMap<>();
 		values.put(NAME_COLUMN, entry.getKey().name() +" (" + entry.getKey().code() +")");
 		final double factor = factors.get(entry.getKey().code());
-		final double richtig = entry.getValue().get(0).value() * factor;
-		values.put(LAST_COLUMN, richtig);
-		final double falsch = entry.getValue().get(1).value() * factor;
-		values.put(CURRENT_COLUMN, falsch);
+		final double last = entry.getValue().get(0).value() * factor;
+		values.put(LAST_COLUMN, last);
+		final double current = entry.getValue().get(1).value() * factor;
+		values.put(CURRENT_COLUMN, current);
 		
-		values.put(DELTA_COLUMN, falsch-richtig);
-		values.put(DELTA_PERCENT_COLUMN, 100 * (falsch-richtig) / richtig);
+		values.put(DELTA_COLUMN, last-current);
+		values.put(DELTA_PERCENT_COLUMN, 100 * (last-current) / last);
 		return values;
 		
 	}
