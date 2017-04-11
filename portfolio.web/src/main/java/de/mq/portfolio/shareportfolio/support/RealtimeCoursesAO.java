@@ -202,8 +202,8 @@ public class RealtimeCoursesAO  implements Serializable {
 		final double current = entry.getValue().get(1).value() * factor;
 		values.put(CURRENT_COLUMN, current);
 		
-		values.put(DELTA_COLUMN, last-current);
-		values.put(DELTA_PERCENT_COLUMN, 100 * (last-current) / last);
+		values.put(DELTA_COLUMN, current-last);
+		values.put(DELTA_PERCENT_COLUMN, 100 * (current-last) / last);
 		return values;
 		
 	}

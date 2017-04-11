@@ -3,6 +3,8 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -116,11 +118,26 @@ class ShareServiceImpl implements ShareService {
 	 * de.mq.portfolio.share.support.ShareService#save(java.util.Collection)
 	 */
 	@Override
-	public final Collection<TimeCourse> realTimeCourses(Collection<String> codes){
-		final Collection<Share> shares = shareRepository.timeCourses(codes).stream().map(timeCourse -> timeCourse.share()).collect(Collectors.toList());
-		return realTimeRateRestRepository.rates(shares);
+	public final Collection<TimeCourse> realTimeCourses(final Collection<String> codes){
+		final boolean flag = true;
+		final Map<String, TimeCourse> timeCourses = shareRepository.timeCourses(codes).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
+		final Map<String,TimeCourse> realTimeCourses =   realTimeRateRestRepository.rates(timeCourses.values().stream().map(tc -> tc.share()).collect(Collectors.toList())).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
+				
+		return codes.stream().map(code -> {
+			final TimeCourse timeCourse = timeCourses.get(code);
+			if (flag&&!timeCourse.rates().isEmpty()) {
+				System.out.println("**?***");
+				
+				return new TimeCourseImpl(timeCourse.share(), Arrays.asList(timeCourse.rates().get(timeCourse.rates().size()-1), realTimeCourses.get(code).rates().get(1)), Arrays.asList());
+			}
+			return realTimeCourses.get(code);
+		}).collect(Collectors.toList());		
+				
+			
 		
-	}
+		
+		
+	} 
 	
 
 }

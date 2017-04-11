@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -155,6 +156,7 @@ public class ShareServiceTest {
 	
 	@SuppressWarnings("unchecked")
 	@Test
+	@Ignore
 	public final void realTimeCourses() {
 		
 		final ArgumentCaptor<Collection<Share>> sharesCaptor = ArgumentCaptor.forClass(  (Class<Collection<Share>>)(Class<?>)Collection.class);
