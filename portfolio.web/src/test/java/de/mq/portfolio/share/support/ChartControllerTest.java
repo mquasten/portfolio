@@ -69,7 +69,7 @@ public class ChartControllerTest {
 		Mockito.when(last.value()).thenReturn(47d);
 		Mockito.when(current.value()).thenReturn(47.11d);
 		Mockito.when(realTimeCourse.rates()).thenReturn(Arrays.asList(last,current));
-		Mockito.when(shareService.realTimeCourses(Arrays.asList(CODE))).thenReturn(Arrays.asList(realTimeCourse));
+		Mockito.when(shareService.realTimeCourses(Arrays.asList(CODE), false)).thenReturn(Arrays.asList(realTimeCourse));
 		
 		
 	}
@@ -127,7 +127,8 @@ public class ChartControllerTest {
 	
 	@Test
 	public final void refreshNoRealTimeCourse() {
-		Mockito.when(shareService.realTimeCourses(Mockito.any())).thenReturn(Arrays.asList());
+		
+		Mockito.when(shareService.realTimeCourses(Mockito.any(), Mockito.anyBoolean())).thenReturn(Arrays.asList());
 		
 		chartController.refresh(chartAO);
 		

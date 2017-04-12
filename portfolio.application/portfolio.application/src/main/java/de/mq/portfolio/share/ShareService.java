@@ -27,9 +27,10 @@ public interface ShareService{
 
 	Collection<String> indexes();
 
-	Optional<TimeCourse> timeCourse(String code);
+	Optional<TimeCourse> timeCourse(final String code);
 
-	Collection<TimeCourse> realTimeCourses(Collection<String> codes);
+
+	Collection<TimeCourse> realTimeCourses(final Collection<String> codes, final boolean useLastStoredTimeCourse);
 
 
 	

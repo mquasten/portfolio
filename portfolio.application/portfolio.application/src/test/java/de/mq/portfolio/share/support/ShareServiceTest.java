@@ -164,7 +164,7 @@ public class ShareServiceTest {
 		Mockito.when(realTimeRateRestRepository.rates(Arrays.asList(share))).thenReturn(Arrays.asList(timeCourse));
 		Mockito.when(shareRepository.timeCourses(Arrays.asList(CODE))).thenReturn(timeCourses);
 		
-		Assert.assertEquals(timeCourses, shareService.realTimeCourses(Arrays.asList(CODE)));
+		Assert.assertEquals(timeCourses, shareService.realTimeCourses(Arrays.asList(CODE), false));
 		Mockito.verify(realTimeRateRestRepository).rates(sharesCaptor.capture());
 		
 		Assert.assertEquals(1, sharesCaptor.getValue().size());

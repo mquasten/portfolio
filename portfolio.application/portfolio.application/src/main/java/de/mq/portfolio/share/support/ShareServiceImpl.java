@@ -118,18 +118,20 @@ class ShareServiceImpl implements ShareService {
 	 * de.mq.portfolio.share.support.ShareService#save(java.util.Collection)
 	 */
 	@Override
-	public final Collection<TimeCourse> realTimeCourses(final Collection<String> codes){
-		final boolean flag = true;
+	public final Collection<TimeCourse> realTimeCourses(final Collection<String> codes, final boolean useLastStoredTimeCourse){
+		
 		final Map<String, TimeCourse> timeCourses = shareRepository.timeCourses(codes).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
 		final Map<String,TimeCourse> realTimeCourses =   realTimeRateRestRepository.rates(timeCourses.values().stream().map(tc -> tc.share()).collect(Collectors.toList())).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
 				
 		return codes.stream().map(code -> {
+			System.out.println(useLastStoredTimeCourse);
 			final TimeCourse timeCourse = timeCourses.get(code);
-			if (flag&&!timeCourse.rates().isEmpty()) {
+			if (useLastStoredTimeCourse&&!timeCourse.rates().isEmpty()) {
 				System.out.println("**?***");
 				
 				return new TimeCourseImpl(timeCourse.share(), Arrays.asList(timeCourse.rates().get(timeCourse.rates().size()-1), realTimeCourses.get(code).rates().get(1)), Arrays.asList());
 			}
+			System.out.println("**!***");
 			return realTimeCourses.get(code);
 		}).collect(Collectors.toList());		
 				

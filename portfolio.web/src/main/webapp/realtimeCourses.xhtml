@@ -11,6 +11,8 @@
 	<f:metadata>
 		<f:viewParam name="portfolioId" value="#{realtimeCourses.portfolioId}" />
 		<f:viewParam name="filter" value="#{realtimeCourses.filter}" />
+		<f:viewParam name="lastStoredTimeCourse" value="#{realtimeCourses.lastStoredTimeCourse}" />
+		
 		 <f:viewAction action="#{realtimeCoursesController.init(realtimeCourses)}" />
 	</f:metadata>
 	<h:outputStylesheet library="css" name="style.css" />
@@ -145,12 +147,25 @@
 
 
 
-<h:panelGrid columns="2" >
- 	<p:button  value="zurück" outcome="retrospective"  >
+<h:panelGrid columns="6" >
+
+	<p:button  value="zurück" outcome="retrospective"  >
  			<f:param name="portfolioId" value="#{realtimeCourses.portfolioId}" />
  			<f:param name="filter" value="#{realtimeCourses.filter}" />
  	</p:button>
- 	<p:commandButton  value="aktualisieren" />
+ 	<p:outputLabel style="display: block; width: 15px;" />
+	<p:selectOneMenu id="lastStoredTimeCourse"  value="#{realtimeCourses.lastStoredTimeCourse}" style="width: 300px;" >          
+	<p:ajax update="@form" event="change"  />   
+               <f:selectItem itemLabel="letzter Referenzkurs Yahoo" itemValue="false" />
+               <f:selectItem itemLabel="letzter gespeicherter Kurs" itemValue="true" />
+            
+  </p:selectOneMenu>
+ 	<p:outputLabel style="display: block; width: 15px;" />
+ 	<p:button  icon="ui-icon-reload"  >
+ 			<f:param name="portfolioId" value="#{realtimeCourses.portfolioId}" /> 
+        	<f:param name="filter" value="#{realtimeCourses.filter}" /> 
+        	<f:param name="lastStoredTimeCourse" value="#{realtimeCourses.lastStoredTimeCourse}" /> 
+ 	</p:button>
 </h:panelGrid >   
 
 </h:form>	

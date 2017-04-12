@@ -52,6 +52,8 @@
         		<p:button  value="Kurse"    outcome="realtimeCourses" disabled="#{!retrospective.committedPortfolio.exchangeRateTranslationsAware}">
         			<f:param name="portfolioId" value="#{retrospective.portfolioId}" /> 
         			<f:param name="filter" value="#{retrospective.filter}" /> 
+        			<f:param name="lastStoredTimeCourse" value="true" /> 
+        			
         		</p:button>
 
 

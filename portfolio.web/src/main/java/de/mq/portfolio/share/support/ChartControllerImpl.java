@@ -54,7 +54,7 @@ public class ChartControllerImpl {
 	}
 	
 	public void refresh(final ChartAO chartAO) {
-		final Optional<TimeCourse> timeCourse = shareService.realTimeCourses(Arrays.asList(chartAO.getCode())).stream().findAny();
+		final Optional<TimeCourse> timeCourse = shareService.realTimeCourses(Arrays.asList(chartAO.getCode()), false).stream().findAny();
 		chartAO.setRealTimeRates(Arrays.asList());
 		if( ! timeCourse.isPresent()){
 			return;

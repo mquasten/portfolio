@@ -49,7 +49,7 @@ public class RealtimeCoursesController {
 			
 		
 		
-		realtimeCourses.assign(shareService.realTimeCourses(sharePortfolio.timeCourses().stream().map(tc -> tc.code()).collect(Collectors.toList())).stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(timeCoursesMap.get(tc.code()), tc.rates())).collect(Collectors.toList()));
+		realtimeCourses.assign(shareService.realTimeCourses(sharePortfolio.timeCourses().stream().map(tc -> tc.code()).collect(Collectors.toList()),realtimeCourses.getLastStoredTimeCourse() ).stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(timeCoursesMap.get(tc.code()), tc.rates())).collect(Collectors.toList()));
 	
 		
 	}

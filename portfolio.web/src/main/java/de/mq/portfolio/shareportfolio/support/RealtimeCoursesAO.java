@@ -44,7 +44,14 @@ public class RealtimeCoursesAO  implements Serializable {
 	private final Collection<Map<String,Object>> realtimeCourses= new ArrayList<>(); 
 	
 	private String portfolioName;
+	private boolean lastStoredTimeCourse=true;
 	
+	
+
+
+
+
+
 	public String getPortfolioName() {
 		return portfolioName;
 	}
@@ -206,6 +213,21 @@ public class RealtimeCoursesAO  implements Serializable {
 		values.put(DELTA_PERCENT_COLUMN, 100 * (current-last) / last);
 		return values;
 		
+	}
+
+	
+	public Boolean getLastStoredTimeCourse() {
+		return lastStoredTimeCourse;
+	}
+
+
+	
+
+
+
+
+	public void setLastStoredTimeCourse(Boolean lastStoredTimeCourse) {
+		this.lastStoredTimeCourse=lastStoredTimeCourse;
 	}
 
 
