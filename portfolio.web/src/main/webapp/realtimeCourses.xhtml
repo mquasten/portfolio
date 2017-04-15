@@ -109,6 +109,16 @@
 					<h:outputText value="#{realtimeCourse[realtimeCourses.lastColumn]}" >
 					  <f:convertNumber pattern="#0.00"  />
 					</h:outputText>
+				</p:column>	
+				
+				<p:column rendered="#{realtimeCourses.lastStoredTimeCourse}">
+					<f:facet name="header">
+						<h:outputText value="Datum (letzter Kurs)" />
+					</f:facet>
+					<h:outputText value="#{realtimeCourse[realtimeCourses.lastDateColumn]}" >
+						<f:convertDateTime type="date" dateStyle="short" />
+					</h:outputText>
+					
 				</p:column>		
 				<p:column>
 					<f:facet name="header">

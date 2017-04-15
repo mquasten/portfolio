@@ -28,6 +28,7 @@ public class RealtimeCoursesAO  implements Serializable {
 	private static final String CURRENT_COLUMN = "current";
 
 	private static final String LAST_COLUMN = "last";
+	private static final String LAST_DATE_COLUMN = "lastDate";
 
 	private static final String NAME_COLUMN = "name";
 
@@ -37,6 +38,8 @@ public class RealtimeCoursesAO  implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	
 	
 	private final Collection<Map<String,Object>> shares= new ArrayList<>(); 
 	
@@ -105,6 +108,10 @@ public class RealtimeCoursesAO  implements Serializable {
 		return LAST_COLUMN;
 	}
 	
+	public String getLastDateColumn() {
+		return LAST_DATE_COLUMN;
+	}
+	
 	public String getCurrentColumn() {
 		return CURRENT_COLUMN;
 	}
@@ -151,8 +158,18 @@ public class RealtimeCoursesAO  implements Serializable {
 
 	private void addRealTimeCourses(final List<Entry<TimeCourse, List<Data>>> entries) {
 		realtimeCourses.clear();
+		realtimeCourses.add(realTimeEntryForPortfolio(entries));
 		realtimeCourses.addAll(entries.stream().map(entry ->  shareEntryToRealtimeCourseMap(entry)).collect(Collectors.toList()));
 		
+	
+	}
+
+
+
+
+
+
+	private Map<String, Object> realTimeEntryForPortfolio(final List<Entry<TimeCourse, List<Data>>> entries) {
 		final double lastSum = sum(entries,0);
 		final double currentSum = sum(entries,1);
 		
@@ -160,12 +177,12 @@ public class RealtimeCoursesAO  implements Serializable {
 		values.put(NAME_COLUMN, this.portfolioName);
 		
 		values.put(LAST_COLUMN,lastSum);
+		
+		
 		values.put(CURRENT_COLUMN,currentSum);
 		values.put(DELTA_COLUMN,   currentSum - lastSum);
 		values.put(DELTA_PERCENT_COLUMN,   100 * (currentSum - lastSum)/lastSum );
-	
-		 
-		realtimeCourses.add(values);
+		return values;
 	}
 
 
@@ -206,6 +223,8 @@ public class RealtimeCoursesAO  implements Serializable {
 		final double factor = factors.get(entry.getKey().code());
 		final double last = entry.getValue().get(0).value() * factor;
 		values.put(LAST_COLUMN, last);
+		
+		values.put(LAST_DATE_COLUMN, entry.getValue().get(0).date());
 		final double current = entry.getValue().get(1).value() * factor;
 		values.put(CURRENT_COLUMN, current);
 		

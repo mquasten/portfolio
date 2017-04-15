@@ -137,11 +137,16 @@ public class RetrospectiveAO implements Serializable {
 			ratesSeries.add(series);
 		});
 
-		final LocalDate start = aggregation.initialRateWithExchangeRate().date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		
+		
+		final LocalDate start = aggregation.currentSharePortfolio().timeCourses().stream().map(tc -> tc.start()).min((d1,d2)->(int) (d1.getTime() - d2.getTime())).orElse(aggregation.initialRateWithExchangeRate().date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		
 		final LineChartSeries startLine = new LineChartSeries();
 		startLine.setShowMarker(false);
 		startLine.setLabel(START_LINE_LABEL);
 
+		
+		
 		LongStream.rangeClosed(0, ChronoUnit.DAYS.between(start, aggregation.endRateWithExchangeRate().date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()))
 				.forEach(i -> startLine.set(df.format(Date.from(start.plusDays(i).atStartOfDay(ZoneId.systemDefault()).toInstant())), aggregation.initialRateWithExchangeRate().value()));
 		ratesSeries.add(startLine);
