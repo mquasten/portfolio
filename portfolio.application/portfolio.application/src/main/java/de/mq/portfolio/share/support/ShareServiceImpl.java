@@ -119,7 +119,6 @@ class ShareServiceImpl implements ShareService {
 	 */
 	@Override
 	public final Collection<TimeCourse> realTimeCourses(final Collection<String> codes, final boolean useLastStoredTimeCourse){
-		
 		final Map<String, TimeCourse> timeCourses = shareRepository.timeCourses(codes).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
 		final Map<String,TimeCourse> realTimeCourses =   realTimeRateRestRepository.rates(timeCourses.values().stream().map(tc -> tc.share()).collect(Collectors.toList())).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
 				
