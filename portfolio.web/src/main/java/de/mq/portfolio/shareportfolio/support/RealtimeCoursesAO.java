@@ -21,18 +21,18 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 @Scope("view")
 public class RealtimeCoursesAO  implements Serializable {
 	
-	private static final String DELTA_PERCENT_COLUMN = "deltaPercent";
+	static final String DELTA_PERCENT_COLUMN = "deltaPercent";
 
-	private static final String DELTA_COLUMN = "delta";
+	static final String DELTA_COLUMN = "delta";
 
-	private static final String CURRENT_COLUMN = "current";
+	static final String CURRENT_COLUMN = "current";
 
-	private static final String LAST_COLUMN = "last";
-	private static final String LAST_DATE_COLUMN = "lastDate";
+	static final String LAST_COLUMN = "last";
+	static final String LAST_DATE_COLUMN = "lastDate";
 
-	private static final String NAME_COLUMN = "name";
+	static final String NAME_COLUMN = "name";
 
-	private static final String CURRENCY_COLUMN = "currency";
+	static final String CURRENCY_COLUMN = "currency";
 
 	/**
 	 * 
@@ -49,8 +49,16 @@ public class RealtimeCoursesAO  implements Serializable {
 	private String portfolioName;
 	private boolean lastStoredTimeCourse=true;
 	
+	private String portfolioCurrency;
+
+
+	private final Map<String, Double> factors = new HashMap<>();
+
 	
 
+	private String portfolioId;
+	
+	private String filter;
 
 
 
@@ -68,24 +76,9 @@ public class RealtimeCoursesAO  implements Serializable {
 		return portfolioCurrency;
 	}
 
-
-
-
-
-	private String portfolioCurrency;
-
-
-	private final Map<String, Double> factors = new HashMap<>();
-
 	
 
 	
-
-	void assign(final SharePortfolio sharePortfolio) {
-		Assert.notNull(sharePortfolio, "SharePortfolio is mandatory");
-		portfolioName=sharePortfolio.name();
-		portfolioCurrency=sharePortfolio.currency();
-	}
 	
 
 
@@ -95,6 +88,7 @@ public class RealtimeCoursesAO  implements Serializable {
 	
 
 	
+
 	
 	public String getCurrencyColumn() {
 		return CURRENCY_COLUMN;
@@ -129,10 +123,12 @@ public class RealtimeCoursesAO  implements Serializable {
 		return shares;
 	}
 
+	void assign(final SharePortfolio sharePortfolio) {
+		Assert.notNull(sharePortfolio, "SharePortfolio is mandatory");
+		portfolioName=sharePortfolio.name();
+		portfolioCurrency=sharePortfolio.currency();
+	}	
 	
-	private String portfolioId;
-	
-	private String filter;
 
 	public String getFilter() {
 		return filter;
@@ -221,6 +217,7 @@ public class RealtimeCoursesAO  implements Serializable {
 		final Map<String,Object> values = new HashMap<>();
 		values.put(NAME_COLUMN, entry.getKey().name() +" (" + entry.getKey().code() +")");
 		final double factor = factors.get(entry.getKey().code());
+		
 		final double last = entry.getValue().get(0).value() * factor;
 		values.put(LAST_COLUMN, last);
 		
