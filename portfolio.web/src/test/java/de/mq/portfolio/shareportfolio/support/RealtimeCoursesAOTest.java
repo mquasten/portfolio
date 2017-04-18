@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,6 +25,8 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 public class RealtimeCoursesAOTest {
 	
+	private static final String ID = UUID.randomUUID().toString();
+	private static final String REGEX_FILTER = ".*";
 	private static final double FACTOR_02 = 0.6D * 0.95D;
 	private static final double FACTOR_01 = 0.4D;
 	private static final String CURRENCY_USD = "USD";
@@ -129,8 +132,8 @@ public class RealtimeCoursesAOTest {
 		
 		Assert.assertEquals(RATE_01_START*FACTOR_01, sapMap.get(RealtimeCoursesAO.LAST_COLUMN));
 		Assert.assertEquals(RATE_01_END*FACTOR_01, sapMap.get(RealtimeCoursesAO.CURRENT_COLUMN));
-		Assert.assertEquals(percentRound(FACTOR_01*(RATE_01_END-RATE_01_START)), percentRound((Double) sapMap.get(RealtimeCoursesAO.DELTA_COLUMN)));
-		Assert.assertEquals(percentRound(100*(RATE_01_END-RATE_01_START)/RATE_01_START), percentRound((Double)sapMap.get(RealtimeCoursesAO.DELTA_PERCENT_COLUMN)));
+		Assert.assertEquals(truncate(FACTOR_01*(RATE_01_END-RATE_01_START)), truncate((Double) sapMap.get(RealtimeCoursesAO.DELTA_COLUMN)));
+		Assert.assertEquals(truncate(100*(RATE_01_END-RATE_01_START)/RATE_01_START), truncate((Double)sapMap.get(RealtimeCoursesAO.DELTA_PERCENT_COLUMN)));
 		Assert.assertEquals(String.format("%s (%s)", NAME_01, CODE_01), sapMap.get(RealtimeCoursesAO.NAME_COLUMN));
 		Assert.assertEquals(lastDate, sapMap.get(RealtimeCoursesAO.LAST_DATE_COLUMN));
 		
@@ -138,8 +141,8 @@ public class RealtimeCoursesAOTest {
 		
 		Assert.assertEquals(RATE_02_START*FACTOR_02, coMap.get(RealtimeCoursesAO.LAST_COLUMN));
 		Assert.assertEquals(RATE_02_END*FACTOR_02, coMap.get(RealtimeCoursesAO.CURRENT_COLUMN));
-		Assert.assertEquals(percentRound(FACTOR_02*(RATE_02_END-RATE_02_START)), percentRound((Double) coMap.get(RealtimeCoursesAO.DELTA_COLUMN)));
-		Assert.assertEquals(percentRound(100*(RATE_02_END-RATE_02_START)/RATE_02_START), percentRound((Double)coMap.get(RealtimeCoursesAO.DELTA_PERCENT_COLUMN)));
+		Assert.assertEquals(truncate(FACTOR_02*(RATE_02_END-RATE_02_START)), truncate((Double) coMap.get(RealtimeCoursesAO.DELTA_COLUMN)));
+		Assert.assertEquals(truncate(100*(RATE_02_END-RATE_02_START)/RATE_02_START), truncate((Double)coMap.get(RealtimeCoursesAO.DELTA_PERCENT_COLUMN)));
 		Assert.assertEquals(String.format("%s (%s)", NAME_02, CODE_02), coMap.get(RealtimeCoursesAO.NAME_COLUMN));
 		Assert.assertEquals(lastDate, coMap.get(RealtimeCoursesAO.LAST_DATE_COLUMN));
 		
@@ -158,8 +161,67 @@ public class RealtimeCoursesAOTest {
 		
 	}
 	
-	private Double percentRound(double value) {
-		return Math.round(10000 * value) / 100d;
+	private Double truncate(double value) {
+		return Math.round(1e6* value) / 1e6;
+	}
+	
+	@Test
+	public final void currencyColumn() {
+		Assert.assertEquals(RealtimeCoursesAO.CURRENCY_COLUMN, realtimeCoursesAO.getCurrencyColumn());
+	}
+	
+	@Test
+	public final void nameColumn() {
+		Assert.assertEquals(RealtimeCoursesAO.NAME_COLUMN, realtimeCoursesAO.getNameColumn());
+	}
+	
+	@Test
+	public final void lastColumn() {
+		Assert.assertEquals(RealtimeCoursesAO.LAST_COLUMN, realtimeCoursesAO.getLastColumn());
+	}
+	
+	@Test
+	public final void lastDateColumn() {
+		Assert.assertEquals(RealtimeCoursesAO.LAST_DATE_COLUMN, realtimeCoursesAO.getLastDateColumn());
+	}
+	
+	@Test
+	public final void currentColumn() {
+		Assert.assertEquals(RealtimeCoursesAO.CURRENT_COLUMN, realtimeCoursesAO.getCurrentColumn());
+	}
+	
+	@Test
+	public final void deltaColumn() {
+		Assert.assertEquals(RealtimeCoursesAO.DELTA_COLUMN, realtimeCoursesAO.getDeltaColumn());
+	}
+	
+	@Test
+	public final void deltaPercentColumn() {
+		Assert.assertEquals(RealtimeCoursesAO.DELTA_PERCENT_COLUMN, realtimeCoursesAO.getDeltaPercentColumn());
+	}
+	
+	@Test
+	public final void  getFilter() {
+		Assert.assertNull(realtimeCoursesAO.getFilter());
+		realtimeCoursesAO.setFilter(REGEX_FILTER);
+		
+		Assert.assertEquals(REGEX_FILTER, realtimeCoursesAO.getFilter());
+	}
+	
+	@Test
+	public final void portfolioId() {
+		Assert.assertNull(realtimeCoursesAO.getPortfolioId());
+		realtimeCoursesAO.setPortfolioId(ID);
+		
+		Assert.assertEquals(ID, realtimeCoursesAO.getPortfolioId());
 	}
 
+	
+	@Test
+	public final void lastStoredTimeCourse() {
+		Assert.assertTrue(realtimeCoursesAO.getLastStoredTimeCourse());
+		realtimeCoursesAO.setLastStoredTimeCourse(Boolean.FALSE);
+		
+		Assert.assertFalse(realtimeCoursesAO.getLastStoredTimeCourse());
+	}
 }
