@@ -1,6 +1,7 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.io.Serializable;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,6 +40,8 @@ public class RealtimeCoursesAO implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private static final String WEIGHT_COLUMN = "weight";
+
 	private final Collection<Map<String, Object>> shares = new ArrayList<>();
 
 	private final Collection<Map<String, Object>> realtimeCourses = new ArrayList<>();
@@ -53,6 +56,7 @@ public class RealtimeCoursesAO implements Serializable {
 	private String portfolioId;
 
 	private String filter;
+	private Map<String, Double> weights = new HashMap<>();
 
 	public String getPortfolioName() {
 		return portfolioName;
@@ -93,6 +97,9 @@ public class RealtimeCoursesAO implements Serializable {
 	public String getDeltaPercentColumn() {
 		return DELTA_PERCENT_COLUMN;
 	}
+	public String getWeightColumn() {
+		return WEIGHT_COLUMN;
+	}
 
 	public Collection<Map<String, Object>> getShares() {
 		return shares;
@@ -102,6 +109,9 @@ public class RealtimeCoursesAO implements Serializable {
 		Assert.notNull(sharePortfolio, "SharePortfolio is mandatory");
 		portfolioName = sharePortfolio.name();
 		portfolioCurrency = sharePortfolio.currency();
+		weights.clear();
+		weights.putAll(sharePortfolio.min().entrySet().stream().map(entry -> new AbstractMap.SimpleImmutableEntry<>(entry.getKey().code(), entry.getValue())).collect(Collectors.toMap(entry -> entry.getKey(), entry ->entry.getValue())));
+	
 	}
 
 	public String getFilter() {
@@ -138,7 +148,7 @@ public class RealtimeCoursesAO implements Serializable {
 
 		final Map<String, Object> values = new HashMap<>();
 		values.put(NAME_COLUMN, this.portfolioName);
-
+	
 		values.put(LAST_COLUMN, lastSum);
 
 		values.put(CURRENT_COLUMN, currentSum);
@@ -177,6 +187,9 @@ public class RealtimeCoursesAO implements Serializable {
 	private Map<String, Object> shareEntryToRealtimeCourseMap(final Entry<TimeCourse, List<Data>> entry) {
 		final Map<String, Object> values = new HashMap<>();
 		values.put(NAME_COLUMN, entry.getKey().name() + " (" + entry.getKey().code() + ")");
+		
+		
+		values.put(WEIGHT_COLUMN, weights.get(entry.getKey().code()));
 		final double factor = factors.get(entry.getKey().code());
 
 		final double last = entry.getValue().get(0).value() * factor;

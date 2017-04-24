@@ -101,6 +101,15 @@
 					<h:outputText value="#{realtimeCourse[realtimeCourses.nameColumn]}" />
 						
 				</p:column>
+					<p:column>
+					<f:facet name="header">
+						<h:outputText value="Anteil [%]" />
+					</f:facet>
+					<h:outputText value="#{100*realtimeCourse[realtimeCourses.weightColumn]}" rendered="#{realtimeCourse[realtimeCourses.weightColumn]!=null}" >
+					  <f:convertNumber pattern="#0.00"  />
+					</h:outputText>
+						
+				</p:column>
 				
 				<p:column>
 					<f:facet name="header">
