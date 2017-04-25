@@ -3,7 +3,6 @@ package de.mq.portfolio.shareportfolio.support;
 
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -64,7 +63,6 @@ public class RealtimeCoursesControllerTest {
 	
 	private final TimeCourse realtimeCourse02 = Mockito.mock(TimeCourse.class);
 	
-	private final Map<TimeCourse, Double> weights = new HashMap<>();
 	
 	@Before
 	public final void setup() {
@@ -101,11 +99,6 @@ public class RealtimeCoursesControllerTest {
 		Mockito.when(exchangeRateService.exchangeRateCalculator(sharePortfolio.exchangeRateTranslations())).thenReturn(exchangeRateCalculator);
 		
 		
-		weights.put(timeCourse01, 0.4);
-		weights.put(timeCourse02, 0.6);
-		
-		Mockito.when(sharePortfolio.min()).thenReturn(weights);
-		
 		Mockito.when(sharePortfolio.timeCourses()).thenReturn(Arrays.asList(timeCourse01, timeCourse02));
 		
 		Mockito.when(realtimeCoursesAO.getLastStoredTimeCourse()).thenReturn(Boolean.TRUE);
@@ -117,19 +110,19 @@ public class RealtimeCoursesControllerTest {
 	public final void init() {
 	
 		@SuppressWarnings("unchecked")
-		final ArgumentCaptor<Map<String, Double>> factorsCaptor = (ArgumentCaptor<Map<String, Double>>) (ArgumentCaptor<?>)ArgumentCaptor.forClass(Map.class);
+		final ArgumentCaptor<Map<String, Double>> exchangeRateCaptor = (ArgumentCaptor<Map<String, Double>>) (ArgumentCaptor<?>)ArgumentCaptor.forClass(Map.class);
 		@SuppressWarnings("unchecked")
 		final ArgumentCaptor<List<Entry<TimeCourse, List<Data>>>> entriesCaptor = (ArgumentCaptor<List<Entry<TimeCourse, List<Data>>>>) (ArgumentCaptor<?>)  ArgumentCaptor.forClass(List.class);
 		realtimeCoursesController.init(realtimeCoursesAO);
 		
 		Mockito.verify(realtimeCoursesAO).assign(sharePortfolio);
 		
-		Mockito.verify(realtimeCoursesAO).setFactors(factorsCaptor.capture());		
-		Assert.assertEquals(2,factorsCaptor.getValue().size());
-		Assert.assertTrue(factorsCaptor.getValue().containsKey(CODE_01));
-		Assert.assertTrue(factorsCaptor.getValue().containsKey(CODE_02));
-		Assert.assertEquals(  EXCHANGE_RATE_01* weights.get(timeCourse01), (Number)   factorsCaptor.getValue().get(CODE_01));
-		Assert.assertEquals(  EXCHANGE_RATE_02* weights.get(timeCourse02), (Number)   factorsCaptor.getValue().get(CODE_02));
+		Mockito.verify(realtimeCoursesAO).setExchangeRates(exchangeRateCaptor.capture());		
+		Assert.assertEquals(2,exchangeRateCaptor.getValue().size());
+		Assert.assertTrue(exchangeRateCaptor.getValue().containsKey(CODE_01));
+		Assert.assertTrue(exchangeRateCaptor.getValue().containsKey(CODE_02));
+		Assert.assertEquals(  EXCHANGE_RATE_01, (Number)   exchangeRateCaptor.getValue().get(CODE_01));
+		Assert.assertEquals(  EXCHANGE_RATE_02 ,   exchangeRateCaptor.getValue().get(CODE_02));
 		
 		Mockito.verify(realtimeCoursesAO).assign(entriesCaptor.capture());
 		Assert.assertEquals(2, entriesCaptor.getValue().size());

@@ -22,13 +22,15 @@ import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
-
 public class RealtimeCoursesAOTest {
 	
 	private static final String ID = UUID.randomUUID().toString();
 	private static final String REGEX_FILTER = ".*";
-	private static final double FACTOR_02 = 0.6D * 0.95D;
-	private static final double FACTOR_01 = 0.4D;
+	private static final double EXCHANGE_RATE_02 =  0.95D;
+	private static final double EXCHANGE_RATE_01 =1d ;
+	
+	private static final double WEIGHT_02 = 0.6D ;
+	private static final double WEIGHT_01 = 0.4D ;
 	private static final String CURRENCY_USD = "USD";
 	private static final String NAME_02 = "Coca Cola";
 	private static final String NAME_01 = "SAP AG";
@@ -59,9 +61,14 @@ public class RealtimeCoursesAOTest {
 	@Before
 	public final void setup() {
 		
-		final Map<String,Double> factors = new HashMap<>();
-		factors.put(CODE_01, FACTOR_01);
-		factors.put(CODE_02, FACTOR_02);
+		final Map<TimeCourse,Double> weights = new HashMap<>();
+		weights.put(timeCourse01, WEIGHT_01);
+		weights.put(timeCourse02, WEIGHT_02);
+		Mockito.when(sharePortfolio.min()).thenReturn(weights);
+		
+		final Map<String,Double> exchangeRates = new HashMap<>();
+		exchangeRates.put(CODE_01, EXCHANGE_RATE_01);
+		exchangeRates.put(CODE_02, EXCHANGE_RATE_02);
 		
 		Mockito.when(share01.currency()).thenReturn(PORTFOLIO_CURRENCY);
 		Mockito.when(share02.currency()).thenReturn(CURRENCY_USD);
@@ -82,7 +89,7 @@ public class RealtimeCoursesAOTest {
 		Mockito.when(timeCourse02.name()).thenReturn(NAME_02);
 		Mockito.when(sharePortfolio.name()).thenReturn(PORTFOLIO_NAME);
 		Mockito.when(sharePortfolio.currency()).thenReturn(PORTFOLIO_CURRENCY);
-		realtimeCoursesAO.setFactors(factors);
+		realtimeCoursesAO.setExchangeRates(exchangeRates);
 		realtimeCoursesAO.assign(sharePortfolio);
 		
 		entries.add(new AbstractMap.SimpleImmutableEntry<>(timeCourse01, Arrays.asList(data01Start, data01End)));
@@ -130,30 +137,32 @@ public class RealtimeCoursesAOTest {
 		Assert.assertEquals(3, realtimeCourses.size());
 		final Map<String,Object> sapMap = realtimeCourses.get(1);
 		
-		Assert.assertEquals(RATE_01_START*FACTOR_01, sapMap.get(RealtimeCoursesAO.LAST_COLUMN));
-		Assert.assertEquals(RATE_01_END*FACTOR_01, sapMap.get(RealtimeCoursesAO.CURRENT_COLUMN));
-		Assert.assertEquals(truncate(FACTOR_01*(RATE_01_END-RATE_01_START)), truncate((Double) sapMap.get(RealtimeCoursesAO.DELTA_COLUMN)));
+		Assert.assertEquals(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01, sapMap.get(RealtimeCoursesAO.LAST_COLUMN));
+		Assert.assertEquals(RATE_01_END*EXCHANGE_RATE_01*WEIGHT_01, sapMap.get(RealtimeCoursesAO.CURRENT_COLUMN));
+		Assert.assertEquals(truncate(EXCHANGE_RATE_01*WEIGHT_01*(RATE_01_END-RATE_01_START)), truncate((Double) sapMap.get(RealtimeCoursesAO.DELTA_COLUMN)));
 		Assert.assertEquals(truncate(100*(RATE_01_END-RATE_01_START)/RATE_01_START), truncate((Double)sapMap.get(RealtimeCoursesAO.DELTA_PERCENT_COLUMN)));
 		Assert.assertEquals(String.format("%s (%s)", NAME_01, CODE_01), sapMap.get(RealtimeCoursesAO.NAME_COLUMN));
 		Assert.assertEquals(lastDate, sapMap.get(RealtimeCoursesAO.LAST_DATE_COLUMN));
-		
+		Assert.assertEquals(WEIGHT_01, sapMap.get(RealtimeCoursesAO.WEIGHT_COLUMN));
 		final Map<String,Object> coMap = realtimeCourses.get(2);
-		
-		Assert.assertEquals(RATE_02_START*FACTOR_02, coMap.get(RealtimeCoursesAO.LAST_COLUMN));
-		Assert.assertEquals(RATE_02_END*FACTOR_02, coMap.get(RealtimeCoursesAO.CURRENT_COLUMN));
-		Assert.assertEquals(truncate(FACTOR_02*(RATE_02_END-RATE_02_START)), truncate((Double) coMap.get(RealtimeCoursesAO.DELTA_COLUMN)));
+	
+		Assert.assertEquals(RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02, coMap.get(RealtimeCoursesAO.LAST_COLUMN));
+		Assert.assertEquals(truncate(RATE_02_END*EXCHANGE_RATE_02*WEIGHT_02), truncate((Double) coMap.get(RealtimeCoursesAO.CURRENT_COLUMN)));
+		Assert.assertEquals(truncate(EXCHANGE_RATE_02*WEIGHT_02*(RATE_02_END-RATE_02_START)), truncate((Double) coMap.get(RealtimeCoursesAO.DELTA_COLUMN)));
 		Assert.assertEquals(truncate(100*(RATE_02_END-RATE_02_START)/RATE_02_START), truncate((Double)coMap.get(RealtimeCoursesAO.DELTA_PERCENT_COLUMN)));
 		Assert.assertEquals(String.format("%s (%s)", NAME_02, CODE_02), coMap.get(RealtimeCoursesAO.NAME_COLUMN));
+		
+		Assert.assertEquals(WEIGHT_02, coMap.get(RealtimeCoursesAO.WEIGHT_COLUMN));
 		Assert.assertEquals(lastDate, coMap.get(RealtimeCoursesAO.LAST_DATE_COLUMN));
 		
 		final Map<String,Object> portfolioMap = realtimeCourses.get(0);
 		
-		Assert.assertEquals(RATE_01_START*FACTOR_01 + RATE_02_START*FACTOR_02 , portfolioMap.get(RealtimeCoursesAO.LAST_COLUMN));
-		Assert.assertEquals(RATE_01_END*FACTOR_01 + RATE_02_END*FACTOR_02, portfolioMap.get(RealtimeCoursesAO.CURRENT_COLUMN));
+		Assert.assertEquals(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01+ RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02 , portfolioMap.get(RealtimeCoursesAO.LAST_COLUMN));
+		Assert.assertEquals(RATE_01_END*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_END*EXCHANGE_RATE_02*WEIGHT_02, portfolioMap.get(RealtimeCoursesAO.CURRENT_COLUMN));
 		
-		Assert.assertEquals(RATE_01_END*FACTOR_01 + RATE_02_END*FACTOR_02  -(RATE_01_START*FACTOR_01 + RATE_02_START*FACTOR_02),  portfolioMap.get(RealtimeCoursesAO.DELTA_COLUMN));
+		Assert.assertEquals(RATE_01_END*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_END*EXCHANGE_RATE_02*WEIGHT_02  -(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02),  portfolioMap.get(RealtimeCoursesAO.DELTA_COLUMN));
 		
-		Assert.assertEquals(100*(RATE_01_END*FACTOR_01 + RATE_02_END*FACTOR_02  -(RATE_01_START*FACTOR_01 + RATE_02_START*FACTOR_02))/(RATE_01_START*FACTOR_01 + RATE_02_START*FACTOR_02),  portfolioMap.get(RealtimeCoursesAO.DELTA_PERCENT_COLUMN));
+		Assert.assertEquals(100*(RATE_01_END*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_END*EXCHANGE_RATE_02*WEIGHT_02  -(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02))/(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02),  portfolioMap.get(RealtimeCoursesAO.DELTA_PERCENT_COLUMN));
 		
 		Assert.assertEquals(PORTFOLIO_NAME, portfolioMap.get(RealtimeCoursesAO.NAME_COLUMN));
 		Assert.assertFalse(portfolioMap.containsKey(RealtimeCoursesAO.LAST_DATE_COLUMN));
@@ -193,6 +202,11 @@ public class RealtimeCoursesAOTest {
 	@Test
 	public final void deltaColumn() {
 		Assert.assertEquals(RealtimeCoursesAO.DELTA_COLUMN, realtimeCoursesAO.getDeltaColumn());
+	}
+	
+	@Test
+	public final void weightColumn() {
+		Assert.assertEquals(RealtimeCoursesAO.WEIGHT_COLUMN, realtimeCoursesAO.getWeightColumn());
 	}
 	
 	@Test

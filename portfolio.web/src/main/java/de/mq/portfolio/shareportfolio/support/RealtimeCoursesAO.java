@@ -35,12 +35,14 @@ public class RealtimeCoursesAO implements Serializable {
 
 	static final String CURRENCY_COLUMN = "currency";
 
+	
+	static final String WEIGHT_COLUMN = "weight";
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final String WEIGHT_COLUMN = "weight";
+	
 
 	private final Collection<Map<String, Object>> shares = new ArrayList<>();
 
@@ -51,7 +53,7 @@ public class RealtimeCoursesAO implements Serializable {
 
 	private String portfolioCurrency;
 
-	private final Map<String, Double> factors = new HashMap<>();
+	private final Map<String, Double> exchangeRates = new HashMap<>();
 
 	private String portfolioId;
 
@@ -158,7 +160,7 @@ public class RealtimeCoursesAO implements Serializable {
 	}
 
 	private double sum(final List<Entry<TimeCourse, List<Data>>> entries, final int index) {
-		return entries.stream().mapToDouble(entry -> entry.getValue().get(index).value() * factors.get(entry.getKey().code())).sum();
+		return entries.stream().mapToDouble(entry -> entry.getValue().get(index).value() * factor(entry.getKey().code())).sum();
 	}
 
 	private void addShares(final List<Entry<TimeCourse, List<Data>>> entries) {
@@ -166,9 +168,9 @@ public class RealtimeCoursesAO implements Serializable {
 		shares.addAll(entries.stream().map(entry -> shareEntryToMap(entry)).collect(Collectors.toList()));
 	}
 
-	void setFactors(final Map<String, Double> factors) {
-		this.factors.clear();
-		this.factors.putAll(factors);
+	void setExchangeRates(final Map<String, Double> exchangeRates) {
+		this.exchangeRates.clear();
+		this.exchangeRates.putAll(exchangeRates);
 	}
 
 	private Map<String, Object> shareEntryToMap(final Entry<TimeCourse, List<Data>> entry) {
@@ -190,7 +192,7 @@ public class RealtimeCoursesAO implements Serializable {
 		
 		
 		values.put(WEIGHT_COLUMN, weights.get(entry.getKey().code()));
-		final double factor = factors.get(entry.getKey().code());
+		final double factor = factor(entry.getKey().code());
 
 		final double last = entry.getValue().get(0).value() * factor;
 		values.put(LAST_COLUMN, last);
@@ -203,6 +205,12 @@ public class RealtimeCoursesAO implements Serializable {
 		values.put(DELTA_PERCENT_COLUMN, 100 * (current - last) / last);
 		return values;
 
+	}
+
+	private double factor(final String code) {
+		Assert.isTrue(exchangeRates.containsKey(code) , String.format("ExchangeRate not found for %s", code));
+		Assert.isTrue(weights.containsKey(code) , String.format("Weight not found for %s", code));
+		return exchangeRates.get(code) * weights.get(code);
 	}
 
 	public Boolean getLastStoredTimeCourse() {

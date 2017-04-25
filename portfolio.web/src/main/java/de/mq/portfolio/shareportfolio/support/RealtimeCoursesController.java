@@ -41,7 +41,7 @@ public class RealtimeCoursesController {
 	public void init(final RealtimeCoursesAO realtimeCourses) {
 		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(realtimeCourses.getPortfolioId());
 		realtimeCourses.assign(sharePortfolio);
-		realtimeCourses.setFactors(factors(sharePortfolio));
+		realtimeCourses.setExchangeRates(factors(sharePortfolio));
 		final Map<String, TimeCourse> timeCoursesMap = new HashMap<>();
 		sharePortfolio.timeCourses().stream().forEach(tc -> timeCoursesMap.put(tc.code(),tc));
 		realtimeCourses.assign(shareService.realTimeCourses(sharePortfolio.timeCourses().stream().map(tc -> tc.code()).collect(Collectors.toList()),realtimeCourses.getLastStoredTimeCourse() ).stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(timeCoursesMap.get(tc.code()), tc.rates())).collect(Collectors.toList()));
@@ -52,13 +52,12 @@ public class RealtimeCoursesController {
 
 
 	private final Map<String, Double>  factors(final SharePortfolio sharePortfolio ) {
-		final Map<String, Double> factors = new HashMap<>();
+		final Map<String, Double> exchangeRates = new HashMap<>();
 		final ExchangeRateCalculator exchangeRateCalculator = exchangeRateService.exchangeRateCalculator(sharePortfolio.exchangeRateTranslations());
-		final Map<TimeCourse,Double> weights = sharePortfolio.min();
 		final Map<String,Date> endDates = new HashMap<>();
 		sharePortfolio.timeCourses().stream().map(tc -> tc.code()).forEach(code -> endDates.put(code, shareService.timeCourse(code).get().end()));
-		sharePortfolio.timeCourses().forEach(tc -> factors.put(tc.code(), exchangeRateCalculator.factor(sharePortfolio.exchangeRate(tc), endDates.get(tc.code())) * weights.get(tc)));
-		return factors;
+		sharePortfolio.timeCourses().forEach(tc -> exchangeRates.put(tc.code(), exchangeRateCalculator.factor(sharePortfolio.exchangeRate(tc), endDates.get(tc.code())) ));
+		return exchangeRates;
 	}
 
 	
