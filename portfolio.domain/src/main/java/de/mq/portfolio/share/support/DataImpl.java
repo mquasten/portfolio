@@ -1,5 +1,6 @@
 package de.mq.portfolio.share.support;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,7 +16,7 @@ public class DataImpl implements Data {
 	static final String DATE_PATTERN = "yyyy-MM-dd";
 
 	@Transient
-	private final SimpleDateFormat df = new SimpleDateFormat(DATE_PATTERN);
+	private final DateFormat df = new SimpleDateFormat(DATE_PATTERN);
 	
 	private String  date;
 
@@ -26,7 +27,6 @@ public class DataImpl implements Data {
 	public Date date() {
 		try {
 			Assert.hasText(date);
-			
 			return df.parse(this.date);
 		} catch (ParseException e) {
 			 throw new IllegalArgumentException(String.format("Invalid Date %s", this.date));
