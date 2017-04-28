@@ -24,16 +24,16 @@ import de.mq.portfolio.share.support.DataImpl;
 import de.mq.portfolio.support.ExceptionTranslationBuilder;
 
 @Repository
-public abstract class RealtimeExchangeRateRepositoryImpl implements RealtimeExchangeRateRepository {
+public abstract class AbstractRealtimeExchangeRateRepository implements RealtimeExchangeRateRepository {
 	
 	//String URL= "http://query.yahooapis.com/v1/public/yql?q=select id,Rate,Date,Time from yahoo.finance.xchange where pair in ({exchangeRates})&format=json&env=store://datatables.org/alltableswithkeys";
-	DateFormat df = new SimpleDateFormat("M/d/yy h:mma", Locale.US);
+	static DateFormat df = new SimpleDateFormat("M/d/yy h:mma", Locale.US);
 	static String URL = "http://finance.yahoo.com/d/quotes.csv?s={currencies}&f=sl1d1t1";
 	final String path ="query.results.rate" ;
-private final RestOperations restOperations;
+	private final RestOperations restOperations;
 	
 	@Autowired
-	RealtimeExchangeRateRepositoryImpl(final RestOperations restOperations) {
+	AbstractRealtimeExchangeRateRepository(final RestOperations restOperations) {
 		this.restOperations = restOperations;
 	}
 	

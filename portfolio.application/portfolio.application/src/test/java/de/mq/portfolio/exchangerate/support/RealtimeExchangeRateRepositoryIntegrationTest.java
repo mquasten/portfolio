@@ -25,6 +25,8 @@ public class RealtimeExchangeRateRepositoryIntegrationTest {
 	public final void exchangeRates() {
 		final Collection<ExchangeRate> exchangeRates = realtimeExchangeRateRepository.exchangeRates(null);
 		Assert.assertEquals(3, exchangeRates.size());
+		
+		System.out.println(exchangeRates);
 	}
 
 }
