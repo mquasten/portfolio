@@ -12,7 +12,7 @@
 
 
 
-	
+<bean class="org.springframework.context.support.ConversionServiceFactoryBean"/>
 
 
 <bean id="googleHistoryRepository" class="de.mq.portfolio.share.support.HistoryGoogleRestRepositoryImpl" />

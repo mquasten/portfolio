@@ -1,5 +1,6 @@
 package de.mq.portfolio.exchangerate.support;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.Assert;
@@ -11,11 +12,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
-
+@Ignore
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/application-test.xml" })
-@Ignore
+
 public class RealtimeExchangeRateRepositoryIntegrationTest {
 	
 	@Autowired
@@ -23,10 +24,11 @@ public class RealtimeExchangeRateRepositoryIntegrationTest {
 	
 	@Test
 	public final void exchangeRates() {
-		final Collection<ExchangeRate> exchangeRates = realtimeExchangeRateRepository.exchangeRates(null);
-		Assert.assertEquals(3, exchangeRates.size());
+		final Collection<ExchangeRate> exchangeRates = Arrays.asList(new ExchangeRateImpl("EUR", "USD"), new ExchangeRateImpl("EUR", "GBP"),  new ExchangeRateImpl("USD", "GBP"));
+		final Collection<ExchangeRate> results = realtimeExchangeRateRepository.exchangeRates(exchangeRates);
+		Assert.assertEquals(3, results.size());
 		
-		System.out.println(exchangeRates);
+		System.out.println(results);
 	}
 
 }
