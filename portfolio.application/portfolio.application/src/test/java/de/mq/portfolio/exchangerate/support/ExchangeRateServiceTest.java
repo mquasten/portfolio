@@ -32,6 +32,8 @@ public class ExchangeRateServiceTest {
 	private final Collection<ExchangeRate> exchangeRates = Arrays.asList(exchangeRate);
 	private final ExchangeRateCalculator  exchangeRateCalculator = Mockito.mock(ExchangeRateCalculator.class);
 	
+	private final RealtimeExchangeRateRepository realtimeExchangeRateRepository = Mockito.mock(RealtimeExchangeRateRepository.class);
+	
 	private final Map<Class<?> ,Object> dependencies = new HashMap<>();
 	
 	@Before
@@ -43,6 +45,7 @@ public class ExchangeRateServiceTest {
 		dependencies.clear();
 		dependencies.put(ExchangeRateRepository.class, exchangeRateRepository);
 		dependencies.put(ExchangeRateDatebaseRepository.class, exchangeRateDatebaseRepository);
+		dependencies.put(RealtimeExchangeRateRepository.class, realtimeExchangeRateRepository);
 		ReflectionUtils.doWithFields(exchangeRateService.getClass(), field -> ReflectionTestUtils.setField(exchangeRateService, field.getName(), dependencies.get(field.getType())), field -> dependencies.containsKey(field.getType()));
 		
 		Mockito.doReturn(builder).when(((AbstractExchangeRateService)exchangeRateService)).newBuilder();
@@ -89,12 +92,13 @@ public class ExchangeRateServiceTest {
 	
 	@Test
 	public final void constructorInjection() throws NoSuchMethodException, SecurityException {
-		final ExchangeRateService service  = BeanUtils.instantiateClass( exchangeRateService.getClass().getDeclaredConstructor(ExchangeRateDatebaseRepository.class, ExchangeRateRepository.class),exchangeRateDatebaseRepository , exchangeRateRepository);
+		final ExchangeRateService service  = BeanUtils.instantiateClass( exchangeRateService.getClass().getDeclaredConstructor(ExchangeRateDatebaseRepository.class, ExchangeRateRepository.class, RealtimeExchangeRateRepository.class),exchangeRateDatebaseRepository , exchangeRateRepository, realtimeExchangeRateRepository);
 		final Map<Class<?> ,Object> results = new HashMap<>();
 		ReflectionUtils.doWithFields(service.getClass(), field -> results.put(field.getType(), ReflectionTestUtils.getField(service, field.getName())), field -> dependencies.containsKey(field.getType()));
-	    Assert.assertEquals(2, results.size());
+	    Assert.assertEquals(3, results.size());
 	    Assert.assertEquals(exchangeRateRepository, results.get(ExchangeRateRepository.class));
 	    Assert.assertEquals(exchangeRateDatebaseRepository, results.get(ExchangeRateDatebaseRepository.class));
+	    Assert.assertEquals(realtimeExchangeRateRepository, results.get(RealtimeExchangeRateRepository.class));
 	}
 	
 	@Test

@@ -40,7 +40,7 @@ public class RealtimeExchangeRateRepositoryTest {
 	
 	@Test
 	public final void exchangeRates() {
-		final Collection<ExchangeRate> results = realtimeExchangeRateRepository.exchangeRates(null);
+		final Collection<ExchangeRate> results = realtimeExchangeRateRepository.exchangeRates(Arrays.asList(new ExchangeRateImpl("EUR", "USD"), new ExchangeRateImpl("USD", "EUR")));
 		Assert.assertEquals(2, results.size());
 		
 	}

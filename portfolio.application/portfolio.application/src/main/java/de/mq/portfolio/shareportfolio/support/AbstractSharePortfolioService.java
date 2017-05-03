@@ -1,6 +1,12 @@
 package de.mq.portfolio.shareportfolio.support;
 
+import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.Collection;
+
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +16,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import de.mq.portfolio.exchangerate.ExchangeRate;
+import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
+import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.share.support.DataImpl;
 import de.mq.portfolio.share.support.ShareRepository;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
@@ -89,10 +99,6 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 		return sharePortfolioRepository.pageable(sharePortfolio, sort, size);
 	}
 
-	
-
-
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -105,8 +111,6 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 		Assert.notNull(sharePortfolio, "SharePortfolio should be given.");
 		sharePortfolioRepository.save(sharePortfolio);
 	}
-
-
 
 	/*
 	 * (non-Javadoc)
@@ -124,7 +128,6 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 		sharePortfolioRepository.save(existing);
 	}
 
-	
 	final String status(final String status, final Long counter, final Long limit) {
 
 		final long max = (limit == null) ? 0 : limit;
@@ -152,7 +155,6 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 
 	}
 
-	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -182,13 +184,28 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 				.withTimeCourses(shareRepository.timeCourses(portfolio.timeCourses().stream().map(tc -> tc.code()).collect(Collectors.toSet()))).build();
 
 	}
-	
-	
-	public final void save(final String json){
+
+	public final void save(final String json) {
 		sharePortfolioRepository.save(json);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.mq.portfolio.shareportfolio.support.SharePortfolioService#
+	 * realtimeExchangeRates(java.lang.String)
+	 */
+	@Override
+	public Map<ExchangeRate, Collection<Data>> realtimeExchangeRates(final String sharePortfolioId) {
+		final SharePortfolio portfolio = sharePortfolioRepository.sharePortfolio(sharePortfolioId);
+		final Set<String> codes = portfolio.timeCourses().stream().map(timeCourse -> timeCourse.code()).collect(Collectors.toSet());
+		final Date endDate = shareRepository.timeCourses(codes).stream().map(tc -> tc.end()).min((d1, d2) -> Long.valueOf(d1.getTime() - d2.getTime()).intValue()).orElseThrow(() -> new IllegalArgumentException("No rates aware."));
+		final ExchangeRateCalculator exchangeRateCalculator = exchangeRateService.exchangeRateCalculator(portfolio.exchangeRateTranslations());
+		return exchangeRateService.realTimeExchangeRates(portfolio.exchangeRateTranslations()).entrySet().stream().map(entry -> new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), Arrays.asList(new DataImpl(endDate, exchangeRateCalculator.factor(entry.getKey(), endDate)), entry.getValue())))
+				.collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
+	}
+
 	@Lookup
-	abstract SharePortfolioRetrospectiveBuilder newBuilder(); 
+	abstract SharePortfolioRetrospectiveBuilder newBuilder();
 
 }

@@ -1,9 +1,12 @@
 package de.mq.portfolio.exchangerate.support;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Service;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
@@ -16,11 +19,14 @@ abstract class AbstractExchangeRateService implements ExchangeRateService {
 	private final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository;
 
 	private final ExchangeRateRepository exchangeRateRepository;
+	
+	private final RealtimeExchangeRateRepository realtimeExchangeRateRepository;
 
 	@Autowired
-	AbstractExchangeRateService(final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository, final ExchangeRateRepository exchangeRateRepository) {
+	AbstractExchangeRateService(final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository, final ExchangeRateRepository exchangeRateRepository, final RealtimeExchangeRateRepository realtimeExchangeRateRepository) {
 		this.exchangeRateDatebaseRepository = exchangeRateDatebaseRepository;
 		this.exchangeRateRepository = exchangeRateRepository;
+		this.realtimeExchangeRateRepository = realtimeExchangeRateRepository;
 	}
 
 	/*
@@ -88,7 +94,15 @@ abstract class AbstractExchangeRateService implements ExchangeRateService {
 		return exchangeRateDatebaseRepository.exchangerates(exchangeRates);
 	}
 	
-
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.exchangerate.support.ExchangeRateService#realTimeExchangeRates(java.util.Collection)
+	 */
+	@Override
+	public final Map<ExchangeRate,Data> realTimeExchangeRates(final Collection<ExchangeRate> exchangeRates) {
+		return realtimeExchangeRateRepository.exchangeRates(exchangeRates).stream().collect(Collectors.toMap(exchangeRate -> exchangeRate, exchangeRate -> DataAccessUtils.requiredSingleResult(exchangeRate.rates())));
+	}
+	
 
 	@Lookup
 	abstract ExchangeRateCalculatorBuilder newBuilder();
