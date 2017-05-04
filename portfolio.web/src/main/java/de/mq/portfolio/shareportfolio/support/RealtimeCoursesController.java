@@ -40,6 +40,11 @@ public class RealtimeCoursesController {
 	
 	public void init(final RealtimeCoursesAO realtimeCourses) {
 		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(realtimeCourses.getPortfolioId());
+		System.out.println("*****");
+		System.out.println(sharePortfolio.exchangeRateTranslations());
+		
+		sharePortfolio.timeCourses().forEach(tc -> System.out.println(tc.code() +"=>" + sharePortfolio.exchangeRate(tc)));
+		
 		realtimeCourses.assign(sharePortfolio);
 		realtimeCourses.setExchangeRates(factors(sharePortfolio));
 		final Map<String, TimeCourse> timeCoursesMap = new HashMap<>();

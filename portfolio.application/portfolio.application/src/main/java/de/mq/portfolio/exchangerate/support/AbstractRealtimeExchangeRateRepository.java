@@ -13,7 +13,6 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.data.util.ReflectionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
@@ -29,15 +28,15 @@ import de.mq.portfolio.support.ExceptionTranslationBuilder;
 public abstract class AbstractRealtimeExchangeRateRepository implements RealtimeExchangeRateRepository {
 	
 	//String URL= "http://query.yahooapis.com/v1/public/yql?q=select id,Rate,Date,Time from yahoo.finance.xchange where pair in ({exchangeRates})&format=json&env=store://datatables.org/alltableswithkeys";
-	static DateFormat df = new SimpleDateFormat("M/d/yy h:mma", Locale.US);
-	static String URL = "http://finance.yahoo.com/d/quotes.csv?s={currencies}&f=sl1d1t1";
+	static final DateFormat DATE_FORMAT = new SimpleDateFormat("M/d/yy h:mma", Locale.US);
+	final String URL = "http://finance.yahoo.com/d/quotes.csv?s={currencies}&f=sl1d1t1";
 	final String path ="query.results.rate" ;
 	private final RestOperations restOperations;
 	
 
 	
 	@Autowired
-	AbstractRealtimeExchangeRateRepository(final RestOperations restOperations,  ConfigurableConversionService configurableConversionService) {
+	AbstractRealtimeExchangeRateRepository(final RestOperations restOperations) {
 		this.restOperations = restOperations;
 		
 	}
@@ -50,9 +49,6 @@ public abstract class AbstractRealtimeExchangeRateRepository implements Realtime
 		
 		
 		final String queryString = rates.stream().map(exchangeRate ->  exchangeRate.source() + exchangeRate.target() + "=X").reduce( "",  ( a,b) -> !StringUtils.isEmpty(a)? a+", "+ b :b );
-		
-		System.out.println(queryString);
-		
 		return  exceptionTranslationBuilder().withResource( () ->  new BufferedReader(new StringReader(restOperations.getForObject(URL, String.class, queryString)))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {return read(bufferedReader);}).translate();	
 	}
 	private Collection<ExchangeRate> read(BufferedReader bufferedReader) throws IOException, ParseException {
@@ -64,8 +60,6 @@ public abstract class AbstractRealtimeExchangeRateRepository implements Realtime
 				continue;
 			}
 			
-		
-			System.out.println(line);
 			final  String dateString = cols[2]+ " " + cols[3];
 			Assert.isTrue(cols[0].length()==6, "Invalid currencyCodes: " + cols[0]);
 			Assert.isTrue(validateDouble(cols[1]), "Invalid number: "+ cols[1]); 
@@ -76,7 +70,7 @@ public abstract class AbstractRealtimeExchangeRateRepository implements Realtime
 			
 			
 			final Data rate = new DataImpl(dateString,Double.parseDouble(cols[1]));
-			Arrays.asList(rate.getClass().getDeclaredFields()).stream().filter(field -> field.getType().equals(DateFormat.class)).forEach(field -> ReflectionUtils.setField(field, rate, df));
+			Arrays.asList(rate.getClass().getDeclaredFields()).stream().filter(field -> field.getType().equals(DateFormat.class)).forEach(field -> ReflectionUtils.setField(field, rate, DATE_FORMAT));
 			exchangeRate.assign(Arrays.asList(rate));
 			results.add(exchangeRate);
 	 
@@ -98,7 +92,7 @@ public abstract class AbstractRealtimeExchangeRateRepository implements Realtime
 	
 	private boolean  validateDate(final String dateString) {
 		try {
-			df.parse(dateString);
+			DATE_FORMAT.parse(dateString);
 			return true;
 		} catch (ParseException e) {
 			return false;
