@@ -12,11 +12,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
-@Ignore
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/application-test.xml" })
-
+@Ignore
 public class RealtimeExchangeRateRepositoryIntegrationTest {
 	
 	@Autowired

@@ -12,6 +12,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestOperations;
 
@@ -52,7 +54,9 @@ public class RealtimeExchangeRateRepositoryTest {
 	@Before
 	public final void setup() {
 		Mockito.when(restOperations.getForObject(urlCaptor.capture(), (Class<String>) classCaptor.capture(), paramCaptor.capture())).thenReturn( DATA);
-		Mockito.doReturn(new   ExceptionTranslationBuilderImpl<>()).when(realtimeExchangeRateRepository).exceptionTranslationBuilder();
+		
+		Mockito.doReturn(new  DefaultConversionService()).when(realtimeExchangeRateRepository).configurableConversionService();
+		Mockito.doAnswer(a -> new ExceptionTranslationBuilderImpl<>()).when(realtimeExchangeRateRepository).exceptionTranslationBuilder();
 		Arrays.asList(AbstractRealtimeExchangeRateRepository.class.getDeclaredFields()).stream().filter(field -> field.getType().equals(RestOperations.class)).forEach(field -> ReflectionTestUtils.setField(realtimeExchangeRateRepository, field.getName(), restOperations));
 	}
 	
@@ -86,4 +90,29 @@ public class RealtimeExchangeRateRepositoryTest {
 	}
 	
 
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void  exchangeRatesWrongCurrencies() {
+		prepareAndExecuteWithWrongLine(newWrongLine("xxxx",  String.valueOf(RATE_USD_EUR), TIME));
+	}
+
+	private void prepareAndExecuteWithWrongLine(final String wrongLine) {
+		Mockito.when(restOperations.getForObject(Mockito.anyString(), Mockito.any(), Mockito.any(String.class))).thenReturn( wrongLine);
+		
+		realtimeExchangeRateRepository.exchangeRates(Arrays.asList(new ExchangeRateImpl("USD", "EUR")));
+	}
+
+	private String newWrongLine(final String sourceCurrency, final String rate, final String time ) {
+		return String.format("\"%s%s=X\",%s,\"%s\",\"%s\"", sourceCurrency, CURRENCY_EUR, rate,DATE, time);
+	}
+	
+	@Test(expected=ConversionFailedException.class)
+	public final void  exchangeRatesWrongRate() {
+		prepareAndExecuteWithWrongLine(newWrongLine("USD",  "x", TIME));
+	}
+	
+	@Test(expected=ConversionFailedException.class)
+	public final void  exchangeRatesWrongTime() {
+		prepareAndExecuteWithWrongLine(newWrongLine("USD",  String.valueOf(RATE_USD_EUR), "x"));
+	}
 }
