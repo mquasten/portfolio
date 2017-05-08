@@ -12,6 +12,8 @@
 	<mongo:db-factory dbname="portfolio" /-->
 
 
+
+	<context:property-placeholder location="classpath:application.properties" />
     <mongo:mongo-client id="mongoClient" host="127.0.0.1" port="27017" >
         <mongo:client-options write-concern="SAFE" />
     </mongo:mongo-client>

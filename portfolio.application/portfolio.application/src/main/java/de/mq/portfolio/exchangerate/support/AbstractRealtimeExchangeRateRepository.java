@@ -10,11 +10,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.data.util.ReflectionUtils;
 import org.springframework.stereotype.Repository;
@@ -30,16 +29,15 @@ import de.mq.portfolio.support.ExceptionTranslationBuilder;
 @Repository
 public abstract class AbstractRealtimeExchangeRateRepository implements RealtimeExchangeRateRepository {
 	
-	static final DateFormat DATE_FORMAT = new SimpleDateFormat("M/d/yy h:mma", Locale.US);
-	final String URL = "http://finance.yahoo.com/d/quotes.csv?s={currencies}&f=sl1d1t1";
-	
+	private  final DateFormat dateFormat;
+	private final String url; 
 	private final RestOperations restOperations;
-	
-
-	
+		
 	@Autowired
-	AbstractRealtimeExchangeRateRepository(final RestOperations restOperations) {
+	AbstractRealtimeExchangeRateRepository(final RestOperations restOperations, @Value("${realtime.exchangerates.url}" )final String url, @Value("${realtime.exchangerates.dateformat}") final String dateFormat) {
 		this.restOperations = restOperations;
+		this.url=url;
+		this.dateFormat=new SimpleDateFormat(dateFormat);
 		
 	}
 	
@@ -50,13 +48,13 @@ public abstract class AbstractRealtimeExchangeRateRepository implements Realtime
 	@Override
 	public final Collection<ExchangeRate> exchangeRates(final Collection<ExchangeRate> rates) {
 		final String queryString = rates.stream().map(exchangeRate ->  exchangeRate.source() + exchangeRate.target() + "=X").reduce( "",  ( a,b) -> !StringUtils.isEmpty(a)? a+", "+ b :b );
-		return    exceptionTranslationBuilderResult().withResource( () ->  new BufferedReader(new StringReader(restOperations.getForObject(URL, String.class, queryString)))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {return  read(bufferedReader);}).translate();	
+		return    exceptionTranslationBuilderResult().withResource( () ->  new BufferedReader(new StringReader(restOperations.getForObject(url, String.class, queryString)))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {return  read(bufferedReader);}).translate();	
 	}
 	private Collection<ExchangeRate> read(BufferedReader bufferedReader) throws IOException, ParseException {
 		
 		final ConfigurableConversionService configurableConversionService =configurableConversionService();
 		
-		configurableConversionService.addConverter(String.class, Date.class, dateString -> exceptionTranslationBuilderConversionService().withStatement(() ->  DATE_FORMAT.parse(dateString) ).translate());
+		configurableConversionService.addConverter(String.class, Date.class, dateString -> exceptionTranslationBuilderConversionService().withStatement(() ->  dateFormat.parse(dateString) ).translate());
 		
 		final Collection<ExchangeRate> results = new ArrayList<>();
 		for (String line = bufferedReader.readLine(); line != null; line = bufferedReader.readLine() ) {	
@@ -66,6 +64,7 @@ public abstract class AbstractRealtimeExchangeRateRepository implements Realtime
 				continue;
 			}
 			
+			
 			final  String dateString = cols[2]+ " " + cols[3];
 			Assert.isTrue(cols[0].length()==6, "Invalid currencyCodes: " + cols[0]);
 			
@@ -73,7 +72,7 @@ public abstract class AbstractRealtimeExchangeRateRepository implements Realtime
 			final ExchangeRate exchangeRate = new ExchangeRateImpl(cols[0].substring(0, 3), cols[0].substring(3));
 			
 			final Data rate = new DataImpl(dateString,configurableConversionService.convert(cols[1], Double.class));
-			Arrays.asList(rate.getClass().getDeclaredFields()).stream().filter(field -> field.getType().equals(DateFormat.class)).forEach(field -> ReflectionUtils.setField(field, rate, DATE_FORMAT));
+			Arrays.asList(rate.getClass().getDeclaredFields()).stream().filter(field -> field.getType().equals(DateFormat.class)).forEach(field -> ReflectionUtils.setField(field, rate, dateFormat));
 			exchangeRate.assign(Arrays.asList(rate));
 			results.add(exchangeRate);
 	 
