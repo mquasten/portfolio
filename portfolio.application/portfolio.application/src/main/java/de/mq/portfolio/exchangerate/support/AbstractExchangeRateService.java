@@ -1,12 +1,9 @@
 package de.mq.portfolio.exchangerate.support;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Service;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
@@ -99,8 +96,8 @@ abstract class AbstractExchangeRateService implements ExchangeRateService {
 	 * @see de.mq.portfolio.exchangerate.support.ExchangeRateService#realTimeExchangeRates(java.util.Collection)
 	 */
 	@Override
-	public final Map<ExchangeRate,Data> realTimeExchangeRates(final Collection<ExchangeRate> exchangeRates) {
-		return realtimeExchangeRateRepository.exchangeRates(exchangeRates).stream().collect(Collectors.toMap(exchangeRate -> exchangeRate, exchangeRate -> DataAccessUtils.requiredSingleResult(exchangeRate.rates())));
+	public final Collection<ExchangeRate> realTimeExchangeRates(final Collection<ExchangeRate> exchangeRates) {
+		return realtimeExchangeRateRepository.exchangeRates(exchangeRates);
 	}
 	
 

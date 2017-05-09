@@ -3,6 +3,7 @@ package de.mq.portfolio.exchangerate.support;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
@@ -43,6 +44,11 @@ public class ExchangeRateImpl implements ExchangeRate {
 
 	public ExchangeRateImpl(final String source, final String target) {
 		this(source, target, "");
+	}
+	
+	public ExchangeRateImpl(final String source, final String target, final  List<Data> rates) {
+		this(source, target, "");
+		assign(rates);
 	}
 
 	@Override

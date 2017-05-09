@@ -1,16 +1,14 @@
 package de.mq.portfolio.shareportfolio.support;
 
-import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collection;
-
 import java.util.Date;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -18,8 +16,8 @@ import org.springframework.util.Assert;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
+import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
-import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.share.support.DataImpl;
 import de.mq.portfolio.share.support.ShareRepository;
@@ -196,13 +194,12 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 	 * realtimeExchangeRates(java.lang.String)
 	 */
 	@Override
-	public Map<ExchangeRate, Collection<Data>> realtimeExchangeRates(final String sharePortfolioId) {
+	public Collection<ExchangeRate> realtimeExchangeRates(final String sharePortfolioId) {
 		final SharePortfolio portfolio = sharePortfolioRepository.sharePortfolio(sharePortfolioId);
 		final Set<String> codes = portfolio.timeCourses().stream().map(timeCourse -> timeCourse.code()).collect(Collectors.toSet());
 		final Date endDate = shareRepository.timeCourses(codes).stream().map(tc -> tc.end()).min((d1, d2) -> Long.valueOf(d1.getTime() - d2.getTime()).intValue()).orElseThrow(() -> new IllegalArgumentException("No rates aware."));
 		final ExchangeRateCalculator exchangeRateCalculator = exchangeRateService.exchangeRateCalculator(portfolio.exchangeRateTranslations());
-		return exchangeRateService.realTimeExchangeRates(portfolio.exchangeRateTranslations()).entrySet().stream().map(entry -> new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), Arrays.asList(new DataImpl(endDate, exchangeRateCalculator.factor(entry.getKey(), endDate)), entry.getValue())))
-				.collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
+		return  exchangeRateService.realTimeExchangeRates(portfolio.exchangeRateTranslations()).stream().map(exchangeRates -> new ExchangeRateImpl(exchangeRates.source(), exchangeRates.target(),Arrays.asList( new DataImpl(endDate, exchangeRateCalculator.factor(exchangeRates, endDate)), DataAccessUtils.requiredSingleResult(exchangeRates.rates()) ))).collect(Collectors.toList());
 	}
 
 	@Lookup

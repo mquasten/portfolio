@@ -1,11 +1,9 @@
 package de.mq.portfolio.exchangerate.support;
 
 import java.util.Collection;
-import java.util.Map;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
-import de.mq.portfolio.share.Data;
 
 public interface ExchangeRateService {
 
@@ -23,6 +21,6 @@ public interface ExchangeRateService {
 
 	Collection<ExchangeRate> exchangeRates(Collection<ExchangeRate> exchangeRates);
 
-	Map<ExchangeRate, Data> realTimeExchangeRates(Collection<ExchangeRate> exchangeRates);
+	Collection<ExchangeRate> realTimeExchangeRates(Collection<ExchangeRate> exchangeRates);
 
 }
