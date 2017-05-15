@@ -1,6 +1,7 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.util.AbstractMap;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.share.ShareService;
@@ -40,12 +42,18 @@ public class RealtimeCoursesController {
 	
 	public void init(final RealtimeCoursesAO realtimeCourses) {
 		final SharePortfolio sharePortfolio = sharePortfolioService.sharePortfolio(realtimeCourses.getPortfolioId());
-		System.out.println("*****");
-		System.out.println(sharePortfolio.exchangeRateTranslations());
+	
 		
+		
+		final Collection<ExchangeRate>  realTimeExchangeRates = exchangeRateService.realTimeExchangeRates(sharePortfolio.exchangeRateTranslations());
+		
+	
+		
+		System.out.println("---------------------");
 		sharePortfolio.timeCourses().forEach(tc -> System.out.println(tc.code() +"=>" + sharePortfolio.exchangeRate(tc)));
 		
 		realtimeCourses.assign(sharePortfolio);
+		realtimeCourses.setExchangeRates(realTimeExchangeRates);
 		realtimeCourses.setExchangeRates(factors(sharePortfolio));
 		final Map<String, TimeCourse> timeCoursesMap = new HashMap<>();
 		sharePortfolio.timeCourses().stream().forEach(tc -> timeCoursesMap.put(tc.code(),tc));

@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
@@ -54,6 +55,8 @@ public class RealtimeCoursesAO implements Serializable {
 	private String portfolioCurrency;
 
 	private final Map<String, Double> exchangeRates = new HashMap<>();
+	
+	private final Collection<ExchangeRate> realtimeExchangeRates = new ArrayList<>();
 
 	private String portfolioId;
 
@@ -171,6 +174,14 @@ public class RealtimeCoursesAO implements Serializable {
 	void setExchangeRates(final Map<String, Double> exchangeRates) {
 		this.exchangeRates.clear();
 		this.exchangeRates.putAll(exchangeRates);
+	}
+	
+	void setExchangeRates(Collection<ExchangeRate> realtimeExchangeRates) {
+	     this.realtimeExchangeRates.addAll(realtimeExchangeRates);
+	}
+
+	public final Collection<ExchangeRate> getRealtimeExchangeRates() {
+		return realtimeExchangeRates;
 	}
 
 	private Map<String, Object> shareEntryToMap(final Entry<TimeCourse, List<Data>> entry) {

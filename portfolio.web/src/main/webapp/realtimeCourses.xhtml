@@ -88,6 +88,20 @@
 				
 </p:dataTable>
 
+<h2>Gewinne und Verluste der Wechselkurse im Depot&nbsp;#{realtimeCourses.portfolioName}</h2>
+
+<p:dataTable var="exchangeRate"
+				value="#{realtimeCourses.realtimeExchangeRates}" lazy="true" resizableColumns="true">
+	<p:column>
+					<f:facet name="header">
+						<h:outputText value="Wechselkurs" />
+					</f:facet>
+					<h:outputText value="#{exchangeRate.source()}" />
+					<h:outputText value="#{exchangeRate.target()}" />	
+				</p:column>			
+				
+</p:dataTable>
+
 <h2>Entwicklung Depot&nbsp;#{realtimeCourses.portfolioName}</h2>
 
 <p:dataTable var="realtimeCourse"

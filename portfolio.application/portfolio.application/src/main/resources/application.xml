@@ -70,6 +70,8 @@
 	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
 
 	</bean>
+	
+	<bean scope="prototype"  class="org.springframework.context.support.ConversionServiceFactoryBean"/>
 
 
 	<!-- bean class="de.mq.portfolio.exchangerate.support.AbstractExchangeRateService" 
