@@ -56,7 +56,10 @@ public class RealtimeCoursesAO implements Serializable {
 
 	private final Map<String, Double> exchangeRates = new HashMap<>();
 	
-	private final Collection<ExchangeRate> realtimeExchangeRates = new ArrayList<>();
+	
+	private final Collection<Map<String, Object>> realtimeExchangeRates = new ArrayList<>();
+	
+	
 
 	private String portfolioId;
 
@@ -177,12 +180,21 @@ public class RealtimeCoursesAO implements Serializable {
 	}
 	
 	void setExchangeRates(Collection<ExchangeRate> realtimeExchangeRates) {
-	     this.realtimeExchangeRates.addAll(realtimeExchangeRates);
+		this.realtimeExchangeRates.clear();
+		realtimeExchangeRates.stream().forEach(rate -> this.realtimeExchangeRates.add(exchangeRatesToMap(rate)));
 	}
 
-	public final Collection<ExchangeRate> getRealtimeExchangeRates() {
-		return realtimeExchangeRates;
+	
+
+	private Map<String,Object> exchangeRatesToMap(ExchangeRate exchangeRate) {
+		final Map<String,Object> results = new HashMap<>();
+		results.put(NAME_COLUMN,  exchangeRate.target());
+		results.put(LAST_COLUMN,  exchangeRate.rates().get(0).value());
+		results.put(CURRENT_COLUMN,  exchangeRate.rates().get(1).value());
+		return results;
 	}
+
+	
 
 	private Map<String, Object> shareEntryToMap(final Entry<TimeCourse, List<Data>> entry) {
 		final Map<String, Object> values = new HashMap<>();
@@ -230,6 +242,10 @@ public class RealtimeCoursesAO implements Serializable {
 
 	public void setLastStoredTimeCourse(Boolean lastStoredTimeCourse) {
 		this.lastStoredTimeCourse = lastStoredTimeCourse;
+	}
+	
+	public Collection<Map<String, Object>> getRealtimeExchangeRates() {
+		return realtimeExchangeRates;
 	}
 
 }

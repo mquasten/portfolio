@@ -45,12 +45,13 @@ public class RealtimeCoursesController {
 	
 		
 		
-		final Collection<ExchangeRate>  realTimeExchangeRates = exchangeRateService.realTimeExchangeRates(sharePortfolio.exchangeRateTranslations());
+		final Collection<ExchangeRate>  realTimeExchangeRates = sharePortfolioService.realtimeExchangeRates(sharePortfolio.id());
+				
+				
 		
 	
 		
-		System.out.println("---------------------");
-		sharePortfolio.timeCourses().forEach(tc -> System.out.println(tc.code() +"=>" + sharePortfolio.exchangeRate(tc)));
+		
 		
 		realtimeCourses.assign(sharePortfolio);
 		realtimeCourses.setExchangeRates(realTimeExchangeRates);

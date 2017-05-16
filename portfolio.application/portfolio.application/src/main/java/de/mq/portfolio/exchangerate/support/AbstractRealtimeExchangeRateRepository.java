@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -46,17 +47,17 @@ public abstract class AbstractRealtimeExchangeRateRepository implements Realtime
 	 */
 	
 	@Override
-	public final Collection<ExchangeRate> exchangeRates(final Collection<ExchangeRate> rates) {
+	public final List<ExchangeRate> exchangeRates(final Collection<ExchangeRate> rates) {
 		final String queryString = rates.stream().map(exchangeRate ->  exchangeRate.source() + exchangeRate.target() + "=X").reduce( "",  ( a,b) -> !StringUtils.isEmpty(a)? a+", "+ b :b );
 		return    exceptionTranslationBuilderResult().withResource( () ->  new BufferedReader(new StringReader(restOperations.getForObject(url, String.class, queryString)))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {return  read(bufferedReader);}).translate();	
 	}
-	private Collection<ExchangeRate> read(BufferedReader bufferedReader) throws IOException, ParseException {
+	private List<ExchangeRate> read(BufferedReader bufferedReader) throws IOException, ParseException {
 		
 		final ConfigurableConversionService configurableConversionService =configurableConversionService();
 		
 		configurableConversionService.addConverter(String.class, Date.class, dateString -> exceptionTranslationBuilderConversionService().withStatement(() ->  dateFormat.parse(dateString) ).translate());
 		
-		final Collection<ExchangeRate> results = new ArrayList<>();
+		final List<ExchangeRate> results = new ArrayList<>();
 		for (String line = bufferedReader.readLine(); line != null; line = bufferedReader.readLine() ) {	
 			
 			final String[] cols = line.replaceAll("[\"]", "").replaceAll("=X", "").split("[,;]");
@@ -83,8 +84,8 @@ public abstract class AbstractRealtimeExchangeRateRepository implements Realtime
 	
 	
 	@SuppressWarnings("unchecked")
-	private ExceptionTranslationBuilder<Collection<ExchangeRate>,BufferedReader> exceptionTranslationBuilderResult(){
-		return (ExceptionTranslationBuilder<Collection<ExchangeRate>,BufferedReader>) exceptionTranslationBuilder();
+	private ExceptionTranslationBuilder<List<ExchangeRate>,BufferedReader> exceptionTranslationBuilderResult(){
+		return (ExceptionTranslationBuilder<List<ExchangeRate>,BufferedReader>) exceptionTranslationBuilder();
 	}
 	
 	@SuppressWarnings("unchecked")

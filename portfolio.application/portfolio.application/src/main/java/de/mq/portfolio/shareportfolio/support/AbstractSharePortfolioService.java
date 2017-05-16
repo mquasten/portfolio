@@ -3,6 +3,7 @@ package de.mq.portfolio.shareportfolio.support;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+
 import java.util.Set;
 import java.util.stream.Collectors;
 

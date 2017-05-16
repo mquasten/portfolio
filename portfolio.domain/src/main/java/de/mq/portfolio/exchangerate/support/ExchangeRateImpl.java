@@ -25,7 +25,7 @@ public class ExchangeRateImpl implements ExchangeRate {
 
 	private final String link;
 
-	private final Collection<Data> rates = new ArrayList<>();
+	private final List<Data> rates = new ArrayList<>();
 
 	@SuppressWarnings("unused")
 	private ExchangeRateImpl() {
@@ -107,8 +107,8 @@ public class ExchangeRateImpl implements ExchangeRate {
 	}
 
 	@Override
-	public final Collection<Data> rates() {
-		return Collections.unmodifiableCollection(rates);
+	public final List<Data> rates() {
+		return Collections.unmodifiableList(rates);
 	}
 
 	@Override

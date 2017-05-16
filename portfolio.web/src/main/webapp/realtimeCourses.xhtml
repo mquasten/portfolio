@@ -88,21 +88,40 @@
 				
 </p:dataTable>
 
-<h2>Gewinne und Verluste der Wechselkurse im Depot&nbsp;#{realtimeCourses.portfolioName}</h2>
+	<h2>Gewinne und Verluste der Wechselkurse im
+		Depot&nbsp;#{realtimeCourses.portfolioName}&nbsp;bezogen
+		auf&nbsp;#{realtimeCourses.portfolioCurrency}</h2>
 
-<p:dataTable var="exchangeRate"
-				value="#{realtimeCourses.realtimeExchangeRates}" lazy="true" resizableColumns="true">
-	<p:column>
-					<f:facet name="header">
-						<h:outputText value="Wechselkurs" />
-					</f:facet>
-					<h:outputText value="#{exchangeRate.source()}" />
-					<h:outputText value="#{exchangeRate.target()}" />	
-				</p:column>			
-				
-</p:dataTable>
+	<p:dataTable var="exchangeRate"
+		value="#{realtimeCourses.realtimeExchangeRates}" lazy="true"
+		resizableColumns="true">
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="Wechselkurs" />
+			</f:facet>
+			<h:outputText value="#{exchangeRate[realtimeCourses.nameColumn]}" />
 
-<h2>Entwicklung Depot&nbsp;#{realtimeCourses.portfolioName}</h2>
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="letzter Kurs" />
+			</f:facet>
+			<h:outputText value="#{exchangeRate[realtimeCourses.lastColumn]}" />
+
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="Realtime-Kurs" />
+			</f:facet>
+			<h:outputText value="#{exchangeRate[realtimeCourses.currentColumn]}" />
+
+		</p:column>
+
+	</p:dataTable>
+
+	<h2>Entwicklung Depot&nbsp;#{realtimeCourses.portfolioName}</h2>
 
 <p:dataTable var="realtimeCourse"
 				value="#{realtimeCourses.realtimeCourses}" lazy="true" resizableColumns="true">
