@@ -197,10 +197,15 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 	@Override
 	public Collection<ExchangeRate> realtimeExchangeRates(final String sharePortfolioId) {
 		final SharePortfolio portfolio = sharePortfolioRepository.sharePortfolio(sharePortfolioId);
+		final Set<ExchangeRate> usedExchangeRates = portfolio.timeCourses().stream().map(tc -> portfolio.exchangeRate(tc)).distinct().collect(Collectors.toSet());
+		
 		final Set<String> codes = portfolio.timeCourses().stream().map(timeCourse -> timeCourse.code()).collect(Collectors.toSet());
 		final Date endDate = shareRepository.timeCourses(codes).stream().map(tc -> tc.end()).min((d1, d2) -> Long.valueOf(d1.getTime() - d2.getTime()).intValue()).orElseThrow(() -> new IllegalArgumentException("No rates aware."));
+		
+		
+		System.out.println("shit in the brain...");
 		final ExchangeRateCalculator exchangeRateCalculator = exchangeRateService.exchangeRateCalculator(portfolio.exchangeRateTranslations());
-		return  exchangeRateService.realTimeExchangeRates(portfolio.exchangeRateTranslations()).stream().map(exchangeRates -> new ExchangeRateImpl(exchangeRates.source(), exchangeRates.target(),Arrays.asList( new DataImpl(endDate, exchangeRateCalculator.factor(exchangeRates, endDate)), DataAccessUtils.requiredSingleResult(exchangeRates.rates()) ))).collect(Collectors.toList());
+		return  exchangeRateService.realTimeExchangeRates(usedExchangeRates).stream().map(exchangeRate -> new ExchangeRateImpl(exchangeRate.source(), exchangeRate.target(),Arrays.asList( new DataImpl(endDate, exchangeRateCalculator.factor(exchangeRate, endDate)), DataAccessUtils.requiredSingleResult(exchangeRate.rates()) ))).collect(Collectors.toList());
 	}
 
 	@Lookup

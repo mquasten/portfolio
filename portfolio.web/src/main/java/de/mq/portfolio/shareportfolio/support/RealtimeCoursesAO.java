@@ -188,12 +188,16 @@ public class RealtimeCoursesAO implements Serializable {
 
 	private Map<String,Object> exchangeRatesToMap(ExchangeRate exchangeRate) {
 		final Map<String,Object> results = new HashMap<>();
-		results.put(NAME_COLUMN,  exchangeRate.target());
+		results.put(NAME_COLUMN,  exchangeRate.source());
 		results.put(LAST_COLUMN,  exchangeRate.rates().get(0).value());
 		results.put(CURRENT_COLUMN,  exchangeRate.rates().get(1).value());
 		return results;
 	}
 
+	
+	
+	
+	
 	
 
 	private Map<String, Object> shareEntryToMap(final Entry<TimeCourse, List<Data>> entry) {

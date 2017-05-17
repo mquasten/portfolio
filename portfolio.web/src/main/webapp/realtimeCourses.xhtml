@@ -89,8 +89,7 @@
 </p:dataTable>
 
 	<h2>Gewinne und Verluste der Wechselkurse im
-		Depot&nbsp;#{realtimeCourses.portfolioName}&nbsp;bezogen
-		auf&nbsp;#{realtimeCourses.portfolioCurrency}</h2>
+		Depot&nbsp;#{realtimeCourses.portfolioName}</h2>
 
 	<p:dataTable var="exchangeRate"
 		value="#{realtimeCourses.realtimeExchangeRates}" lazy="true"
@@ -99,7 +98,8 @@
 			<f:facet name="header">
 				<h:outputText value="Wechselkurs" />
 			</f:facet>
-			<h:outputText value="#{exchangeRate[realtimeCourses.nameColumn]}" />
+			<h:outputText
+				value="#{currencyConverter.convert(exchangeRate[realtimeCourses.nameColumn])} &nbsp; → &nbsp; #{currencyConverter.convert(realtimeCourses.portfolioCurrency)}" />
 
 		</p:column>
 
@@ -107,7 +107,9 @@
 			<f:facet name="header">
 				<h:outputText value="letzter Kurs" />
 			</f:facet>
-			<h:outputText value="#{exchangeRate[realtimeCourses.lastColumn]}" />
+			<h:outputText value="#{exchangeRate[realtimeCourses.lastColumn]}">
+				<f:convertNumber pattern="#0.0000" />
+			</h:outputText>
 
 		</p:column>
 
@@ -115,7 +117,9 @@
 			<f:facet name="header">
 				<h:outputText value="Realtime-Kurs" />
 			</f:facet>
-			<h:outputText value="#{exchangeRate[realtimeCourses.currentColumn]}" />
+			<h:outputText value="#{exchangeRate[realtimeCourses.currentColumn]}">
+				<f:convertNumber pattern="#0.0000" />
+			</h:outputText>
 
 		</p:column>
 
