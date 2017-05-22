@@ -112,6 +112,16 @@
 			</h:outputText>
 
 		</p:column>
+		
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="Datum (letzter Kurs)" />
+			</f:facet>
+			<h:outputText value="#{exchangeRate[realtimeCourses.lastDateColumn]}">
+				<f:convertDateTime type="date" dateStyle="short" />
+			</h:outputText>
+
+		</p:column>
 
 		<p:column>
 			<f:facet name="header">
@@ -119,6 +129,25 @@
 			</f:facet>
 			<h:outputText value="#{exchangeRate[realtimeCourses.currentColumn]}">
 				<f:convertNumber pattern="#0.0000" />
+			</h:outputText>
+
+		</p:column>
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="Datum (realtime Kurs)" />
+			</f:facet>
+			<h:outputText value="#{exchangeRate[realtimeCourses.currentDateColumn]}">
+				<f:convertDateTime type="both" dateStyle="short"  />
+			</h:outputText>
+
+		</p:column>
+		
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="Δ [%]" />
+			</f:facet>
+			<h:outputText value="#{exchangeRate[realtimeCourses.deltaPercentColumn]}">
+				 <f:convertNumber pattern="#0.00"  />
 			</h:outputText>
 
 		</p:column>

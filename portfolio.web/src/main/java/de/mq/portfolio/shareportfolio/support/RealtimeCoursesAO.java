@@ -31,6 +31,8 @@ public class RealtimeCoursesAO implements Serializable {
 
 	static final String LAST_COLUMN = "last";
 	static final String LAST_DATE_COLUMN = "lastDate";
+	
+	static final String CURRENT_DATE_COLUMN = "currentDate";
 
 	static final String NAME_COLUMN = "name";
 
@@ -96,6 +98,10 @@ public class RealtimeCoursesAO implements Serializable {
 
 	public String getCurrentColumn() {
 		return CURRENT_COLUMN;
+	}
+	
+	public String getCurrentDateColumn() {
+		return CURRENT_DATE_COLUMN;
 	}
 
 	public String getDeltaColumn() {
@@ -190,7 +196,14 @@ public class RealtimeCoursesAO implements Serializable {
 		final Map<String,Object> results = new HashMap<>();
 		results.put(NAME_COLUMN,  exchangeRate.source());
 		results.put(LAST_COLUMN,  exchangeRate.rates().get(0).value());
+		
+		results.put(LAST_DATE_COLUMN, exchangeRate.rates().get(0).date());
 		results.put(CURRENT_COLUMN,  exchangeRate.rates().get(1).value());
+		
+		results.put(CURRENT_DATE_COLUMN, exchangeRate.rates().get(1).date());
+		
+		final double delata = 100 *(exchangeRate.rates().get(1).value() - exchangeRate.rates().get(0).value()) / exchangeRate.rates().get(0).value();
+		results.put(DELTA_PERCENT_COLUMN, delata);
 		return results;
 	}
 

@@ -18,7 +18,7 @@ export BIN_DIR=$PROJECT_DIR/target
 
 cd $BIN_DIR
 
-java -Dspring.profiles.active=yahoo -jar portfolio.batch.jar  $*  
-#java -Dspring.profiles.active=google -jar portfolio.batch.jar  $*  
+#java -Dspring.profiles.active=yahoo -jar portfolio.batch.jar  $*  
+java -Dspring.profiles.active=google -jar portfolio.batch.jar  $*  
 
 cd $DIR

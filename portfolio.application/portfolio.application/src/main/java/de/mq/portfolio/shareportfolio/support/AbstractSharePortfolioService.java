@@ -202,8 +202,6 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 		final Set<String> codes = portfolio.timeCourses().stream().map(timeCourse -> timeCourse.code()).collect(Collectors.toSet());
 		final Date endDate = shareRepository.timeCourses(codes).stream().map(tc -> tc.end()).min((d1, d2) -> Long.valueOf(d1.getTime() - d2.getTime()).intValue()).orElseThrow(() -> new IllegalArgumentException("No rates aware."));
 		
-		
-		System.out.println("shit in the brain...");
 		final ExchangeRateCalculator exchangeRateCalculator = exchangeRateService.exchangeRateCalculator(portfolio.exchangeRateTranslations());
 		return  exchangeRateService.realTimeExchangeRates(usedExchangeRates).stream().map(exchangeRate -> new ExchangeRateImpl(exchangeRate.source(), exchangeRate.target(),Arrays.asList( new DataImpl(endDate, exchangeRateCalculator.factor(exchangeRate, endDate)), DataAccessUtils.requiredSingleResult(exchangeRate.rates()) ))).collect(Collectors.toList());
 	}
