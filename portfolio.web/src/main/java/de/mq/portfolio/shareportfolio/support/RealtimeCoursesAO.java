@@ -2,6 +2,7 @@ package de.mq.portfolio.shareportfolio.support;
 
 import java.io.Serializable;
 import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -58,6 +59,8 @@ public class RealtimeCoursesAO implements Serializable {
 
 	private final Map<String, Double> exchangeRates = new HashMap<>();
 	
+	private final Map<String,String> currencies = new HashMap<>();
+	private final Map<String, double[]> exchangeRates2 = new HashMap<>();
 	
 	private final Collection<Map<String, Object>> realtimeExchangeRates = new ArrayList<>();
 	
@@ -126,6 +129,8 @@ public class RealtimeCoursesAO implements Serializable {
 		weights.clear();
 		weights.putAll(sharePortfolio.min().entrySet().stream().map(entry -> new AbstractMap.SimpleImmutableEntry<>(entry.getKey().code(), entry.getValue())).collect(Collectors.toMap(entry -> entry.getKey(), entry ->entry.getValue())));
 	
+		currencies.clear();
+		currencies.putAll(sharePortfolio.timeCourses().stream().map(tc -> new SimpleImmutableEntry<>(tc.code(), tc.share().currency())).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue())));
 	}
 
 	public String getFilter() {
@@ -147,6 +152,7 @@ public class RealtimeCoursesAO implements Serializable {
 	void assign(final List<Entry<TimeCourse, List<Data>>> entries) {
 		addShares(entries);
 		addRealTimeCourses(entries);
+		
 	}
 
 	private void addRealTimeCourses(final List<Entry<TimeCourse, List<Data>>> entries) {
@@ -183,11 +189,13 @@ public class RealtimeCoursesAO implements Serializable {
 	void setExchangeRates(final Map<String, Double> exchangeRates) {
 		this.exchangeRates.clear();
 		this.exchangeRates.putAll(exchangeRates);
-	}
+	} 
 	
 	void setExchangeRates(Collection<ExchangeRate> realtimeExchangeRates) {
 		this.realtimeExchangeRates.clear();
 		realtimeExchangeRates.stream().forEach(rate -> this.realtimeExchangeRates.add(exchangeRatesToMap(rate)));
+		exchangeRates2.clear();
+		exchangeRates2.putAll(realtimeExchangeRates.stream().map(rate -> new SimpleImmutableEntry<>(rate.source(), new double[] {rate.rates().get(0).value(),rate.rates().get(1).value(), })).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue())));
 	}
 
 	
@@ -248,6 +256,9 @@ public class RealtimeCoursesAO implements Serializable {
 	}
 
 	private double factor(final String code) {
+		
+		exchangeRates2.entrySet().stream().forEach(e -> System.out.println(e.getKey()+ "=[" + e.getValue()[0] + ","+  e.getValue()[1] +"]"));
+		System.out.println(currencies);
 		Assert.isTrue(exchangeRates.containsKey(code) , String.format("ExchangeRate not found for %s", code));
 		Assert.isTrue(weights.containsKey(code) , String.format("Weight not found for %s", code));
 		return exchangeRates.get(code) * weights.get(code);
