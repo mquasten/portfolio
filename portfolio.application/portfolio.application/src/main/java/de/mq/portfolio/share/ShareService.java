@@ -29,8 +29,7 @@ public interface ShareService{
 
 	Optional<TimeCourse> timeCourse(final String code);
 
-
-	Collection<TimeCourse> realTimeCourses(final Collection<String> codes, final boolean useLastStoredTimeCourse);
+	Collection<TimeCourse> realTimeCourses(Collection<String> codes, boolean useLastStoredTimeCourse);
 
 
 	

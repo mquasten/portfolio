@@ -3,7 +3,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,17 +21,17 @@ import de.mq.portfolio.share.TimeCourse;
 class ShareServiceImpl implements ShareService {
 
 	
-	private HistoryRepository historyRepository;
+	private final HistoryRepository historyRepository;
 
-	private ShareRepository shareRepository;
+	private final ShareRepository shareRepository;
 	
-	private RealTimeRateRepository realTimeRateRestRepository;
+	private final RealTimeRateRepository realTimeRateRepository;
 
 	@Autowired
-	ShareServiceImpl(final HistoryRepository historyRepository, final ShareRepository shareRepository, final RealTimeRateRepository realTimeRateRestRepository) {
+	ShareServiceImpl(final HistoryRepository historyRepository, final ShareRepository shareRepository, final RealTimeRateRepository realTimeRateRepository) {
 		this.historyRepository = historyRepository;
 		this.shareRepository = shareRepository;
-		this.realTimeRateRestRepository=realTimeRateRestRepository;
+		this.realTimeRateRepository = realTimeRateRepository;
 	}
 
 	/*
@@ -111,17 +110,12 @@ class ShareServiceImpl implements ShareService {
 		shareRepository.save(share);
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.mq.portfolio.share.support.ShareService#save(java.util.Collection)
-	 */
 	@Override
-	public final Collection<TimeCourse> realTimeCourses(final Collection<String> codes, final boolean useLastStoredTimeCourse){
+	public  final Collection<TimeCourse> realTimeCourses(final Collection<String> codes, final boolean useLastStoredTimeCourse){
 		final Map<String, TimeCourse> timeCourses = shareRepository.timeCourses(codes).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
-		final Map<String,TimeCourse> realTimeCourses =   realTimeRateRestRepository.rates(timeCourses.values().stream().map(tc -> tc.share()).collect(Collectors.toList())).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
-				
+		final Map<String,TimeCourse> realTimeCourses =   realTimeRateRepository.rates(timeCourses.values().stream().map(tc -> tc.share()).collect(Collectors.toList())).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
+			
+	
 		return codes.stream().map(code -> {
 			final TimeCourse timeCourse = timeCourses.get(code);
 			if (useLastStoredTimeCourse&&!timeCourse.rates().isEmpty()) {

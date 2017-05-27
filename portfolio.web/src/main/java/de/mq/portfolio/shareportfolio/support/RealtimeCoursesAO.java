@@ -149,20 +149,20 @@ public class RealtimeCoursesAO implements Serializable {
 		this.portfolioId = portfolioId;
 	}
 
-	void assign(final List<Entry<TimeCourse, List<Data>>> entries) {
+	void assign(final Collection<Entry<TimeCourse, List<Data>>> entries) {
 		addShares(entries);
 		addRealTimeCourses(entries);
 		
 	}
 
-	private void addRealTimeCourses(final List<Entry<TimeCourse, List<Data>>> entries) {
+	private void addRealTimeCourses(final Collection<Entry<TimeCourse, List<Data>>> entries) {
 		realtimeCourses.clear();
 		realtimeCourses.add(realTimeEntryForPortfolio(entries));
 		realtimeCourses.addAll(entries.stream().map(entry -> shareEntryToRealtimeCourseMap(entry)).collect(Collectors.toList()));
 
 	}
 
-	private Map<String, Object> realTimeEntryForPortfolio(final List<Entry<TimeCourse, List<Data>>> entries) {
+	private Map<String, Object> realTimeEntryForPortfolio(final Collection<Entry<TimeCourse, List<Data>>> entries) {
 		final double lastSum = sum(entries, 0);
 		final double currentSum = sum(entries, 1);
 
@@ -177,11 +177,11 @@ public class RealtimeCoursesAO implements Serializable {
 		return values;
 	}
 
-	private double sum(final List<Entry<TimeCourse, List<Data>>> entries, final int index) {
+	private double sum(final Collection<Entry<TimeCourse, List<Data>>> entries, final int index) {
 		return entries.stream().mapToDouble(entry -> entry.getValue().get(index).value() * factor(entry.getKey().code(), index)).sum();
 	}
 
-	private void addShares(final List<Entry<TimeCourse, List<Data>>> entries) {
+	private void addShares(final Collection<Entry<TimeCourse, List<Data>>> entries) {
 		shares.clear();
 		shares.addAll(entries.stream().map(entry -> shareEntryToMap(entry)).collect(Collectors.toList()));
 	}

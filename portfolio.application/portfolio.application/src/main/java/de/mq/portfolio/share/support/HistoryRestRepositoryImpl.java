@@ -54,7 +54,6 @@ class HistoryRestRepositoryImpl implements HistoryRepository {
 	}
 
 	private Collection<Data> getValues(final String requestUrl, final int colIndex) {
-		System.out.println(requestUrl);
 		final List<Data> results = Arrays.asList(restOperations.getForObject(requestUrl, String.class).split("\n")).stream().map(line -> line.split(",")).filter(cols -> cols.length >= colIndex + 1).filter(cols -> isDate(df, cols[0]))
 				.map(cols -> new DataImpl(cols[0], Double.parseDouble(cols[colIndex]))).collect(Collectors.toList());
 		results.sort((d1, d2) -> Long.valueOf(d1.date().getTime() - d2.date().getTime()).intValue());

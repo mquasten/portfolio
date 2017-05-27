@@ -1,9 +1,13 @@
 package de.mq.portfolio.shareportfolio.support;
 
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,6 +23,8 @@ import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
+import de.mq.portfolio.share.Data;
+import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.share.support.DataImpl;
 import de.mq.portfolio.share.support.ShareRepository;
@@ -35,12 +41,18 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 	private final ShareRepository shareRepository;
 
 	private final ExchangeRateService exchangeRateService;
+	
+	private final ShareService shareService;
+	
+	static final String TIME_COURSE_PATH = "de.mq.portfolio.share.support.TimeCourseImpl";
+	
 
 	@Autowired
-	AbstractSharePortfolioService(final SharePortfolioRepository sharePortfolioRepository, final ShareRepository shareRepository, final ExchangeRateService exchangeRateService) {
+	AbstractSharePortfolioService(final SharePortfolioRepository sharePortfolioRepository, final ShareRepository shareRepository, final ExchangeRateService exchangeRateService, final ShareService shareService) {
 		this.sharePortfolioRepository = sharePortfolioRepository;
 		this.shareRepository = shareRepository;
 		this.exchangeRateService = exchangeRateService;
+		this.shareService	 = shareService;
 	}
 
 	/*
@@ -204,6 +216,20 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 		
 		final ExchangeRateCalculator exchangeRateCalculator = exchangeRateService.exchangeRateCalculator(portfolio.exchangeRateTranslations());
 		return  exchangeRateService.realTimeExchangeRates(usedExchangeRates).stream().map(exchangeRate -> new ExchangeRateImpl(exchangeRate.source(), exchangeRate.target(),Arrays.asList( new DataImpl(endDate, exchangeRateCalculator.factor(exchangeRate, endDate)), DataAccessUtils.requiredSingleResult(exchangeRate.rates()) ))).collect(Collectors.toList());
+	}
+	
+	
+	
+	
+	
+	
+	@Override
+	public final Collection<Entry<TimeCourse, List<Data>>>  realtimeTimeCourses(final String sharePortfolioId, final boolean useLastStoredTimeCourse) {
+		final SharePortfolio sharePortfolio = sharePortfolioRepository.sharePortfolio(sharePortfolioId);
+		final Map<String, TimeCourse> timeCoursesMap = new HashMap<>();
+		sharePortfolio.timeCourses().stream().forEach(tc -> timeCoursesMap.put(tc.code(),tc));
+		return  shareService.realTimeCourses(sharePortfolio.timeCourses().stream().map(tc -> tc.code()).collect(Collectors.toList()),useLastStoredTimeCourse ).stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(timeCoursesMap.get(tc.code()), tc.rates())).collect(Collectors.toList());
+
 	}
 
 	@Lookup

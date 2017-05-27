@@ -1,11 +1,14 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map.Entry;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
+import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 
@@ -33,5 +36,7 @@ public interface SharePortfolioService {
 	SharePortfolioRetrospective retrospective(final String id);
 
 	Collection<ExchangeRate> realtimeExchangeRates(final String sharePortfolioId);
+
+	Collection<Entry<TimeCourse, List<Data>>> realtimeTimeCourses(String sharePortfolioId, boolean useLastStoredTimeCourse);
 
 }

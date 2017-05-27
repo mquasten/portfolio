@@ -25,7 +25,9 @@ import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
+import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
+
 import de.mq.portfolio.share.support.ShareRepository;
 import de.mq.portfolio.shareportfolio.SharePortfolio;
 import org.junit.Assert;
@@ -56,6 +58,8 @@ public class SharePortfolioServiceTest {
 	
 	private final Pageable pageable = Mockito.mock(Pageable.class);
 	
+	private final  ShareService shareService = Mockito.mock(ShareService.class);
+	
 	private final  Sort sort = Mockito.mock(Sort.class);
 	
 	private final Map<Class<?>, Object> dependencies = new HashMap<>();
@@ -65,6 +69,7 @@ public class SharePortfolioServiceTest {
 		dependencies.put(SharePortfolioRepository.class, sharePortfolioRepository);
 		dependencies.put(ShareRepository.class, shareRepository);
 		dependencies.put(ExchangeRateService.class, exchangeRateService);
+		dependencies.put(ShareService.class, shareService);
 		
 		
 		ReflectionUtils.doWithFields(sharePortfolioService.getClass(), field -> ReflectionTestUtils.setField(sharePortfolioService, field.getName(), dependencies.get(field.getType())), field -> dependencies.containsKey(field.getType()));
@@ -252,7 +257,7 @@ public class SharePortfolioServiceTest {
 	
 	@Test
 	public final void newSharePortfolioService() throws Exception {
-		final SharePortfolioService sharePortfolioService = BeanUtils.instantiateClass(this.sharePortfolioService.getClass().getDeclaredConstructor(SharePortfolioRepository.class, ShareRepository.class, ExchangeRateService.class), sharePortfolioRepository, shareRepository, exchangeRateService);
+		final SharePortfolioService sharePortfolioService = BeanUtils.instantiateClass(this.sharePortfolioService.getClass().getDeclaredConstructor(SharePortfolioRepository.class, ShareRepository.class, ExchangeRateService.class, ShareService.class), sharePortfolioRepository, shareRepository, exchangeRateService, shareService);
 		final Map<Class<?>, Object> results = new HashMap<>();
 		ReflectionUtils.doWithFields(sharePortfolioService.getClass(), field ->  results.put(field.getType(), ReflectionTestUtils.getField(sharePortfolioService, field.getName())), field -> dependencies.containsKey(field.getType()));
 		Assert.assertEquals(dependencies, results);
