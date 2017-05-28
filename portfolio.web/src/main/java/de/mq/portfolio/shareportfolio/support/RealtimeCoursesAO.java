@@ -48,12 +48,10 @@ public class RealtimeCoursesAO implements Serializable {
 
 	
 
-	private final Collection<Map<String, Object>> shares = new ArrayList<>();
-
-	private final Collection<Map<String, Object>> realtimeCourses = new ArrayList<>();
+	
 
 	private String portfolioName;
-	private boolean lastStoredTimeCourse = true;
+	
 
 	private String portfolioCurrency;
 
@@ -62,10 +60,14 @@ public class RealtimeCoursesAO implements Serializable {
 	private final Map<String,String> currencies = new HashMap<>();
 	private final Map<String, double[]> exchangeRates2 = new HashMap<>();
 	
+	
+	private final Collection<Map<String, Object>> shares = new ArrayList<>();
+
+	private final Collection<Map<String, Object>> realtimeCourses = new ArrayList<>();
 	private final Collection<Map<String, Object>> realtimeExchangeRates = new ArrayList<>();
 	
 	
-
+	private boolean lastStoredTimeCourse = true;
 	private String portfolioId;
 
 	private String filter;
@@ -147,7 +149,7 @@ public class RealtimeCoursesAO implements Serializable {
 
 	public void setPortfolioId(String portfolioId) {
 		this.portfolioId = portfolioId;
-	}
+	} 
 
 	void assign(final Collection<Entry<TimeCourse, List<Data>>> entries) {
 		addShares(entries);
