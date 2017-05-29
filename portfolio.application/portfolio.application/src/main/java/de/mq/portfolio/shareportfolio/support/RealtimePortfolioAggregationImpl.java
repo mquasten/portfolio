@@ -46,7 +46,7 @@ class RealtimePortfolioAggregationImpl {
 	RealtimePortfolioAggregationImpl(final SharePortfolio sharePortfolio,  Collection<Entry<TimeCourse, List<Data>>> realtimeCourses, final Map<String, Data[]> exchangeRates ) {
 		portfolioName=sharePortfolio.name();
 		portfolioCurrency=sharePortfolio.currency();
-
+		
 		final Map<String, Double> weights = sharePortfolio.min().entrySet().stream().map(entry -> new AbstractMap.SimpleImmutableEntry<>( entry.getKey().code(), (Double) entry.getValue())).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
 		realtimeCourses.stream().forEach(entry -> add(entry, weights));
 		
@@ -89,25 +89,27 @@ class RealtimePortfolioAggregationImpl {
 	}
 	
 	public final double shareRealtimeRate(final String code) {
-		return  timeCourseAttributeMap(code, RealTimeCourseAttribute.RealTimeRate);
+		return  ((Data)timeCourseAttributeMap(code, RealTimeCourseAttribute.RealTimeRate)).value();
 	}
 	
 	
 	public final double shareRateOfReturn(final String code) {
-		double falsch = shareRealtimeRate(code);
-		double richtig = lastShareRate(code);
-		return (falsch -richtig) / richtig; 
+		return shareRealtimeRate(code) - lastShareRate(code);
+	}
+	
+	public final double shareRateOfReturnPercent (final String code) {
+		return 100d* (shareRealtimeRate(code) - lastShareRate(code)) / lastShareRate(code) ;
 	}
 	
 	public final String shareName(final String code) {
 		return  timeCourseAttributeMap(code, RealTimeCourseAttribute.ShareName);
 	}
 	
-	public final String currency(final String code) {
+	public final String shareCurrency(final String code) {
 		return  timeCourseAttributeMap(code, RealTimeCourseAttribute.Currency);
 	}
 	
-	public final Collection<String> shareCode() {
+	public final Collection<String> shareCodes() {
 		return Collections.unmodifiableSet(timeCourseAttributeMap.keySet());
 	}
 
