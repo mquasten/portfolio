@@ -24,6 +24,9 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 public class RealtimePortfolioAggregationTest {
 	
+	private static final Double REALTIME_EXCHANGE_RATE_USD = 0.95;
+	private static final Double LAST_EXCHANGE_RATE_USD = 0.90;
+	private static final Double LAST_EXCHANGE_RATE_EUR = 1d;
 	private static final Double REAL_TIME_RATE_KO = 45.50d;
 	private static final Double REAL_TIME_RATE_SAP = 95.50d;
 	private static final Double LAST_RATE_SAP = 95.00d;
@@ -57,10 +60,26 @@ public class RealtimePortfolioAggregationTest {
 	private final Data realTimeTimeCourseKo = Mockito.mock(Data.class);
 	
 	private final static Date LAST_DATE_SAP = Mockito.mock(Date.class);
+	
 	private final Date LAST_DATE_KO = Mockito.mock(Date.class);
+	
+	private final Date LAST_EXCHANGE_RATE_DATE_USD = Mockito.mock(Date.class);
+	private final Date REALTIME_EXCHANGE_RATE_DATE_USD = Mockito.mock(Date.class);
+	
+	private final Date LAST_EXCHANGE_RATE_DATE_EUR = Mockito.mock(Date.class);
+	private final Date REALTIME_EXCHANGE_RATE_DATE_EUR = Mockito.mock(Date.class);
+	private static final Object REALTIME_EXCHANGE_RATE_EUR = LAST_EXCHANGE_RATE_EUR;
+	private Data lastExchangeRateUsd = Mockito.mock(Data.class);
+	private Data realtimeExchangeRateUsd = Mockito.mock(Data.class);
+	
+	private Data lastExchangeRateEur = Mockito.mock(Data.class);
+	private Data realtimeExchangeRateEur = Mockito.mock(Data.class);
 
 	@Before
     public final void setup() {
+		
+		
+		
     	Mockito.doReturn(LAST_RATE_SAP).when(lastTimeCourseSap).value();
     	Mockito.doReturn(LAST_DATE_SAP).when(lastTimeCourseSap).date();
     	Mockito.doReturn(REAL_TIME_RATE_SAP).when(realTimeTimeCourseSap).value();
@@ -87,6 +106,23 @@ public class RealtimePortfolioAggregationTest {
     	Mockito.doReturn(PORTFOLIO_NAME).when(sharePortfolio).name();
     	Mockito.doReturn(CURRENCY_EUR).when(sharePortfolio).currency();
     	Mockito.doReturn(weights).when(sharePortfolio).min();
+    	
+    	
+    	Mockito.doReturn(LAST_EXCHANGE_RATE_DATE_USD).when(lastExchangeRateUsd).date();
+    	Mockito.doReturn(REALTIME_EXCHANGE_RATE_DATE_USD).when(realtimeExchangeRateUsd).date();
+    	Mockito.doReturn(LAST_EXCHANGE_RATE_USD).when(lastExchangeRateUsd).value();
+    	Mockito.doReturn(REALTIME_EXCHANGE_RATE_USD).when(realtimeExchangeRateUsd).value();
+    	
+    	
+    	Mockito.doReturn(LAST_EXCHANGE_RATE_DATE_EUR).when(lastExchangeRateEur).date();
+    	Mockito.doReturn(REALTIME_EXCHANGE_RATE_DATE_EUR).when(realtimeExchangeRateEur).date();
+    	Mockito.doReturn(LAST_EXCHANGE_RATE_EUR).when(lastExchangeRateEur).value();
+    	Mockito.doReturn(LAST_EXCHANGE_RATE_EUR).when(realtimeExchangeRateEur).value();
+    	
+    	exchangeRates.put(CURRENCY_USD, Arrays.asList(lastExchangeRateUsd, realtimeExchangeRateUsd).toArray(new Data[2]));
+    	
+    	exchangeRates.put(CURRENCY_EUR, Arrays.asList(lastExchangeRateEur, realtimeExchangeRateEur).toArray(new Data[2]));
+    	
     	
     	realtimePortfolioAggregation= new RealtimePortfolioAggregationImpl(sharePortfolio, realtimeCourses, exchangeRates);
     }
@@ -147,5 +183,45 @@ public class RealtimePortfolioAggregationTest {
 	@Test
 	public final void shareCodes() {
 		Assert.assertEquals(new HashSet<>(Arrays.asList(SAP_CODE, KO_CODE)), realtimePortfolioAggregation.shareCodes());
+	}
+	
+	@Test
+	public final void lastExchangeRateForCurrency() {
+		Assert.assertEquals(LAST_EXCHANGE_RATE_USD, (Double)realtimePortfolioAggregation.lastExchangeRateForCurrency(CURRENCY_USD));
+		Assert.assertEquals(LAST_EXCHANGE_RATE_EUR, (Double)realtimePortfolioAggregation.lastExchangeRateForCurrency(CURRENCY_EUR));
+	}
+	
+	@Test
+	public final void lastExchangeRateDate() {
+		Assert.assertEquals(LAST_EXCHANGE_RATE_DATE_USD, realtimePortfolioAggregation.lastExchangeRateDate(CURRENCY_USD));
+		Assert.assertEquals(LAST_EXCHANGE_RATE_DATE_EUR, realtimePortfolioAggregation.lastExchangeRateDate(CURRENCY_EUR));
+	}
+	
+	@Test
+	public final void realtimeExchangeRateForCurrency() {
+		Assert.assertEquals(REALTIME_EXCHANGE_RATE_USD, (Double) realtimePortfolioAggregation.realtimeExchangeRateForCurrency(CURRENCY_USD));
+		Assert.assertEquals(REALTIME_EXCHANGE_RATE_EUR, (Double) realtimePortfolioAggregation.realtimeExchangeRateForCurrency(CURRENCY_EUR));
+	}
+	
+	@Test
+	public final void realtimeExchangeRateDate() {
+		Assert.assertEquals(REALTIME_EXCHANGE_RATE_DATE_USD, realtimePortfolioAggregation.realtimeExchangeRateDate(CURRENCY_USD));
+		Assert.assertEquals(REALTIME_EXCHANGE_RATE_DATE_EUR, realtimePortfolioAggregation.realtimeExchangeRateDate(CURRENCY_EUR));
+	}
+	
+	@Test
+	public final void  rateOfReturnPercentRealtimeExchangeRate() {
+		Assert.assertEquals( Double.valueOf(100d * (REALTIME_EXCHANGE_RATE_USD - LAST_EXCHANGE_RATE_USD) / LAST_EXCHANGE_RATE_USD), (Double) realtimePortfolioAggregation.rateOfReturnPercentExchangeRate(CURRENCY_USD));
+	    Assert.assertEquals(Double.valueOf(0d), (Double) realtimePortfolioAggregation.rateOfReturnPercentExchangeRate(CURRENCY_EUR)); 
+	}
+	
+	@Test
+	public final void currencies() {
+		Assert.assertEquals(new HashSet<>(Arrays.asList(CURRENCY_EUR, CURRENCY_USD)), realtimePortfolioAggregation.currencies());
+	}
+	
+	@Test
+	public final void  translatedCurrencies() {
+		Assert.assertEquals(new HashSet<>(Arrays.asList(CURRENCY_USD)), realtimePortfolioAggregation.translatedCurrencies());
 	}
 }

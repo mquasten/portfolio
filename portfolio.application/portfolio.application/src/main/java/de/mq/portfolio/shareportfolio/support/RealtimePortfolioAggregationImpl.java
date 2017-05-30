@@ -113,6 +113,34 @@ class RealtimePortfolioAggregationImpl {
 		return Collections.unmodifiableSet(timeCourseAttributeMap.keySet());
 	}
 
+	
+	public final double lastExchangeRateForCurrency(final String currencyCode) {
+		return exchangeRates.get(currencyCode)[0].value();
+	}
+	
+	public final Date lastExchangeRateDate(final String currencyCode) {
+		return exchangeRates.get(currencyCode)[0].date();
+	}
+	
+	public final double realtimeExchangeRateForCurrency(final String currencyCode) {
+		return exchangeRates.get(currencyCode)[1].value();
+	}
+	
+	public final Date realtimeExchangeRateDate(final String currencyCode) {
+		return exchangeRates.get(currencyCode)[1].date();
+	}
+	
+	public final double rateOfReturnPercentExchangeRate (final String currency) {
+		return 100d* (realtimeExchangeRateForCurrency(currency) - lastExchangeRateForCurrency(currency)) / lastExchangeRateForCurrency(currency) ;
+	}
+	
+	public final Collection<String> currencies() {
+		return Collections.unmodifiableSet(exchangeRates.keySet());
+	}
+	
+	public final Collection<String> translatedCurrencies() {
+		return currencies().stream().filter(currency -> ! currency.equals(this.portfolioCurrency)).collect(Collectors.toSet());
+	}
 
 	
 	@SuppressWarnings("unchecked")
