@@ -24,6 +24,10 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 public class RealtimePortfolioAggregationTest {
 	
+	
+
+	private static final Double WEIGHT_KO = 0.6;
+	private static final Double WEIGHT_SAP = 0.4;
 	private static final Double REALTIME_EXCHANGE_RATE_USD = 0.95;
 	private static final Double LAST_EXCHANGE_RATE_USD = 0.90;
 	private static final Double LAST_EXCHANGE_RATE_EUR = 1d;
@@ -68,7 +72,8 @@ public class RealtimePortfolioAggregationTest {
 	
 	private final Date LAST_EXCHANGE_RATE_DATE_EUR = Mockito.mock(Date.class);
 	private final Date REALTIME_EXCHANGE_RATE_DATE_EUR = Mockito.mock(Date.class);
-	private static final Object REALTIME_EXCHANGE_RATE_EUR = LAST_EXCHANGE_RATE_EUR;
+	private static final Double REALTIME_EXCHANGE_RATE_EUR = LAST_EXCHANGE_RATE_EUR;
+
 	private Data lastExchangeRateUsd = Mockito.mock(Data.class);
 	private Data realtimeExchangeRateUsd = Mockito.mock(Data.class);
 	
@@ -91,7 +96,7 @@ public class RealtimePortfolioAggregationTest {
     	realtimeCourses.add(new AbstractMap.SimpleImmutableEntry<>(timeCourseSap, Arrays.asList(lastTimeCourseSap, realTimeTimeCourseSap)) );
     	realtimeCourses.add(new AbstractMap.SimpleImmutableEntry<>(timeCourseKo, Arrays.asList(lastTimeCourseKo, realTimeTimeCourseKo)) );
     	weights.put(timeCourseSap, 0.4);
-    	weights.put(timeCourseSap, 0.6);
+    	weights.put(timeCourseKo, WEIGHT_KO);
     	Mockito.doReturn(SAP_CODE).when(timeCourseSap).code();
     	Mockito.doReturn(shareSap).when(timeCourseSap).share();
     	Mockito.doReturn(SAP_NAME).when(shareSap).name();
@@ -224,4 +229,18 @@ public class RealtimePortfolioAggregationTest {
 	public final void  translatedCurrencies() {
 		Assert.assertEquals(new HashSet<>(Arrays.asList(CURRENCY_USD)), realtimePortfolioAggregation.translatedCurrencies());
 	}
+	
+	@Test
+	public final void lastRatePortfolio() {
+		Assert.assertEquals(Double.valueOf(WEIGHT_KO* LAST_EXCHANGE_RATE_USD *LAST_RATE_KO), (Double) realtimePortfolioAggregation.lastRatePortfolio(KO_CODE));
+		Assert.assertEquals(Double.valueOf(WEIGHT_SAP* LAST_EXCHANGE_RATE_EUR *LAST_RATE_SAP), (Double) realtimePortfolioAggregation.lastRatePortfolio(SAP_CODE));
+	}
+	
+	@Test
+	public final void realtimeRatePortfolio() {
+		
+		Assert.assertEquals(Double.valueOf(WEIGHT_KO* REALTIME_EXCHANGE_RATE_USD *REAL_TIME_RATE_KO), (Double) realtimePortfolioAggregation.realtimeRatePortfolio(KO_CODE));
+		Assert.assertEquals(Double.valueOf(WEIGHT_SAP* REALTIME_EXCHANGE_RATE_EUR *REAL_TIME_RATE_SAP), (Double) realtimePortfolioAggregation.realtimeRatePortfolio(SAP_CODE));
+	}
+	
 }

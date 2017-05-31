@@ -49,10 +49,11 @@ public abstract class AbstractRealtimeExchangeRateRepository implements Realtime
 	@Override
 	public final List<ExchangeRate> exchangeRates(final Collection<ExchangeRate> rates) {
 		final String queryString = rates.stream().map(exchangeRate ->  exchangeRate.source() + exchangeRate.target() + "=X").reduce( "",  ( a,b) -> !StringUtils.isEmpty(a)? a+", "+ b :b );
+		
 		return    exceptionTranslationBuilderResult().withResource( () ->  new BufferedReader(new StringReader(restOperations.getForObject(url, String.class, queryString)))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {return  read(bufferedReader);}).translate();	
 	}
 	private List<ExchangeRate> read(BufferedReader bufferedReader) throws IOException, ParseException {
-		
+	
 		final ConfigurableConversionService configurableConversionService =configurableConversionService();
 		
 		configurableConversionService.addConverter(String.class, Date.class, dateString -> exceptionTranslationBuilderConversionService().withStatement(() ->  dateFormat.parse(dateString) ).translate());

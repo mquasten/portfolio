@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+
 import org.springframework.util.Assert;
 
 import de.mq.portfolio.share.Data;
@@ -38,8 +39,8 @@ class RealtimePortfolioAggregationImpl {
 	
 	private final Map<String,Map<RealTimeCourseAttribute,Object>> timeCourseAttributeMap = new HashMap<>();
 
-	
-	
+	private final Map<String,String> currencies = new HashMap<>();
+	final Map<String, Double> weights = new HashMap<>();
 	private final Map<String, Data[]> exchangeRates = new HashMap<>();
 	
 	
@@ -47,9 +48,11 @@ class RealtimePortfolioAggregationImpl {
 		portfolioName=sharePortfolio.name();
 		portfolioCurrency=sharePortfolio.currency();
 		
-		final Map<String, Double> weights = sharePortfolio.min().entrySet().stream().map(entry -> new AbstractMap.SimpleImmutableEntry<>( entry.getKey().code(), (Double) entry.getValue())).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
+		this.weights.putAll(sharePortfolio.min().entrySet().stream().map(entry -> new AbstractMap.SimpleImmutableEntry<>( entry.getKey().code(), (Double) entry.getValue())).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue())));
 		realtimeCourses.stream().forEach(entry -> add(entry, weights));
 		
+		
+		currencies.putAll(realtimeCourses.stream().map(x -> x.getKey()).collect(Collectors.toMap(tc -> tc.code(), tc-> tc.share().currency())));
 		
 		this.exchangeRates.putAll(exchangeRates);
 		
@@ -148,6 +151,32 @@ class RealtimePortfolioAggregationImpl {
 		Assert.isTrue(timeCourseAttributeMap.containsKey(code), "Attributes missing for " + code );
 		Assert.notNull((((Map<RealTimeCourseAttribute,T>) timeCourseAttributeMap.get(code)).get(key)), "Value missing for " + key + " code " + code );
 		return ((Map<RealTimeCourseAttribute,T>) timeCourseAttributeMap.get(code)).get(key);
+	}
+	
+	public final double lastRatePortfolio(final String code) {
+		return  lastShareRate(code)*weight(code)*exchangeRate(code, 0);
+	}
+	
+	public final double realtimeRatePortfolio(final String code) {
+		return  shareRealtimeRate(code)*weight(code)*exchangeRate(code, 1);
+	}
+
+
+
+	private Double weight(final String code) {
+		Assert.isTrue(weights.containsKey(code), "Weight id mandatory for " + code);
+		return weights.get(code);
+	}
+
+
+
+	private double exchangeRate(final String code, final int index) {
+		final String currency = (currencies.get(code));
+		Assert.notNull(currency, "Currency not found for share " + code);
+		final Data[] exchangerates = exchangeRates.get(currency);
+		Assert.notNull(exchangerates , "ExchangeRate not found for currency " + currency);
+		Assert.isTrue(exchangerates.length==2 , "2 Exchangerates required (Last and realtime).");
+		return exchangerates[index].value();
 	}
 
 }

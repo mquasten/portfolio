@@ -28,7 +28,9 @@ import de.mq.portfolio.support.ExceptionTranslationBuilder;
 @Repository
 public abstract class RealTimeRateYahooRestRepositoryImpl implements RealTimeRateRepository {
 	
-	final static String URL = "http://finance.yahoo.com/d/quotes.csv?s=%s&f=snbaopl1";	
+	//final static String URL = "http://finance.yahoo.com/d/quotes.csv?s=%s&f=snbaopl1";	
+	
+	final static String URL = "http://download.finance.yahoo.com/d/quotes.csv?s=%s&f=snbaopl1";
 	
 	private final RestOperations restOperations;
 	
@@ -45,8 +47,6 @@ public abstract class RealTimeRateYahooRestRepositoryImpl implements RealTimeRat
 	public  Collection<TimeCourse> rates(final Collection<Share> shares) {
 		final Map<String, Share> sharesMap = new HashMap<>();
 		shares.forEach(share -> sharesMap.put(share.code(), share));
-		
-		System.out.println("***" + String.format(URL, shares.stream().map(share -> share.code()).reduce("",   (a , b) ->  StringUtils.isEmpty(a ) ? b :  a+"+" +b  ) +"***"));
 		return exceptionTranslationBuilder().withResource( () ->  new BufferedReader(new StringReader(restOperations.getForObject(String.format(URL, shares.stream().map(share -> share.code()).reduce("",   (a , b) ->  StringUtils.isEmpty(a ) ? b :  a+"+" +b  )), String.class)))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {return  toTimeCourses(sharesMap, bufferedReader);}).translate();
 	}
 	private Collection<TimeCourse> toTimeCourses(final Map<String, Share> sharesMap, BufferedReader bufferedReader) throws IOException {
