@@ -207,8 +207,8 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 	 * realtimeExchangeRates(java.lang.String)
 	 */
 	@Override
-	public Collection<ExchangeRate> realtimeExchangeRates(final String sharePortfolioId) {
-		final SharePortfolio portfolio = sharePortfolioRepository.sharePortfolio(sharePortfolioId);
+	public Collection<ExchangeRate> realtimeExchangeRates(final SharePortfolio portfolio) {
+		
 		final Set<ExchangeRate> usedExchangeRates = portfolio.timeCourses().stream().map(tc -> portfolio.exchangeRate(tc)).distinct().collect(Collectors.toSet());
 		
 		final Set<String> codes = portfolio.timeCourses().stream().map(timeCourse -> timeCourse.code()).collect(Collectors.toSet());
@@ -224,15 +224,29 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 	
 	
 	@Override
-	public final Collection<Entry<TimeCourse, List<Data>>>  realtimeTimeCourses(final String sharePortfolioId, final boolean useLastStoredTimeCourse) {
-		final SharePortfolio sharePortfolio = sharePortfolioRepository.sharePortfolio(sharePortfolioId);
+	public final Collection<Entry<TimeCourse, List<Data>>>  realtimeTimeCourses(final SharePortfolio sharePortfolio, final boolean useLastStoredTimeCourse) {
 		final Map<String, TimeCourse> timeCoursesMap = new HashMap<>();
 		sharePortfolio.timeCourses().stream().forEach(tc -> timeCoursesMap.put(tc.code(),tc));
 		return  shareService.realTimeCourses(sharePortfolio.timeCourses().stream().map(tc -> tc.code()).collect(Collectors.toList()),useLastStoredTimeCourse ).stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(timeCoursesMap.get(tc.code()), tc.rates())).collect(Collectors.toList());
 
 	}
+	
+	@Override
+	public final RealtimePortfolioAggregation realtimePortfolioAggregation(final String sharePortfolioId, final boolean useLastStoredTimeCourse) {
+		final SharePortfolio sharePortfolio = this.sharePortfolio(sharePortfolioId);
+		final Collection<ExchangeRate> realtimeExchangeRates= realtimeExchangeRates(sharePortfolio);
+		
+		final Collection<Entry<TimeCourse, List<Data>>>  realtimeTimeCourses= realtimeTimeCourses(sharePortfolio, useLastStoredTimeCourse );
+		
+		return newRealtimePortfolioAggregationBuilder().withRealtimeCourses(realtimeTimeCourses).withSharePortfolio(sharePortfolio).withRealtimeExchangeRates(realtimeExchangeRates).build();
+		
+		
+	}
 
 	@Lookup
 	abstract SharePortfolioRetrospectiveBuilder newBuilder();
+	
+	@Lookup
+	abstract RealtimePortfolioAggregationBuilder newRealtimePortfolioAggregationBuilder();
 
 }

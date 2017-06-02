@@ -35,8 +35,12 @@ public interface SharePortfolioService {
 
 	SharePortfolioRetrospective retrospective(final String id);
 
-	Collection<ExchangeRate> realtimeExchangeRates(final String sharePortfolioId);
+	Collection<ExchangeRate> realtimeExchangeRates(SharePortfolio portfolio);
 
-	Collection<Entry<TimeCourse, List<Data>>> realtimeTimeCourses(String sharePortfolioId, boolean useLastStoredTimeCourse);
+	Collection<Entry<TimeCourse, List<Data>>> realtimeTimeCourses(final SharePortfolio sharePortfolio, boolean useLastStoredTimeCourse);
+
+	RealtimePortfolioAggregation realtimePortfolioAggregation(String sharePortfolioId, boolean useLastStoredTimeCourse);
+
+	
 
 }

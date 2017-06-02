@@ -18,5 +18,9 @@ public interface RealtimePortfolioAggregationBuilder {
 	RealtimePortfolioAggregationBuilder withRealtimeExchangeRates(Collection<ExchangeRate> realtimeExhangeRates);
 	
 	RealtimePortfolioAggregation build();
+	
+	default Class<? extends RealtimePortfolioAggregation> target() {
+		return RealtimePortfolioAggregationImpl.class;
+	}
 
 }
