@@ -15,9 +15,9 @@ public interface RealtimePortfolioAggregation {
 
 	double shareRealtimeRate(final String code);
 
-	double shareRateOfReturn(final String code);
+	double shareDelata(final String code);
 
-	double shareRateOfReturnPercent(final String code);
+	double shareDeltaPercent(final String code);
 
 	String shareName(final String code);
 
@@ -33,7 +33,7 @@ public interface RealtimePortfolioAggregation {
 
 	Date realtimeExchangeRateDate(final String currencyCode);
 
-	double rateOfReturnPercentExchangeRate(final String currency);
+	double deltaPercentExchangeRate(final String currency);
 
 	Collection<String> translatedCurrencies();
 
@@ -43,10 +43,10 @@ public interface RealtimePortfolioAggregation {
 
 	double realtimeRatePortfolio(final String code);
 
-	double rateOfReturn(final String code);
+	double deltaPortfolio(final String code);
 
 	Double weight(final String code);
 
-	double rateOfReturnPercent(final String code);
+	double deltaPortfolioPercent(final String code);
 
 }

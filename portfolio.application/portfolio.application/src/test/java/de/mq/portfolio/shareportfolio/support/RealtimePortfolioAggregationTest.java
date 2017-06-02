@@ -152,15 +152,15 @@ public class RealtimePortfolioAggregationTest {
 	}
 
 	@Test
-	public final void shareRateOfReturn() {
-		Assert.assertEquals(Double.valueOf(REAL_TIME_RATE_SAP - LAST_RATE_SAP), (Double) realtimePortfolioAggregation.shareRateOfReturn(SAP_CODE));
-		Assert.assertEquals(Double.valueOf(REAL_TIME_RATE_KO - LAST_RATE_KO), (Double) realtimePortfolioAggregation.shareRateOfReturn(KO_CODE));
+	public final void shareDelta() {
+		Assert.assertEquals(Double.valueOf(REAL_TIME_RATE_SAP - LAST_RATE_SAP), (Double) realtimePortfolioAggregation.shareDelata(SAP_CODE));
+		Assert.assertEquals(Double.valueOf(REAL_TIME_RATE_KO - LAST_RATE_KO), (Double) realtimePortfolioAggregation.shareDelata(KO_CODE));
 	}
 
 	@Test
-	public final void shareRateOfReturnPertent() {
-		Assert.assertEquals(Double.valueOf(100 * (REAL_TIME_RATE_SAP - LAST_RATE_SAP) / LAST_RATE_SAP), (Double) realtimePortfolioAggregation.shareRateOfReturnPercent(SAP_CODE));
-		Assert.assertEquals(Double.valueOf(100 * (REAL_TIME_RATE_KO - LAST_RATE_KO) / LAST_RATE_KO), (Double) realtimePortfolioAggregation.shareRateOfReturnPercent(KO_CODE));
+	public final void shareDeltaPercent() {
+		Assert.assertEquals(Double.valueOf(100 * (REAL_TIME_RATE_SAP - LAST_RATE_SAP) / LAST_RATE_SAP), (Double) realtimePortfolioAggregation.shareDeltaPercent(SAP_CODE));
+		Assert.assertEquals(Double.valueOf(100 * (REAL_TIME_RATE_KO - LAST_RATE_KO) / LAST_RATE_KO), (Double) realtimePortfolioAggregation.shareDeltaPercent(KO_CODE));
 	}
 
 	@Test
@@ -205,9 +205,9 @@ public class RealtimePortfolioAggregationTest {
 	}
 
 	@Test
-	public final void rateOfReturnPercentRealtimeExchangeRate() {
-		Assert.assertEquals(Double.valueOf(100d * (REALTIME_EXCHANGE_RATE_USD - LAST_EXCHANGE_RATE_USD) / LAST_EXCHANGE_RATE_USD), (Double) realtimePortfolioAggregation.rateOfReturnPercentExchangeRate(CURRENCY_USD));
-		Assert.assertEquals(Double.valueOf(0d), (Double) realtimePortfolioAggregation.rateOfReturnPercentExchangeRate(CURRENCY_EUR));
+	public final void deltaExchangeRatePercent() {
+		Assert.assertEquals(Double.valueOf(100d * (REALTIME_EXCHANGE_RATE_USD - LAST_EXCHANGE_RATE_USD) / LAST_EXCHANGE_RATE_USD), (Double) realtimePortfolioAggregation.deltaPercentExchangeRate(CURRENCY_USD));
+		Assert.assertEquals(Double.valueOf(0d), (Double) realtimePortfolioAggregation.deltaPercentExchangeRate(CURRENCY_EUR));
 	}
 
 	@Test
@@ -248,15 +248,15 @@ public class RealtimePortfolioAggregationTest {
 	}
 
 	@Test
-	public final void rateOfReturn() {
-		Assert.assertEquals(Double.valueOf(expectedRealTimeRatePortfolioKo() - expectedLastRateKo()), (Double) realtimePortfolioAggregation.rateOfReturn(KO_CODE));
-		Assert.assertEquals(Double.valueOf(expectedRealTimeRatePortfolioSap() - expectedLastRateSap()), (Double) realtimePortfolioAggregation.rateOfReturn(SAP_CODE));
+	public final void deltaPortfolio() {
+		Assert.assertEquals(Double.valueOf(expectedRealTimeRatePortfolioKo() - expectedLastRateKo()), (Double) realtimePortfolioAggregation.deltaPortfolio(KO_CODE));
+		Assert.assertEquals(Double.valueOf(expectedRealTimeRatePortfolioSap() - expectedLastRateSap()), (Double) realtimePortfolioAggregation.deltaPortfolio(SAP_CODE));
 	}
 	
 	@Test
-	public final void rateOfReturnPercent() {
-		Assert.assertEquals(Double.valueOf((expectedRealTimeRatePortfolioKo() - expectedLastRateKo()) / expectedLastRateKo() ), (Double) realtimePortfolioAggregation.rateOfReturnPercent(KO_CODE));
-		Assert.assertEquals(Double.valueOf((expectedRealTimeRatePortfolioSap() - expectedLastRateSap()) / expectedLastRateSap()), (Double) realtimePortfolioAggregation.rateOfReturnPercent(SAP_CODE));
+	public final void deltaPortfolioPercent() {
+		Assert.assertEquals(Double.valueOf((expectedRealTimeRatePortfolioKo() - expectedLastRateKo()) / expectedLastRateKo() ), (Double) realtimePortfolioAggregation.deltaPortfolioPercent(KO_CODE));
+		Assert.assertEquals(Double.valueOf((expectedRealTimeRatePortfolioSap() - expectedLastRateSap()) / expectedLastRateSap()), (Double) realtimePortfolioAggregation.deltaPortfolioPercent(SAP_CODE));
 	}
 
 	@Test(expected = IllegalArgumentException.class)

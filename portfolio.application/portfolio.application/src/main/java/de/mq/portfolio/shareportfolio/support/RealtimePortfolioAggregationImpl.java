@@ -128,7 +128,7 @@ class RealtimePortfolioAggregationImpl implements RealtimePortfolioAggregation {
 	 * shareRateOfReturn(java.lang.String)
 	 */
 	@Override
-	public final double shareRateOfReturn(final String code) {
+	public final double shareDelata(final String code) {
 		return shareRealtimeRate(code) - lastShareRate(code);
 	}
 
@@ -139,7 +139,7 @@ class RealtimePortfolioAggregationImpl implements RealtimePortfolioAggregation {
 	 * shareRateOfReturnPercent(java.lang.String)
 	 */
 	@Override
-	public final double shareRateOfReturnPercent(final String code) {
+	public final double shareDeltaPercent(final String code) {
 		return 100d * (shareRealtimeRate(code) - lastShareRate(code)) / lastShareRate(code);
 	}
 
@@ -227,7 +227,7 @@ class RealtimePortfolioAggregationImpl implements RealtimePortfolioAggregation {
 	 * rateOfReturnPercentExchangeRate(java.lang.String)
 	 */
 	@Override
-	public final double rateOfReturnPercentExchangeRate(final String currency) {
+	public final double deltaPercentExchangeRate(final String currency) {
 		return 100d * (realtimeExchangeRateForCurrency(currency) - lastExchangeRateForCurrency(currency)) / lastExchangeRateForCurrency(currency);
 	}
 
@@ -301,7 +301,7 @@ class RealtimePortfolioAggregationImpl implements RealtimePortfolioAggregation {
 	 * deltaPortfolio(java.lang.String)
 	 */
 	@Override
-	public final double rateOfReturn(final String code) {
+	public final double deltaPortfolio(final String code) {
 		return realtimeRatePortfolio(code) - lastRatePortfolio(code);
 	}
 
@@ -312,7 +312,7 @@ class RealtimePortfolioAggregationImpl implements RealtimePortfolioAggregation {
 	 * rateOfReturnPercent(java.lang.String)
 	 */
 	@Override
-	public final double rateOfReturnPercent(final String code) {
+	public final double deltaPortfolioPercent(final String code) {
 		final double wahr = lastRatePortfolio(code);
 		return (realtimeRatePortfolio(code) - wahr) / wahr;
 	}
