@@ -40,13 +40,16 @@ class RealtimePortfolioAggregationImpl implements RealtimePortfolioAggregation {
 		this.weights.putAll(sharePortfolio.min().entrySet().stream().map(entry -> new AbstractMap.SimpleImmutableEntry<>(entry.getKey().code(), (Double) entry.getValue())).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue())));
 		realtimeCourses.stream().forEach(entry -> add(entry, weights));
 
-		currencies.putAll(realtimeCourses.stream().map(x -> x.getKey()).collect(Collectors.toMap(tc -> tc.code(), tc -> tc.share().currency())));
+		currencies.putAll(realtimeCourses.stream().map(tc -> tc.getKey()).collect(Collectors.toMap(tc -> tc.code(), tc -> tc.share().currency())));
 
 		exchangeRateDataSizeGuard(exchangeRates);
 
 		this.exchangeRates.putAll(exchangeRates);
 
 	}
+	
+	
+	
 
 	private void exchangeRateDataSizeGuard(final Map<String, Data[]> exchangeRates) {
 		exchangeRates.values().forEach(rates -> Assert.isTrue(rates.length == 2, "2 Exchangerates required (Last and realtime)."));
@@ -54,13 +57,13 @@ class RealtimePortfolioAggregationImpl implements RealtimePortfolioAggregation {
 
 	void add(Entry<TimeCourse, List<Data>> entry, final Map<String, Double> weights) {
 		final Map<RealTimeCourseAttribute, Object> values = new HashMap<>();
-		Assert.notNull(entry.getKey().share(), "Share is mandatory.");
+
 		Assert.notNull(entry.getKey().share().currency(), "Currency is mandatory.");
 		values.put(RealTimeCourseAttribute.Currency, entry.getKey().share().currency());
 		values.put(RealTimeCourseAttribute.ShareName, entry.getKey().share().name());
 		Assert.notNull(entry.getKey().code(), "Code is mandatory.");
 		values.put(RealTimeCourseAttribute.Weight, weights.get(entry.getKey().code()));
-		Assert.isTrue(entry.getValue().size() == 2, "2 TimeCourses expected, (last and realtime).");
+		Assert.isTrue(entry.getValue().size() == 2, "2 TimeCourses expected, last and realtime.");
 		values.put(RealTimeCourseAttribute.LastRate, entry.getValue().get(0));
 		values.put(RealTimeCourseAttribute.RealTimeRate, entry.getValue().get(1));
 		timeCourseAttributeMap.put(entry.getKey().code(), values);

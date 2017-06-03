@@ -27,6 +27,8 @@ class HistoryRestRepositoryImpl implements HistoryRepository {
 	final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
 	private final String url = "http://real-chart.finance.yahoo.com/table.csv?s=%s&a=%s&b=%s&c=%s";
+	
+	
 
 	private final int periodeInDays = 365;
 
@@ -46,10 +48,15 @@ class HistoryRestRepositoryImpl implements HistoryRepository {
 
 		final String requestUrl = String.format(url, share.code(), month, day, year);
 
+		System.out.println(requestUrl);
+		
 		final Collection<Data> rates = getValues(requestUrl, 4);
+		
+		System.out.println("rates:" + rates.size());
 
 		final Collection<Data> dividends = getValues(requestUrl + "&g=v", 1);
 
+		System.out.println("dividends:" + dividends.size());
 		return new TimeCourseImpl(share, rates, dividends);
 	}
 

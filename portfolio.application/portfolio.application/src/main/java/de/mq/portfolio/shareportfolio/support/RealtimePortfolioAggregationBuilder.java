@@ -19,8 +19,5 @@ public interface RealtimePortfolioAggregationBuilder {
 	
 	RealtimePortfolioAggregation build();
 	
-	default Class<? extends RealtimePortfolioAggregation> target() {
-		return RealtimePortfolioAggregationImpl.class;
-	}
-
+	
 }
