@@ -1,24 +1,15 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.io.Serializable;
-import java.util.AbstractMap;
-import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-
-import de.mq.portfolio.exchangerate.ExchangeRate;
-import de.mq.portfolio.share.Data;
-import de.mq.portfolio.share.TimeCourse;
-import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 @Component("realtimeCourses")
 @Scope("view")
@@ -41,12 +32,8 @@ public class RealtimeCoursesAO implements Serializable {
 
 	
 	static final String WEIGHT_COLUMN = "weight";
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	
+	private static final long serialVersionUID = 1L;
 
 	
 
@@ -56,9 +43,6 @@ public class RealtimeCoursesAO implements Serializable {
 	private String portfolioCurrency;
 
 	
-	
-	private final Map<String,String> currencies = new HashMap<>();
-	private final Map<String, double[]> exchangeRates2 = new HashMap<>();
 	
 	
 	private final Collection<Map<String, Object>> shares = new ArrayList<>();
@@ -71,7 +55,7 @@ public class RealtimeCoursesAO implements Serializable {
 	private String portfolioId;
 
 	private String filter;
-	private Map<String, Double> weights = new HashMap<>();
+	
 
 	public String getPortfolioName() {
 		return portfolioName;
@@ -124,16 +108,33 @@ public class RealtimeCoursesAO implements Serializable {
 		return shares;
 	}
 
-	void assign(final SharePortfolio sharePortfolio) {
-		Assert.notNull(sharePortfolio, "SharePortfolio is mandatory");
-		portfolioName = sharePortfolio.name();
-		portfolioCurrency = sharePortfolio.currency();
-		weights.clear();
-		weights.putAll(sharePortfolio.min().entrySet().stream().map(entry -> new AbstractMap.SimpleImmutableEntry<>(entry.getKey().code(), entry.getValue())).collect(Collectors.toMap(entry -> entry.getKey(), entry ->entry.getValue())));
-	
-		currencies.clear();
-		currencies.putAll(sharePortfolio.timeCourses().stream().map(tc -> new SimpleImmutableEntry<>(tc.code(), tc.share().currency())).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue())));
+	void assign(final RealtimePortfolioAggregation realtimePortfolioAggregation) {
+		
+		Assert.notNull(realtimePortfolioAggregation, "RealtimePortfolioAggregation is mandatory");
+		portfolioName = realtimePortfolioAggregation.portfolioName();
+		portfolioCurrency = realtimePortfolioAggregation.portfolioCurrency();
+		
+		
+		
+		
+		shares.clear();
+		shares.addAll(realtimePortfolioAggregation.shareCodes().stream().map(code -> shareToMap(realtimePortfolioAggregation, code)).collect(Collectors.toList()));
+		
+		
+		realtimeExchangeRates.clear();
+		realtimeExchangeRates.addAll(realtimePortfolioAggregation.currencies().stream().map(currency -> exchangeRateToMap(realtimePortfolioAggregation, currency)).collect(Collectors.toList()));
+		
+		realtimeCourses.clear();
+		
+		realtimeCourses.add(portfolioSharesToMap(realtimePortfolioAggregation));
+		
+		
+		realtimeCourses.addAll(realtimePortfolioAggregation.shareCodes().stream().map(code -> portfolioSharesToMap(realtimePortfolioAggregation, code)).collect(Collectors.toList()));
+		
+		
 	}
+
+	
 
 	public String getFilter() {
 		return filter;
@@ -151,116 +152,66 @@ public class RealtimeCoursesAO implements Serializable {
 		this.portfolioId = portfolioId;
 	} 
 
-	void assign(final Collection<Entry<TimeCourse, List<Data>>> entries) {
-		addShares(entries);
-		addRealTimeCourses(entries);
-		
-	}
-
-	private void addRealTimeCourses(final Collection<Entry<TimeCourse, List<Data>>> entries) {
-		realtimeCourses.clear();
-		realtimeCourses.add(realTimeEntryForPortfolio(entries));
-		realtimeCourses.addAll(entries.stream().map(entry -> shareEntryToRealtimeCourseMap(entry)).collect(Collectors.toList()));
-
-	}
-
-	private Map<String, Object> realTimeEntryForPortfolio(final Collection<Entry<TimeCourse, List<Data>>> entries) {
-		final double lastSum = sum(entries, 0);
-		final double currentSum = sum(entries, 1);
-
-		final Map<String, Object> values = new HashMap<>();
-		values.put(NAME_COLUMN, this.portfolioName);
 	
-		values.put(LAST_COLUMN, lastSum);
 
-		values.put(CURRENT_COLUMN, currentSum);
-		values.put(DELTA_COLUMN, currentSum - lastSum);
-		values.put(DELTA_PERCENT_COLUMN, 100 * (currentSum - lastSum) / lastSum);
+	
+	
+	private Map<String, Object> portfolioSharesToMap(final RealtimePortfolioAggregation realtimePortfolioAggregation) {
+		final Map<String, Object> values = new HashMap<>();
+		values.put(NAME_COLUMN, realtimePortfolioAggregation.portfolioName() );
+		values.put(LAST_COLUMN, realtimePortfolioAggregation.lastRatePortfolio());
+		values.put(CURRENT_COLUMN, realtimePortfolioAggregation.realtimeRatePortfolio());
+		values.put(DELTA_COLUMN, realtimePortfolioAggregation.deltaPortfolio());
+		values.put(DELTA_PERCENT_COLUMN, realtimePortfolioAggregation.deltaPortfolioPercent());
 		return values;
 	}
 
-	private double sum(final Collection<Entry<TimeCourse, List<Data>>> entries, final int index) {
-		return entries.stream().mapToDouble(entry -> entry.getValue().get(index).value() * factor(entry.getKey().code(), index)).sum();
-	}
-
-	private void addShares(final Collection<Entry<TimeCourse, List<Data>>> entries) {
-		shares.clear();
-		shares.addAll(entries.stream().map(entry -> shareEntryToMap(entry)).collect(Collectors.toList()));
-	}
-
-
 	
-	void setExchangeRates(Collection<ExchangeRate> realtimeExchangeRates) {
-		this.realtimeExchangeRates.clear();
-		realtimeExchangeRates.stream().forEach(rate -> this.realtimeExchangeRates.add(exchangeRatesToMap(rate)));
-		exchangeRates2.clear();
-		exchangeRates2.putAll(realtimeExchangeRates.stream().map(rate -> new SimpleImmutableEntry<>(rate.source(), new double[] {rate.rates().get(0).value(),rate.rates().get(1).value(), })).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue())));
-	}
 
 	
 
-	private Map<String,Object> exchangeRatesToMap(ExchangeRate exchangeRate) {
+	private Map<String,Object> exchangeRateToMap(final RealtimePortfolioAggregation realtimePortfolioAggregation, final String currencyCode) {
 		final Map<String,Object> results = new HashMap<>();
-		results.put(NAME_COLUMN,  exchangeRate.source());
-		results.put(LAST_COLUMN,  exchangeRate.rates().get(0).value());
-		
-		results.put(LAST_DATE_COLUMN, exchangeRate.rates().get(0).date());
-		results.put(CURRENT_COLUMN,  exchangeRate.rates().get(1).value());
-		
-		results.put(CURRENT_DATE_COLUMN, exchangeRate.rates().get(1).date());
-		
-		final double delata = 100 *(exchangeRate.rates().get(1).value() - exchangeRate.rates().get(0).value()) / exchangeRate.rates().get(0).value();
-		results.put(DELTA_PERCENT_COLUMN, delata);
+		results.put(NAME_COLUMN,  currencyCode);
+		results.put(LAST_COLUMN,  realtimePortfolioAggregation.lastExchangeRateForCurrency(currencyCode));
+		results.put(LAST_DATE_COLUMN, realtimePortfolioAggregation.lastExchangeRateDate(currencyCode));
+		results.put(CURRENT_COLUMN, realtimePortfolioAggregation.realtimeExchangeRateForCurrency(currencyCode));
+		results.put(CURRENT_DATE_COLUMN, realtimePortfolioAggregation.realtimeExchangeRateDate(currencyCode));
+		results.put(DELTA_PERCENT_COLUMN, realtimePortfolioAggregation.deltaPercentExchangeRate(currencyCode));
 		return results;
 	}
-
-	
-	
-	
 	
 	
 
-	private Map<String, Object> shareEntryToMap(final Entry<TimeCourse, List<Data>> entry) {
+	private  Map<String, Object> shareToMap(final RealtimePortfolioAggregation realtimePortfolioAggregation, final String code) {
 		final Map<String, Object> values = new HashMap<>();
-		values.put(NAME_COLUMN, entry.getKey().name() + " (" + entry.getKey().code() + ")");
+		
+		realtimePortfolioAggregation.shareName(code);
+		values.put(NAME_COLUMN, realtimePortfolioAggregation.shareName(code) + " (" + code + ")");
+		values.put(LAST_COLUMN, realtimePortfolioAggregation.lastShareRate(code));
+		values.put(CURRENT_COLUMN, realtimePortfolioAggregation.shareRealtimeRate(code));
+		values.put(DELTA_COLUMN, realtimePortfolioAggregation.shareDelata(code));
+		values.put(DELTA_PERCENT_COLUMN, realtimePortfolioAggregation.shareDeltaPercent(code));
+		values.put(CURRENCY_COLUMN, realtimePortfolioAggregation.shareCurrency(code));
+		return values;
+		
+	}
+	
 
-		values.put(LAST_COLUMN, entry.getValue().get(0).value());
-		values.put(CURRENT_COLUMN, entry.getValue().get(1).value());
-		values.put(DELTA_COLUMN, entry.getValue().get(1).value() - (Double) entry.getValue().get(0).value());
-		values.put(DELTA_PERCENT_COLUMN, 100 * (entry.getValue().get(1).value() - (Double) entry.getValue().get(0).value()) / entry.getValue().get(0).value());
-		values.put(CURRENCY_COLUMN, entry.getKey().share().currency());
-
+	
+	private Map<String, Object> portfolioSharesToMap(final RealtimePortfolioAggregation realtimePortfolioAggregation, final String shareCode) {
+		final Map<String, Object> values = new HashMap<>();
+		values.put(NAME_COLUMN, realtimePortfolioAggregation.shareName(shareCode) + " (" + shareCode + ")");
+		values.put(WEIGHT_COLUMN, realtimePortfolioAggregation.weight(shareCode));
+		values.put(LAST_COLUMN, realtimePortfolioAggregation.lastRatePortfolio(shareCode));
+		values.put(LAST_DATE_COLUMN, realtimePortfolioAggregation.lastShareDate(shareCode));
+		values.put(CURRENT_COLUMN, realtimePortfolioAggregation.realtimeRatePortfolio(shareCode));
+		values.put(DELTA_COLUMN, realtimePortfolioAggregation.deltaPortfolio(shareCode));
+		values.put(DELTA_PERCENT_COLUMN, realtimePortfolioAggregation.deltaPortfolioPercent(shareCode));
 		return values;
 	}
 
-	private Map<String, Object> shareEntryToRealtimeCourseMap(final Entry<TimeCourse, List<Data>> entry) {
-		final Map<String, Object> values = new HashMap<>();
-		values.put(NAME_COLUMN, entry.getKey().name() + " (" + entry.getKey().code() + ")");
-		
-		
-		values.put(WEIGHT_COLUMN, weights.get(entry.getKey().code()));
-		final double last = entry.getValue().get(0).value() * factor(entry.getKey().code(), 0);
-		values.put(LAST_COLUMN, last);
-
-		values.put(LAST_DATE_COLUMN, entry.getValue().get(0).date());
-		final double current = entry.getValue().get(1).value() * factor(entry.getKey().code(), 1);
-		values.put(CURRENT_COLUMN, current);
-
-		values.put(DELTA_COLUMN, current - last);
-		values.put(DELTA_PERCENT_COLUMN, 100 * (current - last) / last);
-		return values;
-
-	}
-
-	private double factor(final String code, int index) {
-		Assert.isTrue(weights.containsKey(code) , String.format("Weight not found for %s", code));
-		Assert.isTrue(currencies.containsKey(code) , String.format("CurrencyCode not foud for share %s", code));
-		final String currencyCode =  currencies.get(code);
-		Assert.isTrue(exchangeRates2.containsKey(currencyCode) , String.format("ExchangeRate not found for %s", currencyCode));
-		
-		return exchangeRates2.get(currencyCode)[index] * weights.get(code);
-	}
-
+	
 	public Boolean getLastStoredTimeCourse() {
 		return lastStoredTimeCourse;
 	}

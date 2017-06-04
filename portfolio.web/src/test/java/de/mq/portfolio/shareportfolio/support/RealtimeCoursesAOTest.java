@@ -91,11 +91,11 @@ public class RealtimeCoursesAOTest {
 		Mockito.when(sharePortfolio.name()).thenReturn(PORTFOLIO_NAME);
 		Mockito.when(sharePortfolio.currency()).thenReturn(PORTFOLIO_CURRENCY);
 	//	realtimeCoursesAO.setExchangeRates(exchangeRates);
-		realtimeCoursesAO.assign(sharePortfolio);
+		realtimeCoursesAO.assign( null);
 		
 		entries.add(new AbstractMap.SimpleImmutableEntry<>(timeCourse01, Arrays.asList(data01Start, data01End)));
 		entries.add(new AbstractMap.SimpleImmutableEntry<>(timeCourse02, Arrays.asList(data02Start, data02End)));
-		realtimeCoursesAO.assign(entries);
+		//realtimeCoursesAO.assign(entries);
 	}
 	
 	@Test

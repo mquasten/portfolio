@@ -18,6 +18,8 @@ import de.mq.portfolio.shareportfolio.SharePortfolio;
 
 class RealtimePortfolioAggregationImpl implements RealtimePortfolioAggregation {
 
+	private static final double PERCENT_FACTOR = 100d;
+
 	enum RealTimeCourseAttribute {
 		Currency, ShareName, Weight, LastRate, RealTimeRate
 
@@ -47,9 +49,6 @@ class RealtimePortfolioAggregationImpl implements RealtimePortfolioAggregation {
 		this.exchangeRates.putAll(exchangeRates);
 
 	}
-	
-	
-	
 
 	private void exchangeRateDataSizeGuard(final Map<String, Data[]> exchangeRates) {
 		exchangeRates.values().forEach(rates -> Assert.isTrue(rates.length == 2, "2 Exchangerates required (Last and realtime)."));
@@ -143,7 +142,7 @@ class RealtimePortfolioAggregationImpl implements RealtimePortfolioAggregation {
 	 */
 	@Override
 	public final double shareDeltaPercent(final String code) {
-		return 100d * (shareRealtimeRate(code) - lastShareRate(code)) / lastShareRate(code);
+		return PERCENT_FACTOR * (shareRealtimeRate(code) - lastShareRate(code)) / lastShareRate(code);
 	}
 
 	/*
@@ -231,7 +230,7 @@ class RealtimePortfolioAggregationImpl implements RealtimePortfolioAggregation {
 	 */
 	@Override
 	public final double deltaPercentExchangeRate(final String currency) {
-		return 100d * (realtimeExchangeRateForCurrency(currency) - lastExchangeRateForCurrency(currency)) / lastExchangeRateForCurrency(currency);
+		return PERCENT_FACTOR * (realtimeExchangeRateForCurrency(currency) - lastExchangeRateForCurrency(currency)) / lastExchangeRateForCurrency(currency);
 	}
 
 	/*
@@ -317,7 +316,7 @@ class RealtimePortfolioAggregationImpl implements RealtimePortfolioAggregation {
 	@Override
 	public final double deltaPortfolioPercent(final String code) {
 		final double wahr = lastRatePortfolio(code);
-		return (realtimeRatePortfolio(code) - wahr) / wahr;
+		return PERCENT_FACTOR * (realtimeRatePortfolio(code) - wahr) / wahr;
 	}
 
 	private double exchangeRate(final String code, final int index) {
@@ -329,4 +328,48 @@ class RealtimePortfolioAggregationImpl implements RealtimePortfolioAggregation {
 		return exchangerates[index].value();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.mq.portfolio.shareportfolio.support.RealtimePortfolioAggregation#
+	 * lastRatePortfolio()
+	 */
+	@Override
+	public final double lastRatePortfolio() {
+		return shareCodes().stream().mapToDouble(code -> lastRatePortfolio(code)).sum();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.mq.portfolio.shareportfolio.support.RealtimePortfolioAggregation#
+	 * realtimeRatePortfolio()
+	 */
+	@Override
+	public final double realtimeRatePortfolio() {
+		return shareCodes().stream().mapToDouble(code -> realtimeRatePortfolio(code)).sum();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.mq.portfolio.shareportfolio.support.RealtimePortfolioAggregation#
+	 * deltaPortfolio()
+	 */
+	@Override
+	public final double deltaPortfolio() {
+		return (realtimeRatePortfolio() - lastRatePortfolio());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.mq.portfolio.shareportfolio.support.RealtimePortfolioAggregation#
+	 * deltaPortfolioPercent()
+	 */
+	@Override
+	public final double deltaPortfolioPercent() {
+		final double richtig = lastRatePortfolio();
+		return PERCENT_FACTOR * (realtimeRatePortfolio() - richtig) / richtig;
+	}
 }

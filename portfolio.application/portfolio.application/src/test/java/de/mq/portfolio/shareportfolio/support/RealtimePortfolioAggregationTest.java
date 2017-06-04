@@ -255,8 +255,8 @@ public class RealtimePortfolioAggregationTest {
 	
 	@Test
 	public final void deltaPortfolioPercent() {
-		Assert.assertEquals(Double.valueOf((expectedRealTimeRatePortfolioKo() - expectedLastRateKo()) / expectedLastRateKo() ), (Double) realtimePortfolioAggregation.deltaPortfolioPercent(KO_CODE));
-		Assert.assertEquals(Double.valueOf((expectedRealTimeRatePortfolioSap() - expectedLastRateSap()) / expectedLastRateSap()), (Double) realtimePortfolioAggregation.deltaPortfolioPercent(SAP_CODE));
+		Assert.assertEquals(Double.valueOf(100d*(expectedRealTimeRatePortfolioKo() - expectedLastRateKo()) / expectedLastRateKo() ), (Double) realtimePortfolioAggregation.deltaPortfolioPercent(KO_CODE));
+		Assert.assertEquals(Double.valueOf(100d*(expectedRealTimeRatePortfolioSap() - expectedLastRateSap()) / expectedLastRateSap()), (Double) realtimePortfolioAggregation.deltaPortfolioPercent(SAP_CODE));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -285,6 +285,26 @@ public class RealtimePortfolioAggregationTest {
 
 	private Double expectedRealTimeRatePortfolioKo() {
 		return WEIGHT_KO * REALTIME_EXCHANGE_RATE_USD * REAL_TIME_RATE_KO;
+	}
+	
+	@Test
+	public final void lastRatePortfolioTotal() {
+		Assert.assertEquals(Double.valueOf(expectedLastRateKo() + expectedLastRateSap()) , (Double) realtimePortfolioAggregation.lastRatePortfolio());
+	}
+	
+	@Test
+	public final void realtimeRatePortfolioTotal() {
+		Assert.assertEquals(Double.valueOf(expectedRealTimeRatePortfolioKo() + expectedRealTimeRatePortfolioSap()), (Double) realtimePortfolioAggregation.realtimeRatePortfolio());
+	}
+	
+	@Test
+	public final void  deltaPortfolioTotal() {
+		Assert.assertEquals(Double.valueOf(expectedRealTimeRatePortfolioKo() + expectedRealTimeRatePortfolioSap()- expectedLastRateKo() - expectedLastRateSap())  , (Double) realtimePortfolioAggregation.deltaPortfolio());
+	}
+	
+	@Test
+	public final void  deltaPortfolioPercentTotal() {
+		Assert.assertEquals(Double.valueOf(100d*(expectedRealTimeRatePortfolioKo() + expectedRealTimeRatePortfolioSap()- expectedLastRateKo() - expectedLastRateSap()) /(expectedLastRateKo() + expectedLastRateSap())), (Double) realtimePortfolioAggregation.deltaPortfolioPercent());
 	}
 
 }

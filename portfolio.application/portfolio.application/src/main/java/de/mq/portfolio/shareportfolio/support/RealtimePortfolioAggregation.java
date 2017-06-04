@@ -49,4 +49,12 @@ public interface RealtimePortfolioAggregation {
 
 	double deltaPortfolioPercent(final String code);
 
+	double lastRatePortfolio();
+
+	double realtimeRatePortfolio();
+
+	double deltaPortfolio();
+
+	double deltaPortfolioPercent();
+
 }
