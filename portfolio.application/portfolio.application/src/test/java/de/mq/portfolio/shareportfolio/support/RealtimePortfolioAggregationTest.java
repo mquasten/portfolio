@@ -177,7 +177,7 @@ public class RealtimePortfolioAggregationTest {
 
 	@Test
 	public final void shareCodes() {
-		Assert.assertEquals(new HashSet<>(Arrays.asList(SAP_CODE, KO_CODE)), realtimePortfolioAggregation.shareCodes());
+		Assert.assertEquals(Arrays.asList(SAP_CODE, KO_CODE), realtimePortfolioAggregation.shareCodes());
 	}
 
 	@Test

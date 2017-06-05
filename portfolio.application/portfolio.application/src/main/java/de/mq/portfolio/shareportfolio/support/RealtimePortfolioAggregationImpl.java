@@ -21,7 +21,7 @@ class RealtimePortfolioAggregationImpl implements RealtimePortfolioAggregation {
 	private static final double PERCENT_FACTOR = 100d;
 
 	enum RealTimeCourseAttribute {
-		Currency, ShareName, Weight, LastRate, RealTimeRate
+		Currency, ShareName, Weight, LastRate, RealTimeRate, Order
 
 	}
 
@@ -65,6 +65,8 @@ class RealtimePortfolioAggregationImpl implements RealtimePortfolioAggregation {
 		Assert.isTrue(entry.getValue().size() == 2, "2 TimeCourses expected, last and realtime.");
 		values.put(RealTimeCourseAttribute.LastRate, entry.getValue().get(0));
 		values.put(RealTimeCourseAttribute.RealTimeRate, entry.getValue().get(1));
+		
+		values.put(RealTimeCourseAttribute.Order, timeCourseAttributeMap.size());
 		timeCourseAttributeMap.put(entry.getKey().code(), values);
 	}
 
@@ -175,7 +177,7 @@ class RealtimePortfolioAggregationImpl implements RealtimePortfolioAggregation {
 	 */
 	@Override
 	public final Collection<String> shareCodes() {
-		return Collections.unmodifiableSet(timeCourseAttributeMap.keySet());
+		return timeCourseAttributeMap.entrySet().stream().sorted((entry1, entry2) ->(Integer) entry1.getValue().get(RealTimeCourseAttribute.Order) -(Integer) entry2.getValue().get(RealTimeCourseAttribute.Order)).map(entry -> entry.getKey()).collect(Collectors.toList());
 	}
 
 	/*
