@@ -1,28 +1,17 @@
 package de.mq.portfolio.shareportfolio.support;
 
 import java.sql.Date;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-
-import de.mq.portfolio.share.Data;
-import de.mq.portfolio.share.Share;
-import de.mq.portfolio.share.TimeCourse;
-import de.mq.portfolio.shareportfolio.SharePortfolio;
-@Ignore
 public class RealtimeCoursesAOTest {
 	
 	private static final String ID = UUID.randomUUID().toString();
@@ -44,59 +33,62 @@ public class RealtimeCoursesAOTest {
 	private static final String PORTFOLIO_CURRENCY = "EUR";
 	private static final String PORTFOLIO_NAME = "min-risk portfolio";
 	private  final RealtimeCoursesAO  realtimeCoursesAO = new RealtimeCoursesAO();
-	private  final SharePortfolio sharePortfolio = Mockito.mock(SharePortfolio.class);
 	
-	private final TimeCourse timeCourse01 = Mockito.mock(TimeCourse.class);
-	private final TimeCourse timeCourse02 = Mockito.mock(TimeCourse.class);
-	private final Share share01 = Mockito.mock(Share.class);
-	private final Share share02 = Mockito.mock(Share.class);
 	
-	private Data data01Start = Mockito.mock(Data.class);
-	private Data data01End = Mockito.mock(Data.class);
-	private Data data02Start = Mockito.mock(Data.class);
-	private Data data02End = Mockito.mock(Data.class);
+	
 	
 	private Date lastDate = Mockito.mock(Date.class);
-	private final List<Entry<TimeCourse,List<Data>>> entries = new ArrayList<>();
+	
+	
+	
+	private RealtimePortfolioAggregation realtimePortfolioAggregation = Mockito.mock(RealtimePortfolioAggregation.class);
 	
 	@Before
 	public final void setup() {
+		Mockito.doReturn(PORTFOLIO_NAME).when(realtimePortfolioAggregation).portfolioName();
+		Mockito.doReturn(PORTFOLIO_CURRENCY).when(realtimePortfolioAggregation).portfolioCurrency();
+		Mockito.doReturn(Arrays.asList(CODE_01, CODE_02)).when(realtimePortfolioAggregation).shareCodes();
+		Mockito.doReturn(RATE_01_START).when(realtimePortfolioAggregation).lastShareRate(CODE_01);
+		Mockito.doReturn(RATE_01_END).when(realtimePortfolioAggregation).shareRealtimeRate(CODE_01);
+		Mockito.doReturn(RATE_01_END-RATE_01_START).when(realtimePortfolioAggregation).shareDelata(CODE_01);
 		
-		final Map<TimeCourse,Double> weights = new HashMap<>();
-		weights.put(timeCourse01, WEIGHT_01);
-		weights.put(timeCourse02, WEIGHT_02);
-		Mockito.when(sharePortfolio.min()).thenReturn(weights);
+		Mockito.doReturn(100*(RATE_01_END-RATE_01_START)/RATE_01_START).when(realtimePortfolioAggregation).shareDeltaPercent(CODE_01);
+		Mockito.doReturn(PORTFOLIO_CURRENCY).when(realtimePortfolioAggregation).shareCurrency(CODE_01);
+		Mockito.doReturn(NAME_01).when(realtimePortfolioAggregation).shareName(CODE_01);
 		
-		final Map<String,Double> exchangeRates = new HashMap<>();
-		exchangeRates.put(CODE_01, EXCHANGE_RATE_01);
-		exchangeRates.put(CODE_02, EXCHANGE_RATE_02);
 		
-		Mockito.when(share01.currency()).thenReturn(PORTFOLIO_CURRENCY);
-		Mockito.when(share02.currency()).thenReturn(CURRENCY_USD);
 		
-		Mockito.when(data01Start.value()).thenReturn(RATE_01_START);
-		Mockito.when(data01Start.date()).thenReturn(lastDate);
-		Mockito.when(data01End.value()).thenReturn(RATE_01_END);
+		Mockito.doReturn(RATE_02_START).when(realtimePortfolioAggregation).lastShareRate(CODE_02);
+		Mockito.doReturn(RATE_02_END).when(realtimePortfolioAggregation).shareRealtimeRate(CODE_02);
+		Mockito.doReturn(RATE_02_END-RATE_02_START).when(realtimePortfolioAggregation).shareDelata(CODE_02);
+		Mockito.doReturn(100*(RATE_02_END-RATE_02_START)/RATE_02_START).when(realtimePortfolioAggregation).shareDeltaPercent(CODE_02);
+		Mockito.doReturn(CURRENCY_USD).when(realtimePortfolioAggregation).shareCurrency(CODE_02);
+		Mockito.doReturn(NAME_02).when(realtimePortfolioAggregation).shareName(CODE_02);
 		
-		Mockito.when(data02Start.value()).thenReturn(RATE_02_START);
-		Mockito.when(data02Start.date()).thenReturn(lastDate);
-		Mockito.when(data02End.value()).thenReturn(RATE_02_END);
 		
-		Mockito.when(timeCourse01.share()).thenReturn(share01);
-		Mockito.when(timeCourse02.share()).thenReturn(share02);
-		Mockito.when(timeCourse01.code()).thenReturn(CODE_01);
-		Mockito.when(timeCourse01.name()).thenReturn(NAME_01);
-		Mockito.when(timeCourse02.code()).thenReturn(CODE_02);
-		Mockito.when(timeCourse02.name()).thenReturn(NAME_02);
-		Mockito.when(sharePortfolio.name()).thenReturn(PORTFOLIO_NAME);
-		Mockito.when(sharePortfolio.currency()).thenReturn(PORTFOLIO_CURRENCY);
-	//	realtimeCoursesAO.setExchangeRates(exchangeRates);
-		realtimeCoursesAO.assign( null);
+		Mockito.doReturn(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01).when(realtimePortfolioAggregation).lastRatePortfolio(CODE_01);
+		Mockito.doReturn(RATE_01_END*EXCHANGE_RATE_01*WEIGHT_01).when(realtimePortfolioAggregation).realtimeRatePortfolio(CODE_01);
+		Mockito.doReturn(EXCHANGE_RATE_01*WEIGHT_01*(RATE_01_END-RATE_01_START)).when(realtimePortfolioAggregation).deltaPortfolio(CODE_01);
+		Mockito.doReturn(100*(RATE_01_END-RATE_01_START)/RATE_01_START).when(realtimePortfolioAggregation).deltaPortfolioPercent(CODE_01);
+		Mockito.doReturn(lastDate).when(realtimePortfolioAggregation).lastShareDate(CODE_01);
+		Mockito.doReturn(WEIGHT_01).when(realtimePortfolioAggregation).weight(CODE_01);
 		
-		entries.add(new AbstractMap.SimpleImmutableEntry<>(timeCourse01, Arrays.asList(data01Start, data01End)));
-		entries.add(new AbstractMap.SimpleImmutableEntry<>(timeCourse02, Arrays.asList(data02Start, data02End)));
-		//realtimeCoursesAO.assign(entries);
+		
+		Mockito.doReturn(RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02).when(realtimePortfolioAggregation).lastRatePortfolio(CODE_02);
+		Mockito.doReturn(RATE_02_END*EXCHANGE_RATE_02*WEIGHT_02).when(realtimePortfolioAggregation).realtimeRatePortfolio(CODE_02);
+		Mockito.doReturn(EXCHANGE_RATE_02*WEIGHT_02*(RATE_02_END-RATE_02_START)).when(realtimePortfolioAggregation).deltaPortfolio(CODE_02);
+		Mockito.doReturn(100*(RATE_02_END-RATE_02_START)/RATE_02_START).when(realtimePortfolioAggregation).deltaPortfolioPercent(CODE_02);
+		Mockito.doReturn(lastDate).when(realtimePortfolioAggregation).lastShareDate(CODE_02);
+		Mockito.doReturn(WEIGHT_02).when(realtimePortfolioAggregation).weight(CODE_02);
+		
+		
+		Mockito.doReturn(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01+ RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02).when(realtimePortfolioAggregation).lastRatePortfolio();
+		Mockito.doReturn(RATE_01_END*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_END*EXCHANGE_RATE_02*WEIGHT_02).when(realtimePortfolioAggregation).realtimeRatePortfolio();
+		Mockito.doReturn(RATE_01_END*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_END*EXCHANGE_RATE_02*WEIGHT_02  -(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02)).when(realtimePortfolioAggregation).deltaPortfolio();
+		Mockito.doReturn(100*(RATE_01_END*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_END*EXCHANGE_RATE_02*WEIGHT_02  -(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02))/(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02)).when(realtimePortfolioAggregation).deltaPortfolioPercent();
+		realtimeCoursesAO.assign(realtimePortfolioAggregation);
 	}
+	
 	
 	@Test
 	public final void portfolioName() {
