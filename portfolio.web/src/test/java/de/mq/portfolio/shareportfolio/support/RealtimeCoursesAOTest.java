@@ -16,8 +16,9 @@ public class RealtimeCoursesAOTest {
 	
 	private static final String ID = UUID.randomUUID().toString();
 	private static final String REGEX_FILTER = ".*";
-	private static final double EXCHANGE_RATE_02 =  0.95D;
-	private static final double EXCHANGE_RATE_01 =1d ;
+	private static final double LAST_EXCHANGE_RATE_USD =  0.90D;
+	private static final double CURRENT_EXCHANGE_RATE_USD =  0.95D;
+	private static final double EXCHANGE_RATE_EUR =1d ;
 	
 	private static final double WEIGHT_02 = 0.6D ;
 	private static final double WEIGHT_01 = 0.4D ;
@@ -39,9 +40,16 @@ public class RealtimeCoursesAOTest {
 	
 	private Date lastDate = Mockito.mock(Date.class);
 	
+	private Date lastDateExchangeRateEur = Mockito.mock(Date.class);
 	
+	private Date currentDateExchangeRateEur  = Mockito.mock(Date.class);
+	
+	private Date lastDateExchangeRateUsd = Mockito.mock(Date.class);
+	
+	private Date currentDateExchangeRateUsd  = Mockito.mock(Date.class);
 	
 	private RealtimePortfolioAggregation realtimePortfolioAggregation = Mockito.mock(RealtimePortfolioAggregation.class);
+	
 	
 	@Before
 	public final void setup() {
@@ -66,26 +74,43 @@ public class RealtimeCoursesAOTest {
 		Mockito.doReturn(NAME_02).when(realtimePortfolioAggregation).shareName(CODE_02);
 		
 		
-		Mockito.doReturn(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01).when(realtimePortfolioAggregation).lastRatePortfolio(CODE_01);
-		Mockito.doReturn(RATE_01_END*EXCHANGE_RATE_01*WEIGHT_01).when(realtimePortfolioAggregation).realtimeRatePortfolio(CODE_01);
-		Mockito.doReturn(EXCHANGE_RATE_01*WEIGHT_01*(RATE_01_END-RATE_01_START)).when(realtimePortfolioAggregation).deltaPortfolio(CODE_01);
+		Mockito.doReturn(RATE_01_START*EXCHANGE_RATE_EUR*WEIGHT_01).when(realtimePortfolioAggregation).lastRatePortfolio(CODE_01);
+		Mockito.doReturn(RATE_01_END*EXCHANGE_RATE_EUR*WEIGHT_01).when(realtimePortfolioAggregation).realtimeRatePortfolio(CODE_01);
+		Mockito.doReturn(EXCHANGE_RATE_EUR*WEIGHT_01*(RATE_01_END-RATE_01_START)).when(realtimePortfolioAggregation).deltaPortfolio(CODE_01);
 		Mockito.doReturn(100*(RATE_01_END-RATE_01_START)/RATE_01_START).when(realtimePortfolioAggregation).deltaPortfolioPercent(CODE_01);
 		Mockito.doReturn(lastDate).when(realtimePortfolioAggregation).lastShareDate(CODE_01);
 		Mockito.doReturn(WEIGHT_01).when(realtimePortfolioAggregation).weight(CODE_01);
 		
 		
-		Mockito.doReturn(RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02).when(realtimePortfolioAggregation).lastRatePortfolio(CODE_02);
-		Mockito.doReturn(RATE_02_END*EXCHANGE_RATE_02*WEIGHT_02).when(realtimePortfolioAggregation).realtimeRatePortfolio(CODE_02);
-		Mockito.doReturn(EXCHANGE_RATE_02*WEIGHT_02*(RATE_02_END-RATE_02_START)).when(realtimePortfolioAggregation).deltaPortfolio(CODE_02);
+		Mockito.doReturn(RATE_02_START*LAST_EXCHANGE_RATE_USD*WEIGHT_02).when(realtimePortfolioAggregation).lastRatePortfolio(CODE_02);
+		Mockito.doReturn(RATE_02_END*LAST_EXCHANGE_RATE_USD*WEIGHT_02).when(realtimePortfolioAggregation).realtimeRatePortfolio(CODE_02);
+		Mockito.doReturn(LAST_EXCHANGE_RATE_USD*WEIGHT_02*(RATE_02_END-RATE_02_START)).when(realtimePortfolioAggregation).deltaPortfolio(CODE_02);
 		Mockito.doReturn(100*(RATE_02_END-RATE_02_START)/RATE_02_START).when(realtimePortfolioAggregation).deltaPortfolioPercent(CODE_02);
 		Mockito.doReturn(lastDate).when(realtimePortfolioAggregation).lastShareDate(CODE_02);
 		Mockito.doReturn(WEIGHT_02).when(realtimePortfolioAggregation).weight(CODE_02);
 		
 		
-		Mockito.doReturn(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01+ RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02).when(realtimePortfolioAggregation).lastRatePortfolio();
-		Mockito.doReturn(RATE_01_END*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_END*EXCHANGE_RATE_02*WEIGHT_02).when(realtimePortfolioAggregation).realtimeRatePortfolio();
-		Mockito.doReturn(RATE_01_END*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_END*EXCHANGE_RATE_02*WEIGHT_02  -(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02)).when(realtimePortfolioAggregation).deltaPortfolio();
-		Mockito.doReturn(100*(RATE_01_END*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_END*EXCHANGE_RATE_02*WEIGHT_02  -(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02))/(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02)).when(realtimePortfolioAggregation).deltaPortfolioPercent();
+		Mockito.doReturn(RATE_01_START*EXCHANGE_RATE_EUR*WEIGHT_01+ RATE_02_START*LAST_EXCHANGE_RATE_USD*WEIGHT_02).when(realtimePortfolioAggregation).lastRatePortfolio();
+		Mockito.doReturn(RATE_01_END*EXCHANGE_RATE_EUR*WEIGHT_01 + RATE_02_END*LAST_EXCHANGE_RATE_USD*WEIGHT_02).when(realtimePortfolioAggregation).realtimeRatePortfolio();
+		Mockito.doReturn(RATE_01_END*EXCHANGE_RATE_EUR*WEIGHT_01 + RATE_02_END*LAST_EXCHANGE_RATE_USD*WEIGHT_02  -(RATE_01_START*EXCHANGE_RATE_EUR*WEIGHT_01 + RATE_02_START*LAST_EXCHANGE_RATE_USD*WEIGHT_02)).when(realtimePortfolioAggregation).deltaPortfolio();
+		Mockito.doReturn(100*(RATE_01_END*EXCHANGE_RATE_EUR*WEIGHT_01 + RATE_02_END*LAST_EXCHANGE_RATE_USD*WEIGHT_02  -(RATE_01_START*EXCHANGE_RATE_EUR*WEIGHT_01 + RATE_02_START*LAST_EXCHANGE_RATE_USD*WEIGHT_02))/(RATE_01_START*EXCHANGE_RATE_EUR*WEIGHT_01 + RATE_02_START*LAST_EXCHANGE_RATE_USD*WEIGHT_02)).when(realtimePortfolioAggregation).deltaPortfolioPercent();
+		
+		
+		Mockito.doReturn(Arrays.asList(PORTFOLIO_CURRENCY, CURRENCY_USD)).when(realtimePortfolioAggregation).currencies();
+		Mockito.doReturn(EXCHANGE_RATE_EUR).when(realtimePortfolioAggregation).lastExchangeRateForCurrency(PORTFOLIO_CURRENCY);
+		Mockito.doReturn(EXCHANGE_RATE_EUR).when(realtimePortfolioAggregation).realtimeExchangeRateForCurrency(PORTFOLIO_CURRENCY);
+		Mockito.doReturn(lastDateExchangeRateEur).when(realtimePortfolioAggregation).lastExchangeRateDate(PORTFOLIO_CURRENCY);
+		Mockito.doReturn(currentDateExchangeRateEur).when(realtimePortfolioAggregation).realtimeExchangeRateDate(PORTFOLIO_CURRENCY);
+		
+		Mockito.doReturn(0d).when(realtimePortfolioAggregation).deltaPercentExchangeRate(PORTFOLIO_CURRENCY);
+		
+		Mockito.doReturn(LAST_EXCHANGE_RATE_USD).when(realtimePortfolioAggregation).lastExchangeRateForCurrency(CURRENCY_USD);
+		Mockito.doReturn(CURRENT_EXCHANGE_RATE_USD).when(realtimePortfolioAggregation).realtimeExchangeRateForCurrency(CURRENCY_USD);
+		Mockito.doReturn(lastDateExchangeRateUsd).when(realtimePortfolioAggregation).lastExchangeRateDate(CURRENCY_USD);
+		Mockito.doReturn(currentDateExchangeRateUsd).when(realtimePortfolioAggregation).realtimeExchangeRateDate(CURRENCY_USD);
+		
+		Mockito.doReturn((CURRENT_EXCHANGE_RATE_USD - LAST_EXCHANGE_RATE_USD) / LAST_EXCHANGE_RATE_USD).when(realtimePortfolioAggregation).deltaPercentExchangeRate(CURRENCY_USD);
+		
 		realtimeCoursesAO.assign(realtimePortfolioAggregation);
 	}
 	
@@ -130,18 +155,18 @@ public class RealtimeCoursesAOTest {
 		Assert.assertEquals(3, realtimeCourses.size());
 		final Map<String,Object> sapMap = realtimeCourses.get(1);
 		
-		Assert.assertEquals(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01, sapMap.get(RealtimeCoursesAO.LAST_COLUMN));
-		Assert.assertEquals(RATE_01_END*EXCHANGE_RATE_01*WEIGHT_01, sapMap.get(RealtimeCoursesAO.CURRENT_COLUMN));
-		Assert.assertEquals(truncate(EXCHANGE_RATE_01*WEIGHT_01*(RATE_01_END-RATE_01_START)), truncate((Double) sapMap.get(RealtimeCoursesAO.DELTA_COLUMN)));
+		Assert.assertEquals(RATE_01_START*EXCHANGE_RATE_EUR*WEIGHT_01, sapMap.get(RealtimeCoursesAO.LAST_COLUMN));
+		Assert.assertEquals(RATE_01_END*EXCHANGE_RATE_EUR*WEIGHT_01, sapMap.get(RealtimeCoursesAO.CURRENT_COLUMN));
+		Assert.assertEquals(truncate(EXCHANGE_RATE_EUR*WEIGHT_01*(RATE_01_END-RATE_01_START)), truncate((Double) sapMap.get(RealtimeCoursesAO.DELTA_COLUMN)));
 		Assert.assertEquals(truncate(100*(RATE_01_END-RATE_01_START)/RATE_01_START), truncate((Double)sapMap.get(RealtimeCoursesAO.DELTA_PERCENT_COLUMN)));
 		Assert.assertEquals(String.format("%s (%s)", NAME_01, CODE_01), sapMap.get(RealtimeCoursesAO.NAME_COLUMN));
 		Assert.assertEquals(lastDate, sapMap.get(RealtimeCoursesAO.LAST_DATE_COLUMN));
 		Assert.assertEquals(WEIGHT_01, sapMap.get(RealtimeCoursesAO.WEIGHT_COLUMN));
 		final Map<String,Object> coMap = realtimeCourses.get(2);
 	
-		Assert.assertEquals(RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02, coMap.get(RealtimeCoursesAO.LAST_COLUMN));
-		Assert.assertEquals(truncate(RATE_02_END*EXCHANGE_RATE_02*WEIGHT_02), truncate((Double) coMap.get(RealtimeCoursesAO.CURRENT_COLUMN)));
-		Assert.assertEquals(truncate(EXCHANGE_RATE_02*WEIGHT_02*(RATE_02_END-RATE_02_START)), truncate((Double) coMap.get(RealtimeCoursesAO.DELTA_COLUMN)));
+		Assert.assertEquals(RATE_02_START*LAST_EXCHANGE_RATE_USD*WEIGHT_02, coMap.get(RealtimeCoursesAO.LAST_COLUMN));
+		Assert.assertEquals(truncate(RATE_02_END*LAST_EXCHANGE_RATE_USD*WEIGHT_02), truncate((Double) coMap.get(RealtimeCoursesAO.CURRENT_COLUMN)));
+		Assert.assertEquals(truncate(LAST_EXCHANGE_RATE_USD*WEIGHT_02*(RATE_02_END-RATE_02_START)), truncate((Double) coMap.get(RealtimeCoursesAO.DELTA_COLUMN)));
 		Assert.assertEquals(truncate(100*(RATE_02_END-RATE_02_START)/RATE_02_START), truncate((Double)coMap.get(RealtimeCoursesAO.DELTA_PERCENT_COLUMN)));
 		Assert.assertEquals(String.format("%s (%s)", NAME_02, CODE_02), coMap.get(RealtimeCoursesAO.NAME_COLUMN));
 		
@@ -150,17 +175,41 @@ public class RealtimeCoursesAOTest {
 		
 		final Map<String,Object> portfolioMap = realtimeCourses.get(0);
 		
-		Assert.assertEquals(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01+ RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02 , portfolioMap.get(RealtimeCoursesAO.LAST_COLUMN));
-		Assert.assertEquals(RATE_01_END*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_END*EXCHANGE_RATE_02*WEIGHT_02, portfolioMap.get(RealtimeCoursesAO.CURRENT_COLUMN));
+		Assert.assertEquals(RATE_01_START*EXCHANGE_RATE_EUR*WEIGHT_01+ RATE_02_START*LAST_EXCHANGE_RATE_USD*WEIGHT_02 , portfolioMap.get(RealtimeCoursesAO.LAST_COLUMN));
+		Assert.assertEquals(RATE_01_END*EXCHANGE_RATE_EUR*WEIGHT_01 + RATE_02_END*LAST_EXCHANGE_RATE_USD*WEIGHT_02, portfolioMap.get(RealtimeCoursesAO.CURRENT_COLUMN));
 		
-		Assert.assertEquals(RATE_01_END*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_END*EXCHANGE_RATE_02*WEIGHT_02  -(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02),  portfolioMap.get(RealtimeCoursesAO.DELTA_COLUMN));
+		Assert.assertEquals(RATE_01_END*EXCHANGE_RATE_EUR*WEIGHT_01 + RATE_02_END*LAST_EXCHANGE_RATE_USD*WEIGHT_02  -(RATE_01_START*EXCHANGE_RATE_EUR*WEIGHT_01 + RATE_02_START*LAST_EXCHANGE_RATE_USD*WEIGHT_02),  portfolioMap.get(RealtimeCoursesAO.DELTA_COLUMN));
 		
-		Assert.assertEquals(100*(RATE_01_END*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_END*EXCHANGE_RATE_02*WEIGHT_02  -(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02))/(RATE_01_START*EXCHANGE_RATE_01*WEIGHT_01 + RATE_02_START*EXCHANGE_RATE_02*WEIGHT_02),  portfolioMap.get(RealtimeCoursesAO.DELTA_PERCENT_COLUMN));
+		Assert.assertEquals(100*(RATE_01_END*EXCHANGE_RATE_EUR*WEIGHT_01 + RATE_02_END*LAST_EXCHANGE_RATE_USD*WEIGHT_02  -(RATE_01_START*EXCHANGE_RATE_EUR*WEIGHT_01 + RATE_02_START*LAST_EXCHANGE_RATE_USD*WEIGHT_02))/(RATE_01_START*EXCHANGE_RATE_EUR*WEIGHT_01 + RATE_02_START*LAST_EXCHANGE_RATE_USD*WEIGHT_02),  portfolioMap.get(RealtimeCoursesAO.DELTA_PERCENT_COLUMN));
 		
 		Assert.assertEquals(PORTFOLIO_NAME, portfolioMap.get(RealtimeCoursesAO.NAME_COLUMN));
 		Assert.assertFalse(portfolioMap.containsKey(RealtimeCoursesAO.LAST_DATE_COLUMN));
 		
 		
+	}
+	
+	@Test
+	public final void exchangeRateToMap() {
+		final List<Map<String, Object>>  exchangeReates =  new ArrayList<>(realtimeCoursesAO.getRealtimeExchangeRates());
+		Assert.assertEquals(2, exchangeReates.size());
+		final Map<String,Object> eurMap = exchangeReates.get(0);
+		Assert.assertEquals(PORTFOLIO_CURRENCY, eurMap.get(RealtimeCoursesAO.NAME_COLUMN));
+		Assert.assertEquals(EXCHANGE_RATE_EUR, eurMap.get(RealtimeCoursesAO.LAST_COLUMN));
+		Assert.assertEquals(EXCHANGE_RATE_EUR, eurMap.get(RealtimeCoursesAO.CURRENT_COLUMN));
+		Assert.assertEquals(lastDateExchangeRateEur, eurMap.get(RealtimeCoursesAO.LAST_DATE_COLUMN));
+		Assert.assertEquals(currentDateExchangeRateEur, eurMap.get(RealtimeCoursesAO.CURRENT_DATE_COLUMN));
+		Assert.assertEquals(0d, eurMap.get(RealtimeCoursesAO.DELTA_PERCENT_COLUMN));
+		
+		final Map<String,Object> usdMap = exchangeReates.get(1);
+		Assert.assertEquals(CURRENCY_USD, usdMap.get(RealtimeCoursesAO.NAME_COLUMN));
+		
+		Assert.assertEquals(LAST_EXCHANGE_RATE_USD, usdMap.get(RealtimeCoursesAO.LAST_COLUMN));
+		Assert.assertEquals(CURRENT_EXCHANGE_RATE_USD, usdMap.get(RealtimeCoursesAO.CURRENT_COLUMN));
+		
+		Assert.assertEquals(lastDateExchangeRateUsd, usdMap.get(RealtimeCoursesAO.LAST_DATE_COLUMN));
+		Assert.assertEquals(currentDateExchangeRateUsd, usdMap.get(RealtimeCoursesAO.CURRENT_DATE_COLUMN));
+		
+		Assert.assertEquals((CURRENT_EXCHANGE_RATE_USD - LAST_EXCHANGE_RATE_USD) / LAST_EXCHANGE_RATE_USD, usdMap.get(RealtimeCoursesAO.DELTA_PERCENT_COLUMN));
 	}
 	
 	private Double truncate(double value) {
@@ -230,5 +279,10 @@ public class RealtimeCoursesAOTest {
 		realtimeCoursesAO.setLastStoredTimeCourse(Boolean.FALSE);
 		
 		Assert.assertFalse(realtimeCoursesAO.getLastStoredTimeCourse());
+	}
+	
+	@Test
+	public final void currentDateColumn() {
+		Assert.assertEquals(RealtimeCoursesAO.CURRENT_DATE_COLUMN, realtimeCoursesAO.getCurrentDateColumn());
 	}
 }
