@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.mockito.internal.util.collections.Sets;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -268,6 +269,76 @@ public class SharePortfolioServiceTest {
 		((AbstractSharePortfolioService)sharePortfolioService).save(JSON_STRING);
 		Mockito.verify(sharePortfolioRepository).save(JSON_STRING);
 		
+	}
+	
+	@Test
+	public final void realtimePortfolioAggregation() {
+		
+		final TimeCourse sap = Mockito.mock(TimeCourse.class);
+		Mockito.doReturn("SAP.DE").when(sap).code();
+		final Date endDate = new Date();
+		Mockito.doReturn(endDate).when(sap).end();
+		final TimeCourse jnj = Mockito.mock(TimeCourse.class);
+		Mockito.doReturn("JNJ").when(jnj).code();
+		Mockito.doReturn(new Date(0)).when(jnj).end();
+		ExchangeRateCalculator exchangeRateCalculator = Mockito.mock(ExchangeRateCalculator.class);
+		final ExchangeRate exchangeRateEur = Mockito.mock(ExchangeRate.class);
+		
+		Mockito.doReturn("EUR").when(exchangeRateEur).target();
+		
+		Mockito.doReturn("EUR").when(exchangeRateEur).source();
+		
+
+		final ExchangeRate exchangeRateUsd = Mockito.mock(ExchangeRate.class);
+
+Mockito.doReturn("USD").when(exchangeRateUsd).target();
+		
+		Mockito.doReturn("EUR").when(exchangeRateUsd).source();
+		
+		final Data realTimeDataExchangeRateEur = Mockito.mock(Data.class);
+		final Data realTimeDataExchangeRateUsd = Mockito.mock(Data.class);
+		
+		Mockito.doReturn(Arrays.asList(realTimeDataExchangeRateEur)).when(exchangeRateEur).rates();
+		Mockito.doReturn(Arrays.asList(realTimeDataExchangeRateUsd)).when(exchangeRateUsd).rates();
+		
+		Mockito.doReturn(sharePortfolio).when(sharePortfolioRepository).sharePortfolio(ID);
+		Mockito.doReturn(Arrays.asList(sap, jnj)).when(sharePortfolio).timeCourses();
+		
+		Mockito.doReturn(exchangeRateEur).when(sharePortfolio).exchangeRate(sap);
+		Mockito.doReturn(exchangeRateUsd).when(sharePortfolio).exchangeRate(jnj);
+		
+		Mockito.doReturn(Arrays.asList(sap,jnj)).when(shareRepository).timeCourses(Sets.newSet("SAP.DE", "JNJ"));
+		Mockito.doReturn(Arrays.asList(exchangeRateEur, exchangeRateUsd)).when(sharePortfolio).exchangeRateTranslations();
+		Mockito.doReturn(exchangeRateCalculator).when(exchangeRateService).exchangeRateCalculator(Arrays.asList(exchangeRateEur, exchangeRateUsd));
+		
+		final RealtimePortfolioAggregationBuilder realtimePortfolioAggregationBuilder = Mockito.mock(RealtimePortfolioAggregationBuilder.class);
+		
+		
+		
+		Mockito.doReturn(realtimePortfolioAggregationBuilder).when(realtimePortfolioAggregationBuilder).withRealtimeExchangeRates(Mockito.any());
+		
+		
+		Mockito.doReturn(realtimePortfolioAggregationBuilder).when(realtimePortfolioAggregationBuilder).withSharePortfolio(Mockito.any());
+		
+		Mockito.doReturn(realtimePortfolioAggregationBuilder).when(realtimePortfolioAggregationBuilder).withRealtimeCourses(Mockito.any());
+		
+		Mockito.doReturn(realtimePortfolioAggregationBuilder).when((AbstractSharePortfolioService)sharePortfolioService).newRealtimePortfolioAggregationBuilder();
+		
+		Mockito.doReturn(Arrays.asList(exchangeRateEur, exchangeRateUsd)).when( exchangeRateService).realTimeExchangeRates(Sets.newSet(exchangeRateEur, exchangeRateUsd));
+		sharePortfolioService.realtimePortfolioAggregation(ID, true);
+		
+		Mockito.verify(realtimePortfolioAggregationBuilder).build();
+		
+		final ArgumentCaptor<SharePortfolio> sharePortfolioArgumentCaptor = ArgumentCaptor.forClass(SharePortfolio.class);
+		
+		@SuppressWarnings("unchecked")
+		final ArgumentCaptor<Collection<ExchangeRate>> exchangeRatesArgumentCaptor = (ArgumentCaptor<Collection<ExchangeRate>>) ArgumentCaptor.forClass((Class<?>) Collection.class);
+		Mockito.verify(realtimePortfolioAggregationBuilder).withSharePortfolio(sharePortfolioArgumentCaptor.capture());
+		
+		Mockito.verify(realtimePortfolioAggregationBuilder).withRealtimeExchangeRates(exchangeRatesArgumentCaptor.capture());
+		Assert.assertEquals(sharePortfolio, sharePortfolioArgumentCaptor.getValue());
+		
+		Assert.assertEquals(2, exchangeRatesArgumentCaptor.getValue().size());
 	}
 	
 }

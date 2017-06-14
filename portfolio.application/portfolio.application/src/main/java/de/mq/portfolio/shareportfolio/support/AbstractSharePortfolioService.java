@@ -206,11 +206,19 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 		
 		final Set<ExchangeRate> usedExchangeRates = portfolio.timeCourses().stream().map(tc -> portfolio.exchangeRate(tc)).distinct().collect(Collectors.toSet());
 		
+		
+		
 		final Set<String> codes = portfolio.timeCourses().stream().map(timeCourse -> timeCourse.code()).collect(Collectors.toSet());
+		
+		
 		final Date endDate = shareRepository.timeCourses(codes).stream().map(tc -> tc.end()).min((d1, d2) -> Long.valueOf(d1.getTime() - d2.getTime()).intValue()).orElseThrow(() -> new IllegalArgumentException("No rates aware."));
 		
+		
+		
 		final ExchangeRateCalculator exchangeRateCalculator = exchangeRateService.exchangeRateCalculator(portfolio.exchangeRateTranslations());
-		return  exchangeRateService.realTimeExchangeRates(usedExchangeRates).stream().map(exchangeRate -> new ExchangeRateImpl(exchangeRate.source(), exchangeRate.target(),Arrays.asList( new DataImpl(endDate, exchangeRateCalculator.factor(exchangeRate, endDate)), DataAccessUtils.requiredSingleResult(exchangeRate.rates()) ))).collect(Collectors.toList());
+		
+	
+		return exchangeRateService.realTimeExchangeRates(usedExchangeRates).stream().map(exchangeRate -> new ExchangeRateImpl(exchangeRate.source(), exchangeRate.target(),Arrays.asList( new DataImpl(endDate, exchangeRateCalculator.factor(exchangeRate, endDate)), DataAccessUtils.requiredSingleResult(exchangeRate.rates()) ))).collect(Collectors.toList());
 	}
 	
 	
@@ -229,6 +237,8 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 	@Override
 	public final RealtimePortfolioAggregation realtimePortfolioAggregation(final String sharePortfolioId, final boolean useLastStoredTimeCourse) {
 		final SharePortfolio sharePortfolio = this.sharePortfolio(sharePortfolioId);
+		
+		
 		final Collection<ExchangeRate> realtimeExchangeRates= realtimeExchangeRates(sharePortfolio);
 		
 		final Collection<Entry<TimeCourse, List<Data>>>  realtimeTimeCourses= realtimeTimeCourses(sharePortfolio, useLastStoredTimeCourse );
