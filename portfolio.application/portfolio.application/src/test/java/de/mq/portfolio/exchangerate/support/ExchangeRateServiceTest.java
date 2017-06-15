@@ -3,6 +3,7 @@ package de.mq.portfolio.exchangerate.support;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+
 import java.util.Map;
 
 import org.junit.Before;
@@ -17,7 +18,7 @@ import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.share.Data;
 import org.junit.Assert;
 
-
+ 
 public class ExchangeRateServiceTest {
 
 	
@@ -118,5 +119,13 @@ public class ExchangeRateServiceTest {
 		Mockito.verify(exchangeRateDatebaseRepository).exchangerates(exchangeRates);
 	}
 	
-	
+	@Test
+	public final void realTimeExchangeRates() {
+		
+		final Collection<ExchangeRate> expectedExchangeRates = Arrays.asList(Mockito.mock(ExchangeRate.class));
+		Mockito.doReturn(expectedExchangeRates).when(realtimeExchangeRateRepository).exchangeRates(Arrays.asList(exchangeRate));
+		
+		Assert.assertEquals(expectedExchangeRates, exchangeRateService.realTimeExchangeRates(Arrays.asList(exchangeRate)));
+		Mockito.verify(realtimeExchangeRateRepository).exchangeRates(Arrays.asList(exchangeRate));
+	}
 }

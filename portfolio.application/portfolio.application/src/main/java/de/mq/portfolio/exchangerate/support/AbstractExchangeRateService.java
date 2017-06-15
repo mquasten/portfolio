@@ -2,7 +2,6 @@ package de.mq.portfolio.exchangerate.support;
 
 import java.util.Collection;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,7 @@ abstract class AbstractExchangeRateService implements ExchangeRateService {
 	private final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository;
 
 	private final ExchangeRateRepository exchangeRateRepository;
-	
+
 	private final RealtimeExchangeRateRepository realtimeExchangeRateRepository;
 
 	@Autowired
@@ -40,10 +39,12 @@ abstract class AbstractExchangeRateService implements ExchangeRateService {
 		exchangeRate.assign(rates);
 		return exchangeRate;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.exchangerate.support.ExchangeRateService#exchangeRates()
+	 * 
+	 * @see
+	 * de.mq.portfolio.exchangerate.support.ExchangeRateService#exchangeRates()
 	 */
 	@Override
 	public final Collection<ExchangeRate> exchangeRates() {
@@ -82,25 +83,29 @@ abstract class AbstractExchangeRateService implements ExchangeRateService {
 	public final ExchangeRateCalculator exchangeRateCalculator() {
 		return newBuilder().withExchangeRates(exchangeRateDatebaseRepository.exchangerates()).build();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.exchangerate.support.ExchangeRateService#exchangeRates(java.util.Collection)
+	 * 
+	 * @see
+	 * de.mq.portfolio.exchangerate.support.ExchangeRateService#exchangeRates(
+	 * java.util.Collection)
 	 */
 	@Override
 	public final Collection<ExchangeRate> exchangeRates(Collection<ExchangeRate> exchangeRates) {
 		return exchangeRateDatebaseRepository.exchangerates(exchangeRates);
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see de.mq.portfolio.exchangerate.support.ExchangeRateService#realTimeExchangeRates(java.util.Collection)
+	 * 
+	 * @see de.mq.portfolio.exchangerate.support.ExchangeRateService#
+	 * realTimeExchangeRates(java.util.Collection)
 	 */
 	@Override
 	public final Collection<ExchangeRate> realTimeExchangeRates(final Collection<ExchangeRate> exchangeRates) {
 		return realtimeExchangeRateRepository.exchangeRates(exchangeRates);
 	}
-	
 
 	@Lookup
 	abstract ExchangeRateCalculatorBuilder newBuilder();

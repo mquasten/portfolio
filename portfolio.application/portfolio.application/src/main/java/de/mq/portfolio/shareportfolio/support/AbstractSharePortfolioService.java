@@ -41,18 +41,17 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 	private final ShareRepository shareRepository;
 
 	private final ExchangeRateService exchangeRateService;
-	
+
 	private final ShareService shareService;
-	
+
 	static final String TIME_COURSE_PATH = "de.mq.portfolio.share.support.TimeCourseImpl";
-	
 
 	@Autowired
 	AbstractSharePortfolioService(final SharePortfolioRepository sharePortfolioRepository, final ShareRepository shareRepository, final ExchangeRateService exchangeRateService, final ShareService shareService) {
 		this.sharePortfolioRepository = sharePortfolioRepository;
 		this.shareRepository = shareRepository;
 		this.exchangeRateService = exchangeRateService;
-		this.shareService	 = shareService;
+		this.shareService = shareService;
 	}
 
 	/*
@@ -200,57 +199,41 @@ abstract class AbstractSharePortfolioService implements SharePortfolioService {
 		sharePortfolioRepository.save(json);
 	}
 
-
-	
 	private Collection<ExchangeRate> realtimeExchangeRates(final SharePortfolio portfolio) {
-		
-		final Set<ExchangeRate> usedExchangeRates = portfolio.timeCourses().stream().map(tc -> portfolio.exchangeRate(tc)).distinct().collect(Collectors.toSet());
-		
-		
-		
-		final Set<String> codes = portfolio.timeCourses().stream().map(timeCourse -> timeCourse.code()).collect(Collectors.toSet());
-		
-		
-		final Date endDate = shareRepository.timeCourses(codes).stream().map(tc -> tc.end()).min((d1, d2) -> Long.valueOf(d1.getTime() - d2.getTime()).intValue()).orElseThrow(() -> new IllegalArgumentException("No rates aware."));
-		
-		
-		
-		final ExchangeRateCalculator exchangeRateCalculator = exchangeRateService.exchangeRateCalculator(portfolio.exchangeRateTranslations());
-		
-	
-		return exchangeRateService.realTimeExchangeRates(usedExchangeRates).stream().map(exchangeRate -> new ExchangeRateImpl(exchangeRate.source(), exchangeRate.target(),Arrays.asList( new DataImpl(endDate, exchangeRateCalculator.factor(exchangeRate, endDate)), DataAccessUtils.requiredSingleResult(exchangeRate.rates()) ))).collect(Collectors.toList());
-	}
-	
-	
-	
-	
-	
-	
-	
-	private final Collection<Entry<TimeCourse, List<Data>>>  realtimeTimeCourses(final SharePortfolio sharePortfolio, final boolean useLastStoredTimeCourse) {
-		final Map<String, TimeCourse> timeCoursesMap = new HashMap<>();
-		sharePortfolio.timeCourses().stream().forEach(tc -> timeCoursesMap.put(tc.code(),tc));
-		return  shareService.realTimeCourses(sharePortfolio.timeCourses().stream().map(tc -> tc.code()).collect(Collectors.toList()),useLastStoredTimeCourse ).stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(timeCoursesMap.get(tc.code()), tc.rates())).collect(Collectors.toList());
 
+		final Set<ExchangeRate> usedExchangeRates = portfolio.timeCourses().stream().map(tc -> portfolio.exchangeRate(tc)).distinct().collect(Collectors.toSet());
+
+		final Set<String> codes = portfolio.timeCourses().stream().map(timeCourse -> timeCourse.code()).collect(Collectors.toSet());
+
+		final Date endDate = shareRepository.timeCourses(codes).stream().map(tc -> tc.end()).min((d1, d2) -> Long.valueOf(d1.getTime() - d2.getTime()).intValue()).orElseThrow(() -> new IllegalArgumentException("No rates aware."));
+
+		final ExchangeRateCalculator exchangeRateCalculator = exchangeRateService.exchangeRateCalculator(portfolio.exchangeRateTranslations());
+
+		return exchangeRateService.realTimeExchangeRates(usedExchangeRates).stream()
+				.map(exchangeRate -> new ExchangeRateImpl(exchangeRate.source(), exchangeRate.target(), Arrays.asList(new DataImpl(endDate, exchangeRateCalculator.factor(exchangeRate, endDate)), DataAccessUtils.requiredSingleResult(exchangeRate.rates())))).collect(Collectors.toList());
 	}
-	
+
+	private final Collection<Entry<TimeCourse, List<Data>>> realtimeTimeCourses(final SharePortfolio sharePortfolio, final boolean useLastStoredTimeCourse) {
+		final Map<String, TimeCourse> timeCoursesMap = new HashMap<>();
+		sharePortfolio.timeCourses().stream().forEach(tc -> timeCoursesMap.put(tc.code(), tc));
+		return shareService.realTimeCourses(sharePortfolio.timeCourses().stream().map(tc -> tc.code()).collect(Collectors.toList()), useLastStoredTimeCourse).stream().map(tc -> new AbstractMap.SimpleImmutableEntry<>(timeCoursesMap.get(tc.code()), tc.rates())).collect(Collectors.toList());
+	}
+
 	@Override
 	public final RealtimePortfolioAggregation realtimePortfolioAggregation(final String sharePortfolioId, final boolean useLastStoredTimeCourse) {
 		final SharePortfolio sharePortfolio = this.sharePortfolio(sharePortfolioId);
-		
-		
-		final Collection<ExchangeRate> realtimeExchangeRates= realtimeExchangeRates(sharePortfolio);
-		
-		final Collection<Entry<TimeCourse, List<Data>>>  realtimeTimeCourses= realtimeTimeCourses(sharePortfolio, useLastStoredTimeCourse );
-		
+
+		final Collection<ExchangeRate> realtimeExchangeRates = realtimeExchangeRates(sharePortfolio);
+
+		final Collection<Entry<TimeCourse, List<Data>>> realtimeTimeCourses = realtimeTimeCourses(sharePortfolio, useLastStoredTimeCourse);
+
 		return newRealtimePortfolioAggregationBuilder().withRealtimeCourses(realtimeTimeCourses).withSharePortfolio(sharePortfolio).withRealtimeExchangeRates(realtimeExchangeRates).build();
-		
-		
+
 	}
 
 	@Lookup
 	abstract SharePortfolioRetrospectiveBuilder newBuilder();
-	
+
 	@Lookup
 	abstract RealtimePortfolioAggregationBuilder newRealtimePortfolioAggregationBuilder();
 
