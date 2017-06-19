@@ -9,11 +9,15 @@
 	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+
+<context:property-placeholder location="classpath:application.properties" />
 <bean scope="prototype"  class="org.springframework.context.support.ConversionServiceFactoryBean"/>
 
 <bean id="googleHistoryRepository" class="de.mq.portfolio.share.support.HistoryGoogleRestRepositoryImpl" />
 
 <bean id="yahooHistoryRepository" class="de.mq.portfolio.share.support.HistoryRestRepositoryImpl" />
+
+<bean id="arivaHistoryRepository" class="de.mq.portfolio.share.support.HistoryArivaRestRepositoryImpl" />
 
 <bean id="restTemplate" class="org.springframework.web.client.RestTemplate" />
    
@@ -100,6 +104,8 @@
 	<entry key="EOAN.DE" value="ETR:EOAN" />
 
 </util:map>
+
+
 	
 </beans>
 
