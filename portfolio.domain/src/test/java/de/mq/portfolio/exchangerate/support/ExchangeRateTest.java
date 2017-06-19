@@ -2,6 +2,7 @@ package de.mq.portfolio.exchangerate.support;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
@@ -106,6 +107,16 @@ public class ExchangeRateTest {
 		Assert.assertNull(exchangeRate.target());
 		Assert.assertNull(exchangeRate.link());
 		ReflectionUtils.doWithFields(ExchangeRateImpl.class, field -> Assert.assertNull(ReflectionTestUtils.getField(exchangeRate, field.getName())), field -> field.isAnnotationPresent(Id.class));
+	}
+	
+	@Test
+	public final void createWithrates() {
+		final Data data = Mockito.mock(Data.class);
+		final ExchangeRate exchangeRate = new ExchangeRateImpl(SOURCE, TARGET, Arrays.asList(data));
+		
+		Assert.assertEquals(SOURCE, exchangeRate.source());
+		Assert.assertEquals(TARGET, exchangeRate.target());
+		Assert.assertEquals(Arrays.asList(data), exchangeRate.rates());
 	}
 
 }
