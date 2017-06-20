@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +21,11 @@ import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.support.ConfigurableConversionService;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.Assert;
+
 import org.springframework.web.client.RestOperations;
 
 import de.mq.portfolio.share.Data;
@@ -28,11 +33,13 @@ import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.support.ExceptionTranslationBuilder;
 
+
 @Repository()
 @Profile("ariva" )
 abstract
 class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 
+	private static final String DELIMITER = "|";
 	private final DateFormat dateFormat ;
 	private final int periodeInDays = 365;
 	
@@ -55,8 +62,23 @@ class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 		params.put("stockExchangeId",  21L);
 		params.put("startDate",  dateString(date, periodeInDays));
 		params.put("endDate",  dateString(date, 1));
-		params.put("delimiter", "|" );
-		return new TimeCourseImpl(share, exceptionTranslationBuilderResult().withResource( () ->  new BufferedReader(new StringReader(restOperations.getForObject(url, String.class, params)))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {return  read(bufferedReader);}).translate(), Arrays.asList());
+		params.put("delimiter", DELIMITER );
+		final ResponseEntity<String> responseEntity = restOperations.getForEntity(url, String.class, params);
+		
+		Map<String,String> headers = responseEntity.getHeaders().toSingleValueMap();
+	
+		final String attachement = headers.get("Content-Disposition");
+		Assert.hasText(attachement, "Content-Disposition should not  empty");
+	    final String[] cols = attachement.split("[_]");
+	    Assert.isTrue(cols.length == 3 , " Wrong Content-Disposition Header");
+	    System.out.println(cols[1]);
+	
+	    System.out.println(attachement);
+		return new TimeCourseImpl(share, exceptionTranslationBuilderResult().withResource( () ->  {
+			//478160104
+					
+			return new BufferedReader(new StringReader(responseEntity.getBody()));
+		}).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {return  read(bufferedReader);}).translate(), Arrays.asList());
 	}
 	
 	
@@ -74,10 +96,12 @@ class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 			}
 			
 			
-			final String[] cols =line.split("[|]");
+			final String[] cols =line.split(String.format("[%s]",DELIMITER));
 			if(cols.length  != 7) {
 				continue;
 			}
+			
+			//System.out.println(line);
 			results.add(new DataImpl(configurableConversionService.convert(cols[0], Date.class), configurableConversionService.convert(cols[4].replace(',', '.'), Double.class)));
 			
 		}
