@@ -15,5 +15,9 @@ public interface Share {
 	String currency();
 	
 	String code2();
+	
+	default String id2() {
+		return "invalid";
+	}
 
 }

@@ -32,7 +32,7 @@ import de.mq.portfolio.share.Share;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/application-test.xml" })
-@Ignore
+
 public class HistoryRepositoryIntegrationTest {
 	
 	
@@ -44,8 +44,8 @@ public class HistoryRepositoryIntegrationTest {
 	
 
 	@Autowired
-	@Qualifier("yahooHistoryRepository")
-	private  HistoryRepository   historyYahooRestRepository; 
+	@Qualifier("arivaHistoryRepository")
+	private  HistoryRepository   historyArivaRestRepository; 
 
 	@Value("#{stocks}")
 	private Map<String,String> stocks;
@@ -55,16 +55,21 @@ public class HistoryRepositoryIntegrationTest {
 	final DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 	
 	
-	
+	int counter =0; 
 	
 	
 	
 	@Test
+
 	public  void historySap() throws ParseException {
 		
 		int max = 4;
 		@SuppressWarnings("unchecked")
 		final List<Data>[]  results = new  List[max];
+		
+		Mockito.when(share.id2()).thenReturn("910");
+		Mockito.when(share.wkn()).thenReturn( "716460");
+		
 		Mockito.when(share.code2()).thenReturn("ETR:SAP"); 		
 				
 		results[0] = historyGoogleRestRepository.history(share).rates();
@@ -80,7 +85,7 @@ public class HistoryRepositoryIntegrationTest {
 		Mockito.when(share.index()).thenReturn(null); 
 		
 		Mockito.when(share.code()).thenReturn("SAP.DE"); 
-		results[3] = historyYahooRestRepository.history(share).rates();
+		results[3] = historyArivaRestRepository.history(share).rates();
 		
 		final Map<Date, Double[]> prices = new HashMap<>();
 		IntStream.range(0, max).forEach(i -> {
@@ -110,6 +115,10 @@ public class HistoryRepositoryIntegrationTest {
 			    
 			    if (( values[0] != null) && (values[3]!=null))  {
 			    
+			    	if(  Math.abs(values[3] - values[0]) > 0d  ){
+			    		System.out.println(date +":"  + values[3]+  "<=>" +values[0]);
+			    	}
+			    	
 			    	Assert.assertEquals(values[3], values[0]);
 			    } 
 			    
@@ -126,8 +135,12 @@ public class HistoryRepositoryIntegrationTest {
 			    
 				
 		});
+	
+		System.out.println(missing[0]);
 		
 		Assert.assertTrue( missing[0] < 20 );
+		
+	
 		
 	}
 	
@@ -142,9 +155,11 @@ public class HistoryRepositoryIntegrationTest {
 		@SuppressWarnings("unchecked")
 		final List<Data>[]  results = new  List[max];
 				
-		Mockito.when(share.code2()).thenReturn("NYSE:KO");		
+		Mockito.when(share.code2()).thenReturn("NYSE:KO");	
+		Mockito.when(share.id2()).thenReturn("400");
+		Mockito.when(share.wkn()).thenReturn("850663" );
 		results[0] = historyGoogleRestRepository.history(share).rates();
-		results[1] = historyYahooRestRepository.history(share).rates();
+		results[1] = historyArivaRestRepository.history(share).rates();
 		
 		final Map<Date, Double[]> prices = new HashMap<>();
 		IntStream.range(0, max).forEach(i -> {
@@ -162,7 +177,7 @@ public class HistoryRepositoryIntegrationTest {
 		
 		final List<Date> dates = new ArrayList<>(prices.keySet());
 		Collections.sort(dates, (d1, d2) -> (int) Math.round(d1.getTime() - d2.getTime()));
-		
+		counter=0;
 		final int missing[] = new int[] {0};
 		dates.forEach(date -> {
 			    final Double values [] = prices.get(date);
@@ -172,17 +187,25 @@ public class HistoryRepositoryIntegrationTest {
 				}
 			    
 			    if( values[0] != null &&  values[1] != null  ) {
-			    	Assert.assertEquals( Math.round(100 * values[1]) , Math.round(100 * values[0]));
+			    	Assert.assertEquals( Math.round(10 * values[1]) , Math.round(10 * values[0]));
+			    	if( Math.abs(100 * values[1]   -  100 * values[0]) > 0 ) {
+			    		counter++;
+			    		System.out.println(date + ":"+ values[0] +"<=>" + values[1] );
+			    	}
+			    	//;
 			    }
 			  
 			    
 				
 		});
 		
+		
+		Assert.assertTrue(counter <= 1);
 		Assert.assertTrue( missing[0] == 0 );
 	}
 	
 	@Test
+	@Ignore
 	public  void historyEONA()   {
 	
 		Mockito.when(share.code()).thenReturn("EOAN.DE");
@@ -194,7 +217,7 @@ public class HistoryRepositoryIntegrationTest {
 				
 		
 		results[0] = historyGoogleRestRepository.history(share).rates();
-		results[1] = historyYahooRestRepository.history(share).rates();
+		results[1] = historyArivaRestRepository.history(share).rates();
 		
 		final Map<Date, Double[]> prices = new HashMap<>();
 		IntStream.range(0, max).forEach(i -> {
@@ -239,6 +262,7 @@ public class HistoryRepositoryIntegrationTest {
 	
 	
 	@Test
+	@Ignore
 	public  void historyDB11()   {
 	
 		Mockito.when(share.code()).thenReturn("DB11.DE");
@@ -250,7 +274,7 @@ public class HistoryRepositoryIntegrationTest {
 				
 		
 		results[0] = historyGoogleRestRepository.history(share).rates();
-		results[1] = historyYahooRestRepository.history(share).rates().stream().filter(rate -> ! rate.date().before(new GregorianCalendar(2016, 8 , 5).getTime() )).collect(Collectors.toList());
+		results[1] = historyArivaRestRepository.history(share).rates().stream().filter(rate -> ! rate.date().before(new GregorianCalendar(2016, 8 , 5).getTime() )).collect(Collectors.toList());
 		
 		final Map<Date, Double[]> prices = new HashMap<>();
 		IntStream.range(0, max).forEach(i -> {
@@ -295,6 +319,7 @@ public class HistoryRepositoryIntegrationTest {
 	}
 	
 	@Test
+	@Ignore
 	public final void allshares() {
 		
 		stocks.entrySet().stream().filter(entry -> !entry.getKey().equals("EOAN.DE")&& !entry.getKey().equals("DB11.DE")).forEach(entry -> {
@@ -303,7 +328,7 @@ public class HistoryRepositoryIntegrationTest {
 			Mockito.when(share.code()).thenReturn(entry.getKey());
 			historyGoogleRestRepository.history(share).rates().forEach(rate -> addResult(results, rate,0));
 			
-			historyYahooRestRepository.history(share).rates().forEach(rate -> addResult(results, rate, 1));
+			historyArivaRestRepository.history(share).rates().forEach(rate -> addResult(results, rate, 1));
 		
 			
 			Assert.assertTrue(results.size() > 250);
