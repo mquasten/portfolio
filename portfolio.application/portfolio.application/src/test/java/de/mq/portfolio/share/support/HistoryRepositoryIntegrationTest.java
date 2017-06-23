@@ -136,7 +136,6 @@ public class HistoryRepositoryIntegrationTest {
 				
 		});
 	
-		System.out.println(missing[0]);
 		
 		Assert.assertTrue( missing[0] < 20 );
 		
@@ -205,12 +204,13 @@ public class HistoryRepositoryIntegrationTest {
 	}
 	
 	@Test
-	@Ignore
 	public  void historyEONA()   {
 	
 		Mockito.when(share.code()).thenReturn("EOAN.DE");
 		Mockito.when(share.code2()).thenReturn("ETR:EOAN");
-		
+		Mockito.when(share.id2()).thenReturn("320");
+		Mockito.when(share.wkn()).thenReturn("ENAG99");
+
 		int max = 2;
 		@SuppressWarnings("unchecked")
 		final List<Data>[]  results = new  List[max];
@@ -256,17 +256,20 @@ public class HistoryRepositoryIntegrationTest {
 				
 		});
 		
-		Assert.assertTrue(counter[0]> 110);
-	  	Assert.assertTrue( missing[0] < 5  );
+		Assert.assertTrue(counter[0]> 190);
+	  	Assert.assertTrue( missing[0] == 0  );
+	  
 	}
 	
 	
 	@Test
-	@Ignore
+	
 	public  void historyDB11()   {
 	
 		Mockito.when(share.code()).thenReturn("DB11.DE");
-		Mockito.when(share.code2()).thenReturn("ETR:DB11");
+		Mockito.when(share.code2()).thenReturn("ETR:DB1");
+		Mockito.when(share.id2()).thenReturn("4587");
+		Mockito.when(share.wkn()).thenReturn("581005");
 		
 		int max = 2;
 		@SuppressWarnings("unchecked")
@@ -314,8 +317,10 @@ public class HistoryRepositoryIntegrationTest {
 		});
 		
 		
-		Assert.assertTrue(counter[0]> 110);
-	  	Assert.assertTrue( missing[0] < 5  );
+		
+		
+		Assert.assertTrue(counter[0]> 190);
+	  	Assert.assertTrue( missing[0] == 0  );
 	}
 	
 	@Test
