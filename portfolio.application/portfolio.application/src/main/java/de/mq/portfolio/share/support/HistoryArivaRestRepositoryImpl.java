@@ -57,13 +57,14 @@ class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	@Override
 	public TimeCourse history(Share share) {
 		
-		final int stockExchange = share.code().endsWith(".DE") ? 6: 21;
+		//final int stockExchange = share.code().endsWith(".DE") ? 6: 21;
 		final LocalDate date = LocalDate.now();
 		Map<String,Object> params = new HashMap<>();
-		params.put("shareId",  share.id2());
+		params.putAll(share.gatewayParameter());
+		//params.put("shareId",  share.id2());
 		//params.put("stockExchangeId",  21L);
 		//params.put("stockExchangeId",  6);
-		params.put("stockExchangeId",  stockExchange);
+		//params.put("stockExchangeId",  stockExchange);
 		params.put("startDate",  dateString(date, periodeInDays));
 		params.put("endDate",  dateString(date, 1));
 		params.put("delimiter", DELIMITER );

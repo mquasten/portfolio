@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.junit.Assert;
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -49,15 +49,33 @@ public class HistoryRepositoryIntegrationTest {
 
 	@Value("#{stocks}")
 	private Map<String,String> stocks;
+	
+	@Value("#{arivaHistory}")
+	private List<ShareGatewayParameterImpl> arivaHistory;
+	
+	private final Map <String,Map<String,String>> arivaParameter = new HashMap<>();
+	
+	@Value("#{wkns}")
+	private Map<String,String> wkns;
 
 	private final Share share = Mockito.mock(Share.class);
 	
 	final DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 	
+	@Before
+	public final void setup() {
+		arivaParameter.putAll(arivaHistory.stream().collect(Collectors.toMap(history -> history.code(), history -> history.parameters())));
+	}
+	
 	
 	int counter =0; 
 	
-	
+	private Map<String, String> parameterMap(final String shareId, final String stockExchangeId) {
+		final Map<String,String>  parameter = new HashMap<>();
+		parameter.put("shareId", shareId);
+		parameter.put("stockExchangeId", stockExchangeId);
+		return parameter;
+	}
 	
 	@Test
 
@@ -67,8 +85,9 @@ public class HistoryRepositoryIntegrationTest {
 		@SuppressWarnings("unchecked")
 		final List<Data>[]  results = new  List[max];
 		
-		Mockito.when(share.id2()).thenReturn("910");
-		Mockito.when(share.wkn()).thenReturn( "716460");
+		//Mockito.when(share.id2()).thenReturn("910");
+		Mockito.doReturn(arivaParameter.get("SAP.DE")).when(share).gatewayParameter();
+		Mockito.doReturn(wkns.get("SAP.DE")).when(share).wkn();
 		
 		Mockito.when(share.code2()).thenReturn("ETR:SAP"); 		
 				
@@ -155,8 +174,9 @@ public class HistoryRepositoryIntegrationTest {
 		final List<Data>[]  results = new  List[max];
 				
 		Mockito.when(share.code2()).thenReturn("NYSE:KO");	
-		Mockito.when(share.id2()).thenReturn("400");
-		Mockito.when(share.wkn()).thenReturn("850663" );
+	//	Mockito.when(share.id2()).thenReturn("400");
+		Mockito.doReturn(arivaParameter.get("KO")).when(share).gatewayParameter();
+		Mockito.doReturn(wkns.get("KO")).when(share).wkn();
 		results[0] = historyGoogleRestRepository.history(share).rates();
 		results[1] = historyArivaRestRepository.history(share).rates();
 		
@@ -208,7 +228,8 @@ public class HistoryRepositoryIntegrationTest {
 	
 		Mockito.when(share.code()).thenReturn("EOAN.DE");
 		Mockito.when(share.code2()).thenReturn("ETR:EOAN");
-		Mockito.when(share.id2()).thenReturn("320");
+		//Mockito.when(share.id2()).thenReturn("320");
+		Mockito.doReturn(arivaParameter.get("EOAN.DE")).when(share).gatewayParameter();
 		Mockito.when(share.wkn()).thenReturn("ENAG99");
 
 		int max = 2;
@@ -266,10 +287,11 @@ public class HistoryRepositoryIntegrationTest {
 	
 	public  void historyDB11()   {
 	
-		Mockito.when(share.code()).thenReturn("DB11.DE");
+		Mockito.when(share.code()).thenReturn("DB1.DE");
 		Mockito.when(share.code2()).thenReturn("ETR:DB1");
-		Mockito.when(share.id2()).thenReturn("4587");
-		Mockito.when(share.wkn()).thenReturn("581005");
+		//Mockito.when(share.id2()).thenReturn("4587");
+		Mockito.doReturn(arivaParameter.get("DB1.DE")).when(share).gatewayParameter();
+		Mockito.doReturn(wkns.get("DB1.DE")).when(share).wkn();
 		
 		int max = 2;
 		@SuppressWarnings("unchecked")
@@ -324,10 +346,64 @@ public class HistoryRepositoryIntegrationTest {
 	}
 	
 	@Test
-	@Ignore
+	//@Ignore
 	public final void allshares() {
 		
-		stocks.entrySet().stream().filter(entry -> !entry.getKey().equals("EOAN.DE")&& !entry.getKey().equals("DB11.DE")).forEach(entry -> {
+	
+		
+		arivaHistory.stream().filter(history -> ! history.code().equals("DB1.DE")).forEach(history -> {
+			
+			
+			System.out.println("***" + history.code() + "***");
+			
+		//	System.out.println(history.parameters());
+			final String code2 = stocks.get(history.code());
+			final Map<Date,double[]> results = new HashMap<>();
+			
+			final String id2 = history.parameters().get("shareId");
+			Mockito.when(share.code2()).thenReturn(code2);
+			//Mockito.when(share.id2()).thenReturn(id2);
+			Mockito.when(share.code()).thenReturn(history.code());
+			Mockito.when(share.wkn()).thenReturn(wkns.get(history.code()));
+			
+			Mockito.when(share.gatewayParameter()).thenReturn(history.parameters());
+		
+			historyGoogleRestRepository.history(share).rates().forEach(rate -> addResult(results, rate,0));
+			historyArivaRestRepository.history(share).rates().forEach(rate -> addResult(results, rate, 1));
+			
+			Assert.assertTrue(results.size() > 250);
+			
+			
+			final Set<double[]> resultsWithBoth = results.values().stream().filter(values -> values[0] !=  0d && values[1] !=  0d ).collect(Collectors.toSet());
+			
+			
+			//System.out.println(results.size() + ":" + resultsWithBoth.size() );
+			Assert.assertTrue(results.size() - resultsWithBoth.size() < 1);
+			
+			
+			
+			counter=0;
+			resultsWithBoth.forEach(values ->  {
+			 	
+			 	
+			 	//System.out.println(values[0] + ":" + values[1]);
+			 	
+				if( history.code().equals("GS") || history.code().equals("IBM")|| history.code().equals("JPM")|| history.code().equals("MSFT") || history.code().equals("PG")|| history.code().equals("V")|| history.code().equals("WMT")) {
+					Assert.assertTrue( Math.abs(Math.round(100d*values[0]) - Math.round(100d*values[1]))  <=  200);
+				} else {
+					Assert.assertTrue( Math.abs(Math.round(100d*values[0]) - Math.round(100d*values[1]))  <= 13);
+				}
+				if ( Math.abs(Math.round(100d*values[0]) - Math.round(100d*values[1])) > 1d) {
+					
+					System.out.println(history.code() + ":" + values[0] + ":" + values[1]);
+					counter++;
+				}
+				});
+			
+			Assert.assertTrue(counter <= 3);
+			
+		});
+		/*stocks.entrySet().stream().filter(entry -> !entry.getKey().equals("EOAN.DE")&& !entry.getKey().equals("DB11.DE")).forEach(entry -> {
 			final Map<Date,double[]> results = new HashMap<>();
 			Mockito.when(share.code2()).thenReturn(entry.getValue());
 			Mockito.when(share.code()).thenReturn(entry.getKey());
@@ -350,7 +426,7 @@ public class HistoryRepositoryIntegrationTest {
 			 	//System.out.println(values[0] + ":" + values[1]);
 				Assert.assertTrue(Math.abs(Math.round(100d*values[0]) - Math.round(100d*values[1])) <= 1d );
 				});
-		});
+		}); */
 	}
 
 

@@ -1,5 +1,8 @@
 package de.mq.portfolio.share;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public interface Share {
 	
 	String name();
@@ -16,8 +19,8 @@ public interface Share {
 	
 	String code2();
 	
-	default String id2() {
-		return "invalid";
+	default Map<String,String> gatewayParameter() {
+		return new HashMap<>();
 	}
 
 }
