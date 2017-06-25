@@ -392,7 +392,7 @@ public class HistoryRepositoryIntegrationTest {
 	}
 	
 	@Test
-	
+	@Ignore
 	public final void allDax() {
 		final List<ShareGatewayParameterImpl> daxList = arivaHistory.stream().filter(history ->  history.code().toUpperCase().endsWith(".DE") && !( history.code().equals("DB1.DE")|| history.code().equals("DBK.DE")) ).collect(Collectors.toList());
 		compareShares(daxList, maxDeviationDow);

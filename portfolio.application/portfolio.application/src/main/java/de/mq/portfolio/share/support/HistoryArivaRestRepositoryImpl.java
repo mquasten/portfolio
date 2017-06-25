@@ -4,13 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -57,30 +58,21 @@ class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	@Override
 	public TimeCourse history(Share share) {
 		
-		//final int stockExchange = share.code().endsWith(".DE") ? 6: 21;
 		final LocalDate date = LocalDate.now();
 		Map<String,Object> params = new HashMap<>();
 		params.putAll(share.gatewayParameter());
-		//params.put("shareId",  share.id2());
-		//params.put("stockExchangeId",  21L);
-		//params.put("stockExchangeId",  6);
-		//params.put("stockExchangeId",  stockExchange);
+		
 		params.put("startDate",  dateString(date, periodeInDays));
 		params.put("endDate",  dateString(date, 1));
 		params.put("delimiter", DELIMITER );
-		
-		//System.out.println(url);
+	
 		final ResponseEntity<String> responseEntity = restOperations.getForEntity(url, String.class, params);
-		
-		//System.out.println(responseEntity.getStatusCodeValue());
-		
+	
 		attachementHeaderWknGuard(share, responseEntity.getHeaders());
 	    
 		return new TimeCourseImpl(share, exceptionTranslationBuilderResult().withResource( () ->  {
-			//478160104
-					
 			return new BufferedReader(new StringReader(responseEntity.getBody()));
-		}).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {return  read(bufferedReader);}).translate(), Arrays.asList());
+		}).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {return  read(bufferedReader,share.isIndex());}).translate(), Arrays.asList());
 	}
 
 	void attachementHeaderWknGuard(final Share share, final  HttpHeaders httpHeaders) {
@@ -106,11 +98,18 @@ class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	
 	
 	
-	private List<Data> read(final BufferedReader bufferedReader) throws IOException, ParseException {
+	private List<Data> read(final BufferedReader bufferedReader, final boolean isIndex) throws IOException, ParseException {
 		final ConfigurableConversionService configurableConversionService = configurableConversionService();
+		final DecimalFormat numberFormat = new DecimalFormat();
+		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
+		otherSymbols.setDecimalSeparator(',');
+		otherSymbols.setGroupingSeparator('.'); 
+		numberFormat.setDecimalFormatSymbols(otherSymbols);
+		configurableConversionService.addConverter(String.class, Date.class, dateString -> exceptionTranslationBuilderConversionServiceDate().withStatement(() ->  dateFormat.parse(dateString) ).translate());
 		
-		configurableConversionService.addConverter(String.class, Date.class, dateString -> exceptionTranslationBuilderConversionService().withStatement(() ->  dateFormat.parse(dateString) ).translate());
+	
 		
+		configurableConversionService.addConverter(String.class, Number.class, doubleString -> exceptionTranslationBuilderConversionServiceDouble().withStatement(() -> numberFormat.parse(doubleString) ).translate());
 		final List<Data> results = new ArrayList<>();
 		for (String line = bufferedReader.readLine(); line != null; line = bufferedReader.readLine() ) {
 		//	System.out.println(line);
@@ -120,26 +119,32 @@ class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 				continue;
 			}
 			
-			
 			final String[] cols =line.split(String.format("[%s]",DELIMITER));
-			if(cols.length  != 7) {
+			if(isIndex ? cols.length <5 : cols.length !=7) {
 				continue;
 			}
 			//System.out.println(line);
-			results.add(new DataImpl(configurableConversionService.convert(cols[0], Date.class), configurableConversionService.convert(cols[4].replace(',', '.'), Double.class)));
+			
+			results.add(new DataImpl(configurableConversionService.convert(cols[0], Date.class), configurableConversionService.convert(cols[4], Number.class).doubleValue()));
 			
 		}
 		return results;
 		
 		
 	}
+
 	private String dateString(final LocalDate date, final long daysBack) {
 		return dateFormat.format(Date.from(date.minusDays(daysBack).atStartOfDay(ZoneId.systemDefault()).toInstant()));
 	}
 	
 	@SuppressWarnings("unchecked")
-	private ExceptionTranslationBuilder<Date,BufferedReader> exceptionTranslationBuilderConversionService(){
+	private ExceptionTranslationBuilder<Date,BufferedReader> exceptionTranslationBuilderConversionServiceDate(){
 		return (ExceptionTranslationBuilder<Date,BufferedReader>) exceptionTranslationBuilder();
+	}
+	
+	@SuppressWarnings("unchecked")
+	private ExceptionTranslationBuilder<Number,BufferedReader> exceptionTranslationBuilderConversionServiceDouble(){
+		return (ExceptionTranslationBuilder<Number,BufferedReader>) exceptionTranslationBuilder();
 	}
 	
 	
