@@ -33,7 +33,7 @@ import de.mq.portfolio.share.Share;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/application-test.xml" })
-
+@Ignore
 public class HistoryRepositoryIntegrationTest {
 	
 	
