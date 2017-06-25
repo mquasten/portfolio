@@ -68,7 +68,11 @@ class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 		params.put("startDate",  dateString(date, periodeInDays));
 		params.put("endDate",  dateString(date, 1));
 		params.put("delimiter", DELIMITER );
+		
+		//System.out.println(url);
 		final ResponseEntity<String> responseEntity = restOperations.getForEntity(url, String.class, params);
+		
+		//System.out.println(responseEntity.getStatusCodeValue());
 		
 		attachementHeaderWknGuard(share, responseEntity.getHeaders());
 	    
@@ -104,23 +108,24 @@ class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	
 	private List<Data> read(final BufferedReader bufferedReader) throws IOException, ParseException {
 		final ConfigurableConversionService configurableConversionService = configurableConversionService();
+		
 		configurableConversionService.addConverter(String.class, Date.class, dateString -> exceptionTranslationBuilderConversionService().withStatement(() ->  dateFormat.parse(dateString) ).translate());
 		
 		final List<Data> results = new ArrayList<>();
 		for (String line = bufferedReader.readLine(); line != null; line = bufferedReader.readLine() ) {
-			
+		//	System.out.println(line);
 			
 			if( line.startsWith("Datum")) {
 				
 				continue;
 			}
-			//System.out.println(line);
+			
 			
 			final String[] cols =line.split(String.format("[%s]",DELIMITER));
 			if(cols.length  != 7) {
 				continue;
 			}
-			
+			//System.out.println(line);
 			results.add(new DataImpl(configurableConversionService.convert(cols[0], Date.class), configurableConversionService.convert(cols[4].replace(',', '.'), Double.class)));
 			
 		}

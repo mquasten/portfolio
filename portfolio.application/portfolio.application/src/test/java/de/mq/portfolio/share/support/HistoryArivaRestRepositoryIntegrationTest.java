@@ -49,6 +49,13 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 		return parameter;
 	}
 	
+	private Map<String, String> parameterMap(final String shareId, final String boerseId) {
+		final Map<String,String>  parameter = new HashMap<>();
+		parameter.put("shareId", shareId);
+		parameter.put("stockExchangeId", boerseId );
+		return parameter;
+	}
+	
 	@Test
 	public final void historyJNJ() {
 		Assert.assertNotNull(historyRestRepository);
@@ -59,5 +66,23 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 		
 		historyRestRepository.history(share).rates().forEach(rate -> System.out.println(rate.date() + "=" + rate.value()));
 	}
+	
+	
+	@Test
+	public final void dax() {
+		Mockito.doReturn(parameterMap("290", "12")).when(share).gatewayParameter();
+		Mockito.doReturn("846900").when(share).wkn();
+		
+		historyRestRepository.history(share).rates().forEach(rate -> System.out.println(rate.date() + "=" + rate.value()));
+	}
+	
+	@Test
+	public final void dow() {
+		Mockito.doReturn(parameterMap("4325", "71")).when(share).gatewayParameter();
+		Mockito.doReturn("969420").when(share).wkn();
+		
+		historyRestRepository.history(share).rates().forEach(rate -> System.out.println(rate.date() + "=" + rate.value()));
+	}
+	
 
 }

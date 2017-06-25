@@ -18,6 +18,7 @@ import java.util.stream.IntStream;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -62,23 +63,57 @@ public class HistoryRepositoryIntegrationTest {
 	
 	final DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 	
+	private final Map<String, Double> maxDeviationDow = new HashMap<>();
+	
+	
+	private final Map<String, Double> maxDeviationDax = new HashMap<>();
+	
+	
 	@Before
 	public final void setup() {
 		arivaParameter.putAll(arivaHistory.stream().collect(Collectors.toMap(history -> history.code(), history -> history.parameters())));
+		
+		maxDeviationDow.put("GE", 14d);
+		maxDeviationDow.put("GS", 176d);
+		maxDeviationDow.put("IBM", 37d);
+		maxDeviationDow.put("JPM", 60d);
+		maxDeviationDow.put("MSFT", 51d);
+		maxDeviationDow.put("PG", 47d);
+		maxDeviationDow.put("V", 19d);
+		maxDeviationDow.put("WMT", 18d);
+		maxDeviationDow.put("WMT", 24d);
+		maxDeviationDow.put("AAPL", 6d);
+		maxDeviationDow.put("AXP", 5d);
+		maxDeviationDow.put("CAT", 7d);
+		maxDeviationDow.put("CVX", 8d);
+		maxDeviationDow.put("DD", 4d);
+		maxDeviationDow.put("HD", 10d);
+		maxDeviationDow.put("JNJ", 5d);
+		maxDeviationDow.put("KO", 4d);
+		maxDeviationDow.put("MMM", 10d);
+		maxDeviationDow.put("MRK", 4d);
+		maxDeviationDow.put("PFE", 6d);
+		maxDeviationDow.put("TRV", 9d);
+		maxDeviationDow.put("UNH", 4d);
+		maxDeviationDow.put("UTX", 9d);
+		maxDeviationDow.put("VZ", 3d);
+		maxDeviationDow.put("XOM", 6d);
+		
+		maxDeviationDow.put("MCD", 2d);
+		maxDeviationDow.put("DIS", 2d);
+		maxDeviationDow.put("INTC", 2d);
+		
+		
+		maxDeviationDax.put("DBK.DE", 250d);
 	}
 	
 	
 	int counter =0; 
 	
-	private Map<String, String> parameterMap(final String shareId, final String stockExchangeId) {
-		final Map<String,String>  parameter = new HashMap<>();
-		parameter.put("shareId", shareId);
-		parameter.put("stockExchangeId", stockExchangeId);
-		return parameter;
-	}
+	
 	
 	@Test
-
+	@Ignore
 	public  void historySap() throws ParseException {
 		
 		int max = 4;
@@ -165,6 +200,7 @@ public class HistoryRepositoryIntegrationTest {
 
 	
 	@Test
+	@Ignore
 	public  void historyKO()   {
 	
 		Mockito.when(share.code()).thenReturn("KO");
@@ -224,6 +260,7 @@ public class HistoryRepositoryIntegrationTest {
 	}
 	
 	@Test
+	@Ignore
 	public  void historyEONA()   {
 	
 		Mockito.when(share.code()).thenReturn("EOAN.DE");
@@ -284,7 +321,7 @@ public class HistoryRepositoryIntegrationTest {
 	
 	
 	@Test
-	
+	@Ignore
 	public  void historyDB11()   {
 	
 		Mockito.when(share.code()).thenReturn("DB1.DE");
@@ -345,22 +382,46 @@ public class HistoryRepositoryIntegrationTest {
 	  	Assert.assertTrue( missing[0] == 0  );
 	}
 	
+	
 	@Test
-	//@Ignore
-	public final void allshares() {
+	@Ignore
+	public final void allDow() {
+		final List<ShareGatewayParameterImpl> dowList = arivaHistory.stream().filter(history -> ! history.code().toUpperCase().endsWith(".DE")).collect(Collectors.toList());
+		compareShares(dowList, maxDeviationDow);
+	
+	}
+	
+	@Test
+	
+	public final void allDax() {
+		final List<ShareGatewayParameterImpl> daxList = arivaHistory.stream().filter(history ->  history.code().toUpperCase().endsWith(".DE") && !( history.code().equals("DB1.DE")|| history.code().equals("DBK.DE")) ).collect(Collectors.toList());
+		compareShares(daxList, maxDeviationDow);
+	}
+	
+	@Test
+	@Ignore
+	public final void dax() {
+		singleShare("DBK.DE");
+	}
+	
+	private final void singleShare(final String code) {
+		final List<ShareGatewayParameterImpl> singleShareList = arivaHistory.stream().filter(history ->  history.code().equals(code)  ).collect(Collectors.toList());
+		compareShares(singleShareList, maxDeviationDax);
+	}
+	
+	
+	private final void compareShares( final List<ShareGatewayParameterImpl> shareGatewayParameters, final Map<String,Double> maxDeviation  ) {
 		
 	
-		
-		arivaHistory.stream().filter(history -> ! history.code().equals("DB1.DE")).forEach(history -> {
+		shareGatewayParameters.stream().forEach(history -> {
 			
 			
 			System.out.println("***" + history.code() + "***");
 			
-		//	System.out.println(history.parameters());
 			final String code2 = stocks.get(history.code());
 			final Map<Date,double[]> results = new HashMap<>();
 			
-			final String id2 = history.parameters().get("shareId");
+		
 			Mockito.when(share.code2()).thenReturn(code2);
 			//Mockito.when(share.id2()).thenReturn(id2);
 			Mockito.when(share.code()).thenReturn(history.code());
@@ -386,21 +447,27 @@ public class HistoryRepositoryIntegrationTest {
 			resultsWithBoth.forEach(values ->  {
 			 	
 			 	
-			 	//System.out.println(values[0] + ":" + values[1]);
+			 	//System.out.println(history.code() + ":" +values[0] + ":" + values[1]);
 			 	
-				if( history.code().equals("GS") || history.code().equals("IBM")|| history.code().equals("JPM")|| history.code().equals("MSFT") || history.code().equals("PG")|| history.code().equals("V")|| history.code().equals("WMT")) {
-					Assert.assertTrue( Math.abs(Math.round(100d*values[0]) - Math.round(100d*values[1]))  <=  200);
+				if(maxDeviation.containsKey(history.code())) {
+					Assert.assertTrue( Math.abs(100d*values[0] - 100d*values[1])  <  maxDeviation.get(history.code()));
 				} else {
-					Assert.assertTrue( Math.abs(Math.round(100d*values[0]) - Math.round(100d*values[1]))  <= 13);
+					
+					//System.out.println(history.code() + ":" +values[0] + ":" + values[1]);
+					Assert.assertTrue( Math.abs(100d*values[0] -100d*values[1])  <  1);
 				}
-				if ( Math.abs(Math.round(100d*values[0]) - Math.round(100d*values[1])) > 1d) {
+				if ( Math.abs(100d*values[0] - 100d*values[1]) > 1d) {
 					
 					System.out.println(history.code() + ":" + values[0] + ":" + values[1]);
 					counter++;
 				}
 				});
 			
+			
+			//System.out.println(counter);
 			Assert.assertTrue(counter <= 3);
+			
+			
 			
 		});
 		/*stocks.entrySet().stream().filter(entry -> !entry.getKey().equals("EOAN.DE")&& !entry.getKey().equals("DB11.DE")).forEach(entry -> {

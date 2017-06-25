@@ -102,6 +102,9 @@
 	<entry key="SDF.DE" value="ETR:SDF" />
 	
 	<entry key="EOAN.DE" value="ETR:EOAN" />
+	
+	
+	
 
 </util:map>
 
@@ -428,6 +431,240 @@
 </bean>	
 
 
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="ADS.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="291" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="ALV.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="292" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="BAS.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="293" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="BAYN.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="295" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="BEI.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="1932" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="BMW.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="294" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="CBK.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="296" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="CON.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="1252" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="DAI.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="297" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+
+
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="DBK.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="301" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="DPW.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="754" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="DTE.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="303" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="FME.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="305" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="FRE.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="2038" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="HEI.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="4749" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="HEN3.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="306" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="IFX.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="907" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="LHA.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="310" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="LIN.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="309" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+	<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="MRK.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="1622" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+	
+	<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="MUV2.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="313" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>	
+	<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="RWE.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="3861" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>	
 	
 	<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="SAP.DE"/>
@@ -439,6 +676,62 @@
 		</util:map>
 	</constructor-arg>
 </bean>
+
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="PSM.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="2719" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="SIE.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="318" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="TKA.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="319" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="VNA.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="112337051" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="VOW3.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="1753" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+
+
 
 <bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="EOAN.DE"/>
@@ -457,6 +750,17 @@
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="4587" />
+		<entry key="stockExchangeId" value="6" />
+		</util:map>
+	</constructor-arg>
+</bean>
+
+<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<constructor-arg name="code" value="SDF.DE"/>
+	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="parameters" >
+		<util:map >
+		<entry key="shareId" value="1457" />
 		<entry key="stockExchangeId" value="6" />
 		</util:map>
 	</constructor-arg>
@@ -502,9 +806,41 @@
 	
 	
 	
+	
+	
+	<entry key="ADS.DE" value="A1EWWW" />
+	<entry key="ALV.DE" value="840400" />
+	<entry key="BAS.DE" value="BASF11" />
+	<entry key="BAYN.DE" value="BAY001" />
+	<entry key="BEI.DE" value="520000" />
+	<entry key="BMW.DE" value="519000" />
+	<entry key="CBK.DE" value="CBK100" />
+	<entry key="CON.DE" value="543900" />
+	<entry key="DAI.DE" value="710000" />
+	<entry key="DBK.DE" value="514000" />
+	<entry key="DPW.DE" value="555200" />
+	<entry key="DTE.DE" value="555750" />
+	<entry key="FME.DE" value="578580" />
+	<entry key="FRE.DE" value="578560" />
+	<entry key="HEI.DE" value="604700" />
+	<entry key="HEN3.DE" value="604843" />
+	<entry key="IFX.DE" value="623100" />
+	<entry key="LHA.DE" value="823212" />
+	<entry key="LIN.DE" value="648300" />
+	<entry key="MRK.DE" value="659990" />
+	<entry key="MUV2.DE" value="843002" />
+	<entry key="RWE.DE" value="703712" />
+	<entry key="PSM.DE" value="PSM777" />
+	<entry key="SIE.DE" value="723610" />
+	<entry key="TKA.DE" value="750000" />
+	<entry key="VNA.DE" value="A1ML7J" />
+	<entry key="VOW3.DE" value="766403" />
+
 	<entry key="SAP.DE" value="716460" />
 	<entry key="EOAN.DE" value="ENAG99" />
 	<entry key="DB1.DE" value="581005" />
+	<entry key="SDF.DE" value="KSAG88" />
+	
 	
 </util:map>	
 </beans>
