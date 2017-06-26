@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import de.mq.portfolio.share.Share;
+import de.mq.portfolio.share.ShareGatewayParameter;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
 
@@ -108,6 +109,10 @@ class ShareServiceImpl implements ShareService {
 	@Override
 	public final void save(final Share share) {
 		shareRepository.save(share);
+	}
+	
+	public final void save(final ShareGatewayParameter shareGatewayParameter) {
+		System.out.println(shareGatewayParameter.code() +", " +shareGatewayParameter.gateway() +"=" +shareGatewayParameter.parameters() );
 	}
 	
 	@Override

@@ -54,7 +54,7 @@ class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 		
 		
 		
-		//System.out.println(String.format(url, share.code2(), startDate()));
+		System.out.println(String.format(url, share.code2(), startDate()));
 		final String result =restOperations.getForObject(String.format(url, share.code2(), startDate()), String.class);
 		
 		final List<Data> rates = Arrays.asList(result.split("[\n]")).stream().map(line -> line.split("[,]")).filter(cols -> cols.length >= 5 ).filter(cols -> isDate(cols[0]) ).map(cols -> toData(cols)).collect(Collectors.toList());

@@ -8,10 +8,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.Assert;
 
+import de.mq.portfolio.share.ShareGatewayParameter;
+
+
+
 
 
 @Document(collection="ShareGatewayParameter")
-class ShareGatewayParameterImpl {
+class ShareGatewayParameterImpl implements ShareGatewayParameter {
 	
 	@Id
 	private final String code;
@@ -24,7 +28,7 @@ class ShareGatewayParameterImpl {
 	ShareGatewayParameterImpl(final String code, final Gateway gateway,  final Map<String,String> parameters ) {
 		Assert.hasText(code , "Code is mandatory.");
 		Assert.notNull(gateway, "Gateway is mandatory.");
-		Assert.notEmpty(parameters, "At least on Parameter should exist.");
+		Assert.notEmpty(parameters, "At least one Parameter should exist.");
 		parameters.keySet().forEach(parameter -> Assert.hasText("Parameter key is mandatory."));
 		parameters.values().forEach(parameter -> Assert.hasText("Parameter value is mandatory."));
 		this.code=code;
@@ -35,14 +39,26 @@ class ShareGatewayParameterImpl {
 
 	
 	
+	/* (non-Javadoc)
+	 * @see de.mq.portfolio.share.support.ShareGatewayParameter#code()
+	 */
+	@Override
 	public String code() {
 		return code;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.mq.portfolio.share.support.ShareGatewayParameter#gateway()
+	 */
+	@Override
 	public Gateway gateway() {
 		return gateway;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.mq.portfolio.share.support.ShareGatewayParameter#parameters()
+	 */
+	@Override
 	public Map<String, String> parameters() {
 		return Collections.unmodifiableMap(parameters);
 	}

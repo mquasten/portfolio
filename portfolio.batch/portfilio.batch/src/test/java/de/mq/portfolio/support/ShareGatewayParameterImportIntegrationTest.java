@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,27 +15,25 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.mq.portfolio.batch.RulesEngine;
-import de.mq.portfolio.user.User;
-import org.junit.Assert;
+import de.mq.portfolio.share.ShareGatewayParameter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { RulesConfiguration.class })
+@ActiveProfiles("google")
 @Ignore
-@ActiveProfiles("yahoo")
-public class UsersImportIntegrationTest {
+public class ShareGatewayParameterImportIntegrationTest {
 
     @Autowired
-    @Qualifier("importUsers")
-    
+    @Qualifier("importArivaRateHistory")
     private RulesEngine rulesEngine;
-
+    
+    
     @Test
-    @Ignore
     public final void doImport() {
 
         Assert.assertNotNull(rulesEngine);
         final Map<String, Object> parameters = new HashMap<>();
-        parameters.put("filename", "data/users.csv");
+        parameters.put("filename", "data/ariva.csv");
 
         rulesEngine.fireRules(parameters);
 
@@ -42,14 +41,15 @@ public class UsersImportIntegrationTest {
         System.out.println("Processed: " + rulesEngine.processed());
 
         Assert.assertTrue(rulesEngine.failed().isEmpty());
-        Assert.assertEquals(3, rulesEngine.processed().size());
+        Assert.assertEquals(2, rulesEngine.processed().size());
 
         @SuppressWarnings("unchecked")
-        final Collection<User> results = (Collection<User>) parameters
+        final Collection<ShareGatewayParameter> results = (Collection<ShareGatewayParameter>) parameters
                 .get(AbstractServiceRule.ITEMS_PARAMETER);
 
-        results.forEach(user -> System.out.println(user));
+        results.forEach(shareGatewayParameter -> System.out.println(shareGatewayParameter));
 
     }
+
 
 }

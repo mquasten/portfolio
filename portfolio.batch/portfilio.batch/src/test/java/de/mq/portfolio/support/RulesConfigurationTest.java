@@ -302,7 +302,7 @@ public class RulesConfigurationTest {
 			}
 		}, method -> method.getDeclaringClass().equals(RulesConfiguration.class)&& (!Modifier.isStatic(method.getModifiers()) || method.getReturnType().equals(BeanFactoryPostProcessor.class) ));
 		
-		Assert.assertEquals(9, counters[0]);
+		Assert.assertEquals(10, counters[0]);
 	}
 	
 	

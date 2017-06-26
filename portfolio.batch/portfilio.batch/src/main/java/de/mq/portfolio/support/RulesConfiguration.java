@@ -8,6 +8,7 @@ import java.util.Collection;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.client.ResourceAccessException;
@@ -17,7 +18,9 @@ import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl;
 import de.mq.portfolio.share.Share;
+import de.mq.portfolio.share.ShareGatewayParameter;
 import de.mq.portfolio.share.ShareService;
+import de.mq.portfolio.share.support.ShareGatewayParameterArivaRateHistoryCSVLineConverterImpl;
 import de.mq.portfolio.share.support.SharesCSVLineConverterImpl;
 import de.mq.portfolio.shareportfolio.support.SharePortfolioService;
 import de.mq.portfolio.user.User;
@@ -26,11 +29,13 @@ import de.mq.portfolio.user.support.UsersCSVLineConverterImpl;
 
 @Configuration
 @ImportResource("classpath*:application.xml")
+@Import({AbstractJsonInputService.class})
 class RulesConfiguration {
 
 	static final String IMPORT_PORTFOLIOS_RULE_ENGINE_NAME = "importPortfolios";
 	static final String SPEL_CONVERT_USER_ITEM = "user(#item)";
 	static final String IMPORT_USERS_RULE_ENGINE_NAME = "importUsers";
+	static final String IMPORT_ARIVA_HISTORY_RATE_RULE_ENGINE_NAME = "importArivaRateHistory";
 	static final String IMPORT_SHARES_RULE_ENGINE_NAME = "importShares";
 	static final String IMPORT_TIME_COURSES_RULE_ENGINE_NAME = "importTimeCourses";
 	static final String IMPORT_EXCHANGE_RATES_RULE_ENGINE_NAME = "importExchangeRates";
@@ -63,6 +68,12 @@ class RulesConfiguration {
     @Scope("prototype")
     RulesEngine importUsers(final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<User>, BufferedReader> exceptionTranslationBuilder, final UserService userService) {
 	    return rulesEngineBuilder.withName(IMPORT_USERS_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new UsersCSVLineConverterImpl(),exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(userService, SPEL_CONVERT_USER_ITEM)).withRule(new ProcessServiceRuleImpl<>(userService, SPEL_SAVE_ITEM)).build();
+	}
+	
+	@Bean
+    @Scope("prototype")
+    RulesEngine importArivaRateHistory(final ShareService shareService, final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<ShareGatewayParameter>, BufferedReader> exceptionTranslationBuilder) {
+	    return rulesEngineBuilder.withName(IMPORT_ARIVA_HISTORY_RATE_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new ShareGatewayParameterArivaRateHistoryCSVLineConverterImpl(),exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(shareService, SPEL_SAVE_ITEM)).build();
 	}
 	
 	@Bean

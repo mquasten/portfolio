@@ -33,7 +33,7 @@ import de.mq.portfolio.share.Share;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/application-test.xml" })
-@Ignore
+
 public class HistoryRepositoryIntegrationTest {
 	
 	
@@ -402,6 +402,7 @@ public class HistoryRepositoryIntegrationTest {
 	@Ignore
 	public final void dax() {
 		singleShare("DBK.DE");
+		//singleShare("IBM");
 	}
 	
 	private final void singleShare(final String code) {
@@ -506,5 +507,17 @@ public class HistoryRepositoryIntegrationTest {
 	}
 	
 	
+	@Test
+	@Ignore
+	public final void arivaCSV() {
+		arivaHistory.stream().forEach(history -> {
+			
+			System.out.println(history.code() +";" +history.gateway() +";" + history.parameters().get("shareId")+ ";" + history.parameters().get("stockExchangeId"));
+			
+		});
+		
+		System.out.println("^GDAXI" +";"+Gateway.ArivaRateHistory +";"+"290"+";" +"12");
+		System.out.println("^DJI" +";"+Gateway.ArivaRateHistory +";"+"4325"+";" +"71");
+	}
 
 }
