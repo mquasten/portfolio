@@ -112,7 +112,7 @@ class ShareServiceImpl implements ShareService {
 	}
 	
 	public final void save(final ShareGatewayParameter shareGatewayParameter) {
-		System.out.println(shareGatewayParameter.code() +", " +shareGatewayParameter.gateway() +"=" +shareGatewayParameter.parameters() );
+		shareRepository.save(shareGatewayParameter);
 	}
 	
 	@Override

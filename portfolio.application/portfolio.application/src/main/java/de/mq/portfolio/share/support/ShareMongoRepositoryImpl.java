@@ -17,6 +17,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.share.Share;
+import de.mq.portfolio.share.ShareGatewayParameter;
 import de.mq.portfolio.share.TimeCourse;
 
 @Repository("shareRepository")
@@ -150,6 +151,14 @@ class ShareMongoRepositoryImpl implements ShareRepository {
 			} , field -> field.isAnnotationPresent(Id.class) );
 		}
 		mongoOperations.save(share);
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.share.support.ShareRepository#save(de.mq.portfolio.share.ShareGatewayParameter)
+	 */
+	@Override
+	public final void save(final ShareGatewayParameter shareGatewayParameter) {
+		mongoOperations.save(shareGatewayParameter);
 	}
 
 }

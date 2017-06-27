@@ -20,7 +20,7 @@ import de.mq.portfolio.share.ShareGatewayParameter;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { RulesConfiguration.class })
 @ActiveProfiles("google")
-@Ignore
+@Ignore()
 public class ShareGatewayParameterImportIntegrationTest {
 
     @Autowired
