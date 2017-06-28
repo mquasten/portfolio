@@ -110,7 +110,7 @@
 
 <util:list id="arivaHistory" list-class="java.util.ArrayList">
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="AAPL"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -121,7 +121,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="AXP"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -132,7 +132,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="BA"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -143,7 +143,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="CAT"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -154,7 +154,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="CSCO"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -165,7 +165,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="CVX"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -176,7 +176,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="DD"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -187,7 +187,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="DIS"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -198,7 +198,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="GE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -209,7 +209,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="GS"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -219,7 +219,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="HD"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -230,7 +230,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="IBM"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -241,7 +241,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="INTC"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -252,7 +252,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="JNJ"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -262,7 +262,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="JPM"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -272,7 +272,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>
-	<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="KO"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -284,7 +284,7 @@
 </bean>	
 
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="MCD"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -295,7 +295,7 @@
 	</constructor-arg>
 </bean>	
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="MMM"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -306,7 +306,7 @@
 	</constructor-arg>
 </bean>	
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="MRK"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -317,7 +317,7 @@
 	</constructor-arg>
 </bean>	
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="MSFT"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -327,7 +327,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>	
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="NKE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -338,7 +338,7 @@
 	</constructor-arg>
 </bean>	
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="PFE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -348,7 +348,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>	
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="PG"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -358,7 +358,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>	
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="TRV"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -368,7 +368,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>	
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="UNH"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -378,7 +378,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>	
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="UTX"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -388,7 +388,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>	
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="V"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -398,7 +398,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>	
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="VZ"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -408,7 +408,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>	
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="WMT"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -419,7 +419,7 @@
 	</constructor-arg>
 </bean>	
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="XOM"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -431,7 +431,7 @@
 </bean>	
 
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="ADS.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -441,7 +441,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="ALV.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -452,7 +452,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="BAS.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -463,7 +463,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="BAYN.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -473,7 +473,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="BEI.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -483,7 +483,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="BMW.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -494,7 +494,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="CBK.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -504,7 +504,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="CON.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -515,7 +515,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="DAI.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -527,7 +527,7 @@
 </bean>
 
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="DBK.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -538,7 +538,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="DPW.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -549,7 +549,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="DTE.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -560,7 +560,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="FME.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -571,7 +571,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="FRE.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -581,7 +581,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="HEI.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -592,7 +592,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="HEN3.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -603,7 +603,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="IFX.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -614,7 +614,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="LHA.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -624,7 +624,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="LIN.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -634,7 +634,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>
-	<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="MRK.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -645,7 +645,7 @@
 	</constructor-arg>
 </bean>
 	
-	<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="MUV2.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -655,7 +655,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>	
-	<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="RWE.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -666,7 +666,7 @@
 	</constructor-arg>
 </bean>	
 	
-	<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+	<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="SAP.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -677,7 +677,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="PSM.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -687,7 +687,7 @@
 		</util:map>
 	</constructor-arg>
 </bean>
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="SIE.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -698,7 +698,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="TKA.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -709,7 +709,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="VNA.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -720,7 +720,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="VOW3.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -733,7 +733,7 @@
 
 
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="EOAN.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -744,7 +744,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="DB1.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >
@@ -755,7 +755,7 @@
 	</constructor-arg>
 </bean>
 
-<bean class="de.mq.portfolio.share.support.ShareGatewayParameterImpl">
+<bean class="de.mq.portfolio.gateway.support.ShareGatewayParameterImpl">
 	<constructor-arg name="code" value="SDF.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
 	<constructor-arg name="parameters" >

@@ -1,4 +1,4 @@
-package de.mq.portfolio.share.support;
+package de.mq.portfolio.gateway.support;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,8 +6,9 @@ import java.util.Map;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.util.Assert;
 
+import de.mq.portfolio.gateway.Gateway;
+import de.mq.portfolio.gateway.ShareGatewayParameter;
 
-import de.mq.portfolio.share.ShareGatewayParameter;
 
 public class ShareGatewayParameterArivaRateHistoryCSVLineConverterImpl implements Converter<String[], ShareGatewayParameter> {
 

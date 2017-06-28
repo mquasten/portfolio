@@ -15,7 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.mq.portfolio.batch.RulesEngine;
-import de.mq.portfolio.share.ShareGatewayParameter;
+import de.mq.portfolio.gateway.ShareGatewayParameter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { RulesConfiguration.class })

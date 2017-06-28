@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import de.mq.portfolio.share.Share;
-import de.mq.portfolio.share.ShareGatewayParameter;
 import de.mq.portfolio.share.TimeCourse;
 
 public interface ShareRepository {
@@ -26,8 +25,6 @@ public interface ShareRepository {
 	Collection<String> distinctIndex();
 
 	Collection<TimeCourse> timeCourses(final Collection<String> codes);
-
-	void save(ShareGatewayParameter shareGatewayParameter);
 
 	
 
