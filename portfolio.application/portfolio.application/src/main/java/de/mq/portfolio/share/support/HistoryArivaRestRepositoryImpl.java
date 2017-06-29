@@ -29,6 +29,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestOperations;
 
+import de.mq.portfolio.gateway.Gateway;
+import de.mq.portfolio.gateway.support.ShareGatewayParameterRepository;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
@@ -37,18 +39,18 @@ import de.mq.portfolio.support.ExceptionTranslationBuilder;
 
 @Repository()
 @Profile("ariva" )
-abstract
-class HistoryArivaRestRepositoryImpl implements HistoryRepository {
+abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 
 	private static final String DELIMITER = "|";
 	private final DateFormat dateFormat ;
 	private final int periodeInDays = 365;
-	
+	private final ShareGatewayParameterRepository shareGatewayParameterRepository;
 	private final RestOperations restOperations;
 	private final String url; 
 	private final boolean wknCheck;
 	@Autowired
-	HistoryArivaRestRepositoryImpl(final RestOperations restOperations, @Value("${history.ariva.url}" ) final String url,  @Value("${history.ariva.dateformat?:yyyy-MM-dd}" ) final String dateFormat, @Value("${history.ariva.wkncheck}" ) final boolean wknCheck ) {
+	HistoryArivaRestRepositoryImpl(final ShareGatewayParameterRepository shareGatewayParameterRepository, final RestOperations restOperations, @Value("${history.ariva.url}" ) final String url,  @Value("${history.ariva.dateformat?:yyyy-MM-dd}" ) final String dateFormat, @Value("${history.ariva.wkncheck}" ) final boolean wknCheck ) {
+		this.shareGatewayParameterRepository=shareGatewayParameterRepository;
 		this.restOperations = restOperations;
 		this.url=url;
 		this.dateFormat=new SimpleDateFormat(dateFormat);
@@ -60,7 +62,8 @@ class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 		
 		final LocalDate date = LocalDate.now();
 		Map<String,Object> params = new HashMap<>();
-		params.putAll(share.gatewayParameter());
+		final Map<String, String> parameters = shareGatewayParameterRepository.shareGatewayParameter(Gateway.ArivaRateHistory, share.code()).parameters();
+		params.putAll(parameters);
 		
 		params.put("startDate",  dateString(date, periodeInDays));
 		params.put("endDate",  dateString(date, 1));
@@ -81,6 +84,8 @@ class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 			return;
 		}
 		
+		
+		System.out.println("****");
 		Assert.hasText(share.wkn(), "WKN is mandatory in share if wknCheck is used.");
 		
 		final Map<String,String> headers = httpHeaders.toSingleValueMap();

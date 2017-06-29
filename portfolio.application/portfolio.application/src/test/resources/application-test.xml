@@ -22,7 +22,9 @@
 <bean id="restTemplate" class="org.springframework.web.client.RestTemplate" />
    
 <bean id="yahooRealtimeRepository" class="de.mq.portfolio.share.support.RealTimeRateYahooRestRepositoryImpl" />
-<bean class="de.mq.portfolio.support.ExceptionTranslationBuilderImpl" scope="prototype" />
+<bean class="de.mq.portfolio.support.ExceptionTranslationBuilderImpl" scope="prototype" />    
+
+<bean  class="de.mq.portfolio.gateway.support.ShareGatewayParameterRepositoryImpl" />
 
 <bean  class="de.mq.portfolio.exchangerate.support.AbstractRealtimeExchangeRateRepository"/>
 	<util:map id="stocks" key-type="java.lang.String" value-type="java.lang.String"

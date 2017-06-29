@@ -19,7 +19,7 @@ import de.mq.portfolio.share.Share;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/application-test.xml" })
+@ContextConfiguration(locations = { "/mongo-test.xml" ,"/application-test.xml" })
 @Ignore
 public class HistoryArivaRestRepositoryIntegrationTest {
 	
@@ -39,7 +39,7 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 	
 		
 		Mockito.doReturn("850663").when(share).wkn(); 
-		//Mockito.doReturn("KO").when(share).code();
+		Mockito.doReturn("KO").when(share).code();
 		historyRestRepository.history(share).rates().forEach(rate -> System.out.println(rate.date() + "=" + rate.value()));
 	}
 
@@ -73,6 +73,7 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 	public final void dax() {
 		Mockito.doReturn(parameterMap("290", "12")).when(share).gatewayParameter();
 		Mockito.doReturn("846900").when(share).wkn();
+		Mockito.doReturn("^GDAXI").when(share).code();
 		Mockito.doReturn(true).when(share).isIndex();
 		historyRestRepository.history(share).rates().forEach(rate -> System.out.println(rate.date() + "=" + rate.value()));
 	}
@@ -82,6 +83,7 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 		Mockito.doReturn(parameterMap("4325", "71")).when(share).gatewayParameter();
 		Mockito.doReturn("969420").when(share).wkn();
 		Mockito.doReturn(true).when(share).isIndex();
+		Mockito.doReturn("^DJI").when(share).code();
 		historyRestRepository.history(share).rates().forEach(rate -> System.out.println(rate.date() + "=" + rate.value()));
 	}
 	

@@ -29,6 +29,11 @@ class ShareGatewayParameterImpl implements ShareGatewayParameter {
 
 		this.parameters.putAll(parameters);
 	}
+	
+	@SuppressWarnings("unused")
+	private ShareGatewayParameterImpl() {
+		id=null;
+   }
 
 	/*
 	 * (non-Javadoc)
