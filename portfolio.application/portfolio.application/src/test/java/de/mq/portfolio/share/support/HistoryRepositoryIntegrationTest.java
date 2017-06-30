@@ -501,5 +501,7 @@ public class HistoryRepositoryIntegrationTest {
 		System.out.println("^GDAXI" +";"+Gateway.ArivaRateHistory +";"+"290"+";" +"12");
 		System.out.println("^DJI" +";"+Gateway.ArivaRateHistory +";"+"4325"+";" +"71");
 	}
+	
+	
 
 }

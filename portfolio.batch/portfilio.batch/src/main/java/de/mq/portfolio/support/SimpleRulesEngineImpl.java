@@ -45,7 +45,7 @@ class SimpleRulesEngineImpl implements RulesEngine {
 			if (!rule.evaluate()) {
 				continue;
 			}
-
+			
 			execute(rule, parameters);
 
 			if (skipOnFirstApplied) {

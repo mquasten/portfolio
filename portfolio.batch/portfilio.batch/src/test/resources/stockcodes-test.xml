@@ -83,13 +83,94 @@
 	<entry key="VNA.DE" value="ETR:VNA" />
 	
 	<entry key="VOW3.DE" value="ETR:VOW3" />
-	<entry key="DB11.DE" value="ETR:DB11" />
+	<entry key="DB1.DE" value="ETR:DB11" />
 	
 	<entry key="SDF.DE" value="ETR:SDF" />
 	
 	<entry key="EOAN.DE" value="ETR:EOAN" />
+	
+	
 
 </util:map>
+
+
+<util:map id="wkns" key-type="java.lang.String" value-type="java.lang.String"
+	map-class="java.util.HashMap">
+	<entry key="AAPL" value="865985" />
+	<entry key="AXP" value="850226" />
+	<entry key="BA" value="850471" />
+	<entry key="CAT" value="850598" />
+	<entry key="CSCO" value="878841" />
+	<entry key="CVX" value="852552" />
+	<entry key="DD" value="852046" />
+	<entry key="DIS" value="855686" />
+	<entry key="GE" value="851144" />
+	<entry key="GS" value="920332" />
+	<entry key="HD" value="866953" />
+	<entry key="IBM" value="851399" />
+	<entry key="INTC" value="855681" />
+	<entry key="JNJ" value="853260" />
+	<entry key="JPM" value="850628" />
+	<entry key="KO" value="850663" />
+	<entry key="MCD" value="856958" />
+	<entry key="MMM" value="851745" />
+	<entry key="MRK" value="A0YD8Q" />
+	<entry key="MSFT" value="870747" />
+	<entry key="NKE" value="866993" />
+	<entry key="PFE" value="852009" />
+	<entry key="PG" value="852062" />
+	<entry key="TRV" value="A0MLX4" />
+	<entry key="UNH" value="869561" />
+	<entry key="UTX" value="852759" />
+	<entry key="V" value="A0NC7B" />
+	<entry key="VZ" value="868402" />
+	<entry key="WMT" value="860853" />
+	<entry key="XOM" value="852549" />
+	
+	
+	
+	
+	
+	<entry key="ADS.DE" value="A1EWWW" />
+	<entry key="ALV.DE" value="840400" />
+	<entry key="BAS.DE" value="BASF11" />
+	<entry key="BAYN.DE" value="BAY001" />
+	<entry key="BEI.DE" value="520000" />
+	<entry key="BMW.DE" value="519000" />
+	<entry key="CBK.DE" value="CBK100" />
+	<entry key="CON.DE" value="543900" />
+	<entry key="DAI.DE" value="710000" />
+	<entry key="DBK.DE" value="514000" />
+	<entry key="DPW.DE" value="555200" />
+	<entry key="DTE.DE" value="555750" />
+	<entry key="FME.DE" value="578580" />
+	<entry key="FRE.DE" value="578560" />
+	<entry key="HEI.DE" value="604700" />
+	<entry key="HEN3.DE" value="604843" />
+	<entry key="IFX.DE" value="623100" />
+	<entry key="LHA.DE" value="823212" />
+	<entry key="LIN.DE" value="648300" />
+	<entry key="MRK.DE" value="659990" />
+	<entry key="MUV2.DE" value="843002" />
+	<entry key="RWE.DE" value="703712" />
+	<entry key="PSM.DE" value="PSM777" />
+	<entry key="SIE.DE" value="723610" />
+	<entry key="TKA.DE" value="750000" />
+	<entry key="VNA.DE" value="A1ML7J" />
+	<entry key="VOW3.DE" value="766403" />
+
+	<entry key="SAP.DE" value="716460" />
+	<entry key="EOAN.DE" value="ENAG99" />
+	<entry key="DB1.DE" value="581005" />
+	<entry key="SDF.DE" value="KSAG88" />
+	
+	
+	<entry key="^GDAXI" value="846900" />
+	<entry key="^DJI" value="969420" />
+	
+	
+	
+</util:map>	
 	
 </beans>
 

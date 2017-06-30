@@ -30,6 +30,7 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 	private final Share share = Mockito.mock(Share.class);
 	
 	@Test
+	@Ignore
 	public final void historyKO() {
 		
 		//400, 412
@@ -58,6 +59,7 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 	}
 	
 	@Test
+	@Ignore
 	public final void historyJNJ() {
 		Assert.assertNotNull(historyRestRepository);
 		Mockito.doReturn(parameterMap("412")).when(share).gatewayParameter();
@@ -70,6 +72,7 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 	
 	
 	@Test
+	@Ignore
 	public final void dax() {
 		Mockito.doReturn(parameterMap("290", "12")).when(share).gatewayParameter();
 		Mockito.doReturn("846900").when(share).wkn();
@@ -79,6 +82,7 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 	}
 	
 	@Test
+	@Ignore
 	public final void dow() {
 		Mockito.doReturn(parameterMap("4325", "71")).when(share).gatewayParameter();
 		Mockito.doReturn("969420").when(share).wkn();

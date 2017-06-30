@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestOperations;
+import org.springframework.web.util.UriTemplate;
 
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.support.ShareGatewayParameterRepository;
@@ -69,13 +71,15 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 		params.put("endDate",  dateString(date, 1));
 		params.put("delimiter", DELIMITER );
 	
+		System.out.println(new UriTemplate(url).expand(params));
+		
 		final ResponseEntity<String> responseEntity = restOperations.getForEntity(url, String.class, params);
 	
 		attachementHeaderWknGuard(share, responseEntity.getHeaders());
 	    
 		return new TimeCourseImpl(share, exceptionTranslationBuilderResult().withResource( () ->  {
 			return new BufferedReader(new StringReader(responseEntity.getBody()));
-		}).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {return  read(bufferedReader,share.isIndex());}).translate(), Arrays.asList());
+		}).withStatement(bufferedReader -> {return  read(bufferedReader,share.isIndex());}).translate(), Arrays.asList());
 	}
 
 	void attachementHeaderWknGuard(final Share share, final  HttpHeaders httpHeaders) {
@@ -84,8 +88,6 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 			return;
 		}
 		
-		
-		System.out.println("****");
 		Assert.hasText(share.wkn(), "WKN is mandatory in share if wknCheck is used.");
 		
 		final Map<String,String> headers = httpHeaders.toSingleValueMap();
@@ -133,6 +135,7 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 			results.add(new DataImpl(configurableConversionService.convert(cols[0], Date.class), configurableConversionService.convert(cols[4], Number.class).doubleValue()));
 			
 		}
+		Collections.sort(results, (data1, data2)-> Double.valueOf(Math.signum(Long.valueOf(data1.date().getTime() - data2.date().getTime()).doubleValue())).intValue() ); 
 		return results;
 		
 		
