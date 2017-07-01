@@ -32,7 +32,7 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.util.UriTemplate;
 
 import de.mq.portfolio.gateway.Gateway;
-import de.mq.portfolio.gateway.support.ShareGatewayParameterRepository;
+import de.mq.portfolio.gateway.support.GatewayParameterRepository;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
@@ -46,12 +46,12 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	private static final String DELIMITER = "|";
 	private final DateFormat dateFormat ;
 	private final int periodeInDays = 365;
-	private final ShareGatewayParameterRepository shareGatewayParameterRepository;
+	private final GatewayParameterRepository shareGatewayParameterRepository;
 	private final RestOperations restOperations;
 	private final String url; 
 	private final boolean wknCheck;
 	@Autowired
-	HistoryArivaRestRepositoryImpl(final ShareGatewayParameterRepository shareGatewayParameterRepository, final RestOperations restOperations, @Value("${history.ariva.url}" ) final String url,  @Value("${history.ariva.dateformat?:yyyy-MM-dd}" ) final String dateFormat, @Value("${history.ariva.wkncheck}" ) final boolean wknCheck ) {
+	HistoryArivaRestRepositoryImpl(final GatewayParameterRepository shareGatewayParameterRepository, final RestOperations restOperations, @Value("${history.ariva.url}" ) final String url,  @Value("${history.ariva.dateformat?:yyyy-MM-dd}" ) final String dateFormat, @Value("${history.ariva.wkncheck}" ) final boolean wknCheck ) {
 		this.shareGatewayParameterRepository=shareGatewayParameterRepository;
 		this.restOperations = restOperations;
 		this.url=url;

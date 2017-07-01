@@ -9,27 +9,27 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import de.mq.portfolio.gateway.Gateway;
-import de.mq.portfolio.gateway.ShareGatewayParameter;
+import de.mq.portfolio.gateway.GatewayParameter;
 
 @Repository
-class ShareGatewayParameterRepositoryImpl  implements ShareGatewayParameterRepository{
+class GatewayParameterRepositoryImpl  implements GatewayParameterRepository{
 
 	final MongoOperations mongoOperations; 
 	
 	@Autowired
-	ShareGatewayParameterRepositoryImpl(MongoOperations mongoOperations) {
+	GatewayParameterRepositoryImpl(MongoOperations mongoOperations) {
 		this.mongoOperations = mongoOperations;
 	}
 
 	@Override
-	public ShareGatewayParameter shareGatewayParameter(final Gateway gateway, final String... keys) {
+	public GatewayParameter shareGatewayParameter(final Gateway gateway, final String... keys) {
 		
 		final Query query = new Query(Criteria.where("id").is(gateway.id(keys)));
-		return DataAccessUtils.requiredSingleResult(mongoOperations.find(query, ShareGatewayParameterImpl.class));
+		return DataAccessUtils.requiredSingleResult(mongoOperations.find(query, GatewayParameterImpl.class));
 		
 	}
 	
-	public final void save(final ShareGatewayParameter shareGatewayParameter) {
+	public final void save(final GatewayParameter shareGatewayParameter) {
 		mongoOperations.save(shareGatewayParameter);
 	}
 

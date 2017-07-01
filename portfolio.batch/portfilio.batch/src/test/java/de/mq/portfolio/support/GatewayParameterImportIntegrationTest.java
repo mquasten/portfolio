@@ -15,13 +15,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.mq.portfolio.batch.RulesEngine;
-import de.mq.portfolio.gateway.ShareGatewayParameter;
+import de.mq.portfolio.gateway.GatewayParameter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { RulesConfiguration.class })
 @ActiveProfiles("google")
 @Ignore()
-public class ShareGatewayParameterImportIntegrationTest {
+public class GatewayParameterImportIntegrationTest {
 
     @Autowired
     @Qualifier("importArivaRateHistory")
@@ -44,7 +44,7 @@ public class ShareGatewayParameterImportIntegrationTest {
         Assert.assertEquals(2, rulesEngine.processed().size());
 
         @SuppressWarnings("unchecked")
-        final Collection<ShareGatewayParameter> results = (Collection<ShareGatewayParameter>) parameters
+        final Collection<GatewayParameter> results = (Collection<GatewayParameter>) parameters
                 .get(AbstractServiceRule.ITEMS_PARAMETER);
 
         results.forEach(shareGatewayParameter -> System.out.println(shareGatewayParameter));

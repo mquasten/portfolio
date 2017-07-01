@@ -29,7 +29,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.mq.portfolio.gateway.Gateway;
-import de.mq.portfolio.gateway.ShareGatewayParameter;
+import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 
@@ -54,7 +54,7 @@ public class HistoryRepositoryIntegrationTest {
 	private Map<String,String> stocks;
 	
 	@Value("#{arivaHistory}")
-	private List<ShareGatewayParameter> arivaHistory;
+	private List<GatewayParameter> arivaHistory;
 	
 	private final Map <String,Map<String,String>> arivaParameter = new HashMap<>();
 	
@@ -368,7 +368,7 @@ public class HistoryRepositoryIntegrationTest {
 			    counter[0]++;
 			    
 			    if(  values[0] != null &&  values[1] != null  )  {
-			    	Assert.assertTrue(Math.abs(Math.round(100d*values[0]) - Math.round(100d*values[1])) <= 1d );
+			    	Assert.assertTrue(100*Math.abs(values[0] - values[1]) <= 1d );
 			    	
 			    } else {
 			    	missing[0]++;
@@ -389,7 +389,7 @@ public class HistoryRepositoryIntegrationTest {
 	@Test
 	@Ignore
 	public final void allDow() {
-		final List<ShareGatewayParameter> dowList = arivaHistory.stream().filter(history -> ! history.code().toUpperCase().endsWith(".DE")).collect(Collectors.toList());
+		final List<GatewayParameter> dowList = arivaHistory.stream().filter(history -> ! history.code().toUpperCase().endsWith(".DE")).collect(Collectors.toList());
 		compareShares(dowList, maxDeviationDow);
 	
 	}
@@ -397,24 +397,24 @@ public class HistoryRepositoryIntegrationTest {
 	@Test
 	@Ignore
 	public final void allDax() {
-		final List<ShareGatewayParameter> daxList = arivaHistory.stream().filter(history ->  history.code().toUpperCase().endsWith(".DE") && !( history.code().equals("DB1.DE")|| history.code().equals("DBK.DE")) ).collect(Collectors.toList());
+		final List<GatewayParameter> daxList = arivaHistory.stream().filter(history ->  history.code().toUpperCase().endsWith(".DE") && !( history.code().equals("DB1.DE")|| history.code().equals("DBK.DE")) ).collect(Collectors.toList());
 		compareShares(daxList, maxDeviationDow);
 	}
 	
 	@Test
 	@Ignore
 	public final void dax() {
-		singleShare("SAP.DE");
+		singleShare("DBK.DE");
 		//singleShare("IBM");
 	}
 	
 	private final void singleShare(final String code) {
-		final List<ShareGatewayParameter> singleShareList = arivaHistory.stream().filter(history ->  history.code().equals(code)  ).collect(Collectors.toList());
+		final List<GatewayParameter> singleShareList = arivaHistory.stream().filter(history ->  history.code().equals(code)  ).collect(Collectors.toList());
 		compareShares(singleShareList, maxDeviationDax);
 	}
 	
 	
-	private final void compareShares( final List<ShareGatewayParameter> shareGatewayParameters, final Map<String,Double> maxDeviation  ) {
+	private final void compareShares( final List<GatewayParameter> shareGatewayParameters, final Map<String,Double> maxDeviation  ) {
 		
 	
 		shareGatewayParameters.stream().forEach(history -> {

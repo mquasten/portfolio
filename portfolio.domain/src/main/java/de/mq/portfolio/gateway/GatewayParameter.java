@@ -2,7 +2,7 @@ package de.mq.portfolio.gateway;
 
 import java.util.Map;
 
-public interface ShareGatewayParameter {
+public interface GatewayParameter {
 
 	String code();
 	

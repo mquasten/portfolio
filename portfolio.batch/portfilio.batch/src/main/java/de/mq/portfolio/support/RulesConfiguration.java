@@ -17,9 +17,9 @@ import de.mq.portfolio.batch.RulesEngine;
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl;
-import de.mq.portfolio.gateway.ShareGatewayParameter;
-import de.mq.portfolio.gateway.support.ShareGatewayParameterArivaRateHistoryCSVLineConverterImpl;
-import de.mq.portfolio.gateway.support.ShareGatewayParameterRepository;
+import de.mq.portfolio.gateway.GatewayParameter;
+import de.mq.portfolio.gateway.support.GatewayParameterArivaRateHistoryCSVLineConverterImpl;
+import de.mq.portfolio.gateway.support.GatewayParameterRepository;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.support.SharesCSVLineConverterImpl;
@@ -73,8 +73,8 @@ class RulesConfiguration {
 	
 	@Bean
     @Scope("prototype")
-    RulesEngine importArivaRateHistory(final ShareGatewayParameterRepository shareGatewayParameterRepository, final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<ShareGatewayParameter>, BufferedReader> exceptionTranslationBuilder) {
-	    return rulesEngineBuilder.withName(IMPORT_ARIVA_HISTORY_RATE_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new ShareGatewayParameterArivaRateHistoryCSVLineConverterImpl(),exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(shareGatewayParameterRepository, SPEL_SAVE_ITEM)).build();
+    RulesEngine importArivaRateHistory(final GatewayParameterRepository shareGatewayParameterRepository, final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<GatewayParameter>, BufferedReader> exceptionTranslationBuilder) {
+	    return rulesEngineBuilder.withName(IMPORT_ARIVA_HISTORY_RATE_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new GatewayParameterArivaRateHistoryCSVLineConverterImpl(),exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(shareGatewayParameterRepository, SPEL_SAVE_ITEM)).build();
 	}
 	
 	@Bean

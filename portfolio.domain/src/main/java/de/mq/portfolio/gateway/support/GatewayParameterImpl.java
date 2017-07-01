@@ -9,17 +9,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.Assert;
 
 import de.mq.portfolio.gateway.Gateway;
-import de.mq.portfolio.gateway.ShareGatewayParameter;
+import de.mq.portfolio.gateway.GatewayParameter;
 
 @Document(collection = "ShareGatewayParameter")
-class ShareGatewayParameterImpl implements ShareGatewayParameter {
+class GatewayParameterImpl implements GatewayParameter {
 
 	@Id
 	private final String id;
 
 	private final Map<String, String> parameters = new HashMap<>();
 
-	ShareGatewayParameterImpl(final String code, final Gateway gateway, final Map<String, String> parameters) {
+	GatewayParameterImpl(final String code, final Gateway gateway, final Map<String, String> parameters) {
 		Assert.hasText(code, "Code is mandatory.");
 		Assert.notNull(gateway, "Gateway is mandatory.");
 		Assert.notEmpty(parameters, "At least one Parameter should exist.");
@@ -31,7 +31,7 @@ class ShareGatewayParameterImpl implements ShareGatewayParameter {
 	}
 	
 	@SuppressWarnings("unused")
-	private ShareGatewayParameterImpl() {
+	private GatewayParameterImpl() {
 		id=null;
    }
 
