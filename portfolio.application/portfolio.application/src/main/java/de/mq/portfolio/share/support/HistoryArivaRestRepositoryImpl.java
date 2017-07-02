@@ -32,6 +32,7 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.util.UriTemplate;
 
 import de.mq.portfolio.gateway.Gateway;
+import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.support.GatewayParameterRepository;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
@@ -48,13 +49,13 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	private final int periodeInDays = 365;
 	private final GatewayParameterRepository shareGatewayParameterRepository;
 	private final RestOperations restOperations;
-	private final String url; 
+
 	private final boolean wknCheck;
 	@Autowired
-	HistoryArivaRestRepositoryImpl(final GatewayParameterRepository shareGatewayParameterRepository, final RestOperations restOperations, @Value("${history.ariva.url}" ) final String url,  @Value("${history.ariva.dateformat?:yyyy-MM-dd}" ) final String dateFormat, @Value("${history.ariva.wkncheck}" ) final boolean wknCheck ) {
+	HistoryArivaRestRepositoryImpl(final GatewayParameterRepository shareGatewayParameterRepository, final RestOperations restOperations,  @Value("${history.ariva.dateformat?:yyyy-MM-dd}" ) final String dateFormat, @Value("${history.ariva.wkncheck}" ) final boolean wknCheck ) {
 		this.shareGatewayParameterRepository=shareGatewayParameterRepository;
 		this.restOperations = restOperations;
-		this.url=url;
+	
 		this.dateFormat=new SimpleDateFormat(dateFormat);
 		this.wknCheck=wknCheck;
 	}
@@ -63,17 +64,17 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	public TimeCourse history(Share share) {
 		
 		final LocalDate date = LocalDate.now();
-		Map<String,Object> params = new HashMap<>();
-		final Map<String, String> parameters = shareGatewayParameterRepository.shareGatewayParameter(Gateway.ArivaRateHistory, share.code()).parameters();
-		params.putAll(parameters);
+		final Map<String,Object> params = new HashMap<>();
+		final GatewayParameter gatewayParameter = shareGatewayParameterRepository.shareGatewayParameter(Gateway.ArivaRateHistory, share.code());
+		params.putAll(gatewayParameter.parameters());
 		
 		params.put("startDate",  dateString(date, periodeInDays));
 		params.put("endDate",  dateString(date, 1));
 		params.put("delimiter", DELIMITER );
 	
-		System.out.println(new UriTemplate(url).expand(params));
+		System.out.println(new UriTemplate(gatewayParameter.urlTemplate()).expand(params));
 		
-		final ResponseEntity<String> responseEntity = restOperations.getForEntity(url, String.class, params);
+		final ResponseEntity<String> responseEntity = restOperations.getForEntity(gatewayParameter.urlTemplate(), String.class, params);
 	
 		attachementHeaderWknGuard(share, responseEntity.getHeaders());
 	    

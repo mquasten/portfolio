@@ -6,10 +6,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,7 +37,7 @@ import de.mq.portfolio.share.Share;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/mongo-test.xml" , "/application-test.xml" })
-
+@Ignore
 public class HistoryRepositoryIntegrationTest {
 	
 	
@@ -125,7 +127,7 @@ public class HistoryRepositoryIntegrationTest {
 		final List<Data>[]  results = new  List[max];
 		
 		//Mockito.when(share.id2()).thenReturn("910");
-		Mockito.doReturn(arivaParameter.get("SAP.DE")).when(share).gatewayParameter();
+	
 		Mockito.doReturn(wkns.get("SAP.DE")).when(share).wkn();
 		
 		Mockito.when(share.code2()).thenReturn("ETR:SAP"); 		
@@ -215,7 +217,7 @@ public class HistoryRepositoryIntegrationTest {
 				
 		Mockito.when(share.code2()).thenReturn("NYSE:KO");	
 	//	Mockito.when(share.id2()).thenReturn("400");
-		Mockito.doReturn(arivaParameter.get("KO")).when(share).gatewayParameter();
+	
 		Mockito.doReturn(wkns.get("KO")).when(share).wkn();
 		results[0] = historyGoogleRestRepository.history(share).rates();
 		results[1] = historyArivaRestRepository.history(share).rates();
@@ -269,7 +271,7 @@ public class HistoryRepositoryIntegrationTest {
 		Mockito.when(share.code()).thenReturn("EOAN.DE");
 		Mockito.when(share.code2()).thenReturn("ETR:EOAN");
 		//Mockito.when(share.id2()).thenReturn("320");
-		Mockito.doReturn(arivaParameter.get("EOAN.DE")).when(share).gatewayParameter();
+		
 		Mockito.when(share.wkn()).thenReturn("ENAG99");
 
 		int max = 2;
@@ -330,7 +332,7 @@ public class HistoryRepositoryIntegrationTest {
 		Mockito.when(share.code()).thenReturn("DB1.DE");
 		Mockito.when(share.code2()).thenReturn("ETR:DB1");
 		//Mockito.when(share.id2()).thenReturn("4587");
-		Mockito.doReturn(arivaParameter.get("DB1.DE")).when(share).gatewayParameter();
+	
 		Mockito.doReturn(wkns.get("DB1.DE")).when(share).wkn();
 		
 		int max = 2;
@@ -402,9 +404,9 @@ public class HistoryRepositoryIntegrationTest {
 	}
 	
 	@Test
-	@Ignore
+	//@Ignore
 	public final void dax() {
-		singleShare("DBK.DE");
+		singleShare("SAP.DE");
 		//singleShare("IBM");
 	}
 	
@@ -431,7 +433,7 @@ public class HistoryRepositoryIntegrationTest {
 			Mockito.when(share.code()).thenReturn(history.code());
 			Mockito.when(share.wkn()).thenReturn(wkns.get(history.code()));
 			
-			Mockito.when(share.gatewayParameter()).thenReturn(history.parameters());
+			
 		
 			historyGoogleRestRepository.history(share).rates().forEach(rate -> addResult(results, rate,0));
 			historyArivaRestRepository.history(share).rates().forEach(rate -> addResult(results, rate, 1));
@@ -492,14 +494,18 @@ public class HistoryRepositoryIntegrationTest {
 	@Test
 	@Ignore
 	public final void arivaCSV() {
+		Collection<String> urlTempaltes = new HashSet<>();
 		arivaHistory.stream().forEach(history -> {
 			
-			System.out.println(history.code() +";" +history.gateway() +";" + history.parameters().get("shareId")+ ";" + history.parameters().get("stockExchangeId"));
-			
+			System.out.println(history.code() +";" +history.gateway() +";" +history.urlTemplate()+ ";"+ history.parameters().get("shareId")+ ";" + history.parameters().get("stockExchangeId"));
+			urlTempaltes.add(history.urlTemplate());
 		});
 		
-		System.out.println("^GDAXI" +";"+Gateway.ArivaRateHistory +";"+"290"+";" +"12");
-		System.out.println("^DJI" +";"+Gateway.ArivaRateHistory +";"+"4325"+";" +"71");
+		String url = urlTempaltes.stream().findAny().get();
+		System.out.println("^GDAXI" +";"+Gateway.ArivaRateHistory +";"+ url +  ";"+"290"+";" +"12");
+		System.out.println("^DJI" +";"+Gateway.ArivaRateHistory +";"+url +";"+"4325"+";" +"71");
+		
+		
 	}
 	
 	

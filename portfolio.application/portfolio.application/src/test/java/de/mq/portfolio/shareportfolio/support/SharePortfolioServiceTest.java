@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -257,6 +258,7 @@ public class SharePortfolioServiceTest {
 	}
 
 	@Test
+
 	public final void realtimePortfolioAggregation() {
 
 		final TimeCourse sap = Mockito.mock(TimeCourse.class);
@@ -266,12 +268,14 @@ public class SharePortfolioServiceTest {
 		final List<Data> jnjRealtimeRates = Arrays.asList(Mockito.mock(Data.class), Mockito.mock(Data.class));
 		Mockito.doReturn(sapRealtimeRates).when(sap).rates();
 
-		final Date endDate = new Date();
+		final Date endDate =  new Date();
 		Mockito.doReturn(endDate).when(sap).end();
+	
+		
 		final TimeCourse jnj = Mockito.mock(TimeCourse.class);
 		Mockito.doReturn(jnjRealtimeRates).when(jnj).rates();
 		Mockito.doReturn(CODE_JNJ).when(jnj).code();
-		Mockito.doReturn(new Date(0)).when(jnj).end();
+		Mockito.doReturn(endDate).when(jnj).end();
 		final ExchangeRateCalculator exchangeRateCalculator = Mockito.mock(ExchangeRateCalculator.class);
 		final ExchangeRate exchangeRateEur = Mockito.mock(ExchangeRate.class);
 
@@ -347,6 +351,8 @@ public class SharePortfolioServiceTest {
 
 		Assert.assertEquals(2, rateEuro.rates().size());
 
+	
+		
 		Assert.assertEquals(truncate(endDate), rateEuro.rates().get(0).date());
 
 		Assert.assertEquals(EXCHANGE_RATE_EUR_EUR, (Double) rateEuro.rates().get(0).value());
@@ -380,6 +386,8 @@ public class SharePortfolioServiceTest {
 
 	private Date truncate(final Date endDate) {
 		return Date.from(endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().truncatedTo(ChronoUnit.DAYS).atZone(ZoneId.systemDefault()).toInstant());
+	
+	    
 	}
 
 	@Test(expected = IllegalArgumentException.class)

@@ -10,4 +10,6 @@ public interface GatewayParameter {
 
 	Map<String, String> parameters();
 
+	String urlTemplate();
+
 }

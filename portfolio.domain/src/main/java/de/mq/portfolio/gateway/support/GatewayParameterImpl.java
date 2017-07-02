@@ -16,23 +16,27 @@ class GatewayParameterImpl implements GatewayParameter {
 
 	@Id
 	private final String id;
-
+	
+	private final String urlTemplate;
+ 
 	private final Map<String, String> parameters = new HashMap<>();
 
-	GatewayParameterImpl(final String code, final Gateway gateway, final Map<String, String> parameters) {
+	GatewayParameterImpl(final String code, final Gateway gateway,final String urlTemplate, final Map<String, String> parameters) {
 		Assert.hasText(code, "Code is mandatory.");
 		Assert.notNull(gateway, "Gateway is mandatory.");
+		Assert.hasText(urlTemplate, "UrlTemplate is mandatory.");
 		Assert.notEmpty(parameters, "At least one Parameter should exist.");
 		parameters.keySet().forEach(parameter -> Assert.hasText("Parameter key is mandatory."));
 		parameters.values().forEach(parameter -> Assert.hasText("Parameter value is mandatory."));
 		this.id = gateway.id(code);
-
+		this.urlTemplate=urlTemplate;
 		this.parameters.putAll(parameters);
 	}
 	
 	@SuppressWarnings("unused")
 	private GatewayParameterImpl() {
 		id=null;
+		urlTemplate=null;
    }
 
 	/*
@@ -62,6 +66,15 @@ class GatewayParameterImpl implements GatewayParameter {
 	@Override
 	public Gateway gateway() {
 		return Gateway.gateway(id);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.gateway.GatewayParameter#urlTemplate()
+	 */
+	@Override
+	public final String urlTemplate() {
+		return urlTemplate;
 	}
 
 }

@@ -15,13 +15,13 @@ public class GatewayParameterArivaRateHistoryCSVLineConverterImpl implements Con
 	@Override
 	public final GatewayParameter convert(String[] cols) {
 		Assert.notNull(cols, "Columns is mandatory.");
-		Assert.isTrue(cols.length == 4 , "A Line should have 4 columns.");
+		Assert.isTrue(cols.length == 5 , "A Line should have 4 columns.");
 		
 		final Map<String,String> gatewayParameters = new HashMap<>();
-		gatewayParameters.put("shareId", cols[2]);
-		gatewayParameters.put("stockExchangeId", cols[3]);
+		gatewayParameters.put("shareId", cols[3]);
+		gatewayParameters.put("stockExchangeId", cols[4]);
 		
-		return new GatewayParameterImpl(cols[0], Gateway.valueOf(cols[1]), gatewayParameters);
+		return new GatewayParameterImpl(cols[0], Gateway.valueOf(cols[1]), cols[2], gatewayParameters);
 	}
 
 }

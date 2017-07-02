@@ -115,6 +115,9 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="AAPL"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
+	
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="472" />
@@ -126,6 +129,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="AXP"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="395" />
@@ -137,6 +141,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="BA"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="397" />
@@ -148,6 +153,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="CAT"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="398" />
@@ -159,6 +165,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="CSCO"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="358" />
@@ -170,6 +177,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="CVX"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="4993" />
@@ -181,6 +189,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="DD"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="401" />
@@ -192,6 +201,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="DIS"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="423" />
@@ -203,6 +213,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="GE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="404" />
@@ -214,6 +225,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="GS"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="2456" />
@@ -224,6 +236,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="HD"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="407" />
@@ -235,6 +248,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="IBM"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="409" />
@@ -246,6 +260,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="INTC"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="410" />
@@ -257,6 +272,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="JNJ"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="412" />
@@ -267,6 +283,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="JPM"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="417" />
@@ -277,6 +294,7 @@
 	<bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="KO"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="400" />
@@ -289,6 +307,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="MCD"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="413" />
@@ -300,6 +319,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="MMM"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="416" />
@@ -311,6 +331,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="MRK"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="414" />
@@ -322,6 +343,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="MSFT"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="415" />
@@ -332,6 +354,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="NKE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="1893" />
@@ -343,6 +366,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="PFE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="1239" />
@@ -353,6 +377,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="PG"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="419" />
@@ -363,6 +388,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="TRV"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="100134033" />
@@ -373,6 +399,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="UNH"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="5120" />
@@ -383,6 +410,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="UTX"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="421" />
@@ -393,6 +421,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="V"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="100791339" />
@@ -403,6 +432,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="VZ"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="5111" />
@@ -413,6 +443,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="WMT"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="422" />
@@ -424,6 +455,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="XOM"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="403" />
@@ -436,6 +468,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="ADS.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="291" />
@@ -446,6 +479,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="ALV.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="292" />
@@ -457,6 +491,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="BAS.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="293" />
@@ -468,6 +503,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="BAYN.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="295" />
@@ -478,6 +514,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="BEI.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="1932" />
@@ -488,6 +525,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="BMW.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="294" />
@@ -499,6 +537,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="CBK.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="296" />
@@ -509,6 +548,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="CON.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="1252" />
@@ -520,6 +560,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="DAI.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="297" />
@@ -532,6 +573,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="DBK.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="301" />
@@ -543,6 +585,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="DPW.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="754" />
@@ -554,6 +597,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="DTE.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="303" />
@@ -565,6 +609,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="FME.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="305" />
@@ -576,6 +621,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="FRE.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="2038" />
@@ -586,6 +632,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="HEI.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="4749" />
@@ -597,6 +644,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="HEN3.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="306" />
@@ -608,6 +656,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="IFX.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="907" />
@@ -619,6 +668,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="LHA.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="310" />
@@ -629,6 +679,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="LIN.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="309" />
@@ -639,6 +690,7 @@
 	<bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="MRK.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="1622" />
@@ -650,6 +702,7 @@
 	<bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="MUV2.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="313" />
@@ -660,6 +713,7 @@
 	<bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="RWE.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="3861" />
@@ -671,6 +725,7 @@
 	<bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="SAP.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="910" />
@@ -682,6 +737,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="PSM.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="2719" />
@@ -692,6 +748,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="SIE.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="318" />
@@ -703,6 +760,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="TKA.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="319" />
@@ -714,6 +772,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="VNA.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="112337051" />
@@ -725,6 +784,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="VOW3.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="1753" />
@@ -738,6 +798,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="EOAN.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="320" />
@@ -749,6 +810,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="DB1.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="4587" />
@@ -760,6 +822,7 @@
 <bean class="de.mq.portfolio.gateway.support.GatewayParameterImpl">
 	<constructor-arg name="code" value="SDF.DE"/>
 	<constructor-arg name="gateway" value="ArivaRateHistory"/>
+	<constructor-arg name="urlTemplate" value="http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&amp;boerse_id={stockExchangeId}&amp;clean_split=1&amp;clean_payout=0&amp;clean_bezug=1&amp;min_time={startDate}&amp;max_time={endDate}&amp;trenner={delimiter}&amp;go=Download"  />
 	<constructor-arg name="parameters" >
 		<util:map >
 		<entry key="shareId" value="1457" />
