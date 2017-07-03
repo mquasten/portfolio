@@ -43,7 +43,7 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 	
 	
 	@Test
-	@Ignore
+	//@Ignore
 	public final void historyJNJ() {
 		Assert.assertNotNull(historyRestRepository);
 		

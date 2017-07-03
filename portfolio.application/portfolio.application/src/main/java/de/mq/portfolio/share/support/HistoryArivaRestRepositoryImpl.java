@@ -44,7 +44,7 @@ import de.mq.portfolio.support.ExceptionTranslationBuilder;
 @Profile("ariva" )
 abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 
-	private static final String DELIMITER = "|";
+	static final String DELIMITER = "|";
 	private final DateFormat dateFormat ;
 	private final int periodeInDays = 365;
 	private final GatewayParameterRepository shareGatewayParameterRepository;
@@ -63,9 +63,13 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	@Override
 	public TimeCourse history(Share share) {
 		
+		
+		
 		final LocalDate date = LocalDate.now();
 		final Map<String,Object> params = new HashMap<>();
 		final GatewayParameter gatewayParameter = shareGatewayParameterRepository.shareGatewayParameter(Gateway.ArivaRateHistory, share.code());
+		
+		
 		params.putAll(gatewayParameter.parameters());
 		
 		params.put("startDate",  dateString(date, periodeInDays));
@@ -74,8 +78,12 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	
 		System.out.println(new UriTemplate(gatewayParameter.urlTemplate()).expand(params));
 		
+		
+		
 		final ResponseEntity<String> responseEntity = restOperations.getForEntity(gatewayParameter.urlTemplate(), String.class, params);
 	
+		
+		
 		attachementHeaderWknGuard(share, responseEntity.getHeaders());
 	    
 		return new TimeCourseImpl(share, exceptionTranslationBuilderResult().withResource( () ->  {
@@ -92,6 +100,8 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 		Assert.hasText(share.wkn(), "WKN is mandatory in share if wknCheck is used.");
 		
 		final Map<String,String> headers = httpHeaders.toSingleValueMap();
+		
+		System.out.println(headers);
 	
 		final String attachement = headers.get("Content-Disposition");
 		Assert.hasText(attachement, "Content-Disposition should not  empty");
@@ -127,7 +137,10 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 				continue;
 			}
 			
+			
 			final String[] cols =line.split(String.format("[%s]",DELIMITER));
+			
+		
 			if(isIndex ? cols.length <5 : cols.length !=7) {
 				continue;
 			}
