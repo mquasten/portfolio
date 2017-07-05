@@ -40,8 +40,7 @@ import de.mq.portfolio.share.Share;
 @Ignore
 public class HistoryRepositoryIntegrationTest {
 	
-	
-	
+
 	@Autowired
 	@Qualifier("googleHistoryRepository")
 	private  HistoryRepository   historyGoogleRestRepository; 
@@ -404,10 +403,10 @@ public class HistoryRepositoryIntegrationTest {
 	}
 	
 	@Test
-	//@Ignore
+	@Ignore
 	public final void dax() {
 		singleShare("SAP.DE");
-		//singleShare("IBM");
+		//singleShare("JNJ");
 	}
 	
 	private final void singleShare(final String code) {

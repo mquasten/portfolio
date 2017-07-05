@@ -59,7 +59,9 @@ public class HistoryArivaRestRepositoryTest {
 
 	private static String WKN = "853260";
 
-	private final static String CSV_PATTERN = "Datum|Erster|Hoch|Tief|Schlusskurs|Stuecke|Volumen\n" + "%s|xxx|xxx|xxx|%s|xxx|xxx\n" + "%s|xxx|xxx|xxx|%s|xxx|xxx\n";
+	private final static String CSV_PATTERN = "Datum|Erster|Hoch|Tief|Schlusskurs|Stuecke|Volumen\n" + "%s|xxx|xxx|xxx|%s|xxx|xxx\n" + "%s|xxx|xxx|xxx|%s|xxx|xxx\nxxx|xxx\n";
+	
+	private final static String CSV_PATTERN_INDEX = "Datum|Erster|Hoch|Tief|Schlusskurs|Stuecke|Volumen\n" + "%s|xxx|xxx|xxx|%s\nxxx|xxx\n";
 
 	@SuppressWarnings("unchecked")
 	private final ResponseEntity<String> responseEntity = (ResponseEntity<String>) Mockito.mock((Class<?>) ResponseEntity.class);
@@ -86,7 +88,7 @@ public class HistoryArivaRestRepositoryTest {
 		Mockito.doReturn(headers).when(httpHeaders).toSingleValueMap();
 		Mockito.doReturn(httpHeaders).when(responseEntity).getHeaders();
 
-		Arrays.asList(HistoryArivaRestRepositoryImpl.class.getDeclaredFields()).stream().filter(field -> dependencies.containsKey(field.getType())).forEach(field -> ReflectionTestUtils.setField(historyRepository, field.getName(), dependencies.get(field.getType())));
+		inject();
 		Mockito.doReturn(CODE).when(share).code();
 		Mockito.doReturn(WKN).when(share).wkn();
 		Mockito.doReturn(gatewayParameter).when(gatewayParameterRepository).shareGatewayParameter(Gateway.ArivaRateHistory, CODE);
@@ -112,6 +114,10 @@ public class HistoryArivaRestRepositoryTest {
 		Mockito.doAnswer(answer -> new ExceptionTranslationBuilderImpl<>()).when(historyRepository).exceptionTranslationBuilder();
 	}
 
+	private void inject() {
+		Arrays.asList(HistoryArivaRestRepositoryImpl.class.getDeclaredFields()).stream().filter(field -> dependencies.containsKey(field.getType())).forEach(field -> ReflectionTestUtils.setField(historyRepository, field.getName(), dependencies.get(field.getType())));
+	}
+
 	@Test
 	public final void history() throws ParseException {
 		final TimeCourse result = historyRepository.history(share);
@@ -126,5 +132,29 @@ public class HistoryArivaRestRepositoryTest {
 	private String dateString(final long daysBack) {
 		return new SimpleDateFormat(datePattern).format(Date.from(LocalDate.now().minusDays(daysBack).atStartOfDay(ZoneId.systemDefault()).toInstant()));
 	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void historyWrongContentDispositionHeader() throws ParseException {
+		
+		final Map<String, String> headers = new HashMap<>();
+		headers.put("Content-Disposition", String.format("filename=wkn_historic.csv", WKN));
+		Mockito.doReturn(headers).when(httpHeaders).toSingleValueMap();
+		
+		historyRepository.history(share);
+		
+	}
 
-}
+	@Test
+	public final void historyIndex() throws ParseException {
+		dependencies.put(boolean.class, Boolean.FALSE);
+		inject();
+		Mockito.doReturn(String.format(CSV_PATTERN_INDEX, dateString(1), END_RATE, dateString(365), START_RATE)).when(responseEntity).getBody();
+		Mockito.doReturn(true).when(share).isIndex();
+	
+	
+		final TimeCourse result = historyRepository.history(share);
+		Assert.assertEquals(1, result.rates().size());
+		Assert.assertEquals(new SimpleDateFormat(datePattern).parse(dateString(1)), result.rates().get(0).date());
+		Assert.assertEquals((Double) Double.parseDouble(END_RATE.replace(",", ".")), (Double) result.rates().get(0).value());
+	}
+	}
