@@ -10,19 +10,19 @@ import org.springframework.util.Assert;
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 
-
-public class GatewayParameterArivaRateHistoryCSVLineConverterImpl implements Converter<String[], GatewayParameter> {
+public class GatewayParameterArivaDividendHistoryCSVLineConverterImpl implements Converter<String[], GatewayParameter> {
 
 	@Override
-	public final GatewayParameter convert(String[] cols) {
+	public GatewayParameter convert(String[] cols) {
 		Assert.notNull(cols, "Columns is mandatory.");
-		Assert.isTrue(cols.length == 5 , "A Line should have 5 columns.");
+		Assert.isTrue(cols.length == 4 , "A Line should have 4 columns.");
 		
 		final Map<String,String> gatewayParameters = new HashMap<>();
-		gatewayParameters.put("shareId", cols[3]);
-		gatewayParameters.put("stockExchangeId", cols[4]);
+		gatewayParameters.put("shareName", cols[3]);
+		
 		
 		return new GatewayParameterImpl(cols[0], Gateway.valueOf(cols[1]), cols[2], gatewayParameters);
 	}
-	
+
 }
+

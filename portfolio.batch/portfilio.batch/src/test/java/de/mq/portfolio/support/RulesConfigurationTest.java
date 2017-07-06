@@ -34,6 +34,10 @@ import de.mq.portfolio.batch.RulesEngine;
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl;
+import de.mq.portfolio.gateway.GatewayParameter;
+import de.mq.portfolio.gateway.support.GatewayParameterArivaDividendHistoryCSVLineConverterImpl;
+import de.mq.portfolio.gateway.support.GatewayParameterArivaRateHistoryCSVLineConverterImpl;
+import de.mq.portfolio.gateway.support.GatewayParameterRepository;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.support.SharesCSVLineConverterImpl;
@@ -78,6 +82,8 @@ public class RulesConfigurationTest {
 	private final RulesEngine rulesEngine = Mockito.mock(RulesEngine.class);
 	
 	private final  ExchangeRateService  exchangeRateService = Mockito.mock(ExchangeRateService.class);
+	
+	private final GatewayParameterRepository shareGatewayParameterRepository = Mockito.mock(GatewayParameterRepository.class);
 	
 	@Before
 	public final void setup() {
@@ -215,6 +221,78 @@ public class RulesConfigurationTest {
 		
 		
 	}
+	
+	@Test
+	public void  importArivaRateHistory() {
+		
+		@SuppressWarnings("unchecked")
+		final ExceptionTranslationBuilder<Collection<GatewayParameter>, BufferedReader> exceptionTranslationBuilder = Mockito.mock(ExceptionTranslationBuilder.class);
+		
+		Assert.assertEquals(rulesEngine,rulesConfiguration.importArivaRateHistory(shareGatewayParameterRepository, rulesEngineBuilder, exceptionTranslationBuilder));
+	
+		Assert.assertEquals(RulesConfiguration.IMPORT_ARIVA_HISTORY_RATE_RULE_ENGINE_NAME, nameCaptor.getValue());
+		
+		
+		
+		final List<Rule> rules = ruleCapor.getAllValues();
+		Assert.assertEquals(2, rules.size());
+		
+		
+		
+		Assert.assertEquals(ImportServiceRuleImpl.class, rules.get(0).getClass());
+		final SimpleCSVInputServiceImpl<?> reader = (SimpleCSVInputServiceImpl<?>) ReflectionTestUtils.getField(rules.get(0), TARGET_FIELD);
+		
+		
+		Assert.assertEquals(exceptionTranslationBuilder, fieldValue(reader,ExceptionTranslationBuilder.class));
+		
+		Assert.assertEquals(GatewayParameterArivaRateHistoryCSVLineConverterImpl.class, fieldValue(reader,Converter.class).getClass());
+		final Expression inputExpression = fieldValue(rules.get(0), Expression.class);
+		Assert.assertEquals(RulesConfiguration.SPEL_READ_FILENAME, inputExpression.getExpressionString());
+		
+		Assert.assertEquals(ProcessServiceRuleImpl.class, rules.get(1).getClass());
+		final Expression outputExpression = fieldValue(rules.get(1), Expression.class);
+		Assert.assertEquals(RulesConfiguration.SPEL_SAVE_ITEM, outputExpression.getExpressionString());
+		
+		Assert.assertEquals(shareGatewayParameterRepository, ReflectionTestUtils.getField(rules.get(1), TARGET_FIELD));
+		
+	}
+	
+	
+	@Test
+	public void  importArivaDividendHistory() {
+		
+		@SuppressWarnings("unchecked")
+		final ExceptionTranslationBuilder<Collection<GatewayParameter>, BufferedReader> exceptionTranslationBuilder = Mockito.mock(ExceptionTranslationBuilder.class);
+		
+		Assert.assertEquals(rulesEngine,rulesConfiguration.importArivaDividendHistory(shareGatewayParameterRepository, rulesEngineBuilder, exceptionTranslationBuilder));
+	
+		Assert.assertEquals(RulesConfiguration.IMPORT_ARIVA_HISTORY_DIVIDEND_RULE_ENGINE_NAME, nameCaptor.getValue());
+		
+		
+		
+		final List<Rule> rules = ruleCapor.getAllValues();
+		Assert.assertEquals(2, rules.size());
+		
+		
+		
+		Assert.assertEquals(ImportServiceRuleImpl.class, rules.get(0).getClass());
+		final SimpleCSVInputServiceImpl<?> reader = (SimpleCSVInputServiceImpl<?>) ReflectionTestUtils.getField(rules.get(0), TARGET_FIELD);
+		
+		
+		Assert.assertEquals(exceptionTranslationBuilder, fieldValue(reader,ExceptionTranslationBuilder.class));
+		
+		Assert.assertEquals(GatewayParameterArivaDividendHistoryCSVLineConverterImpl.class, fieldValue(reader,Converter.class).getClass());
+		final Expression inputExpression = fieldValue(rules.get(0), Expression.class);
+		Assert.assertEquals(RulesConfiguration.SPEL_READ_FILENAME, inputExpression.getExpressionString());
+		
+		Assert.assertEquals(ProcessServiceRuleImpl.class, rules.get(1).getClass());
+		final Expression outputExpression = fieldValue(rules.get(1), Expression.class);
+		Assert.assertEquals(RulesConfiguration.SPEL_SAVE_ITEM, outputExpression.getExpressionString());
+		
+		Assert.assertEquals(shareGatewayParameterRepository, ReflectionTestUtils.getField(rules.get(1), TARGET_FIELD));
+		
+	}
+	
 	
 	@Test
 	public void  importExchangeRates() {
