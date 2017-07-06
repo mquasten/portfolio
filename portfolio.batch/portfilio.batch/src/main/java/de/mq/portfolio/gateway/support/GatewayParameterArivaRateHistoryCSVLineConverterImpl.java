@@ -15,7 +15,7 @@ public class GatewayParameterArivaRateHistoryCSVLineConverterImpl implements Con
 	@Override
 	public final GatewayParameter convert(String[] cols) {
 		Assert.notNull(cols, "Columns is mandatory.");
-		Assert.isTrue(cols.length == 5 , "A Line should have 4 columns.");
+		Assert.isTrue(cols.length == 5 , "A Line should have 5 columns.");
 		
 		final Map<String,String> gatewayParameters = new HashMap<>();
 		gatewayParameters.put("shareId", cols[3]);

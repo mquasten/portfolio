@@ -9,7 +9,7 @@ import org.springframework.util.StringUtils;
 
 public enum Gateway {
 
-	ArivaRateHistory("ARH"), CentralBankExchangeRates("BER");
+	ArivaRateHistory("ARH"), ArivaDividendHistory("ADH"), CentralBankExchangeRates("BER");
 
 	static final String DELIMITER = "-";
 	private final String id;

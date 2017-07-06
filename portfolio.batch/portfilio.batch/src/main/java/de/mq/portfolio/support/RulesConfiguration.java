@@ -18,6 +18,7 @@ import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl;
 import de.mq.portfolio.gateway.GatewayParameter;
+import de.mq.portfolio.gateway.support.GatewayParameterArivaDividendHistoryCSVLineConverterImpl;
 import de.mq.portfolio.gateway.support.GatewayParameterArivaRateHistoryCSVLineConverterImpl;
 import de.mq.portfolio.gateway.support.GatewayParameterRepository;
 import de.mq.portfolio.share.Share;
@@ -37,6 +38,7 @@ class RulesConfiguration {
 	static final String SPEL_CONVERT_USER_ITEM = "user(#item)";
 	static final String IMPORT_USERS_RULE_ENGINE_NAME = "importUsers";
 	static final String IMPORT_ARIVA_HISTORY_RATE_RULE_ENGINE_NAME = "importArivaRateHistory";
+	static final String IMPORT_ARIVA_HISTORY_DIVIDEND_RULE_ENGINE_NAME = "importArivaDividendHistory";
 	static final String IMPORT_SHARES_RULE_ENGINE_NAME = "importShares";
 	static final String IMPORT_TIME_COURSES_RULE_ENGINE_NAME = "importTimeCourses";
 	static final String IMPORT_EXCHANGE_RATES_RULE_ENGINE_NAME = "importExchangeRates";
@@ -75,6 +77,12 @@ class RulesConfiguration {
     @Scope("prototype")
     RulesEngine importArivaRateHistory(final GatewayParameterRepository shareGatewayParameterRepository, final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<GatewayParameter>, BufferedReader> exceptionTranslationBuilder) {
 	    return rulesEngineBuilder.withName(IMPORT_ARIVA_HISTORY_RATE_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new GatewayParameterArivaRateHistoryCSVLineConverterImpl(),exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(shareGatewayParameterRepository, SPEL_SAVE_ITEM)).build();
+	}
+	
+	@Bean
+    @Scope("prototype")
+    RulesEngine importArivaDividendHistory(final GatewayParameterRepository shareGatewayParameterRepository, final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<GatewayParameter>, BufferedReader> exceptionTranslationBuilder) {
+	    return rulesEngineBuilder.withName(IMPORT_ARIVA_HISTORY_DIVIDEND_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new GatewayParameterArivaDividendHistoryCSVLineConverterImpl(),exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(shareGatewayParameterRepository, SPEL_SAVE_ITEM)).build();
 	}
 	
 	@Bean

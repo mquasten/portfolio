@@ -491,7 +491,7 @@ public class HistoryRepositoryIntegrationTest {
 	
 	
 	@Test
-	@Ignore
+	
 	public final void arivaCSV() {
 		Collection<String> urlTempaltes = new HashSet<>();
 		arivaHistory.stream().forEach(history -> {
