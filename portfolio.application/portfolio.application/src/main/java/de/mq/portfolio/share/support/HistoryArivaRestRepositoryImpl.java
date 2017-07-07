@@ -12,11 +12,14 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -42,6 +45,11 @@ import de.mq.portfolio.support.ExceptionTranslationBuilder;
 @Repository()
 @Profile("ariva")
 abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
+	
+	enum Imports {
+		Rates,
+		Dividends;
+	}
 
 	static final String DELIMITER = "|";
 	private final DateFormat dateFormat;
@@ -49,20 +57,44 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	private final GatewayParameterRepository shareGatewayParameterRepository;
 	private final RestOperations restOperations;
 
+
 	private final boolean wknCheck;
+	private final Collection<Imports> imports = new ArrayList<>();
+	
+	
+
 
 	@Autowired
-	HistoryArivaRestRepositoryImpl(final GatewayParameterRepository shareGatewayParameterRepository, final RestOperations restOperations, @Value("${history.ariva.dateformat?:yyyy-MM-dd}") final String dateFormat, @Value("${history.ariva.wkncheck}") final boolean wknCheck) {
+	HistoryArivaRestRepositoryImpl(final GatewayParameterRepository shareGatewayParameterRepository, final RestOperations restOperations, @Value("${history.ariva.dateformat?:yyyy-MM-dd}") final String dateFormat, @Value("${history.ariva.wkncheck}") final boolean wknCheck, @Value("${history.arivaimports?:Rates,Dividends}")  final  String imports ) {
 		this.shareGatewayParameterRepository = shareGatewayParameterRepository;
 		this.restOperations = restOperations;
 
 		this.dateFormat = new SimpleDateFormat(dateFormat);
 		this.wknCheck = wknCheck;
+		this.imports.addAll(Arrays.asList(imports.split("[,]")).stream().map(value -> Imports.valueOf(StringUtils.capitalize(StringUtils.trimWhitespace(value).toLowerCase()))).collect(Collectors.toList()));
+	   
 	}
 
 	@Override
 	public TimeCourse history(Share share) {
+		 final Collection<Data> rates = new ArrayList<>();
+		 final Collection<Data> dividends = new ArrayList<>();
+		 final Map<Imports, Consumer<Share>> importsMap = new HashMap<>();
+		 importsMap.put(Imports.Rates, aShare ->  rates.addAll(importRates(aShare)) );
+		 importsMap.put(Imports.Dividends, aShare ->  dividends.addAll(importDividends(aShare)) );
+		
+		 imports.forEach(value -> importsMap.get(value).accept(share));
+		 
+		 return new TimeCourseImpl(share, rates, dividends);
+	
+	}
 
+	private List<Data> importDividends(final Share share) {
+	
+		return new ArrayList<>();
+	}
+
+	private List<Data> importRates(final Share share) {
 		final LocalDate date = LocalDate.now();
 		final Map<String, Object> params = new HashMap<>();
 		final GatewayParameter gatewayParameter = shareGatewayParameterRepository.shareGatewayParameter(Gateway.ArivaRateHistory, share.code());
@@ -77,12 +109,12 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 		final ResponseEntity<String> responseEntity = restOperations.getForEntity(gatewayParameter.urlTemplate(), String.class, params);
 
 		attachementHeaderWknGuard(share, responseEntity.getHeaders());
-		return new TimeCourseImpl(share, exceptionTranslationBuilderResult().withResource(() -> {
+		return exceptionTranslationBuilderResult().withResource(() -> {
 			return new BufferedReader(new StringReader(responseEntity.getBody()));
 
 		}).withStatement(bufferedReader -> {
 			return read(bufferedReader, share.isIndex());
-		}).translate(), Arrays.asList());
+		}).translate();
 	}
 
 	void attachementHeaderWknGuard(final Share share, final HttpHeaders httpHeaders) {

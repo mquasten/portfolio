@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,6 +85,7 @@ public class HistoryArivaRestRepositoryTest {
 		dependencies.put(DateFormat.class, new SimpleDateFormat(datePattern));
 		dependencies.put(RestOperations.class, restOperations);
 		dependencies.put(GatewayParameterRepository.class, gatewayParameterRepository);
+		dependencies.put(Collection.class, Arrays.asList(HistoryArivaRestRepositoryImpl.Imports.Rates));
 
 		Mockito.doReturn(headers).when(httpHeaders).toSingleValueMap();
 		Mockito.doReturn(httpHeaders).when(responseEntity).getHeaders();

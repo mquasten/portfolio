@@ -43,7 +43,7 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 	
 	
 	@Test
-	//@Ignore
+	@Ignore
 	public final void historyJNJ() {
 		Assert.assertNotNull(historyRestRepository);
 		
@@ -56,7 +56,7 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 	
 	
 	@Test
-	@Ignore
+	//@Ignore
 	public final void dax() {
 	
 		Mockito.doReturn("846900").when(share).wkn();
