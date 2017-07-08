@@ -21,6 +21,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,7 +68,7 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 
 
 	@Autowired
-	HistoryArivaRestRepositoryImpl(final GatewayParameterRepository shareGatewayParameterRepository, final RestOperations restOperations, @Value("${history.ariva.dateformat?:yyyy-MM-dd}") final String dateFormat, @Value("${history.ariva.wkncheck}") final boolean wknCheck, @Value("${history.arivaimports?:Rates,Dividends}")  final  String imports ) {
+	HistoryArivaRestRepositoryImpl(final GatewayParameterRepository shareGatewayParameterRepository, final RestOperations restOperations, @Value("${history.ariva.dateformat?:yyyy-MM-dd}") final String dateFormat, @Value("${history.ariva.wkncheck}") final boolean wknCheck, @Value("${history.ariva.imports?:Rates,Dividends}")  final  String imports ) {
 		this.shareGatewayParameterRepository = shareGatewayParameterRepository;
 		this.restOperations = restOperations;
 
@@ -77,6 +80,8 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 
 	@Override
 	public TimeCourse history(Share share) {
+		Assert.notNull(share, "Share is mandatory.");
+		 Assert.hasText(share.code(), "Code is mandatoty.");
 		 final Collection<Data> rates = new ArrayList<>();
 		 final Collection<Data> dividends = new ArrayList<>();
 		 final Map<Imports, Consumer<Share>> importsMap = new HashMap<>();
@@ -85,13 +90,54 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 		
 		 imports.forEach(value -> importsMap.get(value).accept(share));
 		 
-		 return new TimeCourseImpl(share, rates, dividends);
+		 return new TimeCourseImpl(share, rates, dividends); 
+		
+		
 	
 	}
 
 	private List<Data> importDividends(final Share share) {
-	
-		return new ArrayList<>();
+		
+		
+		final GatewayParameter gatewayParameter = shareGatewayParameterRepository.shareGatewayParameter(Gateway.ArivaDividendHistory, share.code());
+		
+		
+	    final String html =  restOperations.getForObject(gatewayParameter.urlTemplate() ,String.class, gatewayParameter.parameters());
+		final Document doc = Jsoup.parse(html);
+	       
+		final List<Data> dividends = new ArrayList<>();
+	       final List<Element> results  = doc.getElementsByTag("tr").stream().filter(line -> line.getElementsMatchingText("Dividende").size() > 0 ).collect(Collectors.toList());
+
+	       final ConfigurableConversionService configurableConversionService = preparedConversionService(new SimpleDateFormat("dd.MM.yy"));
+	       
+	       final Date startDate = date(LocalDate.now(), periodeInDays);
+	       
+	      
+	       for(final Element result : results ){
+	           final List<Element> tds = result.getElementsByTag("td");
+	         
+	           
+	          
+	          
+	           
+	           final Date date = configurableConversionService.convert(tds.get(0).text(), Date.class);
+	          if( date.before(startDate)) {
+	        	   continue;
+	           } 
+	           final String cols[] = tds.get(3).text().split("[ ]");
+	           final Double rate = configurableConversionService.convert(cols[0], Number.class).doubleValue();
+	          
+	          
+	           Assert.isTrue(tds.get(1).text().equals("Dividende"));
+
+	           dividends.add(new DataImpl(date, rate));
+	          
+	       }
+	 
+
+	       Collections.sort(dividends, (data1, data2) -> Double.valueOf(Math.signum(Long.valueOf(data1.date().getTime() - data2.date().getTime()).doubleValue())).intValue());
+		
+		return dividends;
 	}
 
 	private List<Data> importRates(final Share share) {
@@ -138,15 +184,8 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	}
 
 	private List<Data> read(final BufferedReader bufferedReader, final boolean isIndex) throws IOException, ParseException {
-		final ConfigurableConversionService configurableConversionService = configurableConversionService();
-		final DecimalFormat numberFormat = new DecimalFormat();
-		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
-		otherSymbols.setDecimalSeparator(',');
-		otherSymbols.setGroupingSeparator('.');
-		numberFormat.setDecimalFormatSymbols(otherSymbols);
-		configurableConversionService.addConverter(String.class, Date.class, dateString -> exceptionTranslationBuilderConversionServiceDate().withStatement(() -> dateFormat.parse(dateString)).translate());
-
-		configurableConversionService.addConverter(String.class, Number.class, doubleString -> exceptionTranslationBuilderConversionServiceDouble().withStatement(() -> numberFormat.parse(doubleString)).translate());
+		
+		final ConfigurableConversionService configurableConversionService = preparedConversionService(dateFormat);
 		final List<Data> results = new ArrayList<>();
 		for (String line = bufferedReader.readLine(); line != null; line = bufferedReader.readLine()) {
 			// System.out.println(line);
@@ -171,8 +210,25 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 
 	}
 
+	private ConfigurableConversionService preparedConversionService(final DateFormat dateFormat) {
+		final ConfigurableConversionService configurableConversionService = configurableConversionService();
+		final DecimalFormat numberFormat = new DecimalFormat();
+		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
+		otherSymbols.setDecimalSeparator(',');
+		otherSymbols.setGroupingSeparator('.');
+		numberFormat.setDecimalFormatSymbols(otherSymbols);
+		configurableConversionService.addConverter(String.class, Date.class, dateString -> exceptionTranslationBuilderConversionServiceDate().withStatement(() -> dateFormat.parse(dateString)).translate());
+
+		configurableConversionService.addConverter(String.class, Number.class, doubleString -> exceptionTranslationBuilderConversionServiceDouble().withStatement(() -> numberFormat.parse(doubleString)).translate());
+		return configurableConversionService;
+	}
+
 	private String dateString(final LocalDate date, final long daysBack) {
-		return dateFormat.format(Date.from(date.minusDays(daysBack).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+		return dateFormat.format(date(date, daysBack));
+	}
+
+	private Date date(final LocalDate date, final long daysBack) {
+		return Date.from(date.minusDays(daysBack).atStartOfDay(ZoneId.systemDefault()).toInstant());
 	}
 
 	@SuppressWarnings("unchecked")
