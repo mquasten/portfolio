@@ -18,8 +18,8 @@ import org.junit.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={RulesConfiguration.class})
-@Ignore
 @ActiveProfiles("ariva")
+@Ignore
 public class TimeCoursesImportIntegrationTest {
 	
 	

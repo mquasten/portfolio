@@ -5,7 +5,7 @@ import java.util.Collection;
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 
-interface ExchangeRateCalculatorBuilder {
+public interface ExchangeRateCalculatorBuilder {
 
 	ExchangeRateCalculatorBuilder withExchangeRate(ExchangeRate exchangeRate);
 

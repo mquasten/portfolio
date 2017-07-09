@@ -69,11 +69,13 @@ public class HistoryArivaRestRepositoryTest {
 
 	private final String urlTemplate = "url?secu={shareId}?boerse_id={stockExchangeId}&min_time={startDate}&max_time={endDate}&trenner={delimiter}";
 	private final Map<String, String> parameters = new HashMap<>();
+	
+	
 
 	@SuppressWarnings("unchecked")
 	@Before
 	public final void setup() {
-
+		
 		final Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Disposition", String.format("filename=wkn_%s_historic.csv", WKN));
 
@@ -96,6 +98,7 @@ public class HistoryArivaRestRepositoryTest {
 		Mockito.doReturn(gatewayParameter).when(gatewayParameterRepository).shareGatewayParameter(Gateway.ArivaRateHistory, CODE);
 		Mockito.doReturn(parameters).when(gatewayParameter).parameters();
 		Mockito.doReturn(urlTemplate).when(gatewayParameter).urlTemplate();
+		
 		Mockito.doAnswer(answer -> {
 			Assert.assertEquals(urlTemplate, answer.getArguments()[0]);
 			Assert.assertEquals(String.class, answer.getArguments()[1]);
@@ -105,7 +108,7 @@ public class HistoryArivaRestRepositoryTest {
 			Assert.assertEquals(ARIVA_STOCK_EXCHANGE_ID_VALUE, params.get(ARIVA_STOCK_EXCHANGE_ID));
 			Assert.assertEquals(dateString(1), params.get("endDate"));
 			Assert.assertEquals(dateString(365), params.get("startDate"));
-			Assert.assertEquals(HistoryArivaRestRepositoryImpl.DELIMITER, params.get("delimiter"));
+			Assert.assertEquals("|", params.get("delimiter"));
 
 			return responseEntity;
 		}

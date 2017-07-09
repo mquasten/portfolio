@@ -66,6 +66,7 @@ class SimpleRulesEngineImpl implements RulesEngine {
 			processed.add(rule.getName());
 		} catch (final Exception ex) {
 			exceptions.add(new SimpleImmutableEntry<>(rule.getName(), ex));
+			ex.printStackTrace();
 		}
 	}
 

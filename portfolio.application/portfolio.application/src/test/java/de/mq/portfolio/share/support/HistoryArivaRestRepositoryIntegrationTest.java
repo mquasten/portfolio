@@ -77,6 +77,7 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 		ReflectionTestUtils.setField(historyRestRepository, "imports", Arrays.asList(HistoryArivaRestRepositoryImpl.Imports.Dividends));
 
 		Mockito.doReturn("SAP.DE").when(share).code();
+		Mockito.doReturn("EUR").when(share).currency();
 
 		final TimeCourse timeCourse = historyRestRepository.history(share);
 
@@ -93,6 +94,7 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 		ReflectionTestUtils.setField(historyRestRepository, "imports", Arrays.asList(HistoryArivaRestRepositoryImpl.Imports.Dividends));
 
 		Mockito.doReturn("KO").when(share).code();
+		Mockito.doReturn("USD").when(share).currency();
 
 		final TimeCourse timeCourse = historyRestRepository.history(share);
 
