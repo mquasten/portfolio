@@ -1,4 +1,4 @@
-ADS.DE;ArivaDividendHistory;http://www.ariva.de/{shareName}/historische_ereignisse;adidas-aktie
+﻿ADS.DE;ArivaDividendHistory;http://www.ariva.de/{shareName}/historische_ereignisse;adidas-aktie
 ALV.DE;ArivaDividendHistory;http://www.ariva.de/{shareName}/historische_ereignisse;allianz-aktie
 BAS.DE;ArivaDividendHistory;http://www.ariva.de/{shareName}/historische_ereignisse;basf-aktie
 BAYN.DE;ArivaDividendHistory;http://www.ariva.de/{shareName}/historische_ereignisse;bayer-aktie
@@ -7,7 +7,7 @@ BMW.DE;ArivaDividendHistory;http://www.ariva.de/{shareName}/historische_ereignis
 CBK.DE;ArivaDividendHistory;http://www.ariva.de/{shareName}/historische_ereignisse;commerzbank-aktie
 CON.DE;ArivaDividendHistory;http://www.ariva.de/{shareName}/historische_ereignisse;continental-aktie
 DAI.DE;ArivaDividendHistory;http://www.ariva.de/{shareName}/historische_ereignisse;daimler-aktie
-DB1.DE;ArivaDividendHistory;http://www.ariva.de/{shareName}/historische_ereignisse;deutsche_b�rse-aktie
+DB1.DE;ArivaDividendHistory;http://www.ariva.de/{shareName}/historische_ereignisse;deutsche_börse-aktie
 DBK.DE;ArivaDividendHistory;http://www.ariva.de/{shareName}/historische_ereignisse;deutsche_bank-aktie
 DPW.DE;ArivaDividendHistory;http://www.ariva.de/{shareName}/historische_ereignisse;deutsche_post-aktie
 DTE.DE;ArivaDividendHistory;http://www.ariva.de/{shareName}/historische_ereignisse;deutsche_telekom-aktie

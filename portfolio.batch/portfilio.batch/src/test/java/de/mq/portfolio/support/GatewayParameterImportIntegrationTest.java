@@ -20,36 +20,33 @@ import de.mq.portfolio.gateway.GatewayParameter;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { RulesConfiguration.class })
 @ActiveProfiles("google")
-@Ignore()
+@Ignore
 public class GatewayParameterImportIntegrationTest {
 
-    @Autowired
-    @Qualifier("importArivaRateHistory")
-    private RulesEngine rulesEngine;
-    
-    
-    @Test
-    public final void doImport() {
+	@Autowired
+	@Qualifier("importArivaRateHistory")
+	private RulesEngine rulesEngine;
 
-        Assert.assertNotNull(rulesEngine);
-        final Map<String, Object> parameters = new HashMap<>();
-        parameters.put("filename", "data/ariva.csv");
+	@Test
+	public final void doImport() {
 
-        rulesEngine.fireRules(parameters);
+		Assert.assertNotNull(rulesEngine);
+		final Map<String, Object> parameters = new HashMap<>();
+		parameters.put("filename", "data/ariva.csv");
 
-        System.out.println("Failed: " + rulesEngine.failed());
-        System.out.println("Processed: " + rulesEngine.processed());
+		rulesEngine.fireRules(parameters);
 
-        Assert.assertTrue(rulesEngine.failed().isEmpty());
-        Assert.assertEquals(2, rulesEngine.processed().size());
+		System.out.println("Failed: " + rulesEngine.failed());
+		System.out.println("Processed: " + rulesEngine.processed());
 
-        @SuppressWarnings("unchecked")
-        final Collection<GatewayParameter> results = (Collection<GatewayParameter>) parameters
-                .get(AbstractServiceRule.ITEMS_PARAMETER);
+		Assert.assertTrue(rulesEngine.failed().isEmpty());
+		Assert.assertEquals(2, rulesEngine.processed().size());
 
-        results.forEach(shareGatewayParameter -> System.out.println(shareGatewayParameter));
+		@SuppressWarnings("unchecked")
+		final Collection<GatewayParameter> results = (Collection<GatewayParameter>) parameters.get(AbstractServiceRule.ITEMS_PARAMETER);
 
-    }
+		results.forEach(shareGatewayParameter -> System.out.println(shareGatewayParameter.parameters()));
 
+	}
 
 }
