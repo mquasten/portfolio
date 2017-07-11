@@ -53,125 +53,109 @@ import de.mq.portfolio.support.ExceptionTranslationBuilder;
 @Repository()
 @Profile("ariva")
 abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
-	
-	
 
 	enum Imports {
-		Rates,
-		Dividends;
+		Rates, Dividends;
 	}
 
 	private final String delimiter = "|";
-	private final DateFormat dateFormatRates=new SimpleDateFormat("yyyy-MM-dd");
-	private final DateFormat dateFormatDividends= new SimpleDateFormat("dd.MM.yy");
+	private final DateFormat dateFormatRates = new SimpleDateFormat("yyyy-MM-dd");
+	private final DateFormat dateFormatDividends = new SimpleDateFormat("dd.MM.yy");
 	private final int periodeInDays = 365;
 	private final int startOffsetInDays = 1;
-	private final GatewayParameterRepository shareGatewayParameterRepository;
+	private final GatewayParameterRepository gatewayParameterRepository;
 	private final RestOperations restOperations;
-	
 
 	private final boolean wknCheck;
 	private final Collection<Imports> imports = new ArrayList<>();
-	
-	private final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository;
-	
-	private final Collection<ExchangeRate> exchangeRates= new ArrayList<>(); 
 
+	private final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository;
+
+	private final Collection<ExchangeRate> exchangeRates = new ArrayList<>();
 
 	@Autowired
-	HistoryArivaRestRepositoryImpl(final GatewayParameterRepository shareGatewayParameterRepository, final RestOperations restOperations, final  ExchangeRateDatebaseRepository exchangeRateDatebaseRepository ,  @Value("${history.ariva.wkncheck}") final boolean wknCheck, @Value("${history.ariva.imports?:Rates,Dividends}")  final  String imports ) {
-		this.shareGatewayParameterRepository = shareGatewayParameterRepository;
+	HistoryArivaRestRepositoryImpl(final GatewayParameterRepository gatewayParameterRepository, final RestOperations restOperations, final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository, @Value("${history.ariva.wkncheck}") final boolean wknCheck, @Value("${history.ariva.imports?:Rates,Dividends}") final String imports) {
+		this.gatewayParameterRepository = gatewayParameterRepository;
 		this.restOperations = restOperations;
-		
-		this.exchangeRateDatebaseRepository=exchangeRateDatebaseRepository;
-	
+
+		this.exchangeRateDatebaseRepository = exchangeRateDatebaseRepository;
+
 		this.wknCheck = wknCheck;
 		this.imports.addAll(Arrays.asList(imports.split("[,]")).stream().map(value -> Imports.valueOf(StringUtils.capitalize(StringUtils.trimWhitespace(value).toLowerCase()))).collect(Collectors.toList()));
-	   
+
 	}
 
 	@Override
 	public TimeCourse history(Share share) {
-		
+
 		Assert.notNull(share, "Share is mandatory.");
-		 Assert.hasText(share.code(), "Code is mandatoty.");
-		 final Collection<Data> rates = new ArrayList<>();
-		 final Collection<Data> dividends = new ArrayList<>();
-		 final Map<Imports, Consumer<Share>> importsMap = new HashMap<>();
-		 importsMap.put(Imports.Rates, aShare ->  rates.addAll(importRates(aShare)) );
-		
-		 importsMap.put(Imports.Dividends, aShare ->  dividends.addAll(importDividends(aShare)) );
-		
-		 imports.forEach(value -> importsMap.get(value).accept(share));
-		 
-		 return new TimeCourseImpl(share, rates, dividends); 
-		
-		
-	
+		Assert.hasText(share.code(), "Code is mandatoty.");
+		final Collection<Data> rates = new ArrayList<>();
+		final Collection<Data> dividends = new ArrayList<>();
+		final Map<Imports, Consumer<Share>> importsMap = new HashMap<>();
+		importsMap.put(Imports.Rates, aShare -> rates.addAll(importRates(aShare)));
+
+		importsMap.put(Imports.Dividends, aShare -> dividends.addAll(importDividends(aShare)));
+
+		imports.forEach(value -> importsMap.get(value).accept(share));
+
+		return new TimeCourseImpl(share, rates, dividends);
+
 	}
 
 	private List<Data> importDividends(final Share share) {
-		
-		if(  share.isIndex()){
+
+		if (share.isIndex()) {
 			return Arrays.asList();
 		}
-		if( exchangeRates.isEmpty() ) {
+
+		Assert.hasText(share.currency(), "Share must have a currency.");
+		if (exchangeRates.isEmpty()) {
 			exchangeRates.addAll(exchangeRateDatebaseRepository.exchangerates());
 		}
-		
-		
-		
-		final GatewayParameter gatewayParameter = shareGatewayParameterRepository.shareGatewayParameter(Gateway.ArivaDividendHistory, share.code());
-		
+
+		final GatewayParameter gatewayParameter = gatewayParameterRepository.shareGatewayParameter(Gateway.ArivaDividendHistory, share.code());
+
 		System.out.println(new UriTemplate(gatewayParameter.urlTemplate()).expand(gatewayParameter.parameters()));
-	    final String html =  restOperations.getForObject(gatewayParameter.urlTemplate() ,String.class, gatewayParameter.parameters());
+		final String html = restOperations.getForObject(gatewayParameter.urlTemplate(), String.class, gatewayParameter.parameters());
+
 		final Document doc = Jsoup.parse(html);
-	       
+
 		final List<Data> dividends = new ArrayList<>();
-	       final List<Element> results  = doc.getElementsByTag("tr").stream().filter(line -> line.getElementsMatchingText("Dividende").size() > 0 ).collect(Collectors.toList());
+		final List<Element> results = doc.getElementsByTag("tr").stream().filter(line -> line.getElementsMatchingText("Dividende").size() > 0).collect(Collectors.toList());
 
-	       final ConfigurableConversionService configurableConversionService = preparedConversionService(dateFormatDividends);
-	       
-	       final Date startDate = date(LocalDate.now(), periodeInDays);
-	  
-	       final ExchangeRateCalculator exchangeRateCalculator=  exchangeRateCalculatorBuilder().withExchangeRates(exchangeRates).build();
-	       
-	       for(final Element result : results ){
-	           final List<Element> tds = result.getElementsByTag("td");
-	         
-	           
-	          
-	          
-	           
-	           final Date date = configurableConversionService.convert(tds.get(0).text(), Date.class);
-	          if( date.before(startDate)) {
-	        	   continue;
-	           } 
-	           final String cols[] = tds.get(3).text().split("[ ]");
-	           final Double rate = configurableConversionService.convert(cols[0], Number.class).doubleValue() * exchangeRateCalculator.factor(new ExchangeRateImpl(cols[1], share.currency()), date);
-	          
-	          
-	      
-	           
-	           Assert.isTrue(tds.get(1).text().equals("Dividende"));
-	           
-	        
-	           
+		final ConfigurableConversionService configurableConversionService = preparedConversionService(dateFormatDividends);
 
-	           dividends.add(new DataImpl(date, Math.round(100*rate)/100d));
-	          
-	       }
-	 
+		final Date startDate = date(LocalDate.now(), periodeInDays);
 
-	       Collections.sort(dividends, (data1, data2) -> Double.valueOf(Math.signum(Long.valueOf(data1.date().getTime() - data2.date().getTime()).doubleValue())).intValue());
-		
+		final ExchangeRateCalculator exchangeRateCalculator = exchangeRateCalculatorBuilder().withExchangeRates(exchangeRates).build();
+
+		for (final Element result : results) {
+			final List<Element> tds = result.getElementsByTag("td");
+
+			final Date date = configurableConversionService.convert(tds.get(0).text(), Date.class);
+			if (date.before(startDate)) {
+				continue;
+			}
+			final String cols[] = tds.get(3).text().split("[ ]");
+
+			final Double rate = configurableConversionService.convert(cols[0], Number.class).doubleValue() * exchangeRateCalculator.factor(new ExchangeRateImpl(cols[1], share.currency()), date);
+
+			Assert.isTrue(tds.get(1).text().equals("Dividende"));
+
+			dividends.add(new DataImpl(date, Math.round(100 * rate) / 100d));
+
+		}
+
+		Collections.sort(dividends, (data1, data2) -> Double.valueOf(Math.signum(Long.valueOf(data1.date().getTime() - data2.date().getTime()).doubleValue())).intValue());
+
 		return dividends;
 	}
 
 	private List<Data> importRates(final Share share) {
 		final LocalDate date = LocalDate.now();
 		final Map<String, Object> params = new HashMap<>();
-		final GatewayParameter gatewayParameter = shareGatewayParameterRepository.shareGatewayParameter(Gateway.ArivaRateHistory, share.code());
+		final GatewayParameter gatewayParameter = gatewayParameterRepository.shareGatewayParameter(Gateway.ArivaRateHistory, share.code());
 
 		params.putAll(gatewayParameter.parameters());
 
@@ -212,7 +196,7 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	}
 
 	private List<Data> read(final BufferedReader bufferedReader, final boolean isIndex) throws IOException, ParseException {
-		
+
 		final ConfigurableConversionService configurableConversionService = preparedConversionService(dateFormatRates);
 		final List<Data> results = new ArrayList<>();
 		for (String line = bufferedReader.readLine(); line != null; line = bufferedReader.readLine()) {
@@ -255,7 +239,8 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 		return dateFormatRates.format(date(date, daysBack));
 	}
 
-	private Date date(final LocalDate date, final long daysBack) {
+	Date date(final LocalDate date, final long daysBack) {
+
 		return Date.from(date.minusDays(daysBack).atStartOfDay(ZoneId.systemDefault()).toInstant());
 	}
 
@@ -279,7 +264,7 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 
 	@Lookup
 	abstract ConfigurableConversionService configurableConversionService();
-	
+
 	@Lookup
 	abstract ExchangeRateCalculatorBuilder exchangeRateCalculatorBuilder();
 
