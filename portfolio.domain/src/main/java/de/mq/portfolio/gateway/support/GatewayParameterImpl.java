@@ -11,7 +11,7 @@ import org.springframework.util.Assert;
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 
-@Document(collection = "ShareGatewayParameter")
+@Document(collection = "GatewayParameter")
 class GatewayParameterImpl implements GatewayParameter {
 
 	@Id

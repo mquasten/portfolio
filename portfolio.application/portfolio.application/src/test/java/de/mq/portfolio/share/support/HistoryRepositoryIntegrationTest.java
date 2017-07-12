@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -37,7 +38,7 @@ import de.mq.portfolio.share.Share;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/mongo-test.xml" , "/application-test.xml" })
-@Ignore
+
 public class HistoryRepositoryIntegrationTest {
 	
 
@@ -491,7 +492,7 @@ public class HistoryRepositoryIntegrationTest {
 	
 	
 	@Test
-	
+	@Ignore
 	public final void arivaCSV() {
 		Collection<String> urlTempaltes = new HashSet<>();
 		arivaHistory.stream().forEach(history -> {
@@ -505,6 +506,29 @@ public class HistoryRepositoryIntegrationTest {
 		System.out.println("^DJI" +";"+Gateway.ArivaRateHistory +";"+url +";"+"4325"+";" +"71");
 		
 		
+	}
+	
+	@Test
+	@Ignore
+	public final void googleCSV() {
+		stocks.entrySet().stream().sorted((c1, c2) -> compare(c1, c2)).forEach(entry -> {
+			System.out.println(entry.getKey() + ";" +"http://www.google.com/finance/historical?q={query}&output=csv"+";" + entry.getValue() );
+			});
+		
+		
+		//http://www.google.com/finance/historical?q={query}&output=csv
+	}
+
+
+
+	private int compare(Entry<String, String> c1, Entry<String, String> c2) {
+		int index1 = c1.getKey().endsWith("DE") ?1 :  0; 
+		int index2 = c2.getKey().endsWith("DE") ?1 :  0; 
+		
+		if ( Math.signum(index1-index2) !=0d ) {
+			return ((Float)Math.signum(index1-index2)).intValue(); 
+		}
+		return c1.getKey().compareTo(c2.getKey());
 	}
 	
 	

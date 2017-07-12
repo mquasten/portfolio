@@ -35,8 +35,8 @@ import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl;
 import de.mq.portfolio.gateway.GatewayParameter;
-import de.mq.portfolio.gateway.support.GatewayParameterArivaDividendHistoryCSVLineConverterImpl;
-import de.mq.portfolio.gateway.support.GatewayParameterArivaRateHistoryCSVLineConverterImpl;
+
+import de.mq.portfolio.gateway.support.GatewayParameterCSVLineConverterImpl;
 import de.mq.portfolio.gateway.support.GatewayParameterRepository;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
@@ -245,7 +245,7 @@ public class RulesConfigurationTest {
 		
 		Assert.assertEquals(exceptionTranslationBuilder, fieldValue(reader,ExceptionTranslationBuilder.class));
 		
-		Assert.assertEquals(GatewayParameterArivaRateHistoryCSVLineConverterImpl.class, fieldValue(reader,Converter.class).getClass());
+		Assert.assertEquals(GatewayParameterCSVLineConverterImpl.class, fieldValue(reader,Converter.class).getClass());
 		final Expression inputExpression = fieldValue(rules.get(0), Expression.class);
 		Assert.assertEquals(RulesConfiguration.SPEL_READ_FILENAME, inputExpression.getExpressionString());
 		
@@ -281,7 +281,7 @@ public class RulesConfigurationTest {
 		
 		Assert.assertEquals(exceptionTranslationBuilder, fieldValue(reader,ExceptionTranslationBuilder.class));
 		
-		Assert.assertEquals(GatewayParameterArivaDividendHistoryCSVLineConverterImpl.class, fieldValue(reader,Converter.class).getClass());
+		Assert.assertEquals(GatewayParameterCSVLineConverterImpl.class, fieldValue(reader,Converter.class).getClass());
 		final Expression inputExpression = fieldValue(rules.get(0), Expression.class);
 		Assert.assertEquals(RulesConfiguration.SPEL_READ_FILENAME, inputExpression.getExpressionString());
 		
@@ -380,7 +380,7 @@ public class RulesConfigurationTest {
 			}
 		}, method -> method.getDeclaringClass().equals(RulesConfiguration.class)&& (!Modifier.isStatic(method.getModifiers()) || method.getReturnType().equals(BeanFactoryPostProcessor.class) ));
 		
-		Assert.assertEquals(11, counters[0]);
+		Assert.assertEquals(12, counters[0]);
 	}
 	
 	
