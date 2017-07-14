@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.junit.Before;
@@ -233,11 +234,8 @@ public class RulesConfigurationTest {
 		Assert.assertEquals(RulesConfiguration.IMPORT_ARIVA_HISTORY_RATE_RULE_ENGINE_NAME, nameCaptor.getValue());
 		
 		
-		
 		final List<Rule> rules = ruleCapor.getAllValues();
 		Assert.assertEquals(2, rules.size());
-		
-		
 		
 		Assert.assertEquals(ImportServiceRuleImpl.class, rules.get(0).getClass());
 		final SimpleCSVInputServiceImpl<?> reader = (SimpleCSVInputServiceImpl<?>) ReflectionTestUtils.getField(rules.get(0), TARGET_FIELD);
@@ -245,7 +243,15 @@ public class RulesConfigurationTest {
 		
 		Assert.assertEquals(exceptionTranslationBuilder, fieldValue(reader,ExceptionTranslationBuilder.class));
 		
-		Assert.assertEquals(GatewayParameterCSVLineConverterImpl.class, fieldValue(reader,Converter.class).getClass());
+		final Object csvConverter = fieldValue(reader,Converter.class);
+		Assert.assertEquals(GatewayParameterCSVLineConverterImpl.class, csvConverter.getClass());
+		
+		final List<String> parameters =  parametersFromCsvConverter(csvConverter);
+		
+		Assert.assertEquals(2, parameters.size());
+		Assert.assertEquals(RulesConfiguration.SHARE_ID_PARAMETER_NAME, parameters.get(0));
+		Assert.assertEquals(RulesConfiguration.STOCK_EXCHANGE_ID_PARAMETER_NAME, parameters.get(1));
+		
 		final Expression inputExpression = fieldValue(rules.get(0), Expression.class);
 		Assert.assertEquals(RulesConfiguration.SPEL_READ_FILENAME, inputExpression.getExpressionString());
 		
@@ -256,7 +262,53 @@ public class RulesConfigurationTest {
 		Assert.assertEquals(shareGatewayParameterRepository, ReflectionTestUtils.getField(rules.get(1), TARGET_FIELD));
 		
 	}
+
+	@SuppressWarnings("unchecked")
+	private List<String> parametersFromCsvConverter(final Object csvConverter) {
+		return DataAccessUtils.requiredSingleResult(Arrays.asList(csvConverter.getClass().getDeclaredFields()).stream().filter(field -> field.getType().equals(List.class)).map(field ->(List<String>) ReflectionTestUtils.getField(csvConverter, field.getName())).collect(Collectors.toList()));
+	}
 	
+	
+	
+	
+	@Test
+	public void  importGoogleRateHistory() {
+		
+		@SuppressWarnings("unchecked")
+		final ExceptionTranslationBuilder<Collection<GatewayParameter>, BufferedReader> exceptionTranslationBuilder = Mockito.mock(ExceptionTranslationBuilder.class);
+		
+		Assert.assertEquals(rulesEngine,rulesConfiguration.importGoogleRateHistory(shareGatewayParameterRepository, rulesEngineBuilder, exceptionTranslationBuilder));
+	
+		Assert.assertEquals(RulesConfiguration.IMPORT_GOOGLE_RATE_RULE_ENGINE_NAME, nameCaptor.getValue());
+		
+		
+		final List<Rule> rules = ruleCapor.getAllValues();
+		Assert.assertEquals(2, rules.size());
+		
+		Assert.assertEquals(ImportServiceRuleImpl.class, rules.get(0).getClass());
+		final SimpleCSVInputServiceImpl<?> reader = (SimpleCSVInputServiceImpl<?>) ReflectionTestUtils.getField(rules.get(0), TARGET_FIELD);
+		
+		
+		Assert.assertEquals(exceptionTranslationBuilder, fieldValue(reader,ExceptionTranslationBuilder.class));
+		
+		final Object csvConverter = fieldValue(reader,Converter.class);
+		Assert.assertEquals(GatewayParameterCSVLineConverterImpl.class, csvConverter.getClass());
+		
+		final List<String> parameters =  parametersFromCsvConverter(csvConverter);
+		
+		Assert.assertEquals(1, parameters.size());
+		Assert.assertEquals(RulesConfiguration.QUERY_PARAMETER_NAME, parameters.get(0));
+			
+		final Expression inputExpression = fieldValue(rules.get(0), Expression.class);
+		Assert.assertEquals(RulesConfiguration.SPEL_READ_FILENAME, inputExpression.getExpressionString());
+		
+		Assert.assertEquals(ProcessServiceRuleImpl.class, rules.get(1).getClass());
+		final Expression outputExpression = fieldValue(rules.get(1), Expression.class);
+		Assert.assertEquals(RulesConfiguration.SPEL_SAVE_ITEM, outputExpression.getExpressionString());
+		
+		Assert.assertEquals(shareGatewayParameterRepository, ReflectionTestUtils.getField(rules.get(1), TARGET_FIELD));
+		
+	}
 	
 	@Test
 	public void  importArivaDividendHistory() {
@@ -281,7 +333,14 @@ public class RulesConfigurationTest {
 		
 		Assert.assertEquals(exceptionTranslationBuilder, fieldValue(reader,ExceptionTranslationBuilder.class));
 		
-		Assert.assertEquals(GatewayParameterCSVLineConverterImpl.class, fieldValue(reader,Converter.class).getClass());
+		final Object csvConverter = fieldValue(reader,Converter.class);
+		Assert.assertEquals(GatewayParameterCSVLineConverterImpl.class, csvConverter.getClass());
+		
+		final List<String> parameters =  parametersFromCsvConverter(csvConverter);
+		Assert.assertEquals(1, parameters.size());
+		
+		Assert.assertEquals(RulesConfiguration.SHARE_NAME_PARAMETER_NAME, parameters.stream().findAny().get());
+		
 		final Expression inputExpression = fieldValue(rules.get(0), Expression.class);
 		Assert.assertEquals(RulesConfiguration.SPEL_READ_FILENAME, inputExpression.getExpressionString());
 		
