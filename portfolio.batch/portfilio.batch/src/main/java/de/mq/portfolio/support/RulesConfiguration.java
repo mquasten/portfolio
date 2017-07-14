@@ -33,7 +33,7 @@ import de.mq.portfolio.user.support.UsersCSVLineConverterImpl;
 @Import({AbstractJsonInputService.class})
 class RulesConfiguration {
 
-	static final String QUERY_PARAMETER_NAME = "q";
+	static final String QUERY_PARAMETER_NAME = "query";
 	static final String SHARE_NAME_PARAMETER_NAME = "shareName";
 	static final String STOCK_EXCHANGE_ID_PARAMETER_NAME = "stockExchangeId";
 	static final String SHARE_ID_PARAMETER_NAME = "shareId";

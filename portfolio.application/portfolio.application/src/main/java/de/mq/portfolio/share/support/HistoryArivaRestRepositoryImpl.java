@@ -66,7 +66,7 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	private final GatewayParameterRepository gatewayParameterRepository;
 	private final RestOperations restOperations;
 
-	private final boolean wknCheck;
+	private final boolean wknCheck; 
 	private final Collection<Imports> imports = new ArrayList<>();
 
 	private final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository;
@@ -84,6 +84,7 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 		this.imports.addAll(Arrays.asList(imports.split("[,]")).stream().map(value -> Imports.valueOf(StringUtils.capitalize(StringUtils.trimWhitespace(value).toLowerCase()))).collect(Collectors.toList()));
 
 	}
+	
 
 	@Override
 	public TimeCourse history(Share share) {
