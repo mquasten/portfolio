@@ -13,7 +13,6 @@ import de.mq.portfolio.share.Share;
 
 public class ShareTest {
 	
-	private static final String CODE2 = "NYSE:KO";
 	private static final String CURRENCY_FIELD = "currency";
 	private static final String CURRENCY = "EUR";
 	private static final String WKN = "wkn123456";
@@ -22,7 +21,7 @@ public class ShareTest {
 	private static final String INDEX = "Dow";
 	private static final String NAME = "Coca Cola";
 	private static final String CODE = "KO";
-	private final Share share = new ShareImpl(CODE, NAME, CODE2, INDEX, WKN, CURRENCY);
+	private final Share share = new ShareImpl(CODE, NAME, INDEX, WKN, CURRENCY);
 	
 	@Test
 	public final void name() {
@@ -47,12 +46,11 @@ public class ShareTest {
 	
 	@Test
 	public final void constructorCodeName() {
-		final Share share = new ShareImpl(CODE, NAME,"",null, WKN, CURRENCY);
+		final Share share = new ShareImpl(CODE, NAME,null, WKN, CURRENCY);
 		Assert.assertEquals(NAME, share.name());
 		Assert.assertEquals(CODE, share.code());
 		Assert.assertNull(share.index());
 		Assert.assertTrue(share.isIndex());
-		Assert.assertNull(share.code2());
 	}
 	
 	@Test
@@ -94,9 +92,5 @@ public class ShareTest {
 		Assert.assertNull(share.currency());
 	}
 	
-	@Test
-	public final void code2() {
-		Assert.assertEquals(CODE2, share.code2());
-	}
 
 }

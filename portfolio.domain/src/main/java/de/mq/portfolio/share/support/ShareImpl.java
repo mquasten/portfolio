@@ -24,22 +24,19 @@ class ShareImpl implements Share {
 	
 	private String currency;
 	
-	private String code2;
-	
 
-	ShareImpl(final String code, final String name,final String code2, final String index, final String wkn, final String currency) {
+	ShareImpl(final String code, final String name, final String index, final String wkn, final String currency) {
 		this.code = code;
 		this.name = name;
 		this.index = index;
 		this.wkn=wkn;
 		this.currency=currency;
-		this.code2=StringUtils.hasText(code2)?code2:null;
 	}
 
 	
 
 	ShareImpl(final String code) {
-		this(code, null, null, null,null,null);
+		this(code, null, null,null,null);
 	}
 
 	@SuppressWarnings("unused")
@@ -105,16 +102,6 @@ class ShareImpl implements Share {
 		}
 		return currency.trim().toUpperCase();
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see de.mq.portfolio.share.support.support.Share#code2()
-	 */
-	@Override
-	public String code2() {
-		return code2;
-	}
-
 
 
 

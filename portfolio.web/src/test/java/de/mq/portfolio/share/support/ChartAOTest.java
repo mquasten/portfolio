@@ -38,8 +38,6 @@ public class ChartAOTest {
 
 	private static final String CODE = "KO";
 
-	private static final String CODE2 = "NYSE:KO";
-
 	private static final String INDEX = "^DJI";
 
 	private final ChartAO chartAO = new ChartAO();
@@ -63,7 +61,6 @@ public class ChartAOTest {
 		Mockito.when(timeCourse.share()).thenReturn(share);
 		Mockito.when(timeCourse.dividends()).thenReturn(dividends);
 		Mockito.when(share.wkn()).thenReturn(WKN);
-		Mockito.when(share.code2()).thenReturn(CODE2);
 		Mockito.when(share.name()).thenReturn(NAME);
 		Mockito.when(share.currency()).thenReturn(CURRENCY_USD);
 		Mockito.when(share.index()).thenReturn(INDEX);
@@ -125,13 +122,6 @@ public class ChartAOTest {
 		Assert.assertNull(chartAO.getName());
 		chartAO.setTimeCourse(timeCourse);
 		Assert.assertEquals(NAME, chartAO.getName());
-	}
-
-	@Test
-	public final void getCode2() {
-		Assert.assertNull(chartAO.getCode2());
-		chartAO.setTimeCourse(timeCourse);
-		Assert.assertEquals(CODE2, chartAO.getCode2());
 	}
 
 	@Test

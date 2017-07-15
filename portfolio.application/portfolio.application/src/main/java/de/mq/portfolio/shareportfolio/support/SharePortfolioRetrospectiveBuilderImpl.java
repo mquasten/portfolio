@@ -192,7 +192,7 @@ class SharePortfolioRetrospectiveBuilderImpl implements SharePortfolioRetrospect
 
 	private Share newShare(final String name, final String currency) {
 
-		return BeanUtils.instantiateClass(declaredConstructor(SHARE_PATH, String.class, String.class, String.class, String.class, String.class, String.class), name, name, null, null,null, currency);
+		return BeanUtils.instantiateClass(declaredConstructor(SHARE_PATH, String.class, String.class, String.class, String.class, String.class), name, name, null,null, currency);
 	}
 
 	private void addRate(final Map<Date, List<Double>> rates, final Data r, final double k, final double exchangeRate) {

@@ -130,15 +130,13 @@ public class HistoryRepositoryIntegrationTest {
 	
 		Mockito.doReturn(wkns.get("SAP.DE")).when(share).wkn();
 		
-		Mockito.when(share.code2()).thenReturn("ETR:SAP"); 		
 				
 		results[0] = historyGoogleRestRepository.history(share).rates();
 		
-		Mockito.when(share.code2()).thenReturn("FRA:SAP"); 
 		
 		results[1] = historyGoogleRestRepository.history(share).rates();
 		
-		Mockito.when(share.code2()).thenReturn("NYSE:SAP");
+	
 		
 		results[2] = historyGoogleRestRepository.history(share).rates();
 		
@@ -215,8 +213,6 @@ public class HistoryRepositoryIntegrationTest {
 		@SuppressWarnings("unchecked")
 		final List<Data>[]  results = new  List[max];
 				
-		Mockito.when(share.code2()).thenReturn("NYSE:KO");	
-	//	Mockito.when(share.id2()).thenReturn("400");
 	
 		Mockito.doReturn(wkns.get("KO")).when(share).wkn();
 		results[0] = historyGoogleRestRepository.history(share).rates();
@@ -269,7 +265,6 @@ public class HistoryRepositoryIntegrationTest {
 	public  void historyEONA()   {
 	
 		Mockito.when(share.code()).thenReturn("EOAN.DE");
-		Mockito.when(share.code2()).thenReturn("ETR:EOAN");
 		//Mockito.when(share.id2()).thenReturn("320");
 		
 		Mockito.when(share.wkn()).thenReturn("ENAG99");
@@ -330,7 +325,7 @@ public class HistoryRepositoryIntegrationTest {
 	public  void historyDB11()   {
 	
 		Mockito.when(share.code()).thenReturn("DB1.DE");
-		Mockito.when(share.code2()).thenReturn("ETR:DB1");
+	
 		//Mockito.when(share.id2()).thenReturn("4587");
 	
 		Mockito.doReturn(wkns.get("DB1.DE")).when(share).wkn();
@@ -424,12 +419,9 @@ public class HistoryRepositoryIntegrationTest {
 			
 			System.out.println("***" + history.code() + "***");
 			
-			final String code2 = stocks.get(history.code());
 			final Map<Date,double[]> results = new HashMap<>();
 			
 		
-			Mockito.when(share.code2()).thenReturn(code2);
-			//Mockito.when(share.id2()).thenReturn(id2);
 			Mockito.when(share.code()).thenReturn(history.code());
 			Mockito.when(share.wkn()).thenReturn(wkns.get(history.code()));
 			

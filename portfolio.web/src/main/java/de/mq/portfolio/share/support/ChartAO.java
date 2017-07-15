@@ -33,7 +33,6 @@ public class ChartAO implements Serializable {
 
 	private String currency;
 	
-	private String code2;
 	
 	private String index;
 	
@@ -93,10 +92,7 @@ public class ChartAO implements Serializable {
 	}
 
 	
-	public String getCode2() {
-		return code2;
-	}
-
+	
 	
 	
 	public String getIndex() {
@@ -129,7 +125,6 @@ public class ChartAO implements Serializable {
 		dividends = timeCourse.dividends();
 		wkn = timeCourse.share().wkn();
 		currency = timeCourse.share().currency();
-		code2 = timeCourse.share().code2();
 		index = timeCourse.share().index();
 	}
 

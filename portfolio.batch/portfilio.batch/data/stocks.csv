@@ -1,63 +1,63 @@
 ^GDAXI;846900;EUR;Deutscher Aktien Index
-ADS.DE;A1EWWW;EUR;Adidas AG;ETR:ADS;Deutscher Aktien Index
-ALV.DE;840400;EUR;Allianz SE;ETR:ALV;Deutscher Aktien Index
-BAS.DE;BASF11;EUR;BASF SE;ETR:BAS;Deutscher Aktien Index
-BAYN.DE;BAY001;EUR;Bayer AG;ETR:BAYN;Deutscher Aktien Index
-BEI.DE;520000;EUR;Beiersdorf AG;ETR:BEI;Deutscher Aktien Index
-BMW.DE;519000;EUR;Bayerische Motoren Werke Aktiengesellschaft;ETR:BMW;Deutscher Aktien Index
-CBK.DE;CBK100;EUR;Commerzbank AG;ETR:CBK;Deutscher Aktien Index
-CON.DE;543900;EUR;Continental Aktiengesellschaft;ETR:CON;Deutscher Aktien Index
-DAI.DE;710000;EUR;Daimler AG;ETR:DAI;Deutscher Aktien Index
-DB1.DE;581005;EUR;Deutsche Boerse AG;ETR:DB11;Deutscher Aktien Index
-DBK.DE;514000;EUR;Deutsche Bank AG;ETR:DBK;Deutscher Aktien Index
-DPW.DE;555200;EUR;Deutsche Post AG;ETR:DPW;Deutscher Aktien Index
-DTE.DE;555750;EUR;Deutsche Telekom AG;ETR:DTE;Deutscher Aktien Index
-EOAN.DE;ENAG99;EUR;E.ON SE;ETR:EOAN;Deutscher Aktien Index
-FME.DE;578580;EUR;Fresenius Medical Care AG & Co. KGAA;ETR:FME;Deutscher Aktien Index
-FRE.DE;578560;EUR;Fresenius SE & Co KGaA;ETR:FRE;Deutscher Aktien Index
-HEI.DE;604700;EUR;HeidelbergCement AG;ETR:HEI;Deutscher Aktien Index
-HEN3.DE;604843;EUR;Henkel AG & Co. KGaA;ETR:HEN3;Deutscher Aktien Index
-IFX.DE;623100;EUR;Infineon Technologies AG;ETR:IFX;Deutscher Aktien Index
-LHA.DE;823212;EUR;Deutsche Lufthansa AG;ETR:LHA;Deutscher Aktien Index
-LIN.DE;648300;EUR;Linde Aktiengesellschaft;ETR:LIN;Deutscher Aktien Index
-MRK.DE;659990;EUR;Merck KGaA;ETR:MRK;Deutscher Aktien Index
-MUV2.DE;843002;EUR;M?nchener R?ckversicherungs-Gesellschaft Aktiengesellschaft;ETR:MUV2;Deutscher Aktien Index
-RWE.DE;703712;EUR;RWE AG;ETR:RWE;Deutscher Aktien Index
-SAP.DE;716460;EUR;SAP SE;ETR:SAP;Deutscher Aktien Index
-SDF.DE;KSAG88;EUR;K+S Aktiengesellschaft;ETR:SDF;MDAX (Mid-Cap-DAX)
-PSM.DE;PSM777;EUR;PROSIEBENSAT.1 MEDIA;ETR:PSM;Deutscher Aktien Index
-SIE.DE;723610;EUR;Siemens Aktiengesellschaft;ETR:SIE;Deutscher Aktien Index
-TKA.DE;750000;EUR;ThyssenKrupp AG;ETR:TKA;Deutscher Aktien Index
-VNA.DE;A1ML7J;EUR;VONOVIA N;ETR:VNA;Deutscher Aktien Index
-VOW3.DE;766403;EUR;Volkswagen AG;ETR:VOW3;Deutscher Aktien Index
+ADS.DE;A1EWWW;EUR;Adidas AG;Deutscher Aktien Index
+ALV.DE;840400;EUR;Allianz SE;Deutscher Aktien Index
+BAS.DE;BASF11;EUR;BASF SE;Deutscher Aktien Index
+BAYN.DE;BAY001;EUR;Bayer AG;Deutscher Aktien Index
+BEI.DE;520000;EUR;Beiersdorf AG;Deutscher Aktien Index
+BMW.DE;519000;EUR;Bayerische Motoren Werke Aktiengesellschaft;Deutscher Aktien Index
+CBK.DE;CBK100;EUR;Commerzbank AG;Deutscher Aktien Index
+CON.DE;543900;EUR;Continental Aktiengesellschaft;Deutscher Aktien Index
+DAI.DE;710000;EUR;Daimler AG;Deutscher Aktien Index
+DB1.DE;581005;EUR;Deutsche Boerse AG;Deutscher Aktien Index
+DBK.DE;514000;EUR;Deutsche Bank AG;Deutscher Aktien Index
+DPW.DE;555200;EUR;Deutsche Post AG;Deutscher Aktien Index
+DTE.DE;555750;EUR;Deutsche Telekom AG;Deutscher Aktien Index
+EOAN.DE;ENAG99;EUR;E.ON SE;Deutscher Aktien Index
+FME.DE;578580;EUR;Fresenius Medical Care AG & Co. KGAA;Deutscher Aktien Index
+FRE.DE;578560;EUR;Fresenius SE & Co KGaA;Deutscher Aktien Index
+HEI.DE;604700;EUR;HeidelbergCement AG;Deutscher Aktien Index
+HEN3.DE;604843;EUR;Henkel AG & Co. KGaA;Deutscher Aktien Index
+IFX.DE;623100;EUR;Infineon Technologies AG;Deutscher Aktien Index
+LHA.DE;823212;EUR;Deutsche Lufthansa AG;Deutscher Aktien Index
+LIN.DE;648300;EUR;Linde Aktiengesellschaft;Deutscher Aktien Index
+MRK.DE;659990;EUR;Merck KGaA;Deutscher Aktien Index
+MUV2.DE;843002;EUR;Münchener Rückversicherungs-Gesellschaft Aktiengesellschaft;Deutscher Aktien Index
+RWE.DE;703712;EUR;RWE AG;Deutscher Aktien Index
+SAP.DE;716460;EUR;SAP SE;Deutscher Aktien Index
+SDF.DE;KSAG88;EUR;K+S Aktiengesellschaft;MDAX (Mid-Cap-DAX)
+PSM.DE;PSM777;EUR;PROSIEBENSAT.1 MEDIA;Deutscher Aktien Index
+SIE.DE;723610;EUR;Siemens Aktiengesellschaft;Deutscher Aktien Index
+TKA.DE;750000;EUR;ThyssenKrupp AG;Deutscher Aktien Index
+VNA.DE;A1ML7J;EUR;VONOVIA N;Deutscher Aktien Index
+VOW3.DE;766403;EUR;Volkswagen AG;Deutscher Aktien Index
 ^DJI;969420;USD;Dow Jones Industrial Average
-AAPL;865985;USD;Apple Inc.;NASDAQ:AAPL;Dow Jones Industrial Average
-AXP;850226;USD;American Express Company;NYSE:AXP;Dow Jones Industrial Average
-BA;850471;USD;The Boeing Company;NYSE:BA;Dow Jones Industrial Average
-CAT;850598;USD;Caterpillar Inc.;NYSE:CAT;Dow Jones Industrial Average
-CSCO;878841;USD;Cisco Systems, Inc.;NASDAQ:CSCO;Dow Jones Industrial Average
-CVX;852552;USD;Chevron Corporation;NYSE:CVX;Dow Jones Industrial Average
-DD;852046;USD;E. I. du Pont de Nemours and Company;NYSE:DD;Dow Jones Industrial Average
-DIS;855686;USD;The Walt Disney Company;NYSE:DIS;Dow Jones Industrial Average
-GE;851144;USD;General Electric Company;NYSE:GE;Dow Jones Industrial Average
-GS;920332;USD;The Goldman Sachs Group, Inc.;NYSE:GS;Dow Jones Industrial Average
-HD;866953;USD;The Home Depot, Inc.;NYSE:HD;Dow Jones Industrial Average
-IBM;851399;USD;International Business Machines Corporation;NYSE:IBM;Dow Jones Industrial Average
-INTC;855681;USD;Intel Corporation;NASDAQ:INTC;Dow Jones Industrial Average
-JNJ;853260;USD;Johnson & Johnson;NYSE:JNJ;Dow Jones Industrial Average
-JPM;850628;USD;JPMorgan Chase & Co.;NYSE:JPM;Dow Jones Industrial Average
-KO;850663;USD;The Coca-Cola Company;NYSE:KO;Dow Jones Industrial Average
-MCD;856958;USD;McDonald's Corp.;NYSE:MCD;Dow Jones Industrial Average
-MMM;851745;USD;3M Company;NYSE:MMM;Dow Jones Industrial Average
-MRK;A0YD8Q;USD;Merck & Co. Inc.;NYSE:MRK;Dow Jones Industrial Average
-MSFT;870747;USD;Microsoft Corporation;NASDAQ:MSFT;Dow Jones Industrial Average
-NKE;866993;USD;NIKE, Inc.;NYSE:NKE;Dow Jones Industrial Average
-PFE;852009;USD;Pfizer Inc;NYSE:PFE;Dow Jones Industrial Average
-PG;852062;USD;The Procter & Gamble Company;NYSE:PG;Dow Jones Industrial Average
-TRV;A0MLX4;USD;The Travelers Companies, Inc.;NYSE:TRV;Dow Jones Industrial Average
-UNH;869561;USD;UnitedHealth Group Incorporated;NYSE:UNH;Dow Jones Industrial Average
-UTX;852759;USD;United Technologies Corporation;NYSE:UTX;Dow Jones Industrial Average
-V;A0NC7B;USD;Visa Inc.;NYSE:V;Dow Jones Industrial Average
-VZ;868402;USD;Verizon Communications Inc.;NYSE:VZ;Dow Jones Industrial Average
-WMT;860853;USD;Wal-Mart Stores Inc.;NYSE:WMT;Dow Jones Industrial Average
-XOM;852549;USD;Exxon Mobil Corporation;NYSE:XOM;Dow Jones Industrial Average
+AAPL;865985;USD;Apple Inc.;Dow Jones Industrial Average
+AXP;850226;USD;American Express Company;Dow Jones Industrial Average
+BA;850471;USD;The Boeing Company;Dow Jones Industrial Average
+CAT;850598;USD;Caterpillar Inc.;Dow Jones Industrial Average
+CSCO;878841;USD;Cisco Systems, Inc.;Dow Jones Industrial Average
+CVX;852552;USD;Chevron Corporation;Dow Jones Industrial Average
+DD;852046;USD;E. I. du Pont de Nemours and Company;Dow Jones Industrial Average
+DIS;855686;USD;The Walt Disney Company;Dow Jones Industrial Average
+GE;851144;USD;General Electric Company;Dow Jones Industrial Average
+GS;920332;USD;The Goldman Sachs Group, Inc.;Dow Jones Industrial Average
+HD;866953;USD;The Home Depot, Inc.;Dow Jones Industrial Average
+IBM;851399;USD;International Business Machines Corporation;Dow Jones Industrial Average
+INTC;855681;USD;Intel Corporation;Dow Jones Industrial Average
+JNJ;853260;USD;Johnson & Johnson;Dow Jones Industrial Average
+JPM;850628;USD;JPMorgan Chase & Co.;Dow Jones Industrial Average
+KO;850663;USD;The Coca-Cola Company;Dow Jones Industrial Average
+MCD;856958;USD;McDonald's Corp.;Dow Jones Industrial Average
+MMM;851745;USD;3M Company;Dow Jones Industrial Average
+MRK;A0YD8Q;USD;Merck & Co. Inc.;Dow Jones Industrial Average
+MSFT;870747;USD;Microsoft Corporation;Dow Jones Industrial Average
+NKE;866993;USD;NIKE, Inc.;Dow Jones Industrial Average
+PFE;852009;USD;Pfizer Inc;Dow Jones Industrial Average
+PG;852062;USD;The Procter & Gamble Company;Dow Jones Industrial Average
+TRV;A0MLX4;USD;The Travelers Companies, Inc.;Dow Jones Industrial Average
+UNH;869561;USD;UnitedHealth Group Incorporated;Dow Jones Industrial Average
+UTX;852759;USD;United Technologies Corporation;Dow Jones Industrial Average
+V;A0NC7B;USD;Visa Inc.;Dow Jones Industrial Average
+VZ;868402;USD;Verizon Communications Inc.;Dow Jones Industrial Average
+WMT;860853;USD;Wal-Mart Stores Inc.;Dow Jones Industrial Average
+XOM;852549;USD;Exxon Mobil Corporation;Dow Jones Industrial Average

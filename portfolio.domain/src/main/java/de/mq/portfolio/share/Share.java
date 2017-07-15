@@ -13,7 +13,5 @@ public interface Share {
 	String wkn();
 
 	String currency();
-	
-	String code2();
 
 }
