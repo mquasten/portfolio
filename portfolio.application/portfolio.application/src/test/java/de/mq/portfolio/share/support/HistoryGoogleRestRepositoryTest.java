@@ -34,7 +34,7 @@ public class HistoryGoogleRestRepositoryTest {
 
 	private static final String CODE = "KO";
 
-	private static final String LINES_PATTERN = "Date,Open,High,Low,Close,Volume\n%s,x,x,x,%s,x\n28-Mai-68, Kylies Bithday\n%s,x,x,x,%s,x";
+	private static final String LINES_PATTERN = "Date,Open,High,Low,Close,Volume\n%s,x,x,x,%s,x\n28-Mai-68, Kylies Birthday\n%s,x,x,x,%s,x";
 
 	private static final double CURRENT_RATE = 100.00d;
 
@@ -103,8 +103,7 @@ public class HistoryGoogleRestRepositoryTest {
 
 		final TimeCourse timeCourse = historyRepository.history(share);
 
-		System.out.println(historyRepository);
-
+		Assert.assertTrue(timeCourse.dividends().isEmpty());
 		Assert.assertEquals(2, timeCourse.rates().size());
 		Assert.assertTrue(timeCourse.dividends().isEmpty());
 		Assert.assertEquals(share, timeCourse.share());
@@ -117,6 +116,19 @@ public class HistoryGoogleRestRepositoryTest {
 
 		Mockito.verify(restOperations).getForObject(urlTemplate, String.class, urlParameter);
 
+	}
+	
+	@Test
+	public final void historyIndex() throws ParseException {
+
+		Mockito.when(share.isIndex()).thenReturn(true);
+		final TimeCourse timeCourse = historyRepository.history(share);
+		
+		Assert.assertTrue(timeCourse.rates().isEmpty());
+		Assert.assertTrue(timeCourse.dividends().isEmpty());
+		
+		Mockito.verifyNoMoreInteractions(restOperations, gatewayParameterRepository);
+		
 	}
 
 	@Test(expected = ConversionFailedException.class)

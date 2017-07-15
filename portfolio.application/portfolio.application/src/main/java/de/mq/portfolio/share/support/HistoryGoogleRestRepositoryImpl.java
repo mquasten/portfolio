@@ -50,8 +50,11 @@ abstract class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 
 	@Override
 	public TimeCourse history(final Share share) {
-
 		Assert.notNull(share, "Share is mandatory.");
+		
+		if( share.isIndex() ) {
+			return new TimeCourseImpl(share, Arrays.asList(), Arrays.asList());
+		}
 
 		Assert.hasText(share.code(), "Share code is mandatory.");
 

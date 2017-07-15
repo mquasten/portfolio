@@ -1,4 +1,4 @@
-﻿AAPL;GoogleRateHistory;http://www.google.com/finance/historical?q={query}&startdate={startdate}&output=csv;NASDAQ:AAPL
+AAPL;GoogleRateHistory;http://www.google.com/finance/historical?q={query}&startdate={startdate}&output=csv;NASDAQ:AAPL
 AXP;GoogleRateHistory;http://www.google.com/finance/historical?q={query}&startdate={startdate}&output=csv;NYSE:AXP
 BA;GoogleRateHistory;http://www.google.com/finance/historical?q={query}&startdate={startdate}&output=csv;NYSE:BA
 CAT;GoogleRateHistory;http://www.google.com/finance/historical?q={query}&startdate={startdate}&output=csv;NYSE:CAT
