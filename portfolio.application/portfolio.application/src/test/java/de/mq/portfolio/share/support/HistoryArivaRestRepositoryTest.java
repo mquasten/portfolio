@@ -119,7 +119,7 @@ public class HistoryArivaRestRepositoryTest {
 		inject();
 		Mockito.doReturn(CODE).when(share).code();
 		Mockito.doReturn(WKN).when(share).wkn();
-		Mockito.doReturn(gatewayParameter).when(gatewayParameterRepository).shareGatewayParameter(Gateway.ArivaRateHistory, CODE);
+		Mockito.doReturn(gatewayParameter).when(gatewayParameterRepository).gatewayParameter(Gateway.ArivaRateHistory, CODE);
 		Mockito.doReturn(parameters).when(gatewayParameter).parameters();
 		Mockito.doReturn(urlTemplate).when(gatewayParameter).urlTemplate();
 
@@ -213,7 +213,7 @@ public class HistoryArivaRestRepositoryTest {
 		parameters.clear();
 		parameters.put("shareName", SHARE_NAME);
 		Mockito.doReturn(DIVIDENDS_URL).when(gatewayParameter).urlTemplate();
-		Mockito.when(gatewayParameterRepository.shareGatewayParameter(Gateway.ArivaDividendHistory, share.code())).thenReturn(gatewayParameter);
+		Mockito.when(gatewayParameterRepository.gatewayParameter(Gateway.ArivaDividendHistory, share.code())).thenReturn(gatewayParameter);
 		Mockito.doReturn(parameters).when(gatewayParameter).parameters();
 		final String html = org.springframework.util.StreamUtils.copyToString(getClass().getClassLoader().getResourceAsStream("arivaDividend.html"), Charset.forName("UTF-8"));
 

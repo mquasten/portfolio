@@ -115,7 +115,7 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 			exchangeRates.addAll(exchangeRateDatebaseRepository.exchangerates());
 		}
 
-		final GatewayParameter gatewayParameter = gatewayParameterRepository.shareGatewayParameter(Gateway.ArivaDividendHistory, share.code());
+		final GatewayParameter gatewayParameter = gatewayParameterRepository.gatewayParameter(Gateway.ArivaDividendHistory, share.code());
 
 		System.out.println(new UriTemplate(gatewayParameter.urlTemplate()).expand(gatewayParameter.parameters()));
 		final String html = restOperations.getForObject(gatewayParameter.urlTemplate(), String.class, gatewayParameter.parameters());
@@ -156,7 +156,7 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	private List<Data> importRates(final Share share) {
 		final LocalDate date = LocalDate.now();
 		final Map<String, Object> params = new HashMap<>();
-		final GatewayParameter gatewayParameter = gatewayParameterRepository.shareGatewayParameter(Gateway.ArivaRateHistory, share.code());
+		final GatewayParameter gatewayParameter = gatewayParameterRepository.gatewayParameter(Gateway.ArivaRateHistory, share.code());
 
 		params.putAll(gatewayParameter.parameters());
 

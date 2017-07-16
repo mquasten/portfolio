@@ -92,7 +92,7 @@ public class HistoryGoogleRestRepositoryTest {
 
 		Mockito.doAnswer(answer -> new ExceptionTranslationBuilderImpl<>()).when(historyRepository).exceptionTranslationBuilder();
 
-		Mockito.doReturn(gatewayParameter).when(gatewayParameterRepository).shareGatewayParameter(Gateway.GoogleRateHistory, CODE);
+		Mockito.doReturn(gatewayParameter).when(gatewayParameterRepository).gatewayParameter(Gateway.GoogleRateHistory, CODE);
 
 		Mockito.doReturn(parameter).when(gatewayParameter).parameters();
 		Mockito.doReturn(urlTemplate).when(gatewayParameter).urlTemplate();

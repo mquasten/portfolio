@@ -23,9 +23,14 @@ public enum Gateway {
 	}
 
 	public String id(final String... keys) {
+		
+		return pattern(id, keys);
+	}
+
+	public static String pattern(final String idPattern, final String... keys) {
 		Assert.notNull(keys, "Keys is mandatory.");
 		Assert.notEmpty(Arrays.asList(keys), "At lets one key expected.");
-		return StringUtils.arrayToDelimitedString(keys, DELIMITER) + DELIMITER + id;
+		return StringUtils.arrayToDelimitedString(keys, DELIMITER)+ DELIMITER+ idPattern;
 	}
 
 	public static String code(final String id) {

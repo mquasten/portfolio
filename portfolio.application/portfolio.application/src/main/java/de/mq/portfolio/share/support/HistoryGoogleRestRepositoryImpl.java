@@ -62,7 +62,7 @@ abstract class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 
 		configurableConversionService.addConverter(String.class, Date.class, dateString -> exceptionTranslationBuilder().withStatement(() -> dateFormat.parse(dateString)).translate());
 
-		final GatewayParameter gatewayParameter = gatewayParameterRepository.shareGatewayParameter(Gateway.GoogleRateHistory, share.code());
+		final GatewayParameter gatewayParameter = gatewayParameterRepository.gatewayParameter(Gateway.GoogleRateHistory, share.code());
 		final Map<String, String> parameters = new HashMap<>();
 		parameters.put("startdate", startDate());
 		parameters.putAll(gatewayParameter.parameters());
