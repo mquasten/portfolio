@@ -12,5 +12,6 @@ public interface GatewayParameterRepository {
 	
 	Collection<GatewayParameter> gatewayParameters(final String ... keys);
 	
-
+	void save(final GatewayParameter gatewayParameter) ;
+	
 }

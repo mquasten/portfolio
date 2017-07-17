@@ -1,9 +1,15 @@
 package de.mq.portfolio.gateway.support;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
+import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.GatewayParameterAggregation;
 
@@ -13,7 +19,7 @@ class GatewayParameterAggregationBuilderImpl<T> implements GatewayParameterAggre
 	
 	private T domain;
 	
-	private GatewayParameter gatewayParameter;
+	private Map<Gateway,GatewayParameter> gatewayParameters = new HashMap<>();
 	
 	/*
 	 * (non-Javadoc)
@@ -31,8 +37,17 @@ class GatewayParameterAggregationBuilderImpl<T> implements GatewayParameterAggre
 	 */
 	@Override
 	public GatewayParameterAggregationBuilder<T> withGatewayParameter(final GatewayParameter  gatewayParameter) {
-		Assert.isNull(this.gatewayParameter , "GatewayParameter already assigned.");
-		this.gatewayParameter=gatewayParameter;
+		Assert.notNull(gatewayParameter, "GatewayParameter is mandatory.");
+		Assert.notNull(gatewayParameter.gateway(), "Gateway is mandatory.");
+		Assert.isNull(this.gatewayParameters.containsKey(gatewayParameter.gateway()) , String.format("GatewayParameter for %s already assigned.", gatewayParameter.gateway()));
+		this.gatewayParameters.put(gatewayParameter.gateway(), gatewayParameter);
+		return this;
+	}
+	
+	@Override
+	public GatewayParameterAggregationBuilder<T> withGatewayParameters(final Collection<GatewayParameter>  gatewayParameters) {
+		Assert.isTrue(!StringUtils.isEmpty(gatewayParameters), "At least 1 GatewayParameter is required.");
+		gatewayParameters.forEach(gatewayParameter -> withGatewayParameter(gatewayParameter));
 		return this;
 	}
 	/*
@@ -43,8 +58,9 @@ class GatewayParameterAggregationBuilderImpl<T> implements GatewayParameterAggre
 	public
 	GatewayParameterAggregation<T> build() {
 		Assert.notNull(domain, "Domain is mandatory.");
-		Assert.notNull(gatewayParameter, "GatewayParameter is mandatory.");
-		return new GatewayParameterAggregationImpl<>(domain, gatewayParameter);
+		Assert.isTrue(!StringUtils.isEmpty(gatewayParameters), "At least 1 GatewayParameter is required.");
+		
+		return new GatewayParameterAggregationImpl<>(domain, gatewayParameters.values());
 	}
 
 }

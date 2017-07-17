@@ -8,8 +8,10 @@ import de.mq.portfolio.share.Share;
 
 interface ShareGatewayParameterService {
 
-	GatewayParameterAggregation<Share> gatewayParameter(Share share, Gateway gateway);
+	GatewayParameterAggregation<Share> gatewayParameter(final Share share, final Collection<Gateway> gateways);
 
-	Collection<GatewayParameterAggregation<Share>> gatewayParameters(Share share);
+	GatewayParameterAggregation<Share> gatewayParameters(final Share share);
+
+	
 
 }
