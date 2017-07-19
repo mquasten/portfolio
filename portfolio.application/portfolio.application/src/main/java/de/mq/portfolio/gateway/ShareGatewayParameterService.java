@@ -1,12 +1,11 @@
-package de.mq.portfolio.gateway.support;
+package de.mq.portfolio.gateway;
 
 import java.util.Collection;
 
 import de.mq.portfolio.gateway.Gateway;
-import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.share.Share;
 
-interface ShareGatewayParameterService {
+public interface ShareGatewayParameterService {
 
 	GatewayParameterAggregation<Share> gatewayParameter(final Share share, final Collection<Gateway> gateways);
 

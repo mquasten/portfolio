@@ -25,7 +25,7 @@ import org.springframework.web.client.RestOperations;
 
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
-import de.mq.portfolio.gateway.support.GatewayParameterRepository;
+import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.support.ExceptionTranslationBuilderImpl;
@@ -46,8 +46,7 @@ public class HistoryGoogleRestRepositoryTest {
 
 	private final RestOperations restOperations = Mockito.mock(RestOperations.class);
 
-	private final GatewayParameterRepository gatewayParameterRepository = Mockito.mock(GatewayParameterRepository.class);
-
+	
 	private final HistoryGoogleRestRepositoryImpl historyRepository = Mockito.mock(HistoryGoogleRestRepositoryImpl.class, Mockito.CALLS_REAL_METHODS);
 
 	private final Share share = Mockito.mock(Share.class);
@@ -64,6 +63,9 @@ public class HistoryGoogleRestRepositoryTest {
 	private final Map<String, String> urlParameter = new HashMap<>();
 
 	private final Map<Class<?>, Object> dependencies = new HashMap<>();
+	
+	@SuppressWarnings("unchecked")
+	private final GatewayParameterAggregation<Share> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
 
 	@Before
 	public final void setup() {
@@ -78,7 +80,7 @@ public class HistoryGoogleRestRepositoryTest {
 		urlParameter.putAll(parameter);
 
 		dependencies.put(RestOperations.class, restOperations);
-		dependencies.put(GatewayParameterRepository.class, gatewayParameterRepository);
+	
 
 		dependencies.put(DateFormat.class, new SimpleDateFormat("d-MMM-yy", Locale.US));
 		// Mockito.when(share.code2()).thenReturn(CODE2);
@@ -92,16 +94,20 @@ public class HistoryGoogleRestRepositoryTest {
 
 		Mockito.doAnswer(answer -> new ExceptionTranslationBuilderImpl<>()).when(historyRepository).exceptionTranslationBuilder();
 
-		Mockito.doReturn(gatewayParameter).when(gatewayParameterRepository).gatewayParameter(Gateway.GoogleRateHistory, CODE);
 
 		Mockito.doReturn(parameter).when(gatewayParameter).parameters();
 		Mockito.doReturn(urlTemplate).when(gatewayParameter).urlTemplate();
+		
+		Mockito.doReturn(share).when(gatewayParameterAggregation).domain();
+		Mockito.doReturn(Arrays.asList(gatewayParameter)).when(gatewayParameterAggregation).gatewayParameters();
+		
+		Mockito.doReturn(gatewayParameter).when(gatewayParameterAggregation).gatewayParameter(Gateway.GoogleRateHistory);
 	}
 
 	@Test
 	public final void history() throws ParseException {
 
-		final TimeCourse timeCourse = historyRepository.history(share);
+		final TimeCourse timeCourse = historyRepository.history(gatewayParameterAggregation);
 
 		Assert.assertTrue(timeCourse.dividends().isEmpty());
 		Assert.assertEquals(2, timeCourse.rates().size());
@@ -122,12 +128,12 @@ public class HistoryGoogleRestRepositoryTest {
 	public final void historyIndex() throws ParseException {
 
 		Mockito.when(share.isIndex()).thenReturn(true);
-		final TimeCourse timeCourse = historyRepository.history(share);
+		final TimeCourse timeCourse = historyRepository.history(gatewayParameterAggregation);
 		
 		Assert.assertTrue(timeCourse.rates().isEmpty());
 		Assert.assertTrue(timeCourse.dividends().isEmpty());
 		
-		Mockito.verifyNoMoreInteractions(restOperations, gatewayParameterRepository);
+		Mockito.verifyNoMoreInteractions(restOperations, gatewayParameter);
 		
 	}
 
@@ -135,7 +141,7 @@ public class HistoryGoogleRestRepositoryTest {
 	public final void historyInvalidData() {
 		Mockito.when(restOperations.getForObject(urlTemplate, String.class, urlParameter)).thenReturn(String.format(LINES_PATTERN, now, CURRENT_RATE, startDate, "x.x"));
 
-		historyRepository.history(share);
+		historyRepository.history(gatewayParameterAggregation);
 	}
 
 	private Date startDate() {
@@ -147,8 +153,8 @@ public class HistoryGoogleRestRepositoryTest {
 
 	@Test
 	public final void createWithDependencies() throws NoSuchMethodException, SecurityException {
-		final Constructor<? extends HistoryRepository> constructor = historyRepository.getClass().getDeclaredConstructor(RestOperations.class, GatewayParameterRepository.class);
-		final HistoryRepository historyRepository = BeanUtils.instantiateClass(constructor, restOperations, gatewayParameterRepository);
+		final Constructor<? extends HistoryRepository> constructor = historyRepository.getClass().getDeclaredConstructor(RestOperations.class);
+		final HistoryRepository historyRepository = BeanUtils.instantiateClass(constructor, restOperations);
 		final Map<Class<?>, Object> injectedDependencies = Arrays.asList(HistoryGoogleRestRepositoryImpl.class.getDeclaredFields()).stream().filter(field -> dependencies.containsKey(field.getType())).collect(Collectors.toMap(field -> field.getType(), field -> ReflectionTestUtils.getField(historyRepository, field.getName())));
 
 		Assert.assertEquals(dependencies, injectedDependencies);

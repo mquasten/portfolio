@@ -12,6 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+
+import de.mq.portfolio.gateway.GatewayParameterAggregation;
+import de.mq.portfolio.gateway.ShareGatewayParameterService;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
@@ -26,12 +29,15 @@ class ShareServiceImpl implements ShareService {
 	private final ShareRepository shareRepository;
 	
 	private final RealTimeRateRepository realTimeRateRepository;
+	
+	private final ShareGatewayParameterService shareGatewayParameterService;
 
 	@Autowired
-	ShareServiceImpl(final HistoryRepository historyRepository, final ShareRepository shareRepository, final RealTimeRateRepository realTimeRateRepository) {
+	ShareServiceImpl(final HistoryRepository historyRepository, final ShareRepository shareRepository, final RealTimeRateRepository realTimeRateRepository, final ShareGatewayParameterService shareGatewayParameterService) {
 		this.historyRepository = historyRepository;
 		this.shareRepository = shareRepository;
 		this.realTimeRateRepository = realTimeRateRepository;
+		this.shareGatewayParameterService=shareGatewayParameterService;
 	}
 
 	/*
@@ -43,7 +49,10 @@ class ShareServiceImpl implements ShareService {
 	 */
 	@Override
 	public final TimeCourse timeCourse(final Share share) {
-		return historyRepository.history(share);
+		final GatewayParameterAggregation<Share> gatewayParameterAggregation = shareGatewayParameterService.gatewayParameter(share, historyRepository.supports(share));
+		
+		return historyRepository.history(gatewayParameterAggregation);
+		
 	}
 	
 	

@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.GatewayParameterAggregation;
+import de.mq.portfolio.gateway.ShareGatewayParameterService;
 import de.mq.portfolio.share.Share;
 
 @Service

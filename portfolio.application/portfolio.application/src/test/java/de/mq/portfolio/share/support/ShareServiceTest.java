@@ -15,6 +15,9 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import de.mq.portfolio.gateway.Gateway;
+import de.mq.portfolio.gateway.GatewayParameterAggregation;
+import de.mq.portfolio.gateway.ShareGatewayParameterService;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
@@ -37,7 +40,13 @@ public class ShareServiceTest {
 	
 	private final RealTimeRateRepository realTimeRateRestRepository = Mockito.mock(RealTimeRateRepository.class);
 
-	private final ShareService shareService = new ShareServiceImpl(historyRepository, shareRepository, realTimeRateRestRepository);
+	
+
+	private final ShareGatewayParameterService  shareGatewayParameterService = Mockito.mock(ShareGatewayParameterService.class);
+	private final ShareService shareService = new ShareServiceImpl(historyRepository, shareRepository, realTimeRateRestRepository, shareGatewayParameterService);
+	
+	@SuppressWarnings("unchecked")
+	private final GatewayParameterAggregation<Share> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
 
 	private final Share share = Mockito.mock(Share.class);
 
@@ -70,9 +79,14 @@ public class ShareServiceTest {
 
 	@Test
 	public void timeCourse() {
-		Mockito.when(historyRepository.history(share)).thenReturn(timeCourse);
-
+		Mockito.when(shareGatewayParameterService.gatewayParameter(share, Arrays.asList(Gateway.GoogleRateHistory))).thenReturn(gatewayParameterAggregation);
+		Mockito.when(historyRepository.supports(share)).thenReturn(Arrays.asList(Gateway.GoogleRateHistory));
+		Mockito.when(historyRepository.history(gatewayParameterAggregation)).thenReturn(timeCourse);
 		Assert.assertEquals(timeCourse, shareService.timeCourse(share));
+		
+		Mockito.verify(historyRepository).supports(share);
+		Mockito.verify(historyRepository).history(gatewayParameterAggregation);
+		
 		
 	}
 

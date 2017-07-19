@@ -14,6 +14,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestOperations;
 
+import de.mq.portfolio.gateway.Gateway;
+
+import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
@@ -38,7 +41,7 @@ class HistoryRestRepositoryImpl implements HistoryRepository {
 	}
 
 	@Override
-	public final TimeCourse history(final Share share) {
+	public final TimeCourse history(final GatewayParameterAggregation<Share> gatewayParameterAggregation) {
 
 		final GregorianCalendar cal = new GregorianCalendar();
 		cal.add(Calendar.DATE, -periodeInDays);
@@ -46,7 +49,7 @@ class HistoryRestRepositoryImpl implements HistoryRepository {
 		final int day = cal.get(Calendar.DAY_OF_MONTH);
 		final int year = cal.get(Calendar.YEAR);
 
-		final String requestUrl = String.format(url, share.code(), month, day, year);
+		final String requestUrl = String.format(url, gatewayParameterAggregation.domain().code(), month, day, year);
 
 		System.out.println(requestUrl);
 		
@@ -57,7 +60,7 @@ class HistoryRestRepositoryImpl implements HistoryRepository {
 		final Collection<Data> dividends = getValues(requestUrl + "&g=v", 1);
 
 		System.out.println("dividends:" + dividends.size());
-		return new TimeCourseImpl(share, rates, dividends);
+		return new TimeCourseImpl(gatewayParameterAggregation.domain(), rates, dividends);
 	}
 
 	private Collection<Data> getValues(final String requestUrl, final int colIndex) {
@@ -75,6 +78,11 @@ class HistoryRestRepositoryImpl implements HistoryRepository {
 		} catch (final ParseException ex) {
 			return false;
 		}
+	}
+
+	@Override
+	public Collection<Gateway> supports(final Share share) {
+		return Arrays.asList();
 	}
 
 }

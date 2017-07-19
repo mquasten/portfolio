@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.web.client.RestOperations;
 
+import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
@@ -20,15 +21,19 @@ public class HistoryRepositoryTest {
 	
 	private static final String DATE2 = "19-05-28";
 	private static final Integer RATE2 = 17500;
-	private static final String CODE = "^IDAXI";
+
 	private final RestOperations restOperations = Mockito.mock(RestOperations.class);
 	private final Share share = Mockito.mock(Share.class);
 	private final HistoryRepository historyRepository = new HistoryRestRepositoryImpl(restOperations); 
 	
+	@SuppressWarnings("unchecked")
+	private GatewayParameterAggregation<Share> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
+	
+	
 	@Before
 	public final void setup() {
-		Mockito.when(share.code()).thenReturn(CODE);
 	
+		Mockito.when(gatewayParameterAggregation.domain()).thenReturn(share);
 		Mockito.doAnswer(i -> {
 			Assert.assertEquals(String.class, (i.getArguments()[1]));
 			final String url = (String) i.getArguments()[0];
@@ -44,7 +49,7 @@ public class HistoryRepositoryTest {
 	
 	@Test
 	public final void history() throws ParseException {
-		final TimeCourse timeCourse = historyRepository.history(share);
+		final TimeCourse timeCourse = historyRepository.history(gatewayParameterAggregation);
 		Assert.assertEquals(2, timeCourse.rates().size());
 		Assert.assertEquals(1, timeCourse.dividends().size());
 		Assert.assertTrue(timeCourse.rates().stream().findAny().isPresent());

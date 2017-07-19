@@ -38,7 +38,8 @@ import de.mq.portfolio.exchangerate.support.ExchangeRateCalculatorBuilder;
 import de.mq.portfolio.exchangerate.support.ExchangeRateDatebaseRepository;
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
-import de.mq.portfolio.gateway.support.GatewayParameterRepository;
+import de.mq.portfolio.gateway.GatewayParameterAggregation;
+
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
@@ -74,7 +75,6 @@ public class HistoryArivaRestRepositoryTest {
 
 	private final RestOperations restOperations = Mockito.mock(RestOperations.class);
 
-	private final GatewayParameterRepository gatewayParameterRepository = Mockito.mock(GatewayParameterRepository.class);
 
 	private final GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
 
@@ -83,6 +83,7 @@ public class HistoryArivaRestRepositoryTest {
 	private final HttpHeaders httpHeaders = Mockito.mock(HttpHeaders.class);
 
 	private static String WKN = "853260";
+	
 
 	private final static String CSV_PATTERN = "Datum|Erster|Hoch|Tief|Schlusskurs|Stuecke|Volumen\n" + "%s|xxx|xxx|xxx|%s|xxx|xxx\n" + "%s|xxx|xxx|xxx|%s|xxx|xxx\nxxx|xxx\n";
 
@@ -95,6 +96,10 @@ public class HistoryArivaRestRepositoryTest {
 	private final Map<String, String> parameters = new HashMap<>();
 
 	private final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository = Mockito.mock(ExchangeRateDatebaseRepository.class);
+	
+	
+	@SuppressWarnings("unchecked")
+	private GatewayParameterAggregation<Share> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
 
 	@SuppressWarnings("unchecked")
 	@Before
@@ -110,7 +115,7 @@ public class HistoryArivaRestRepositoryTest {
 		dependencies.put(boolean.class, Boolean.TRUE);
 		dependencies.put(DateFormat.class, new SimpleDateFormat(datePattern));
 		dependencies.put(RestOperations.class, restOperations);
-		dependencies.put(GatewayParameterRepository.class, gatewayParameterRepository);
+		
 		dependencies.put(Collection.class, Arrays.asList(HistoryArivaRestRepositoryImpl.Imports.Rates));
 
 		Mockito.doReturn(headers).when(httpHeaders).toSingleValueMap();
@@ -119,9 +124,12 @@ public class HistoryArivaRestRepositoryTest {
 		inject();
 		Mockito.doReturn(CODE).when(share).code();
 		Mockito.doReturn(WKN).when(share).wkn();
-		Mockito.doReturn(gatewayParameter).when(gatewayParameterRepository).gatewayParameter(Gateway.ArivaRateHistory, CODE);
+	//	Mockito.doReturn(gatewayParameter).when(gatewayParameterRepository).gatewayParameter(Gateway.ArivaRateHistory, CODE);
 		Mockito.doReturn(parameters).when(gatewayParameter).parameters();
 		Mockito.doReturn(urlTemplate).when(gatewayParameter).urlTemplate();
+		
+		Mockito.when(gatewayParameterAggregation.domain()).thenReturn(share);
+		Mockito.when(gatewayParameterAggregation.gatewayParameter(Gateway.ArivaRateHistory)).thenReturn(gatewayParameter);
 
 		Mockito.doAnswer(answer -> {
 			Assert.assertEquals(urlTemplate, answer.getArguments()[0]);
@@ -149,7 +157,7 @@ public class HistoryArivaRestRepositoryTest {
 
 	@Test
 	public final void history() throws ParseException {
-		final TimeCourse result = historyRepository.history(share);
+		final TimeCourse result = historyRepository.history(gatewayParameterAggregation);
 		Assert.assertEquals(2, result.rates().size());
 		Assert.assertEquals(new SimpleDateFormat(datePattern).parse(dateString(365)), result.rates().get(0).date());
 		Assert.assertEquals((Double) Double.parseDouble(START_RATE.replace(",", ".")), (Double) result.rates().get(0).value());
@@ -169,7 +177,7 @@ public class HistoryArivaRestRepositoryTest {
 		headers.put("Content-Disposition", String.format("filename=wkn_historic.csv", WKN));
 		Mockito.doReturn(headers).when(httpHeaders).toSingleValueMap();
 
-		historyRepository.history(share);
+		historyRepository.history(gatewayParameterAggregation);
 
 	}
 
@@ -180,7 +188,7 @@ public class HistoryArivaRestRepositoryTest {
 		Mockito.doReturn(String.format(CSV_PATTERN_INDEX, dateString(1), END_RATE, dateString(365), START_RATE)).when(responseEntity).getBody();
 		Mockito.doReturn(true).when(share).isIndex();
 
-		final TimeCourse result = historyRepository.history(share);
+		final TimeCourse result = historyRepository.history(gatewayParameterAggregation);
 		Assert.assertEquals(1, result.rates().size());
 		Assert.assertEquals(new SimpleDateFormat(datePattern).parse(dateString(1)), result.rates().get(0).date());
 		Assert.assertEquals((Double) Double.parseDouble(END_RATE.replace(",", ".")), (Double) result.rates().get(0).value());
@@ -192,7 +200,7 @@ public class HistoryArivaRestRepositoryTest {
 
 		prepareForDividends();
 
-		final TimeCourse timeCourse = historyRepository.history(share);
+		final TimeCourse timeCourse = historyRepository.history(gatewayParameterAggregation);
 		Assert.assertTrue(timeCourse.rates().isEmpty());
 		Assert.assertEquals(4, timeCourse.dividends().size());
 
@@ -213,7 +221,12 @@ public class HistoryArivaRestRepositoryTest {
 		parameters.clear();
 		parameters.put("shareName", SHARE_NAME);
 		Mockito.doReturn(DIVIDENDS_URL).when(gatewayParameter).urlTemplate();
-		Mockito.when(gatewayParameterRepository.gatewayParameter(Gateway.ArivaDividendHistory, share.code())).thenReturn(gatewayParameter);
+		//Mockito.when(gatewayParameterRepository.gatewayParameter(Gateway.ArivaDividendHistory, share.code())).thenReturn(gatewayParameter);
+		
+		Mockito.when(gatewayParameterAggregation.gatewayParameter(Gateway.ArivaRateHistory)).thenReturn(null);
+		Mockito.when(gatewayParameterAggregation.gatewayParameter(Gateway.ArivaDividendHistory)).thenReturn(gatewayParameter);
+		
+		
 		Mockito.doReturn(parameters).when(gatewayParameter).parameters();
 		final String html = org.springframework.util.StreamUtils.copyToString(getClass().getClassLoader().getResourceAsStream("arivaDividend.html"), Charset.forName("UTF-8"));
 
@@ -247,7 +260,7 @@ public class HistoryArivaRestRepositoryTest {
 		prepareForDividends();
 		Mockito.doReturn(true).when(share).isIndex();
 
-		final TimeCourse timeCourse = historyRepository.history(share);
+		final TimeCourse timeCourse = historyRepository.history(gatewayParameterAggregation);
 		Assert.assertTrue(timeCourse.rates().isEmpty());
 		Assert.assertTrue(timeCourse.dividends().isEmpty());
 
@@ -262,7 +275,7 @@ public class HistoryArivaRestRepositoryTest {
 		ReflectionTestUtils.setField(historyRepository, EXCHANGE_RATES_FIELD, new ArrayList<>());
 		final ExchangeRate exchangeRate = Mockito.mock(ExchangeRate.class);
 		Mockito.doReturn(Arrays.asList(exchangeRate)).when(exchangeRateDatebaseRepository).exchangerates();
-		Assert.assertEquals(4, historyRepository.history(share).dividends().size());
+		Assert.assertEquals(4, historyRepository.history(gatewayParameterAggregation).dividends().size());
 
 		Assert.assertEquals(Arrays.asList(exchangeRate), ReflectionTestUtils.getField(historyRepository, EXCHANGE_RATES_FIELD));
 
@@ -270,13 +283,12 @@ public class HistoryArivaRestRepositoryTest {
 
 	@Test
 	public final void constructorDependencies() throws NoSuchMethodException, SecurityException {
-		final Constructor<?> constructor = (Constructor<?>) historyRepository.getClass().getDeclaredConstructor(GatewayParameterRepository.class, RestOperations.class, ExchangeRateDatebaseRepository.class, boolean.class, String.class);
-		final Object historyRepository = BeanUtils.instantiateClass(constructor, gatewayParameterRepository, restOperations, exchangeRateDatebaseRepository, true, "rates,dividends");
+		final Constructor<?> constructor = (Constructor<?>) historyRepository.getClass().getDeclaredConstructor(RestOperations.class, ExchangeRateDatebaseRepository.class, boolean.class, String.class);
+		final Object historyRepository = BeanUtils.instantiateClass(constructor,  restOperations, exchangeRateDatebaseRepository, true, "rates,dividends");
 
 		final Map<Class<?>, Object> dependencies = Arrays.asList(HistoryArivaRestRepositoryImpl.class.getDeclaredFields()).stream().filter(field -> !field.getName().equals(EXCHANGE_RATES_FIELD)).filter(field -> !field.getType().equals(DateFormat.class))
 				.filter(field -> !field.getType().equals(int.class)).filter(field -> !Modifier.isStatic(field.getModifiers())).collect(Collectors.toMap(field -> field.getType(), field -> ReflectionTestUtils.getField(historyRepository, field.getName())));
 
-		Assert.assertEquals(gatewayParameterRepository, dependencies.get(GatewayParameterRepository.class));
 		Assert.assertEquals(exchangeRateDatebaseRepository, dependencies.get(ExchangeRateDatebaseRepository.class));
 		Assert.assertEquals(restOperations, dependencies.get(RestOperations.class));
 

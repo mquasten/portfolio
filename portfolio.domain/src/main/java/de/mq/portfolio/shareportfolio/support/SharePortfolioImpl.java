@@ -341,7 +341,9 @@ class SharePortfolioImpl implements SharePortfolio {
 	private double sumRates(final ExchangeRateCalculator exchangeRateCalculator, final List<TimeCourse> timeCourses, final double[] weights,  final Function<TimeCourse, Collection<Data>>  filterStrategy) {
 		weightsVectorGuard(weights);
 		final Collection<Double> results =new ArrayList<>();
-		IntStream.range(0, timeCourses.size()).forEach(i -> results.addAll(filterStrategy.apply(timeCourses.get(i)).stream().map( rate ->  weights[i]* rate.value()* exchangeRateCalculator.factor(exchangeRate(timeCourses.get(i)), rate.date())).collect(Collectors.toList())));
+		
+		
+		IntStream.range(0, timeCourses.size()).forEach(i -> results.addAll(filterStrategy.apply(timeCourses.get(i)).stream().map( rate ->  (weights[i]* rate.value()* exchangeRateCalculator.factor(exchangeRate(timeCourses.get(i)), rate.date()))).collect(Collectors.toList())));
 		return  results.stream().reduce((a, b) -> a + b).orElse(0d);
 		
 	}
