@@ -49,11 +49,6 @@ abstract class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 	public TimeCourse history(final GatewayParameterAggregation<Share> gatewayParameterAggregation) {
 		Assert.notNull(gatewayParameterAggregation, "GatewayParameterAggregation is mandatory.");
 		Assert.notNull(gatewayParameterAggregation.domain(), "Share is mandatory.");
-		
-		if( gatewayParameterAggregation.domain().isIndex() ) {
-			return new TimeCourseImpl(gatewayParameterAggregation.domain(), Arrays.asList(), Arrays.asList());
-		}
-
 
 		final ConfigurableConversionService configurableConversionService = configurableConversionService();
 
@@ -90,8 +85,7 @@ abstract class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 	}
 	@Override
 	public Collection<Gateway> supports(final Share share) {
-		return Arrays.asList(Gateway.GoogleRateHistory);
-		
+		return share.isIndex()?  Arrays.asList(): Arrays.asList(Gateway.GoogleRateHistory);
 	}
 
 	@Lookup

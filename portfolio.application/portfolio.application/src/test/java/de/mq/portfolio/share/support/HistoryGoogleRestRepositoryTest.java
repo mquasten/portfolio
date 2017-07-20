@@ -124,18 +124,7 @@ public class HistoryGoogleRestRepositoryTest {
 
 	}
 	
-	@Test
-	public final void historyIndex() throws ParseException {
-
-		Mockito.when(share.isIndex()).thenReturn(true);
-		final TimeCourse timeCourse = historyRepository.history(gatewayParameterAggregation);
-		
-		Assert.assertTrue(timeCourse.rates().isEmpty());
-		Assert.assertTrue(timeCourse.dividends().isEmpty());
-		
-		Mockito.verifyNoMoreInteractions(restOperations, gatewayParameter);
-		
-	}
+	
 
 	@Test(expected = ConversionFailedException.class)
 	public final void historyInvalidData() {

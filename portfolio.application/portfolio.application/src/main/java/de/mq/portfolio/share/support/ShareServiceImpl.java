@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-
+import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.gateway.ShareGatewayParameterService;
 import de.mq.portfolio.share.Share;
@@ -49,7 +49,14 @@ class ShareServiceImpl implements ShareService {
 	 */
 	@Override
 	public final TimeCourse timeCourse(final Share share) {
-		final GatewayParameterAggregation<Share> gatewayParameterAggregation = shareGatewayParameterService.gatewayParameter(share, historyRepository.supports(share));
+		final Collection<Gateway> supportedGateways = historyRepository.supports(share);
+		
+		if( supportedGateways.isEmpty()){
+			System.err.println("No Gateway supported for share:" + share.code());
+			return new TimeCourseImpl(share, Arrays.asList(), Arrays.asList());
+		}
+		
+		final GatewayParameterAggregation<Share> gatewayParameterAggregation = shareGatewayParameterService.gatewayParameter(share, supportedGateways);
 		
 		return historyRepository.history(gatewayParameterAggregation);
 		
