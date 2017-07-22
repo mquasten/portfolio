@@ -15,6 +15,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Reference;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.util.Assert;
 
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
@@ -52,6 +53,9 @@ class TimeCourseImpl implements TimeCourse {
 		this.rates.addAll(rates);
 		this.dividends.addAll(dividends);
 	}
+   
+   
+  
 
    @SuppressWarnings("unused")
 	private TimeCourseImpl() {
@@ -226,6 +230,24 @@ class TimeCourseImpl implements TimeCourse {
 			this.share=timeCourse.share();
 		}
 	}
+	
+	@Override
+	public  void assign(final TimeCourse timeCourse, final boolean overwriteEmptyRatesAndDividends) {
+			if( ! overwriteEmptyRatesAndDividends) {
+				assign(timeCourse);
+				return;
+			}
+		
+			Assert.notNull(timeCourse, "TimeCourse is mandatory.");
+		 	Assert.notNull(timeCourse.share(), "Share is mandatory.");
+			
+		 	this.share=timeCourse.share();
+			this.rates.clear();
+		 	this.rates.addAll(timeCourse.rates());
+		 	this.dividends.clear();
+			this.dividends.addAll(timeCourse.dividends());
+		}
+	
 	
 	@Override
 	public Date start() {

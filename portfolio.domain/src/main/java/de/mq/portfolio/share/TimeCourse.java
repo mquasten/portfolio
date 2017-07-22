@@ -44,6 +44,13 @@ public interface TimeCourse  extends IdentifierAware<String>{
 
 	void assign(final TimeCourse timeCourse);
 
+	void assign(final TimeCourse timeCourse, final boolean overwriteEmptyRatesAndDividends);
+
+
+
+
+
+
 	
 
 }

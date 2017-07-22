@@ -31,10 +31,6 @@ class HistoryRestRepositoryImpl implements HistoryRepository {
 
 	private final String url = "http://real-chart.finance.yahoo.com/table.csv?s=%s&a=%s&b=%s&c=%s";
 	
-	
-
-	private final int periodeInDays = 365;
-
 	@Autowired
 	HistoryRestRepositoryImpl(final RestOperations restOperations) {
 		this.restOperations = restOperations;
@@ -44,7 +40,7 @@ class HistoryRestRepositoryImpl implements HistoryRepository {
 	public final TimeCourse history(final GatewayParameterAggregation<Share> gatewayParameterAggregation) {
 
 		final GregorianCalendar cal = new GregorianCalendar();
-		cal.add(Calendar.DATE, -periodeInDays);
+		cal.add(Calendar.DATE, -HistoryRepository.OFFSET_DAYS_ONE_YEAR_BACK);
 		final int month = cal.get(Calendar.MONTH);
 		final int day = cal.get(Calendar.DAY_OF_MONTH);
 		final int year = cal.get(Calendar.YEAR);

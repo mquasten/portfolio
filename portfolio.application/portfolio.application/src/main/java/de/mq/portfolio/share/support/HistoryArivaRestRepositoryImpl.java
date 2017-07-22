@@ -37,11 +37,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.util.UriTemplate;
 
-import de.mq.portfolio.exchangerate.ExchangeRate;
-import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
-import de.mq.portfolio.exchangerate.support.ExchangeRateCalculatorBuilder;
-import de.mq.portfolio.exchangerate.support.ExchangeRateDatebaseRepository;
-import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.GatewayParameterAggregation;
@@ -61,23 +56,21 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	private final String delimiter = "|";
 	private final DateFormat dateFormatRates = new SimpleDateFormat("yyyy-MM-dd");
 	private final DateFormat dateFormatDividends = new SimpleDateFormat("dd.MM.yy");
-	private final int periodeInDays = 365;
-	private final int startOffsetInDays = 1;
 	private final RestOperations restOperations;
 
 	private final boolean wknCheck; 
 	private final Collection<Imports> imports = new ArrayList<>();
 
-	private final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository;
 
-	private final Collection<ExchangeRate> exchangeRates = new ArrayList<>();
+
+	
 
 	@Autowired
-	HistoryArivaRestRepositoryImpl(final RestOperations restOperations, final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository, @Value("${history.ariva.wkncheck}") final boolean wknCheck, @Value("${history.ariva.imports?:Rates,Dividends}") final String imports) {
+	HistoryArivaRestRepositoryImpl(final RestOperations restOperations, @Value("${history.ariva.wkncheck}") final boolean wknCheck, @Value("${history.ariva.imports?:Rates,Dividends}") final String imports) {
 		
 		this.restOperations = restOperations;
 
-		this.exchangeRateDatebaseRepository = exchangeRateDatebaseRepository;
+		
 
 		this.wknCheck = wknCheck;
 		this.imports.addAll(Arrays.asList(imports.split("[,]")).stream().map(value -> Imports.valueOf(StringUtils.capitalize(StringUtils.trimWhitespace(value).toLowerCase()))).collect(Collectors.toList()));
@@ -109,11 +102,7 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 			return Arrays.asList();
 		}
 
-		Assert.hasText(gatewayParameterAggregation.domain().currency(), "Share must have a currency.");
-		if (exchangeRates.isEmpty()) {
-			exchangeRates.addAll(exchangeRateDatebaseRepository.exchangerates());
-		}
-
+		
 		final GatewayParameter gatewayParameter = gatewayParameterAggregation.gatewayParameter(Gateway.ArivaDividendHistory);
 				
 		System.out.println(gatewayParameter);
@@ -128,27 +117,20 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 
 		final ConfigurableConversionService configurableConversionService = preparedConversionService(dateFormatDividends);
 
-		final Date startDate = date(LocalDate.now(), periodeInDays);
+	
 
-		final ExchangeRateCalculator exchangeRateCalculator = exchangeRateCalculatorBuilder().withExchangeRates(exchangeRates).build();
+		
 
 		for (final Element result : results) {
 			final List<Element> tds = result.getElementsByTag("td");
 
 			final Date date = configurableConversionService.convert(tds.get(0).text(), Date.class);
-			if (date.before(startDate)) {
-				continue;
-			}
 			
-		
-			if( date.after(yesterday())) {
-				continue;
-			}
 			
 			
 			final String cols[] = tds.get(3).text().split("[ ]");
 
-			final Double rate = configurableConversionService.convert(cols[0], Number.class).doubleValue() * exchangeRateCalculator.factor(new ExchangeRateImpl(cols[1], gatewayParameterAggregation.domain().currency()), date);
+			final Double rate = configurableConversionService.convert(cols[0], Number.class).doubleValue() ;
 
 			Assert.isTrue(tds.get(1).text().equals("Dividende"));
 
@@ -169,8 +151,8 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 
 		params.putAll(gatewayParameter.parameters());
 
-		params.put("startDate", dateString(date, periodeInDays));
-		params.put("endDate", dateString(date, startOffsetInDays));
+		params.put("startDate", dateString(date, HistoryRepository.OFFSET_DAYS_ONE_YEAR_BACK));
+		params.put("endDate", dateString(date, HistoryRepository.OFFSET_DAYS_ONE_DAY_BACK));
 		params.put("delimiter", delimiter);
 
 		System.out.println(new UriTemplate(gatewayParameter.urlTemplate()).expand(params));
@@ -250,14 +232,9 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	}
 
 	Date date(final LocalDate date, final long daysBack) {
-
 		return Date.from(date.minusDays(daysBack).atStartOfDay(ZoneId.systemDefault()).toInstant());
-	}
+	} 
 	
-	
-	private Date yesterday() {
-		return Date.from(LocalDate.now().minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-	}
 	
 	@Override
 	public Collection<Gateway> supports(final Share share) {
@@ -285,7 +262,6 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	@Lookup
 	abstract ConfigurableConversionService configurableConversionService();
 
-	@Lookup
-	abstract ExchangeRateCalculatorBuilder exchangeRateCalculatorBuilder();
+	
 
 }

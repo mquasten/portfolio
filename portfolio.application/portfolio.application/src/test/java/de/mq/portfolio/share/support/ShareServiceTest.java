@@ -43,7 +43,7 @@ public class ShareServiceTest {
 	
 
 	private final ShareGatewayParameterService  shareGatewayParameterService = Mockito.mock(ShareGatewayParameterService.class);
-	private final ShareService shareService = new ShareServiceImpl(historyRepository, shareRepository, realTimeRateRestRepository, shareGatewayParameterService);
+	private final ShareService shareService = new ShareServiceImpl(historyRepository, shareRepository, realTimeRateRestRepository, shareGatewayParameterService, Arrays.asList());
 	
 	@SuppressWarnings("unchecked")
 	private final GatewayParameterAggregation<Share> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);

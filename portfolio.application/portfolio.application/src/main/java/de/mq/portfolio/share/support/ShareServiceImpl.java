@@ -3,6 +3,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,13 +32,16 @@ class ShareServiceImpl implements ShareService {
 	private final RealTimeRateRepository realTimeRateRepository;
 	
 	private final ShareGatewayParameterService shareGatewayParameterService;
+	
+	private final Map<TimeCourseConverter.TimeCourseConverterType, TimeCourseConverter> timeCourseConverters = new HashMap<>();
 
 	@Autowired
-	ShareServiceImpl(final HistoryRepository historyRepository, final ShareRepository shareRepository, final RealTimeRateRepository realTimeRateRepository, final ShareGatewayParameterService shareGatewayParameterService) {
+	ShareServiceImpl(final HistoryRepository historyRepository, final ShareRepository shareRepository, final RealTimeRateRepository realTimeRateRepository, final ShareGatewayParameterService shareGatewayParameterService, final Collection<TimeCourseConverter> timeCourseConverters) {
 		this.historyRepository = historyRepository;
 		this.shareRepository = shareRepository;
 		this.realTimeRateRepository = realTimeRateRepository;
 		this.shareGatewayParameterService=shareGatewayParameterService;
+		this.timeCourseConverters.putAll(timeCourseConverters.stream().collect(Collectors.toMap(converter -> converter.timeCourseConverterType(), converter -> converter)));
 	}
 
 	/*
@@ -58,7 +62,12 @@ class ShareServiceImpl implements ShareService {
 		
 		final GatewayParameterAggregation<Share> gatewayParameterAggregation = shareGatewayParameterService.gatewayParameter(share, supportedGateways);
 		
-		return historyRepository.history(gatewayParameterAggregation);
+		
+		final TimeCourse  result =  historyRepository.history(gatewayParameterAggregation);
+		
+		historyRepository.converters(share).forEach(type -> result.assign(timeCourseConverters.get(type).convert(result), true));
+		
+		return result;
 		
 	}
 	

@@ -38,7 +38,7 @@ abstract class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 	private final RestOperations restOperations;
 	private final DateFormat dateFormat = new SimpleDateFormat("d-MMM-yy", Locale.US);
 
-	private final int periodeInDays = 365;
+	
 
 	@Autowired
 	HistoryGoogleRestRepositoryImpl(final RestOperations restOperations) {
@@ -77,7 +77,7 @@ abstract class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 	}
 
 	private String startDate() {
-		return dateFormat.format(Date.from(LocalDate.now().minusDays(periodeInDays).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+		return dateFormat.format(Date.from(LocalDate.now().minusDays(HistoryRepository.OFFSET_DAYS_ONE_YEAR_BACK).atStartOfDay(ZoneId.systemDefault()).toInstant()));
 	}
 
 	private Data toData(final String[] cols, final ConfigurableConversionService configurableConversionService) {
