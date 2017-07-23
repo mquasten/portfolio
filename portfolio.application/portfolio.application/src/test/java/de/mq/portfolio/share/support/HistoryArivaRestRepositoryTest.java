@@ -275,5 +275,28 @@ public class HistoryArivaRestRepositoryTest {
 		Assert.assertEquals(Arrays.asList(HistoryArivaRestRepositoryImpl.Imports.Rates, HistoryArivaRestRepositoryImpl.Imports.Dividends), dependencies.get(Collection.class));
 
 	}
+	
+	@Test
+	public final void supports() {
+		Assert.assertEquals(Arrays.asList(Gateway.ArivaRateHistory, Gateway.ArivaDividendHistory), historyRepository.supports(share));
+	}
+	
+	@Test
+	public final void supportsIndex() {
+		Mockito.when(share.isIndex()).thenReturn(true);
+		Assert.assertEquals(Arrays.asList(Gateway.ArivaRateHistory), historyRepository.supports(share));
+	}
 
+	@Test
+	public final void  converters() {
+		Mockito.when(share.currency()).thenReturn(TimeCourseDividendsCurrencyConverterImpl.CURRENCY_EUR);
+		Assert.assertEquals(Arrays.asList(TimeCourseConverter.TimeCourseConverterType.DateInRange), historyRepository.converters(share));
+	}
+	
+	@Test
+	public final void  convertersNotEuro() {
+		Mockito.when(share.currency()).thenReturn("USD");
+		Assert.assertEquals(Arrays.asList(TimeCourseConverter.TimeCourseConverterType.DateInRange, TimeCourseConverter.TimeCourseConverterType.EurDividendsCurrency), historyRepository.converters(share));
+	}
+	
 }

@@ -18,6 +18,7 @@ import de.mq.portfolio.share.TimeCourse;
 @Component
 abstract class TimeCourseDividendsCurrencyConverterImpl implements TimeCourseConverter {
 
+	static final String CURRENCY_EUR = "EUR";
 	private final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository;
 	
 	TimeCourseDividendsCurrencyConverterImpl(final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository) {
@@ -26,7 +27,7 @@ abstract class TimeCourseDividendsCurrencyConverterImpl implements TimeCourseCon
 	
 	@Override
 	public TimeCourse convert(final TimeCourse source) {
-		final ExchangeRate exchangerate = new ExchangeRateImpl("EUR", source.share().currency() );
+		final ExchangeRate exchangerate = new ExchangeRateImpl(CURRENCY_EUR, source.share().currency() );
 		final Collection<ExchangeRate> exchangeRates = exchangeRateDatebaseRepository.exchangerates(Arrays.asList(exchangerate));
 		
 		final ExchangeRateCalculator exchangeRateCalculator = exchangeRateCalculatorBuilder().withExchangeRates(exchangeRates).build();

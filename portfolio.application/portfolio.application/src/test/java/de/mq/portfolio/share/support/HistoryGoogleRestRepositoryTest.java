@@ -148,5 +148,20 @@ public class HistoryGoogleRestRepositoryTest {
 
 		Assert.assertEquals(dependencies, injectedDependencies);
 	}
+	
+	@Test
+	public final void supports() {
+		Assert.assertEquals(Arrays.asList(Gateway.GoogleRateHistory), historyRepository.supports(share));
+	}
+	@Test
+	public final void supportsIndex() {
+		
+		Mockito.when(share.isIndex()).thenReturn(true);
+		Assert.assertTrue(historyRepository.supports(share).isEmpty());
+	}
 
+	@Test
+	public final void converters() {
+		Assert.assertEquals(Arrays.asList(TimeCourseConverter.TimeCourseConverterType.DateInRange), historyRepository.converters(share));
+	}
 }

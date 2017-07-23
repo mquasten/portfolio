@@ -22,8 +22,6 @@ interface HistoryRepository {
 	
 	Collection<Gateway> supports(final  Share  share);
 
-
-
 	default Collection<TimeCourseConverterType> converters(final Share share) {
 		return Arrays.asList(TimeCourseConverterType.DateInRange);
 	}

@@ -249,7 +249,7 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 		final Collection<TimeCourseConverterType> converters = new ArrayList<>(Arrays.asList(TimeCourseConverter.TimeCourseConverterType.DateInRange));
 		Assert.notNull(share);
 		Assert.hasText(share.code() , "Currency is mandatory.");
-		if( ! share.currency().equals("EUR") ) {
+		if( ! share.currency().equals(TimeCourseDividendsCurrencyConverterImpl.CURRENCY_EUR) ) {
 			converters.add(TimeCourseConverter.TimeCourseConverterType.EurDividendsCurrency);
 		}
 		return converters;
