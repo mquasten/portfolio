@@ -249,6 +249,7 @@ class TimeCourseImpl implements TimeCourse {
 		}
 	
 	
+	
 	@Override
 	public Date start() {
 		if( rates==null){

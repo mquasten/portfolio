@@ -65,6 +65,9 @@ class ShareServiceImpl implements ShareService {
 		
 		final TimeCourse  result =  historyRepository.history(gatewayParameterAggregation);
 		
+		
+		
+		
 		historyRepository.converters(share).forEach(type -> result.assign(timeCourseConverters.get(type).convert(result), true));
 		
 		return result;

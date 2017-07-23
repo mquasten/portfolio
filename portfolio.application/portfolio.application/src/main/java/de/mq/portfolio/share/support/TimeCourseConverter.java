@@ -11,7 +11,7 @@ interface TimeCourseConverter  extends Converter<TimeCourse, TimeCourse> {
 	
 	enum TimeCourseConverterType {
 		DateInRange,
-		DividendEuroUSD;
+		EurDividendsCurrency;
 	}
 	
 	

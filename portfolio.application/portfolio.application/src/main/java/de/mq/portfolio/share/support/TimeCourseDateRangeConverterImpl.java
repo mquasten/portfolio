@@ -14,7 +14,7 @@ import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
 
 @Component
-class TimeCourseDateInPastConverterImpl implements TimeCourseConverter {
+class TimeCourseDateRangeConverterImpl implements TimeCourseConverter {
 
 
 
@@ -25,8 +25,8 @@ class TimeCourseDateInPastConverterImpl implements TimeCourseConverter {
 
 	private List<Data> beforeYesterday(final Collection<Data> data) {
 		final Date yesterday = dateDaysBack(HistoryRepository.OFFSET_DAYS_ONE_DAY_BACK);
-		final Date startDate = dateDaysBack(HistoryRepository.OFFSET_DAYS_ONE_YEAR_BACK);
-		return data.stream().filter(date -> ( (! date.date().after(yesterday))     &&   (! date.date().before(startDate))    )           ).collect(Collectors.toList());
+		final Date oneYearBack = dateDaysBack(HistoryRepository.OFFSET_DAYS_ONE_YEAR_BACK);
+		return data.stream().filter(date -> ( (! date.date().after(yesterday))     &&   (! date.date().before(oneYearBack))    )           ).collect(Collectors.toList());
 	}
 	
 	

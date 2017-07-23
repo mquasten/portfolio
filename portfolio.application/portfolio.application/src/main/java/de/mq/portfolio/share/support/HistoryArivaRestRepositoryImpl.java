@@ -43,6 +43,7 @@ import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.share.support.TimeCourseConverter.TimeCourseConverterType;
 import de.mq.portfolio.support.ExceptionTranslationBuilder;
 
 @Repository()
@@ -240,11 +241,27 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	public Collection<Gateway> supports(final Share share) {
 		return share.isIndex() ?  Arrays.asList(Gateway.ArivaRateHistory) : Arrays.asList(Gateway.ArivaRateHistory, Gateway.ArivaDividendHistory);
 	}
+	
+	
+
+	@Override
+	public Collection<TimeCourseConverterType> converters(Share share) {
+		final Collection<TimeCourseConverterType> converters = new ArrayList<>(Arrays.asList(TimeCourseConverter.TimeCourseConverterType.DateInRange));
+		Assert.notNull(share);
+		Assert.hasText(share.code() , "Currency is mandatory.");
+		if( ! share.currency().equals("EUR") ) {
+			converters.add(TimeCourseConverter.TimeCourseConverterType.EurDividendsCurrency);
+		}
+		return converters;
+	}
+
 
 	@SuppressWarnings("unchecked")
 	private ExceptionTranslationBuilder<Date, BufferedReader> exceptionTranslationBuilderConversionServiceDate() {
 		return (ExceptionTranslationBuilder<Date, BufferedReader>) exceptionTranslationBuilder();
 	}
+	
+	
 
 	@SuppressWarnings("unchecked")
 	private ExceptionTranslationBuilder<Number, BufferedReader> exceptionTranslationBuilderConversionServiceDouble() {

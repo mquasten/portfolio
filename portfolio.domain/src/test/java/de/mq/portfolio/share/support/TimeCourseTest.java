@@ -283,6 +283,58 @@ public class TimeCourseTest {
 	}
 	
 	@Test
+	public final void assignForce() {
+		
+		
+		final TimeCourse newTimeCourse = Mockito.mock(TimeCourse.class);
+		final Share newShare = Mockito.mock(Share.class);
+		final List<Data> newRates = Arrays.asList(data1);
+		final List<Data> newDividends = Arrays.asList(datax);
+		Mockito.when(newTimeCourse.rates()).thenReturn(newRates);
+		Mockito.when(newTimeCourse.dividends()).thenReturn(newDividends);
+	
+	
+		
+		
+		timeCourse.assign(newTimeCourse, false);
+		
+		
+		
+		Assert.assertEquals(newRates.size(), timeCourse.rates().size());
+		
+		Assert.assertEquals(newRates, timeCourse.rates());
+		Assert.assertEquals(newDividends, timeCourse.dividends());
+		Assert.assertEquals(share, timeCourse.share());
+		
+		Mockito.when(newTimeCourse.rates()).thenReturn(Arrays.asList(data1, data2, data3));
+		Mockito.when(newTimeCourse.dividends()).thenReturn(Arrays.asList(datax, datay));
+		
+		Mockito.when(newTimeCourse.share()).thenReturn(newShare);
+		timeCourse.assign(newTimeCourse, true);
+	
+		Assert.assertEquals(Arrays.asList(data1, data2, data3), timeCourse.rates());
+		Assert.assertEquals(Arrays.asList(datax, datay), timeCourse.dividends());
+		Assert.assertEquals(newShare, timeCourse.share());
+		
+		Mockito.when(newTimeCourse.rates()).thenReturn(Arrays.asList());
+		Mockito.when(newTimeCourse.dividends()).thenReturn(Arrays.asList());
+	
+		
+		timeCourse.assign(newTimeCourse, false);
+		
+		Assert.assertEquals(Arrays.asList(data1, data2, data3), timeCourse.rates());
+		Assert.assertEquals(Arrays.asList(datax, datay), timeCourse.dividends());
+		Assert.assertEquals(newShare, timeCourse.share());
+		
+		timeCourse.assign(newTimeCourse, true);
+		
+		Assert.assertTrue(timeCourse.rates().isEmpty());
+		Assert.assertTrue(timeCourse.dividends().isEmpty());
+		Assert.assertEquals(newShare, timeCourse.share());
+	
+	}
+	
+	@Test
 	public final void assignEmpty() {
 		final TimeCourse newTimeCourse = Mockito.mock(TimeCourse.class);
 		Assert.assertEquals(rates.size(), timeCourse.rates().size());
