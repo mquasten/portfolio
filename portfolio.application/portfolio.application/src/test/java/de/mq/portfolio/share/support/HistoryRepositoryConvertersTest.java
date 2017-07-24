@@ -15,6 +15,8 @@ public class HistoryRepositoryConvertersTest {
 	
 	private final Share share = Mockito.mock(Share.class);
 	
+	
+	
 	@Test
 	public final void converters() {
 		Assert.assertEquals(Arrays.asList(TimeCourseConverter.TimeCourseConverterType.DateInRange), historyRepository.converters(share));	

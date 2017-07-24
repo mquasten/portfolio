@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
+import org.springframework.util.CollectionUtils;
+
 
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
@@ -33,12 +34,14 @@ abstract class ShareGatewayParameterServiceImpl implements ShareGatewayParameter
 	 */
 	@Override
 	public GatewayParameterAggregation<Share> gatewayParameter(final Share share, final Collection<Gateway> gateways) {
-		
-		Assert.notNull(share, "Share is mandatory.");
-		Assert.isTrue( !StringUtils.isEmpty(gateways) , "At least 1 gateway is required.");
-		
-		return new GatewayParameterAggregationImpl<>(share, gateways.stream().map(gateway -> gatewayParameterRepository.gatewayParameter(gateway, share.code())).collect(Collectors.toList()));
+		shareRequiredGuard(share);
+		Assert.isTrue( !CollectionUtils.isEmpty(gateways) , "At least 1 gateway is required.");
+		return gatewayParameterAggregationBuilder().withDomain(share).withGatewayParameters(gateways.stream().map(gateway -> gatewayParameterRepository.gatewayParameter(gateway, share.code())).collect(Collectors.toList())).build();
+	}
 
+	private void shareRequiredGuard(final Share share) {
+		Assert.notNull(share, "Share is mandatory.");
+		Assert.notNull(share.code(), "Code is mandatory.");
 	}
 
 	/* (non-Javadoc)
@@ -46,7 +49,7 @@ abstract class ShareGatewayParameterServiceImpl implements ShareGatewayParameter
 	 */
 	@Override
 	public GatewayParameterAggregation<Share> gatewayParameters(final Share share) {
-		Assert.notNull(share, "Share is mandatory.");
+		shareRequiredGuard(share);
 		return gatewayParameterAggregationBuilder().withGatewayParameters(gatewayParameterRepository.gatewayParameters(share.code())).withDomain(share).build();
 	}
 

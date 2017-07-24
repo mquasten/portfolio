@@ -15,12 +15,12 @@ import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 
 @Repository
-class GatewayParameterRepositoryImpl  implements GatewayParameterRepository{
+class GatewayParameterRepositoryImpl  implements GatewayParameterRepository {
 
 	final MongoOperations mongoOperations; 
 	
 	@Autowired
-	GatewayParameterRepositoryImpl(MongoOperations mongoOperations) {
+	GatewayParameterRepositoryImpl(final MongoOperations mongoOperations) {
 		this.mongoOperations = mongoOperations;
 	}
 

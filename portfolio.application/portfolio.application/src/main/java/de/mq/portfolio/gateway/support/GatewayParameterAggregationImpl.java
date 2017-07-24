@@ -18,7 +18,7 @@ class GatewayParameterAggregationImpl<T> implements GatewayParameterAggregation<
 	
 	private  final T domain;
 
-	private  final Map<Gateway, GatewayParameter> gatewayParameters = new HashMap<>();;
+	private  final Map<Gateway, GatewayParameter> gatewayParameters = new HashMap<>();
 	
 	GatewayParameterAggregationImpl(final T domain, final Collection<GatewayParameter> gatewayParameters) {
 		Assert.notNull(domain);
