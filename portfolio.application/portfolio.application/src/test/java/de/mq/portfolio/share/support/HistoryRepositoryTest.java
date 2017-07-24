@@ -62,7 +62,6 @@ public class HistoryRepositoryTest {
 		Assert.assertEquals((Double) RATE2.doubleValue(), (Double) rate2.value());
 		Assert.assertEquals( ((HistoryRestRepositoryImpl)historyRepository).df.parseObject(DATE2), rate2.date());
 		
-		
 		final Data dividend = timeCourse.dividends().stream().findAny().get();
 		Assert.assertEquals((Double) DIVIDEND.doubleValue(), (Double) dividend.value());
 		Assert.assertEquals( ((HistoryRestRepositoryImpl)historyRepository).df.parseObject(DATE1), dividend.date());

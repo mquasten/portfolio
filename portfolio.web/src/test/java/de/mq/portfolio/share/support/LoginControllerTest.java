@@ -12,7 +12,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -24,7 +24,6 @@ import org.junit.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LoginControllerTest {
-	
 	private static final String LANGUAGE = "de";
 
 	private static final String VIEW_LODIN= "login.xhtml";
