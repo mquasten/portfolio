@@ -27,12 +27,12 @@ abstract class TimeCourseDividendsCurrencyConverterImpl implements TimeCourseCon
 	
 	@Override
 	public TimeCourse convert(final TimeCourse source) {
-		final ExchangeRate exchangerate = new ExchangeRateImpl(CURRENCY_EUR, source.share().currency() );
-		final Collection<ExchangeRate> exchangeRates = exchangeRateDatebaseRepository.exchangerates(Arrays.asList(exchangerate));
+		final ExchangeRate exchangeRate = new ExchangeRateImpl(CURRENCY_EUR, source.share().currency() );
+		final Collection<ExchangeRate> exchangeRates = exchangeRateDatebaseRepository.exchangerates(Arrays.asList(exchangeRate));
 		
 		final ExchangeRateCalculator exchangeRateCalculator = exchangeRateCalculatorBuilder().withExchangeRates(exchangeRates).build();
 		
-		final Collection<Data> dividends  =  source.dividends().stream().map(data -> new DataImpl(data.date(), data.value() * exchangeRateCalculator.factor(exchangerate, data.date()))).collect(Collectors.toList());
+		final Collection<Data> dividends  =  source.dividends().stream().map(data -> new DataImpl(data.date(), data.value() * exchangeRateCalculator.factor(exchangeRate, data.date()))).collect(Collectors.toList());
 		return new TimeCourseImpl(source.share(), source.rates(), dividends);
 	}
 
