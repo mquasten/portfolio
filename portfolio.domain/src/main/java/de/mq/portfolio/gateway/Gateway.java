@@ -9,13 +9,25 @@ import org.springframework.util.StringUtils;
 
 public enum Gateway {
 
-	ArivaRateHistory("ARH"), ArivaDividendHistory("ADH"), GoogleRateHistory("GRH"), CentralBankExchangeRates("BER");
+	
+	ArivaRateHistory("ARH", GatewayGroup.RateHistory), 
+	ArivaDividendHistory("ADH", GatewayGroup.DividendHistory), 
+	GoogleRateHistory("GRH", GatewayGroup.RateHistory), 
+	CentralBankExchangeRates("BER", GatewayGroup.ExchangeRate);
+	
+	public enum GatewayGroup {
+		RateHistory,
+		DividendHistory,
+		ExchangeRate;
+	}
 
 	static final String DELIMITER = "-";
 	private final String id;
+	private final GatewayGroup gatewayGroup;
 
-	Gateway(final String id) {
+	Gateway(final String id, final GatewayGroup gatewayGroup) {
 		this.id = id;
+		this.gatewayGroup=gatewayGroup;
 	}
 
 	String id() {
@@ -25,6 +37,10 @@ public enum Gateway {
 	public String id(final String... keys) {
 		
 		return pattern(id, keys);
+	}
+	
+	public GatewayGroup gatewayGroup() {
+		return this.gatewayGroup;
 	}
 
 	public static String pattern(final String idPattern, final String... keys) {
@@ -60,5 +76,6 @@ public enum Gateway {
 	private static Gateway gatewayValue(final String gatewayId) {
 		return DataAccessUtils.requiredSingleResult(Arrays.asList(values()).stream().filter(value -> value.id().equals(gatewayId)).collect(Collectors.toSet()));
 	}
+	
 
 }

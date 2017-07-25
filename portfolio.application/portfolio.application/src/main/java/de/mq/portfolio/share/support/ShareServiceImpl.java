@@ -65,10 +65,9 @@ class ShareServiceImpl implements ShareService {
 		
 		final TimeCourse  result =  historyRepository.history(gatewayParameterAggregation);
 		
-		
-		
-		
 		historyRepository.converters(share).forEach(type -> result.assign(timeCourseConverters.get(type).convert(result), true));
+		
+		result.assign(supportedGateways);
 		
 		return result;
 		
@@ -149,9 +148,11 @@ class ShareServiceImpl implements ShareService {
 		return codes.stream().map(code -> {
 			final TimeCourse timeCourse = timeCourses.get(code);
 			if (useLastStoredTimeCourse&&!timeCourse.rates().isEmpty()) {
+			
 				return new TimeCourseImpl(timeCourse.share(), Arrays.asList(timeCourse.rates().get(timeCourse.rates().size()-1), realTimeCourses.get(code).rates().get(1)), Arrays.asList());
 			}
-			return realTimeCourses.get(code);
+			
+			return realTimeCourses.containsKey(code) ? realTimeCourses.get(code): new TimeCourseImpl(timeCourse.share(), Arrays.asList(), Arrays.asList());
 		}).collect(Collectors.toList());		
 				
 			

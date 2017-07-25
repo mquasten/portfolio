@@ -22,6 +22,7 @@ import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.share.support.TimeCourseConverter.TimeCourseConverterType;
 
 
 public class ShareServiceTest {
@@ -42,8 +43,9 @@ public class ShareServiceTest {
 
 	
 
+	private final TimeCourseConverter timeCourseConverter = Mockito.mock(TimeCourseConverter.class);
 	private final ShareGatewayParameterService  shareGatewayParameterService = Mockito.mock(ShareGatewayParameterService.class);
-	private final ShareService shareService = new ShareServiceImpl(historyRepository, shareRepository, realTimeRateRestRepository, shareGatewayParameterService, Arrays.asList());
+	private  ShareService shareService;
 	
 	@SuppressWarnings("unchecked")
 	private final GatewayParameterAggregation<Share> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
@@ -51,6 +53,8 @@ public class ShareServiceTest {
 	private final Share share = Mockito.mock(Share.class);
 
 	private final TimeCourse timeCourse = Mockito.mock(TimeCourse.class);
+	
+	private final TimeCourse convertedTimeCourse = Mockito.mock(TimeCourse.class);
 	
 	private final Collection<String> indexes = new ArrayList<>();
 	
@@ -74,19 +78,45 @@ public class ShareServiceTest {
 		Mockito.when(shareRepository.pageable(share,sort, PAGE_SIZE)).thenReturn(pageable);
 		
 		Mockito.when(shareRepository.timeCourses(Arrays.asList(CODE))).thenReturn(timeCourses);
+		Mockito.when(timeCourseConverter.timeCourseConverterType()).thenReturn(TimeCourseConverterType.DateInRange);
 		
+		Mockito.when(historyRepository.converters(share)).thenReturn(Arrays.asList(TimeCourseConverterType.DateInRange));
+		Mockito.when(timeCourseConverter.convert(timeCourse)).thenReturn(convertedTimeCourse);
+		
+		Mockito.when(shareGatewayParameterService.gatewayParameter(share, Arrays.asList(Gateway.GoogleRateHistory))).thenReturn(gatewayParameterAggregation);
+		Mockito.when(historyRepository.supports(share)).thenReturn(Arrays.asList(Gateway.GoogleRateHistory));
+		Mockito.when(historyRepository.history(gatewayParameterAggregation)).thenReturn(timeCourse);
+		
+		shareService = new ShareServiceImpl(historyRepository, shareRepository, realTimeRateRestRepository, shareGatewayParameterService, Arrays.asList(timeCourseConverter));
 	}
 
 	@Test
 	public void timeCourse() {
-		Mockito.when(shareGatewayParameterService.gatewayParameter(share, Arrays.asList(Gateway.GoogleRateHistory))).thenReturn(gatewayParameterAggregation);
-		Mockito.when(historyRepository.supports(share)).thenReturn(Arrays.asList(Gateway.GoogleRateHistory));
-		Mockito.when(historyRepository.history(gatewayParameterAggregation)).thenReturn(timeCourse);
+		
 		Assert.assertEquals(timeCourse, shareService.timeCourse(share));
 		
 		Mockito.verify(historyRepository).supports(share);
 		Mockito.verify(historyRepository).history(gatewayParameterAggregation);
 		
+		Mockito.verify(timeCourseConverter).convert(timeCourse);
+		Mockito.verify(timeCourse).assign(convertedTimeCourse, true);
+		Mockito.verify(timeCourse).assign(Arrays.asList(Gateway.GoogleRateHistory));
+	}
+	
+	@Test
+	public void timeCourseNothingSupported() {
+		Mockito.when(historyRepository.supports(share)).thenReturn(Arrays.asList());
+		
+		final TimeCourse timeCourse =  shareService.timeCourse(share);
+		
+		Assert.assertTrue(timeCourse instanceof TimeCourseImpl); 
+		Assert.assertEquals(share, timeCourse.share());
+		Assert.assertTrue(timeCourse.rates().isEmpty());
+		Assert.assertTrue(timeCourse.dividends().isEmpty());
+		
+		Mockito.verifyNoMoreInteractions(convertedTimeCourse);
+		
+		Mockito.verify(historyRepository, Mockito.never()).history(gatewayParameterAggregation);
 		
 	}
 
@@ -121,7 +151,7 @@ public class ShareServiceTest {
 		shareService.replaceTimeCourse(newTimeCourse);
 
 		final ArgumentCaptor<TimeCourse> timeCourseCaptor = ArgumentCaptor.forClass(TimeCourse.class);
-		Mockito.verify(timeCourse, Mockito.never()).assign(Mockito.any());
+		Mockito.verify(timeCourse, Mockito.never()).assign(Mockito.any(TimeCourse.class));
 		Mockito.verify(shareRepository).save(timeCourseCaptor.capture());
 		Assert.assertEquals(TimeCourseImpl.class, timeCourseCaptor.getValue().getClass());
 		Assert.assertEquals(share, timeCourseCaptor.getValue().share());
@@ -159,6 +189,7 @@ public class ShareServiceTest {
 	public void timeCourses() {
 		Assert.assertEquals(timeCourses, shareService.timeCourses(pageable, share));
 		Mockito.verify(shareRepository).timeCourses(pageable, share);
+	
 	}
 	
 	@Test

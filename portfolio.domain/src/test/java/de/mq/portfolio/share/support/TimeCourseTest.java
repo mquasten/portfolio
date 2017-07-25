@@ -1,6 +1,7 @@
 package de.mq.portfolio.share.support;
 
 import java.lang.reflect.Field;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,7 +17,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Reference;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
+
+import de.mq.portfolio.gateway.Gateway;
 
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
@@ -258,6 +262,8 @@ public class TimeCourseTest {
 	
 	@Test
 	public final void assign() {
+		
+		timeCourse.assign(Arrays.asList(Gateway.GoogleRateHistory));
 		final TimeCourse newTimeCourse = Mockito.mock(TimeCourse.class);
 		final Share newShare = Mockito.mock(Share.class);
 		final List<Data> newRates = Arrays.asList(data1);
@@ -265,13 +271,16 @@ public class TimeCourseTest {
 		Mockito.when(newTimeCourse.rates()).thenReturn(newRates);
 		Mockito.when(newTimeCourse.dividends()).thenReturn(newDividends);
 		Mockito.when(newTimeCourse.share()).thenReturn(newShare);
+		final Date date = new Date();
+		Mockito.when(newTimeCourse.updates()).thenReturn(Arrays.asList(new AbstractMap.SimpleImmutableEntry<>(Gateway.ArivaRateHistory, date), new AbstractMap.SimpleImmutableEntry<>(Gateway.ArivaDividendHistory, date)));
 		
 		Assert.assertEquals(rates.size(), timeCourse.rates().size());
 		Assert.assertEquals(rates, timeCourse.rates());
 		Assert.assertEquals(dividends.size(), timeCourse.dividends().size());
 		Assert.assertEquals(dividends, timeCourse.dividends());
 		Assert.assertEquals(share, timeCourse.share());
-		
+		Assert.assertEquals(1, timeCourse.updates().size());
+		Assert.assertEquals(Gateway.GoogleRateHistory,timeCourse.updates().stream().findAny().get().getKey() );
 		
 		timeCourse.assign(newTimeCourse);
 		
@@ -280,6 +289,10 @@ public class TimeCourseTest {
 		Assert.assertEquals(newDividends.size(), timeCourse.dividends().size());
 		Assert.assertEquals(newDividends, timeCourse.dividends());
 		Assert.assertEquals(newShare, timeCourse.share());
+		
+		Assert.assertEquals(2, timeCourse.updates().size());
+		Assert.assertTrue(timeCourse.updates().stream().map(entry -> entry.getKey()).collect(Collectors.toList()).containsAll(Arrays.asList(Gateway.ArivaRateHistory, Gateway.ArivaDividendHistory)));
+		timeCourse.updates().stream().map( entry -> entry.getValue()).forEach(value -> Assert.assertEquals(date, value)); 
 	}
 	
 	@Test
@@ -337,11 +350,18 @@ public class TimeCourseTest {
 	@Test
 	public final void assignEmpty() {
 		final TimeCourse newTimeCourse = Mockito.mock(TimeCourse.class);
+		final Date date = new Date();
+		Mockito.when(newTimeCourse.updates()).thenReturn(Arrays.asList(new AbstractMap.SimpleImmutableEntry<>(Gateway.ArivaRateHistory, date), new AbstractMap.SimpleImmutableEntry<>(Gateway.ArivaDividendHistory, date)));
+	
+		
+		timeCourse.assign(Arrays.asList(Gateway.GoogleRateHistory));
 		Assert.assertEquals(rates.size(), timeCourse.rates().size());
 		Assert.assertEquals(rates, timeCourse.rates());
 		Assert.assertEquals(dividends.size(), timeCourse.dividends().size());
 		Assert.assertEquals(dividends, timeCourse.dividends());
 		Assert.assertEquals(share, timeCourse.share());
+		Assert.assertEquals(1, timeCourse.updates().size());
+		Assert.assertEquals(Gateway.GoogleRateHistory, timeCourse.updates().stream().map(entry -> entry.getKey()).findAny().get());
 		
 		timeCourse.assign(newTimeCourse);
 		
@@ -350,6 +370,25 @@ public class TimeCourseTest {
 		Assert.assertEquals(dividends.size(), timeCourse.dividends().size());
 		Assert.assertEquals(dividends, timeCourse.dividends());
 		Assert.assertEquals(share, timeCourse.share());
+		Assert.assertEquals(1, timeCourse.updates().size());
+		Assert.assertEquals(Gateway.GoogleRateHistory, timeCourse.updates().stream().map(entry -> entry.getKey()).findAny().get());
+	}
+	
+	@Test
+	public final void assignGateways() {
+		Assert.assertTrue(CollectionUtils.isEmpty(timeCourse.updates()));
+		
+		timeCourse.assign(Arrays.asList(Gateway.ArivaDividendHistory, Gateway.CentralBankExchangeRates));
+		
+		Assert.assertEquals(1, timeCourse.updates().size());
+		
+		timeCourse.updates().forEach(entry -> {
+			Assert.assertEquals(Gateway.ArivaDividendHistory, entry.getKey());
+			
+			Assert.assertTrue(Math.abs(System.currentTimeMillis() - entry.getValue().getTime()) < 500 );
+			
+		});
+		
 	}
 
 }

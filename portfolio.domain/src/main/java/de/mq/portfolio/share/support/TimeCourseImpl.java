@@ -1,13 +1,16 @@
+
 package de.mq.portfolio.share.support;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -17,6 +20,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.Assert;
 
+import de.mq.portfolio.gateway.Gateway;
+import de.mq.portfolio.gateway.Gateway.GatewayGroup;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
@@ -48,13 +53,13 @@ class TimeCourseImpl implements TimeCourse {
 
 	private double standardDeviation;
 	
+	private final  Map<Gateway, Date> updates = new HashMap<>();
+	
    TimeCourseImpl(final  Share share, final Collection<Data> rates, final Collection<Data> dividends) {
 		this.share=share;
 		this.rates.addAll(rates);
 		this.dividends.addAll(dividends);
 	}
-   
-   
   
 
    @SuppressWarnings("unused")
@@ -221,15 +226,36 @@ class TimeCourseImpl implements TimeCourse {
 		if( timeCourse.rates().size() > 0) {
 			rates.clear();
 			rates.addAll(timeCourse.rates());
+			delteUpdates(GatewayGroup.RateHistory);
+			updates.putAll(updates(timeCourse, GatewayGroup.RateHistory));
 		}
 		if( timeCourse.dividends().size() > 0) {
 			dividends.clear();
 			dividends.addAll(timeCourse.dividends());
+			delteUpdates(GatewayGroup.DividendHistory);
+			updates.putAll(updates(timeCourse, GatewayGroup.DividendHistory));
 		}
 		if( timeCourse.share() != null) {
 			this.share=timeCourse.share();
 		}
 	}
+
+
+	private void delteUpdates(final GatewayGroup gatewayGroup) {
+		updates(this, gatewayGroup).keySet().forEach(gateway -> updates.remove(gateway));
+	}
+
+
+	private Map<Gateway, Date> updates(final TimeCourse timeCourse, final GatewayGroup gatewayGroup) {
+		return timeCourse.updates().stream().filter(entry -> entry.getKey().gatewayGroup() == gatewayGroup).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
+	}
+	
+	@Override
+	public Collection<Entry<Gateway,Date>> updates() {
+		return Collections.unmodifiableCollection(updates.entrySet());
+	}
+	
+	
 	
 	@Override
 	public  void assign(final TimeCourse timeCourse, final boolean overwriteEmptyRatesAndDividends) {
@@ -246,9 +272,15 @@ class TimeCourseImpl implements TimeCourse {
 		 	this.rates.addAll(timeCourse.rates());
 		 	this.dividends.clear();
 			this.dividends.addAll(timeCourse.dividends());
+			
 		}
 	
-	
+	@Override
+	public void assign(final Collection<Gateway> gateways) {
+		final Date updateDate = new Date();
+		final Collection<GatewayGroup> supportedGroups = Arrays.asList(GatewayGroup.RateHistory, GatewayGroup.DividendHistory);
+		updates.putAll(gateways.stream().filter(gateway -> supportedGroups.contains(gateway.gatewayGroup())).collect(Collectors.toMap(gateway -> gateway, gateway -> updateDate)));
+	}
 	
 	@Override
 	public Date start() {

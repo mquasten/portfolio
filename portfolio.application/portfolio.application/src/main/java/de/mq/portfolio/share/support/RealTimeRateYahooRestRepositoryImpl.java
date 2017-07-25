@@ -30,6 +30,8 @@ public abstract class RealTimeRateYahooRestRepositoryImpl implements RealTimeRat
 	
 	//final static String URL = "http://finance.yahoo.com/d/quotes.csv?s=%s&f=snbaopl1";	
 	
+	//http://download.finance.yahoo.com/d/quotes.csv?s=^GDAXI&f=nsl1opc1p2&e=.csv
+	
 	final static String URL = "http://download.finance.yahoo.com/d/quotes.csv?s=%s&f=snbaopl1";
 	
 	private final RestOperations restOperations;

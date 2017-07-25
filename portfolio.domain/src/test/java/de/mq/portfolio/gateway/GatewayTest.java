@@ -5,6 +5,8 @@ import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.mq.portfolio.gateway.Gateway.GatewayGroup;
+
 public class GatewayTest {
 
 	private static final String ID_PATTERN = "%s-%s";
@@ -62,5 +64,19 @@ public class GatewayTest {
 	@Test
 	public final void createValues() {
 		Arrays.asList(Gateway.values()).forEach(value -> Assert.assertEquals(value, Gateway.valueOf(value.name())));
+	}
+	
+	@Test
+	public final void gatewayGroups() {
+		Assert.assertEquals(3, (Gateway.GatewayGroup.values().length));
+		Assert.assertEquals(GatewayGroup.RateHistory, Gateway.GoogleRateHistory.gatewayGroup());
+		Assert.assertEquals(GatewayGroup.RateHistory, Gateway.ArivaRateHistory.gatewayGroup());
+		Assert.assertEquals(GatewayGroup.DividendHistory, Gateway.ArivaDividendHistory.gatewayGroup());
+		Assert.assertEquals(GatewayGroup.ExchangeRate, Gateway.CentralBankExchangeRates.gatewayGroup());
+	}
+	
+	@Test
+	public final void createGatewayGroup() {
+		Arrays.asList(GatewayGroup.values()).forEach(value -> Assert.assertEquals(value, GatewayGroup.valueOf(value.name())));
 	}
 }
