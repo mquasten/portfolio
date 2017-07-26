@@ -12,14 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import de.mq.portfolio.gateway.ShareGatewayParameterService;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
 
 @Component("chartController")
 @Scope("singleton")
-public class ChartControllerImpl {
+public  class ChartControllerImpl {
 
 	private final ShareService shareService;
+	
+	@Autowired
+	private  ShareGatewayParameterService shareGatewayParameterService;
 
 	final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -50,8 +54,22 @@ public class ChartControllerImpl {
 		series.setShowMarker(false);
 		series.setLabel(timeCourse.get().share().name().replaceAll("'", " "));
 		chartAO.assign(ratesSeries);
+		
+		
+		setGatewayParameters(chartAO, timeCourse);
 
 	}
+
+	private void setGatewayParameters(final ChartAO chartAO, final Optional<TimeCourse> timeCourse) {
+		try {
+		
+			chartAO.setGatewayParameters(shareGatewayParameterService.gatewayParameters(timeCourse.get().share()).gatewayParameters());
+		} catch (final Exception ex ) {
+			chartAO.setMessage(ex.getMessage());
+		}
+	}
+	
+	
 	
 	public void refresh(final ChartAO chartAO) {
 		final Optional<TimeCourse> timeCourse = shareService.realTimeCourses(Arrays.asList(chartAO.getCode()), false).stream().findAny();
@@ -61,5 +79,7 @@ public class ChartControllerImpl {
 		}
 		chartAO.setRealTimeRates(timeCourse.get().rates());
 	}
+	
+	
 
 }

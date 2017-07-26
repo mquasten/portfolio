@@ -3,15 +3,22 @@ package de.mq.portfolio.share.support;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.DateAxis;
+import org.primefaces.model.chart.LegendPlacement;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import de.mq.portfolio.gateway.Gateway;
+import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.TimeCourse;
 
@@ -45,10 +52,19 @@ public class ChartAO implements Serializable {
 	private final LineChartModel chartModel = new LineChartModel();
 
 	private final DateAxis axis = new DateAxis(LABEL_TIME);
+	
+	private final List<GatewayParameter> gatewayParameters = new ArrayList<>();
 
+	private final Map<Gateway,Date> updated = new HashMap<>(); 
+	
+	private String message; 
+	
+	
 	public ChartAO() {
 		axis.setTickFormat(TICK_FORMAT);
 		chartModel.getAxes().put(AxisType.X, axis);
+		chartModel.setLegendPlacement(LegendPlacement.OUTSIDEGRID);
+
 		
 
 	}
@@ -126,6 +142,23 @@ public class ChartAO implements Serializable {
 		wkn = timeCourse.share().wkn();
 		currency = timeCourse.share().currency();
 		index = timeCourse.share().index();
+		updated.clear();
+		updated.putAll(timeCourse.updates().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue())));
+	}
+	
+	void setGatewayParameters(final Collection<GatewayParameter> gatewayParameters) {
+		this.gatewayParameters.clear();
+		this.gatewayParameters.addAll(gatewayParameters);
+	}
+	
+	
+	public final Date lastUpdate(final Gateway gateway) {
+		return updated.get(gateway);
+	}
+	
+	
+	public List<GatewayParameter> getGatewayParameters() {
+		return gatewayParameters;
 	}
 
 	public Double getLast() {
@@ -133,6 +166,15 @@ public class ChartAO implements Serializable {
 	}
 
 
+	public String getMessage() {
+		return message;
+	}
+
+	void setMessage(String message) {
+		this.message = message;
+	}
+
+	
 	public boolean isRealTimeRateValid() {
 		return last != null && current != null; 
 	}

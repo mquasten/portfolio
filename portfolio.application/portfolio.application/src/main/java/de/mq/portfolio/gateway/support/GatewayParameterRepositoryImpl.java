@@ -39,7 +39,7 @@ class GatewayParameterRepositoryImpl  implements GatewayParameterRepository {
 
 	@Override
 	public Collection<GatewayParameter> gatewayParameters(final String... keys) {
-		return Collections.unmodifiableList(mongoOperations.find(new Query(Criteria.where("id").regex(Gateway.pattern(".*" , keys))), GatewayParameterImpl.class));
+		return Collections.unmodifiableList(mongoOperations.find(new Query(Criteria.where("id").regex(Gateway.pattern(".*" , keys).replaceAll("\\^", "."))), GatewayParameterImpl.class));
 	}
 
 }
