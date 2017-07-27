@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -17,7 +18,10 @@ import de.mq.portfolio.share.TimeCourse;
 public class TimeCourseDateRangeConverterTest {
 	
 	
-	private final TimeCourseConverter timeCourseConverter = new TimeCourseDateRangeConverterImpl();
+	
+	private final HistoryDateUtil historyDateUtil = Mockito.mock(HistoryDateUtil.class);
+	
+	private final TimeCourseConverter timeCourseConverter = new TimeCourseDateRangeConverterImpl(historyDateUtil);
 	
 	private final Share share = Mockito.mock(Share.class);
 	
@@ -37,13 +41,23 @@ public class TimeCourseDateRangeConverterTest {
 	private Date daysBack(final int days) {
 		final Calendar calendar = new GregorianCalendar();
 		calendar.add(Calendar.DATE, -days);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
 		return calendar.getTime();
 	}
 	
+	@Before
+	public final void setup() {
+		Mockito.when(historyDateUtil.getOneDayBack()).thenReturn(daysBack(1));
+		Mockito.when(historyDateUtil.getOneYearBack()).thenReturn(daysBack(365));
+	}
 	
 	
 	@Test
 	public final void convert() {
+		
 		final TimeCourse result = timeCourseConverter.convert(timeCourse);
 		
 		Assert.assertEquals(share, result.share());

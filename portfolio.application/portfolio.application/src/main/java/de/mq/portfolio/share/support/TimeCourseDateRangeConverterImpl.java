@@ -1,9 +1,6 @@
 package de.mq.portfolio.share.support;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Collection;
-
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,6 +14,12 @@ import de.mq.portfolio.share.TimeCourse;
 class TimeCourseDateRangeConverterImpl implements TimeCourseConverter {
 
 
+	private final HistoryDateUtil historyDateUtil;
+	
+
+	TimeCourseDateRangeConverterImpl(HistoryDateUtil historyDateUtil) {
+		this.historyDateUtil = historyDateUtil;
+	}
 
 	@Override
 	public final TimeCourse convert(final TimeCourse source) {
@@ -24,16 +27,13 @@ class TimeCourseDateRangeConverterImpl implements TimeCourseConverter {
 	}
 
 	private List<Data> beforeYesterday(final Collection<Data> data) {
-		final Date yesterday = dateDaysBack(HistoryRepository.OFFSET_DAYS_ONE_DAY_BACK);
-		final Date oneYearBack = dateDaysBack(HistoryRepository.OFFSET_DAYS_ONE_YEAR_BACK);
+		final Date yesterday = historyDateUtil.getOneDayBack(); 
+		final Date oneYearBack = historyDateUtil.getOneYearBack();
+		
 		return data.stream().filter(date -> ( (! date.date().after(yesterday))     &&   (! date.date().before(oneYearBack))    )           ).collect(Collectors.toList());
 	}
 	
 	
-	
-	private Date dateDaysBack(final long daysBack) {
-		return Date.from(LocalDate.now().minusDays(daysBack).atStartOfDay(ZoneId.systemDefault()).toInstant());
-	} 
 
 	@Override
 	public final  TimeCourseConverterType timeCourseConverterType() {

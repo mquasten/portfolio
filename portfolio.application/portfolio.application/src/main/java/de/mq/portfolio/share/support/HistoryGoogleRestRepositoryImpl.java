@@ -63,6 +63,8 @@ abstract class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 		
 		
 		parameters.putAll(gatewayParameter.parameters());
+		
+		System.out.println(startDate());
 
 		System.out.println(new UriTemplate(gatewayParameter.urlTemplate()).expand(parameters));
 

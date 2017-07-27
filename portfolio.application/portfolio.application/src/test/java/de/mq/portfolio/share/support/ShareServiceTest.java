@@ -36,8 +36,8 @@ public class ShareServiceTest {
 	private static final String DOW = "Dow Jones Industrial Average";
 	private static final String OTHER_CODE = "^DJI";
 	private static final Number PAGE_SIZE = 50;
-	HistoryRepository historyRepository = Mockito.mock(HistoryRepository.class);
-	ShareRepository shareRepository = Mockito.mock(ShareRepository.class);
+	private final HistoryRepository historyRepository = Mockito.mock(HistoryRepository.class);
+	private final ShareRepository shareRepository = Mockito.mock(ShareRepository.class);
 	
 	private final RealTimeRateRepository realTimeRateRestRepository = Mockito.mock(RealTimeRateRepository.class);
 
