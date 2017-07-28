@@ -22,14 +22,15 @@ public  class ChartControllerImpl {
 
 	private final ShareService shareService;
 	
-	@Autowired
-	private  ShareGatewayParameterService shareGatewayParameterService;
+	
+	private final  ShareGatewayParameterService shareGatewayParameterService;
 
 	final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Autowired
-	ChartControllerImpl(final ShareService shareService) {
+	ChartControllerImpl(final ShareService shareService, final  ShareGatewayParameterService shareGatewayParameterService) {
 		this.shareService = shareService;
+		this.shareGatewayParameterService=shareGatewayParameterService;
 	}
 
 	public void init(final ChartAO chartAO) {

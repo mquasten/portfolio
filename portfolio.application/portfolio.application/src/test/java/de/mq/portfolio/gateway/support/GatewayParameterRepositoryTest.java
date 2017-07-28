@@ -60,14 +60,39 @@ public class GatewayParameterRepositoryTest {
 	@Test
 	public final void gatewayParameters() {
 		final GatewayParameter otherGatewayParameter = Mockito.mock(GatewayParameter.class);
+		final Collection<Query> queries = prepareForGatewayParameters(otherGatewayParameter);
+
+		Assert.assertEquals(Arrays.asList(gatewayParameter, otherGatewayParameter), gatewayParameterRepository.gatewayParameters(CODE));
+
+		Assert.assertEquals(1, queries.size());
+		final Query query = queries.stream().findAny().get();
+		
+
+		final Map<?, ?> queryParams = query.getQueryObject().toMap();
+
+		Assert.assertEquals(idFieldName(), queryParams.keySet().stream().findAny().get());
+
+		Assert.assertEquals(Gateway.pattern(".*", CODE), queryParams.values().stream().findAny().get().toString());
+	}
+
+	private Collection<Query> prepareForGatewayParameters(final GatewayParameter otherGatewayParameter) {
 		final Collection<Query> queries = new ArrayList<>();
 		Mockito.doAnswer(answer -> {
 			Assert.assertEquals(GatewayParameterImpl.class, answer.getArgument(1));
 			queries.add(answer.getArgument(0));
 			return Arrays.asList(gatewayParameter, otherGatewayParameter);
 		}).when(mongoOperations).find(Mockito.any(Query.class), Mockito.any());
+		return queries;
+	}
+	
+	@Test
+	public final void gatewayParametersIndex() {
+		final GatewayParameter otherGatewayParameter = Mockito.mock(GatewayParameter.class);
+		
+		final Collection<Query> queries = prepareForGatewayParameters(otherGatewayParameter);
 
-		Assert.assertEquals(Arrays.asList(gatewayParameter, otherGatewayParameter), gatewayParameterRepository.gatewayParameters("JNJ"));
+		String code = "DJI";
+		Assert.assertEquals(Arrays.asList(gatewayParameter, otherGatewayParameter), gatewayParameterRepository.gatewayParameters("^"+code));
 
 		Assert.assertEquals(1, queries.size());
 		final Query query = queries.stream().findAny().get();
@@ -76,7 +101,7 @@ public class GatewayParameterRepositoryTest {
 
 		Assert.assertEquals(idFieldName(), queryParams.keySet().stream().findAny().get());
 
-		Assert.assertEquals(Gateway.pattern(".*", CODE), queryParams.values().stream().findAny().get().toString());
+		Assert.assertEquals(Gateway.pattern(".*", "." +code), queryParams.values().stream().findAny().get().toString());
 	}
 
 }

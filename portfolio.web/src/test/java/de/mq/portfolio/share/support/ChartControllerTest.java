@@ -5,19 +5,24 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.primefaces.model.chart.LineChartSeries;
 
+import de.mq.portfolio.gateway.GatewayParameter;
+import de.mq.portfolio.gateway.GatewayParameterAggregation;
+import de.mq.portfolio.gateway.ShareGatewayParameterService;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.TimeCourse;
-import org.junit.Assert;
 
 public class ChartControllerTest {
+
+	private static final String MESSAGE = "At least one GatewayParameter should exist.";
 
 	private static final double VALUE = 47.11d;
 
@@ -33,7 +38,9 @@ public class ChartControllerTest {
 
 	private final ShareService shareService = Mockito.mock(ShareService.class);
 
-	private final ChartControllerImpl chartController = new ChartControllerImpl(shareService);
+	private final ShareGatewayParameterService shareGatewayParameterService = Mockito.mock(ShareGatewayParameterService.class);
+	
+	private final ChartControllerImpl chartController = new ChartControllerImpl(shareService, shareGatewayParameterService);
 
 	private final TimeCourse timeCourse = Mockito.mock(TimeCourse.class);
 
@@ -48,9 +55,13 @@ public class ChartControllerTest {
 	
 	private final TimeCourse realTimeCourse = Mockito.mock(TimeCourse.class);
 	
-
+	private final GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
+	
+	@SuppressWarnings("unchecked")
+	private final GatewayParameterAggregation<Share> gatewayParameterAggregation= Mockito.mock(GatewayParameterAggregation.class);
+	
 	@SuppressWarnings("rawtypes")
-	ArgumentCaptor<Collection> chartSeries = ArgumentCaptor.forClass(Collection.class);
+	private final ArgumentCaptor<Collection> chartSeries = ArgumentCaptor.forClass(Collection.class);
 
 	@Before
 	public final void setup() {
@@ -70,7 +81,9 @@ public class ChartControllerTest {
 		Mockito.when(current.value()).thenReturn(47.11d);
 		Mockito.when(realTimeCourse.rates()).thenReturn(Arrays.asList(last,current));
 		Mockito.when(shareService.realTimeCourses(Arrays.asList(CODE), false)).thenReturn(Arrays.asList(realTimeCourse));
-		
+				
+		Mockito.when(shareGatewayParameterService.gatewayParameters(share)).thenReturn(gatewayParameterAggregation);
+		Mockito.when(gatewayParameterAggregation.gatewayParameters()).thenReturn(Arrays.asList(gatewayParameter));
 		
 	}
 
@@ -100,7 +113,17 @@ public class ChartControllerTest {
 
 		Assert.assertFalse(result.isShowMarker());
 		Assert.assertEquals(NAME.replaceAll("'", " "), result.getLabel());
+		
+		Mockito.verify(chartAO).setGatewayParameters(Arrays.asList(gatewayParameter));
+		Mockito.verify(chartAO, Mockito.never()).setMessage(Mockito.anyString());
 
+	}
+	
+	@Test
+	public final void initGatewayParameterSucks() {
+		Mockito.doThrow(new IllegalArgumentException(MESSAGE)).when(shareGatewayParameterService).gatewayParameters(share);
+		chartController.init(chartAO);
+		Mockito.verify(chartAO).setMessage(MESSAGE);
 	}
 
 	@Test
