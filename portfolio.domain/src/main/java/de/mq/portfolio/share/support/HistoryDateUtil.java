@@ -10,13 +10,17 @@ import java.util.Locale;
 import org.springframework.stereotype.Component;
 
 @Component
-final class HistoryDateUtil {
+public final class HistoryDateUtil {
 	
+	static final String GERMAN_YEAR_TO_DAY_DATE_FORMAT = "yyyy-MM-dd";
+	static final String GOOGLE_DATE_FORMAT = "d-MMM-yy";
 	static final int OFFSET_DAYS_ONE_DAY_BACK = 1;
 	static final int OFFSET_DAYS_ONE_YEAR_BACK =365;
 	
 
-	private final DateFormat googleDateFormat = new SimpleDateFormat("d-MMM-yy" , Locale.US);
+	private final DateFormat googleDateFormat = new SimpleDateFormat(GOOGLE_DATE_FORMAT , Locale.US);
+	
+	private final SimpleDateFormat germanYearToDayDateFormat = new SimpleDateFormat(GERMAN_YEAR_TO_DAY_DATE_FORMAT, Locale.GERMANY);
 	
 	public  final Date getOneYearBack() {
 		return dateDaysBack(OFFSET_DAYS_ONE_YEAR_BACK);
@@ -34,8 +38,16 @@ final class HistoryDateUtil {
 		return dateFormat.format(getOneYearBack());
 	}
 	
+	public final String oneDayBack(final DateFormat dateFormat) {	
+		return dateFormat.format(getOneDayBack());
+	}
+	
 	public final DateFormat getGoogleDateFormat() {
 		return googleDateFormat;
+	}
+	
+	public final DateFormat getGermanYearToDayDateFormat() {
+		return  germanYearToDayDateFormat;
 	}
 
 }
