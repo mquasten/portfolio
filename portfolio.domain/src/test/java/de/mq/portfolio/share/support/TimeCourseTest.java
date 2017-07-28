@@ -41,17 +41,17 @@ public class TimeCourseTest {
 	private final Date date2 = Mockito.mock(Date.class);
 	private final Date date3 = Mockito.mock(Date.class);
 
-	final Share share = Mockito.mock(Share.class);
+	private final Share share = Mockito.mock(Share.class);
 
-	final Collection<Data> rates = new ArrayList<>();
-	final Collection<Data> dividends = new ArrayList<>();
+	private final Collection<Data> rates = new ArrayList<>();
+	private final Collection<Data> dividends = new ArrayList<>();
 
-	final Data data1 = Mockito.mock(Data.class);
-	final Data data2 = Mockito.mock(Data.class);
-	final Data data3 = Mockito.mock(Data.class);
+	private final Data data1 = Mockito.mock(Data.class);
+	private final Data data2 = Mockito.mock(Data.class);
+	private final Data data3 = Mockito.mock(Data.class);
 
-	final Data datax = Mockito.mock(Data.class);
-	final Data datay = Mockito.mock(Data.class);
+	private final Data datax = Mockito.mock(Data.class);
+	private final Data datay = Mockito.mock(Data.class);
 
 	private TimeCourse timeCourse;
 
