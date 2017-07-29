@@ -16,6 +16,8 @@
 <context:property-placeholder location="classpath:application.properties" />
 <bean scope="prototype"  class="org.springframework.context.support.ConversionServiceFactoryBean"/>
 
+<bean class="de.mq.portfolio.share.support.HistoryDateUtil" />
+
 <bean id="googleHistoryRepository" class="de.mq.portfolio.share.support.HistoryGoogleRestRepositoryImpl" />
 
 <bean id="yahooHistoryRepository" class="de.mq.portfolio.share.support.HistoryRestRepositoryImpl" />

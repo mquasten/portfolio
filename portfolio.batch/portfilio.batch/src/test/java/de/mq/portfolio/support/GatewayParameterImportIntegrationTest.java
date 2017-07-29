@@ -24,7 +24,7 @@ import de.mq.portfolio.gateway.GatewayParameter;
 public class GatewayParameterImportIntegrationTest {
 
 	@Autowired
-	@Qualifier("importArivaRateHistory")
+	@Qualifier("importGatewayParameters")
 	private RulesEngine rulesEngine;
 
 	@Test

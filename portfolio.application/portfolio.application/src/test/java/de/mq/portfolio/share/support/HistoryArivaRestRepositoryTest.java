@@ -32,7 +32,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestOperations;
 
-
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.GatewayParameterAggregation;
@@ -44,13 +43,15 @@ import de.mq.portfolio.support.ExceptionTranslationBuilderImpl;
 
 public class HistoryArivaRestRepositoryTest {
 
+	private static final String ARIVA_END_DATE = "endDate";
+
+	private static final String ARIVA_START_DATE = "startDate";
+
 	private static final String EXCHANGE_RATES_FIELD = "exchangeRates";
 
 	private static final String SHARE_NAME = "coca_cola_aktie";
 
 	private static final String DIVIDENDS_URL = "http://www.ariva.de/{shareName}/historische_ereignisse";
-
-
 
 	private static final String START_RATE = "90,00";
 
@@ -62,6 +63,7 @@ public class HistoryArivaRestRepositoryTest {
 
 	private static final String ARIVA_SHARE_ID_VALUE = "4711";
 
+	private static String ARIVA_STOCK_EXCHANGE_ID_VALUE = "21";
 	private static final String CODE = "JNJ";
 
 	private final String datePattern = "yyyy-MM-dd";
@@ -72,7 +74,6 @@ public class HistoryArivaRestRepositoryTest {
 
 	private final RestOperations restOperations = Mockito.mock(RestOperations.class);
 
-
 	private final GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
 
 	private final Share share = Mockito.mock(Share.class);
@@ -80,7 +81,6 @@ public class HistoryArivaRestRepositoryTest {
 	private final HttpHeaders httpHeaders = Mockito.mock(HttpHeaders.class);
 
 	private static String WKN = "853260";
-	
 
 	private final static String CSV_PATTERN = "Datum|Erster|Hoch|Tief|Schlusskurs|Stuecke|Volumen\n" + "%s|xxx|xxx|xxx|%s|xxx|xxx\n" + "%s|xxx|xxx|xxx|%s|xxx|xxx\nxxx|xxx\n";
 
@@ -92,9 +92,6 @@ public class HistoryArivaRestRepositoryTest {
 	private final String urlTemplate = "url?secu={shareId}?boerse_id={stockExchangeId}&min_time={startDate}&max_time={endDate}&trenner={delimiter}";
 	private final Map<String, String> parameters = new HashMap<>();
 
-	
-	
-	
 	@SuppressWarnings("unchecked")
 	private GatewayParameterAggregation<Share> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
 
@@ -107,12 +104,16 @@ public class HistoryArivaRestRepositoryTest {
 
 		// Content-Disposition=attachment; filename=wkn_853260_historic.csv
 		parameters.put(ARIVA_SHARE_ID, ARIVA_SHARE_ID_VALUE);
-		String ARIVA_STOCK_EXCHANGE_ID_VALUE = "21";
+
 		parameters.put(ARIVA_STOCK_EXCHANGE_ID, ARIVA_STOCK_EXCHANGE_ID_VALUE);
+
+		parameters.put(ARIVA_START_DATE, dateString(365));
+		parameters.put(ARIVA_END_DATE, dateString(1));
+		parameters.put(HistoryArivaRestRepositoryImpl.PARAM_DELIMITER, "|");
 		dependencies.put(boolean.class, Boolean.TRUE);
 		dependencies.put(DateFormat.class, new SimpleDateFormat(datePattern));
 		dependencies.put(RestOperations.class, restOperations);
-		
+
 		dependencies.put(Collection.class, Arrays.asList(HistoryArivaRestRepositoryImpl.Imports.Rates));
 
 		Mockito.doReturn(headers).when(httpHeaders).toSingleValueMap();
@@ -121,10 +122,10 @@ public class HistoryArivaRestRepositoryTest {
 		inject();
 		Mockito.doReturn(CODE).when(share).code();
 		Mockito.doReturn(WKN).when(share).wkn();
-	//	Mockito.doReturn(gatewayParameter).when(gatewayParameterRepository).gatewayParameter(Gateway.ArivaRateHistory, CODE);
+
 		Mockito.doReturn(parameters).when(gatewayParameter).parameters();
 		Mockito.doReturn(urlTemplate).when(gatewayParameter).urlTemplate();
-		
+
 		Mockito.when(gatewayParameterAggregation.domain()).thenReturn(share);
 		Mockito.when(gatewayParameterAggregation.gatewayParameter(Gateway.ArivaRateHistory)).thenReturn(gatewayParameter);
 
@@ -135,8 +136,8 @@ public class HistoryArivaRestRepositoryTest {
 			final Map<?, ?> params = (Map<?, ?>) answer.getArguments()[2];
 			Assert.assertEquals(ARIVA_SHARE_ID_VALUE, params.get(ARIVA_SHARE_ID));
 			Assert.assertEquals(ARIVA_STOCK_EXCHANGE_ID_VALUE, params.get(ARIVA_STOCK_EXCHANGE_ID));
-			Assert.assertEquals(dateString(1), params.get("endDate"));
-			Assert.assertEquals(dateString(365), params.get("startDate"));
+			Assert.assertEquals(dateString(1), params.get(ARIVA_END_DATE));
+			Assert.assertEquals(dateString(365), params.get(ARIVA_START_DATE));
 			Assert.assertEquals("|", params.get("delimiter"));
 
 			return responseEntity;
@@ -217,12 +218,12 @@ public class HistoryArivaRestRepositoryTest {
 		parameters.clear();
 		parameters.put("shareName", SHARE_NAME);
 		Mockito.doReturn(DIVIDENDS_URL).when(gatewayParameter).urlTemplate();
-		//Mockito.when(gatewayParameterRepository.gatewayParameter(Gateway.ArivaDividendHistory, share.code())).thenReturn(gatewayParameter);
-		
+		// Mockito.when(gatewayParameterRepository.gatewayParameter(Gateway.ArivaDividendHistory,
+		// share.code())).thenReturn(gatewayParameter);
+
 		Mockito.when(gatewayParameterAggregation.gatewayParameter(Gateway.ArivaRateHistory)).thenReturn(null);
 		Mockito.when(gatewayParameterAggregation.gatewayParameter(Gateway.ArivaDividendHistory)).thenReturn(gatewayParameter);
-		
-		
+
 		Mockito.doReturn(parameters).when(gatewayParameter).parameters();
 		final String html = org.springframework.util.StreamUtils.copyToString(getClass().getClassLoader().getResourceAsStream("arivaDividend.html"), Charset.forName("UTF-8"));
 
@@ -239,9 +240,9 @@ public class HistoryArivaRestRepositoryTest {
 		final GregorianCalendar cal = new GregorianCalendar(2017, 6, 1);
 		cal.add(Calendar.DATE, -365);
 
-		Mockito.doReturn(cal.getTime()).when(historyRepository).date(Mockito.any(LocalDate.class), Mockito.anyLong());
+		// Mockito.doReturn(cal.getTime()).when(historyRepository).date(Mockito.any(LocalDate.class),
+		// Mockito.anyLong());
 
-		
 	}
 
 	@Test
@@ -257,30 +258,27 @@ public class HistoryArivaRestRepositoryTest {
 
 	}
 
-	
-
 	@Test
 	public final void constructorDependencies() throws NoSuchMethodException, SecurityException {
-		final Constructor<?> constructor = (Constructor<?>) historyRepository.getClass().getDeclaredConstructor(RestOperations.class, boolean.class, String.class);
-		final Object historyRepository = BeanUtils.instantiateClass(constructor,  restOperations,  true, "rates,dividends");
+		final HistoryDateUtil historyDateUtil = Mockito.mock(HistoryDateUtil.class);
+		final Constructor<?> constructor = (Constructor<?>) historyRepository.getClass().getDeclaredConstructor(RestOperations.class, HistoryDateUtil.class, boolean.class, String.class);
+		final Object historyRepository = BeanUtils.instantiateClass(constructor, restOperations, historyDateUtil, true, "rates,dividends");
 
 		final Map<Class<?>, Object> dependencies = Arrays.asList(HistoryArivaRestRepositoryImpl.class.getDeclaredFields()).stream().filter(field -> !field.getName().equals(EXCHANGE_RATES_FIELD)).filter(field -> !field.getType().equals(DateFormat.class))
 				.filter(field -> !field.getType().equals(int.class)).filter(field -> !Modifier.isStatic(field.getModifiers())).collect(Collectors.toMap(field -> field.getType(), field -> ReflectionTestUtils.getField(historyRepository, field.getName())));
 
-	
 		Assert.assertEquals(restOperations, dependencies.get(RestOperations.class));
 
-		Assert.assertEquals("|", dependencies.get(String.class));
 		Assert.assertTrue((Boolean) dependencies.get(boolean.class));
 		Assert.assertEquals(Arrays.asList(HistoryArivaRestRepositoryImpl.Imports.Rates, HistoryArivaRestRepositoryImpl.Imports.Dividends), dependencies.get(Collection.class));
 
 	}
-	
+
 	@Test
 	public final void supports() {
 		Assert.assertEquals(Arrays.asList(Gateway.ArivaRateHistory, Gateway.ArivaDividendHistory), historyRepository.supports(share));
 	}
-	
+
 	@Test
 	public final void supportsIndex() {
 		Mockito.when(share.isIndex()).thenReturn(true);
@@ -288,15 +286,15 @@ public class HistoryArivaRestRepositoryTest {
 	}
 
 	@Test
-	public final void  converters() {
+	public final void converters() {
 		Mockito.when(share.currency()).thenReturn(TimeCourseDividendsCurrencyConverterImpl.CURRENCY_EUR);
 		Assert.assertEquals(Arrays.asList(TimeCourseConverter.TimeCourseConverterType.DateInRange), historyRepository.converters(share));
 	}
-	
+
 	@Test
-	public final void  convertersNotEuro() {
+	public final void convertersNotEuro() {
 		Mockito.when(share.currency()).thenReturn("USD");
 		Assert.assertEquals(Arrays.asList(TimeCourseConverter.TimeCourseConverterType.DateInRange, TimeCourseConverter.TimeCourseConverterType.EurDividendsCurrency), historyRepository.converters(share));
 	}
-	
+
 }

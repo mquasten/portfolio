@@ -2,16 +2,10 @@ package de.mq.portfolio.share.support;
 
 import java.io.BufferedReader;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +30,12 @@ import de.mq.portfolio.support.ExceptionTranslationBuilder;
 abstract class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 	private final String datePattern = "[0-9]{1,2}-[A-z]{3,3}-[0-9]{2,2}";
 	private final RestOperations restOperations;
-	private final DateFormat dateFormat = new SimpleDateFormat("d-MMM-yy", Locale.US);
-
-	
+	private final DateFormat dateFormat;
 
 	@Autowired
-	HistoryGoogleRestRepositoryImpl(final RestOperations restOperations) {
+	HistoryGoogleRestRepositoryImpl(final RestOperations restOperations, final HistoryDateUtil historyDateUtil) {
 		this.restOperations = restOperations;
+		this.dateFormat = historyDateUtil.getGoogleDateFormat();
 	}
 
 	@Override
@@ -55,20 +48,12 @@ abstract class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 		configurableConversionService.addConverter(String.class, Date.class, dateString -> exceptionTranslationBuilder().withStatement(() -> dateFormat.parse(dateString)).translate());
 
 		gatewayParameterAggregation.gatewayParameter(Gateway.GoogleRateHistory);
-		
+
 		final GatewayParameter gatewayParameter = gatewayParameterAggregation.gatewayParameter(Gateway.GoogleRateHistory);
-		final Map<String, String> parameters = new HashMap<>();
-		parameters.put("startdate", startDate());
-		
-		
-		
-		parameters.putAll(gatewayParameter.parameters());
-		
-		System.out.println(startDate());
 
-		System.out.println(new UriTemplate(gatewayParameter.urlTemplate()).expand(parameters));
+		System.out.println(new UriTemplate(gatewayParameter.urlTemplate()).expand(gatewayParameter.parameters()));
 
-		final String result = restOperations.getForObject(gatewayParameter.urlTemplate(), String.class, parameters);
+		final String result = restOperations.getForObject(gatewayParameter.urlTemplate(), String.class, gatewayParameter.parameters());
 
 		Assert.hasText(result, "ResponseBody is mandatory.");
 
@@ -78,16 +63,13 @@ abstract class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 		return new TimeCourseImpl(gatewayParameterAggregation.domain(), rates, Arrays.asList());
 	}
 
-	private String startDate() {
-		return dateFormat.format(Date.from(LocalDate.now().minusDays(HistoryRepository.OFFSET_DAYS_ONE_YEAR_BACK).atStartOfDay(ZoneId.systemDefault()).toInstant()));
-	}
-
 	private Data toData(final String[] cols, final ConfigurableConversionService configurableConversionService) {
 		return new DataImpl(configurableConversionService.convert(cols[0], Date.class), configurableConversionService.convert(cols[4], Number.class).doubleValue());
 	}
+
 	@Override
 	public Collection<Gateway> supports(final Share share) {
-		return share.isIndex()?  Arrays.asList(): Arrays.asList(Gateway.GoogleRateHistory);
+		return share.isIndex() ? Arrays.asList() : Arrays.asList(Gateway.GoogleRateHistory);
 	}
 
 	@Lookup

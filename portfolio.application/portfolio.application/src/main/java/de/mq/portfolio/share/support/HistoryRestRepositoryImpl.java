@@ -30,7 +30,7 @@ class HistoryRestRepositoryImpl implements HistoryRepository {
 	final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
 	private final String url = "http://real-chart.finance.yahoo.com/table.csv?s=%s&a=%s&b=%s&c=%s";
-	
+
 	@Autowired
 	HistoryRestRepositoryImpl(final RestOperations restOperations) {
 		this.restOperations = restOperations;
@@ -40,7 +40,7 @@ class HistoryRestRepositoryImpl implements HistoryRepository {
 	public final TimeCourse history(final GatewayParameterAggregation<Share> gatewayParameterAggregation) {
 
 		final GregorianCalendar cal = new GregorianCalendar();
-		cal.add(Calendar.DATE, -HistoryRepository.OFFSET_DAYS_ONE_YEAR_BACK);
+		cal.add(Calendar.DATE, - HistoryDateUtil.OFFSET_DAYS_ONE_YEAR_BACK);
 		final int month = cal.get(Calendar.MONTH);
 		final int day = cal.get(Calendar.DAY_OF_MONTH);
 		final int year = cal.get(Calendar.YEAR);
@@ -48,9 +48,9 @@ class HistoryRestRepositoryImpl implements HistoryRepository {
 		final String requestUrl = String.format(url, gatewayParameterAggregation.domain().code(), month, day, year);
 
 		System.out.println(requestUrl);
-		
+
 		final Collection<Data> rates = getValues(requestUrl, 4);
-		
+
 		System.out.println("rates:" + rates.size());
 
 		final Collection<Data> dividends = getValues(requestUrl + "&g=v", 1);

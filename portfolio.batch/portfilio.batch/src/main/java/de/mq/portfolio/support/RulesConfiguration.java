@@ -18,8 +18,8 @@ import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl;
 import de.mq.portfolio.gateway.GatewayParameter;
+import de.mq.portfolio.gateway.ShareGatewayParameterService;
 import de.mq.portfolio.gateway.support.GatewayParameterCSVLineConverterImpl;
-import de.mq.portfolio.gateway.support.GatewayParameterRepository;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.support.SharesCSVLineConverterImpl;
@@ -30,7 +30,7 @@ import de.mq.portfolio.user.support.UsersCSVLineConverterImpl;
 
 @Configuration
 @ImportResource("classpath*:application.xml")
-@Import({AbstractJsonInputService.class})
+@Import({ AbstractJsonInputService.class })
 class RulesConfiguration {
 
 	static final String QUERY_PARAMETER_NAME = "query";
@@ -40,9 +40,8 @@ class RulesConfiguration {
 	static final String IMPORT_PORTFOLIOS_RULE_ENGINE_NAME = "importPortfolios";
 	static final String SPEL_CONVERT_USER_ITEM = "user(#item)";
 	static final String IMPORT_USERS_RULE_ENGINE_NAME = "importUsers";
-	static final String IMPORT_ARIVA_HISTORY_RATE_RULE_ENGINE_NAME = "importArivaRateHistory";
-	static final String IMPORT_ARIVA_HISTORY_DIVIDEND_RULE_ENGINE_NAME = "importArivaDividendHistory";
-	static final String IMPORT_GOOGLE_RATE_RULE_ENGINE_NAME = "importGoogleRateHistory";
+	static final String IMPORT_GATEWAY_PARAMETER_RULE_ENGINE_NAME = "importGatewayParameters";
+
 	static final String IMPORT_SHARES_RULE_ENGINE_NAME = "importShares";
 	static final String IMPORT_TIME_COURSES_RULE_ENGINE_NAME = "importTimeCourses";
 	static final String IMPORT_EXCHANGE_RATES_RULE_ENGINE_NAME = "importExchangeRates";
@@ -56,49 +55,42 @@ class RulesConfiguration {
 	@Bean
 	@Scope("prototype")
 	RulesEngine importExchangeRates(final ExchangeRateService exchangeRateService, final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<ExchangeRate>, BufferedReader> exceptionTranslationBuilder) {
-		return rulesEngineBuilder.withName(IMPORT_EXCHANGE_RATES_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new ExchangeRatesCSVLineConverterImpl(),exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(exchangeRateService, SPEL_PROCESS_EXCHANGE_RATE_ITEM)).withRule(new ProcessServiceRuleImpl<>(exchangeRateService, SPEL_SAVE_ITEM)).build();
+		return rulesEngineBuilder.withName(IMPORT_EXCHANGE_RATES_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new ExchangeRatesCSVLineConverterImpl(), exceptionTranslationBuilder), SPEL_READ_FILENAME))
+				.withRule(new ProcessServiceRuleImpl<>(exchangeRateService, SPEL_PROCESS_EXCHANGE_RATE_ITEM)).withRule(new ProcessServiceRuleImpl<>(exchangeRateService, SPEL_SAVE_ITEM)).build();
 	}
 
 	@Bean
 	@Scope("prototype")
 	RulesEngine importTimeCourses(final ShareService shareService, final RulesEngineBuilder rulesEngineBuilder) {
-		return rulesEngineBuilder.withName(IMPORT_TIME_COURSES_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(shareService, SPEL_INPUT_SHARES)).withRule(new ProcessServiceRuleImpl<>(shareService, SPEL_PROCESS_TIME_COURSE_ITEM)).withRule(new ProcessServiceRuleImpl<>(shareService, SPEL_REPLACE_TIME_COURSE_ITEM)).build();
+		return rulesEngineBuilder.withName(IMPORT_TIME_COURSES_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(shareService, SPEL_INPUT_SHARES)).withRule(new ProcessServiceRuleImpl<>(shareService, SPEL_PROCESS_TIME_COURSE_ITEM))
+				.withRule(new ProcessServiceRuleImpl<>(shareService, SPEL_REPLACE_TIME_COURSE_ITEM)).build();
 	}
 
 	@Bean
 	@Scope("prototype")
-	RulesEngine importShares(final ShareService shareService, final RulesEngineBuilder rulesEngineBuilder,  final ExceptionTranslationBuilder<Collection<Share>, BufferedReader> exceptionTranslationBuilder) {
-		return rulesEngineBuilder.withName(IMPORT_SHARES_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new SharesCSVLineConverterImpl(), exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(shareService, SPEL_SAVE_ITEM)).build();
+	RulesEngine importShares(final ShareService shareService, final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<Share>, BufferedReader> exceptionTranslationBuilder) {
+		return rulesEngineBuilder.withName(IMPORT_SHARES_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new SharesCSVLineConverterImpl(), exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(shareService, SPEL_SAVE_ITEM))
+				.build();
 	}
-	
+
 	@Bean
-    @Scope("prototype")
-    RulesEngine importUsers(final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<User>, BufferedReader> exceptionTranslationBuilder, final UserService userService) {
-	    return rulesEngineBuilder.withName(IMPORT_USERS_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new UsersCSVLineConverterImpl(),exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(userService, SPEL_CONVERT_USER_ITEM)).withRule(new ProcessServiceRuleImpl<>(userService, SPEL_SAVE_ITEM)).build();
+	@Scope("prototype")
+	RulesEngine importUsers(final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<User>, BufferedReader> exceptionTranslationBuilder, final UserService userService) {
+		return rulesEngineBuilder.withName(IMPORT_USERS_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new UsersCSVLineConverterImpl(), exceptionTranslationBuilder), SPEL_READ_FILENAME))
+				.withRule(new ProcessServiceRuleImpl<>(userService, SPEL_CONVERT_USER_ITEM)).withRule(new ProcessServiceRuleImpl<>(userService, SPEL_SAVE_ITEM)).build();
 	}
-	
+
 	@Bean
-    @Scope("prototype")
-    RulesEngine importArivaRateHistory(final GatewayParameterRepository shareGatewayParameterRepository, final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<GatewayParameter>, BufferedReader> exceptionTranslationBuilder) {
-	    return rulesEngineBuilder.withName(IMPORT_ARIVA_HISTORY_RATE_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new GatewayParameterCSVLineConverterImpl(SHARE_ID_PARAMETER_NAME, STOCK_EXCHANGE_ID_PARAMETER_NAME),exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(shareGatewayParameterRepository, SPEL_SAVE_ITEM)).build();
+	@Scope("prototype")
+	RulesEngine importGatewayParameters(final ShareGatewayParameterService shareGatewayParameterService, final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<GatewayParameter>, BufferedReader> exceptionTranslationBuilder) {
+		return rulesEngineBuilder.withName(IMPORT_GATEWAY_PARAMETER_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new GatewayParameterCSVLineConverterImpl(), exceptionTranslationBuilder), SPEL_READ_FILENAME))
+				.withRule(new ProcessServiceRuleImpl<>(shareGatewayParameterService, SPEL_SAVE_ITEM)).build();
 	}
-	
+
 	@Bean
-    @Scope("prototype")
-    RulesEngine importArivaDividendHistory(final GatewayParameterRepository shareGatewayParameterRepository, final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<GatewayParameter>, BufferedReader> exceptionTranslationBuilder) {
-	    return rulesEngineBuilder.withName(IMPORT_ARIVA_HISTORY_DIVIDEND_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new GatewayParameterCSVLineConverterImpl(SHARE_NAME_PARAMETER_NAME),exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(shareGatewayParameterRepository, SPEL_SAVE_ITEM)).build();
-	}
-	
-	@Bean
-    @Scope("prototype")
-    RulesEngine importGoogleRateHistory(final GatewayParameterRepository shareGatewayParameterRepository, final RulesEngineBuilder rulesEngineBuilder, final ExceptionTranslationBuilder<Collection<GatewayParameter>, BufferedReader> exceptionTranslationBuilder) {
-	    return rulesEngineBuilder.withName(IMPORT_GOOGLE_RATE_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(new SimpleCSVInputServiceImpl<>(new GatewayParameterCSVLineConverterImpl(QUERY_PARAMETER_NAME),exceptionTranslationBuilder), SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(shareGatewayParameterRepository, SPEL_SAVE_ITEM)).build();
-	}
-	
-	@Bean
-    @Scope("prototype")
-    RulesEngine importPortfolios(final RulesEngineBuilder rulesEngineBuilder, final AbstractJsonInputService importService, final SharePortfolioService sharePortfolioService) {
-		  return rulesEngineBuilder.withName(IMPORT_PORTFOLIOS_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(importService, SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(sharePortfolioService, SPEL_SAVE_ITEM)).build();
+	@Scope("prototype")
+	RulesEngine importPortfolios(final RulesEngineBuilder rulesEngineBuilder, final AbstractJsonInputService importService, final SharePortfolioService sharePortfolioService) {
+		return rulesEngineBuilder.withName(IMPORT_PORTFOLIOS_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(importService, SPEL_READ_FILENAME)).withRule(new ProcessServiceRuleImpl<>(sharePortfolioService, SPEL_SAVE_ITEM)).build();
 	}
 
 	@Bean
@@ -112,19 +104,18 @@ class RulesConfiguration {
 	BatchProcessorImpl batchProcessor(Collection<RulesEngine> rulesEngines) {
 		return new BatchProcessorImpl(rulesEngines);
 
-	} 
+	}
 
 	@Bean
 	@Scope("singleton")
 	ApplicationContextAware commandlineProcessor() {
 		return new SimpleCommandlineProcessorImpl(BatchProcessorImpl.class);
-	} 
-	
+	}
 
 	@Bean
 	@Scope("prototype")
-	 ExceptionTranslationBuilder<?,?> exceptionTranslationBuilder() {
-		 return new ExceptionTranslationBuilderImpl<>().withTranslation(ResourceAccessException.class, Arrays.asList(IOException.class));
+	ExceptionTranslationBuilder<?, ?> exceptionTranslationBuilder() {
+		return new ExceptionTranslationBuilderImpl<>().withTranslation(ResourceAccessException.class, Arrays.asList(IOException.class));
 	}
 
 }

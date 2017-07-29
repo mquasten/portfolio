@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -20,64 +21,59 @@ class GatewayParameterImpl implements GatewayParameter {
 
 	@Id
 	private final String id;
-	
+
 	private final String urlTemplate;
-	
-	@SuppressWarnings("unused")
+
 	private final String parameterExpression;
- 
-	//@Transient
-	private final  Map<String, String> parameters = new HashMap<>();
 
-	@Deprecated
-	GatewayParameterImpl(final String code, final Gateway gateway,final String urlTemplate, final Map<String, String> parameters) {
-		Assert.hasText(code, "Code is mandatory.");
-		Assert.notNull(gateway, "Gateway is mandatory.");
-		Assert.hasText(urlTemplate, "UrlTemplate is mandatory.");
-		Assert.notEmpty(parameters, "At least one Parameter should exist.");
-		parameters.keySet().forEach(parameter -> Assert.hasText("Parameter key is mandatory."));
-		parameters.values().forEach(parameter -> Assert.hasText("Parameter value is mandatory."));
-		this.id = gateway.id(code);
-		this.urlTemplate=urlTemplate;
-		this.parameters.putAll(parameters);
-		this.parameterExpression=null;
-	} 
-	
-	GatewayParameterImpl(final String code, final Gateway gateway,final String urlTemplate, final String parameterExpression) {
-		Assert.hasText(code, "Code is mandatory.");
-		Assert.notNull(gateway, "Gateway is mandatory.");
-		Assert.hasText(urlTemplate, "UrlTemplate is mandatory.");
-	
-		this.id = gateway.id(code);
-		this.urlTemplate=urlTemplate;
-		this.parameterExpression=parameterExpression;
-		initParameters(parameterExpression);
-		
+	@Transient
+	private final Map<String, String> parameters = new HashMap<>();
+
+	GatewayParameterImpl(final String code, final Gateway gateway, final String urlTemplate, final Map<String, String> parameters) {
+		this(code, gateway, urlTemplate, mapToString(parameters));
 	}
-	
-	
 
+	static String mapToString(final Map<String, String> parameters) {
+		final StringBuilder builder = new StringBuilder("{");
 
-	void initParameters(final String parameters) {
-		Assert.hasText(parameters, "ParameterString is mandatory.");
+		parameters.entrySet().forEach(entry -> builder.append(String.format(builder.length() == 1 ? "%s:'%s'" : ", %s:'%s'", entry.getKey(), entry.getValue())));
+		builder.append("}");
+
+		return builder.toString();
+	}
+
+	GatewayParameterImpl(final String code, final Gateway gateway, final String urlTemplate, final String parameterExpression) {
+		Assert.hasText(code, "Code is mandatory.");
+		Assert.notNull(gateway, "Gateway is mandatory.");
+		Assert.hasText(urlTemplate, "UrlTemplate is mandatory.");
+
+		this.id = gateway.id(code);
+		this.urlTemplate = urlTemplate;
+		this.parameterExpression = parameterExpression;
+		initParameters();
+
+	}
+
+	void initParameters() {
+		Assert.hasText(parameterExpression, "ParameterString is mandatory.");
 
 		final ExpressionParser parser = new SpelExpressionParser();
 		final StandardEvaluationContext context = new StandardEvaluationContext(new HistoryDateUtil());
 		@SuppressWarnings("unchecked")
-		final Map<String, String> parameterMap = (Map<String, String>) parser.parseExpression(parameters).getValue(context);
+		final Map<String, String> parameterMap = (Map<String, String>) parser.parseExpression(parameterExpression).getValue(context);
 		this.parameters.putAll(parameterMap);
-			
+
 		Assert.notEmpty(this.parameters, "At least one Parameter should exist.");
 		this.parameters.keySet().forEach(parameter -> Assert.hasText("Parameter key is mandatory."));
 		this.parameters.values().forEach(parameter -> Assert.hasText("Parameter value is mandatory."));
 	}
-	
+
 	@SuppressWarnings("unused")
 	private GatewayParameterImpl() {
-		id=null;
-		urlTemplate=null;
-		parameterExpression=null;
-   }
+		id = null;
+		urlTemplate = null;
+		parameterExpression = null;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -101,15 +97,17 @@ class GatewayParameterImpl implements GatewayParameter {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see de.mq.portfolio.gateway.ShareGatewayParameter#gateway()
 	 */
 	@Override
 	public Gateway gateway() {
 		return Gateway.gateway(id);
 	}
-	
+
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see de.mq.portfolio.gateway.GatewayParameter#urlTemplate()
 	 */
 	@Override

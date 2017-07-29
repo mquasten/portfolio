@@ -8,8 +8,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,40 +48,36 @@ import de.mq.portfolio.support.ExceptionTranslationBuilder;
 @Profile("ariva")
 abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 
+	static final String PARAM_DELIMITER = "delimiter";
+
 	enum Imports {
 		Rates, Dividends;
 	}
 
-	private final String delimiter = "|";
-	private final DateFormat dateFormatRates = new SimpleDateFormat("yyyy-MM-dd");
+	private final DateFormat dateFormatRates;
 	private final DateFormat dateFormatDividends = new SimpleDateFormat("dd.MM.yy");
 	private final RestOperations restOperations;
 
-	private final boolean wknCheck; 
+	private final boolean wknCheck;
 	private final Collection<Imports> imports = new ArrayList<>();
 
-
-
-	
-
 	@Autowired
-	HistoryArivaRestRepositoryImpl(final RestOperations restOperations, @Value("${history.ariva.wkncheck}") final boolean wknCheck, @Value("${history.ariva.imports?:Rates,Dividends}") final String imports) {
-		
+	HistoryArivaRestRepositoryImpl(final RestOperations restOperations, final HistoryDateUtil historyDateUtil, @Value("${history.ariva.wkncheck}") final boolean wknCheck, @Value("${history.ariva.imports?:Rates,Dividends}") final String imports) {
+
 		this.restOperations = restOperations;
 
-		
+		dateFormatRates = historyDateUtil.getGermanYearToDayDateFormat();
 
 		this.wknCheck = wknCheck;
 		this.imports.addAll(Arrays.asList(imports.split("[,]")).stream().map(value -> Imports.valueOf(StringUtils.capitalize(StringUtils.trimWhitespace(value).toLowerCase()))).collect(Collectors.toList()));
 
 	}
-	
 
 	@Override
 	public TimeCourse history(GatewayParameterAggregation<Share> gatewayParameterAggregation) {
 
 		Assert.notNull(gatewayParameterAggregation.domain(), "Share is mandatory.");
-		
+
 		final Collection<Data> rates = new ArrayList<>();
 		final Collection<Data> dividends = new ArrayList<>();
 		final Map<Imports, Consumer<Share>> importsMap = new HashMap<>();
@@ -103,9 +97,8 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 			return Arrays.asList();
 		}
 
-		
 		final GatewayParameter gatewayParameter = gatewayParameterAggregation.gatewayParameter(Gateway.ArivaDividendHistory);
-				
+
 		System.out.println(gatewayParameter);
 
 		System.out.println(new UriTemplate(gatewayParameter.urlTemplate()).expand(gatewayParameter.parameters()));
@@ -118,20 +111,14 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 
 		final ConfigurableConversionService configurableConversionService = preparedConversionService(dateFormatDividends);
 
-	
-
-		
-
 		for (final Element result : results) {
 			final List<Element> tds = result.getElementsByTag("td");
 
 			final Date date = configurableConversionService.convert(tds.get(0).text(), Date.class);
-			
-			
-			
+
 			final String cols[] = tds.get(3).text().split("[ ]");
 
-			final Double rate = configurableConversionService.convert(cols[0], Number.class).doubleValue() ;
+			final Double rate = configurableConversionService.convert(cols[0], Number.class).doubleValue();
 
 			Assert.isTrue(tds.get(1).text().equals("Dividende"));
 
@@ -145,26 +132,20 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 	}
 
 	private List<Data> importRates(final GatewayParameterAggregation<Share> gatewayParameterAggregation) {
-		final LocalDate date = LocalDate.now();
-		final Map<String, Object> params = new HashMap<>();
+
 		final GatewayParameter gatewayParameter = gatewayParameterAggregation.gatewayParameter(Gateway.ArivaRateHistory);
-		
+		final Map<String, String> parameters = gatewayParameter.parameters();
 
-		params.putAll(gatewayParameter.parameters());
-
-		params.put("startDate", dateString(date, HistoryRepository.OFFSET_DAYS_ONE_YEAR_BACK));
-		params.put("endDate", dateString(date, HistoryRepository.OFFSET_DAYS_ONE_DAY_BACK));
-		params.put("delimiter", delimiter);
-
-		System.out.println(new UriTemplate(gatewayParameter.urlTemplate()).expand(params));
-		final ResponseEntity<String> responseEntity = restOperations.getForEntity(gatewayParameter.urlTemplate(), String.class, params);
-
+		Assert.hasText(parameters.get(PARAM_DELIMITER));
+		System.out.println(new UriTemplate(gatewayParameter.urlTemplate()).expand(parameters));
+		final ResponseEntity<String> responseEntity = restOperations.getForEntity(gatewayParameter.urlTemplate(), String.class, parameters);
 		attachementHeaderWknGuard(gatewayParameterAggregation.domain(), responseEntity.getHeaders());
 		return exceptionTranslationBuilderResult().withResource(() -> {
 			return new BufferedReader(new StringReader(responseEntity.getBody()));
 
 		}).withStatement(bufferedReader -> {
-			return read(bufferedReader, gatewayParameterAggregation.domain().isIndex());
+
+			return read(bufferedReader, gatewayParameterAggregation.domain().isIndex(), parameters.get(PARAM_DELIMITER));
 		}).translate();
 	}
 
@@ -188,7 +169,7 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 		Assert.isTrue(StringUtils.trimWhitespace(share.wkn()).equals(StringUtils.trimWhitespace(cols[1])), "WKN didn't match with attachement.");
 	}
 
-	private List<Data> read(final BufferedReader bufferedReader, final boolean isIndex) throws IOException, ParseException {
+	private List<Data> read(final BufferedReader bufferedReader, final boolean isIndex, final String delimiter) throws IOException, ParseException {
 
 		final ConfigurableConversionService configurableConversionService = preparedConversionService(dateFormatRates);
 		final List<Data> results = new ArrayList<>();
@@ -228,40 +209,26 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 		return configurableConversionService;
 	}
 
-	private String dateString(final LocalDate date, final long daysBack) {
-		return dateFormatRates.format(date(date, daysBack));
-	}
-
-	Date date(final LocalDate date, final long daysBack) {
-		return Date.from(date.minusDays(daysBack).atStartOfDay(ZoneId.systemDefault()).toInstant());
-	} 
-	
-	
 	@Override
 	public Collection<Gateway> supports(final Share share) {
-		return share.isIndex() ?  Arrays.asList(Gateway.ArivaRateHistory) : Arrays.asList(Gateway.ArivaRateHistory, Gateway.ArivaDividendHistory);
+		return share.isIndex() ? Arrays.asList(Gateway.ArivaRateHistory) : Arrays.asList(Gateway.ArivaRateHistory, Gateway.ArivaDividendHistory);
 	}
-	
-	
 
 	@Override
 	public Collection<TimeCourseConverterType> converters(Share share) {
 		final Collection<TimeCourseConverterType> converters = new ArrayList<>(Arrays.asList(TimeCourseConverter.TimeCourseConverterType.DateInRange));
 		Assert.notNull(share);
-		Assert.hasText(share.code() , "Currency is mandatory.");
-		if( ! share.currency().equals(TimeCourseDividendsCurrencyConverterImpl.CURRENCY_EUR) ) {
+		Assert.hasText(share.code(), "Currency is mandatory.");
+		if (!share.currency().equals(TimeCourseDividendsCurrencyConverterImpl.CURRENCY_EUR)) {
 			converters.add(TimeCourseConverter.TimeCourseConverterType.EurDividendsCurrency);
 		}
 		return converters;
 	}
 
-
 	@SuppressWarnings("unchecked")
 	private ExceptionTranslationBuilder<Date, BufferedReader> exceptionTranslationBuilderConversionServiceDate() {
 		return (ExceptionTranslationBuilder<Date, BufferedReader>) exceptionTranslationBuilder();
 	}
-	
-	
 
 	@SuppressWarnings("unchecked")
 	private ExceptionTranslationBuilder<Number, BufferedReader> exceptionTranslationBuilderConversionServiceDouble() {
@@ -278,7 +245,5 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 
 	@Lookup
 	abstract ConfigurableConversionService configurableConversionService();
-
-	
 
 }
