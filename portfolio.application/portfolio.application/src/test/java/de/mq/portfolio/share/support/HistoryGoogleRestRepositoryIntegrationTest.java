@@ -28,6 +28,8 @@ import de.mq.portfolio.share.TimeCourse;
 public class HistoryGoogleRestRepositoryIntegrationTest {
 	
 	
+	private static final String QUERY_START_DATE_NAME = "startdate";
+
 	private static final String QUERY_PARAMETER_VALUE = "KO:NYSE";
 
 	private static final String QUERY_PARAMETER_NAME = "query";
@@ -40,6 +42,8 @@ public class HistoryGoogleRestRepositoryIntegrationTest {
 	
 	private Share share = Mockito.mock(Share.class);
 	
+	private final HistoryDateUtil historyDateUtil = new HistoryDateUtil();
+	
 	@SuppressWarnings("unchecked")
 	final GatewayParameterAggregation<Share> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
 	final GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
@@ -51,6 +55,8 @@ public class HistoryGoogleRestRepositoryIntegrationTest {
 		Mockito.when(gatewayParameter.urlTemplate()).thenReturn(URL);
 		final Map<String,String> parameter = new HashMap<>();
 		parameter.put(QUERY_PARAMETER_NAME, QUERY_PARAMETER_VALUE);
+		parameter.put(QUERY_START_DATE_NAME, historyDateUtil.oneYearBack(historyDateUtil.getGoogleDateFormat()));
+		
 		Mockito.when(gatewayParameter.parameters()).thenReturn(parameter);
 	}
 	

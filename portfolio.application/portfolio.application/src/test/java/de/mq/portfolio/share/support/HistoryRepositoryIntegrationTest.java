@@ -68,6 +68,9 @@ public class HistoryRepositoryIntegrationTest {
 	private final Map<String, Double> maxDeviationDow = new HashMap<>();
 
 	private final Map<String, Double> maxDeviationDax = new HashMap<>();
+	
+	
+	private final HistoryDateUtil historyDateUtil= new HistoryDateUtil();
 
 	@Before
 	public final void setup() {
@@ -114,7 +117,7 @@ public class HistoryRepositoryIntegrationTest {
 	int counter = 0;
 
 	@Test
-	// @Ignore
+	@Ignore
 	public void historySap() throws ParseException {
 
 		final List<GatewayParameterAggregation<Share>> gatewayParameterAggregations = new ArrayList<>();
@@ -205,6 +208,8 @@ public class HistoryRepositoryIntegrationTest {
 		final GatewayParameterAggregation<Share> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
 		final Map<String, String> parameters = new HashMap<>();
 		parameters.put("query", query);
+		parameters.put("startdate" , historyDateUtil.oneYearBack(historyDateUtil.getGoogleDateFormat()));
+	
 		final GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
 		Mockito.when(gatewayParameter.urlTemplate()).thenReturn("http://www.google.com/finance/historical?q={query}&startdate={startdate}&output=csv");
 		Mockito.when(gatewayParameter.parameters()).thenReturn(parameters);

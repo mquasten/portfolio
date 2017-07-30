@@ -29,18 +29,6 @@ class GatewayParameterImpl implements GatewayParameter {
 	@Transient
 	private final Map<String, String> parameters = new HashMap<>();
 
-	GatewayParameterImpl(final String code, final Gateway gateway, final String urlTemplate, final Map<String, String> parameters) {
-		this(code, gateway, urlTemplate, mapToString(parameters));
-	}
-
-	static String mapToString(final Map<String, String> parameters) {
-		final StringBuilder builder = new StringBuilder("{");
-
-		parameters.entrySet().forEach(entry -> builder.append(String.format(builder.length() == 1 ? "%s:'%s'" : ", %s:'%s'", entry.getKey(), entry.getValue())));
-		builder.append("}");
-
-		return builder.toString();
-	}
 
 	GatewayParameterImpl(final String code, final Gateway gateway, final String urlTemplate, final String parameterExpression) {
 		Assert.hasText(code, "Code is mandatory.");

@@ -40,7 +40,9 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 
 	private final GatewayParameter gatewayParameterRates = Mockito.mock(GatewayParameter.class);
 
-	GatewayParameter gatewayParameterDividends = Mockito.mock(GatewayParameter.class);
+	private final GatewayParameter gatewayParameterDividends = Mockito.mock(GatewayParameter.class);
+	
+	private final HistoryDateUtil historyDateUtil = new HistoryDateUtil();
 
 	@Before
 	public final void setup() {
@@ -68,7 +70,7 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 
 		final TimeCourse timeCourse = historyRestRepository.history(gatewayParameterAggregation);
 		Assert.assertTrue(timeCourse.rates().size() > 250);
-		Assert.assertTrue(timeCourse.dividends().size() == 4);
+		Assert.assertTrue(timeCourse.dividends().stream().filter(data -> data.date().after(historyDateUtil.getOneYearBack())).count() ==4);
 		// printRates(timeCourse.rates());
 		// printRates(timeCourse.dividends());
 	}
@@ -81,7 +83,9 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 		final Map<String, String> results = new HashMap<>();
 		results.put("shareId", shareId);
 		results.put("stockExchangeId", stockExchangeId);
-
+		results.put("delimiter", "|");
+		results.put("startDate", historyDateUtil.oneYearBack(historyDateUtil.getGermanYearToDayDateFormat()));
+		results.put("endDate", historyDateUtil.oneDayBack(historyDateUtil.getGermanYearToDayDateFormat()));
 		return results;
 	}
 
@@ -102,12 +106,13 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 		Mockito.when(gatewayParameterDividends.parameters()).thenReturn(dividendParameters("johnson_&_johnson-aktie"));
 		Mockito.doReturn("853260").when(share).wkn();// JNJ
 		Mockito.doReturn(CURRENCY_USD).when(share).currency();
+		
 
 		final TimeCourse timeCourses = historyRestRepository.history(gatewayParameterAggregation);
 		Assert.assertTrue(timeCourses.rates().size() > 250);
-		Assert.assertTrue(timeCourses.dividends().size() == 4);
-		// printRates(timeCourses.rates());
-		// printRates(timeCourses.dividends());
+		Assert.assertTrue(timeCourses.dividends().stream().filter(data -> data.date().after(historyDateUtil.getOneYearBack())).count() ==4);
+	//	 printRates(timeCourses.rates());
+	//	 printRates(timeCourses.dividends());
 	}
 
 	@Test
@@ -137,7 +142,7 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 
 		Assert.assertTrue(timeCourses.rates().size() > 250);
 		Assert.assertTrue(timeCourses.dividends().size() == 0);
-
+		
 		printRates(timeCourses.rates());
 	}
 
@@ -153,7 +158,7 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 
 		final TimeCourse timeCourse = historyRestRepository.history(gatewayParameterAggregation);
 
-		Assert.assertEquals(1, timeCourse.dividends().size());
+		Assert.assertEquals(1, timeCourse.dividends().stream().filter(data -> data.date().after(historyDateUtil.getOneYearBack())).count());
 		Assert.assertTrue(timeCourse.rates().size() > 250);
 
 		printRates(timeCourse.rates());
