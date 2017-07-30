@@ -138,7 +138,7 @@
 
 			</f:facet>
 			
-			<p:dataTable var="gatewayParameter" value="#{chart.gatewayParameters}" lazy="true" resizableColumns="true" emptyMessage=""  rendered="#{chart.gatewayParameters.size() >= 1}">
+			<p:dataTable id= "gatewayParameter" var="gatewayParameter" value="#{chart.gatewayParameters}" lazy="true" resizableColumns="true" emptyMessage=""  rendered="#{chart.gatewayParameters.size() >= 1}">
 				
 				
 				<p:column headerText="Gateway">
@@ -170,6 +170,10 @@
 						</h:column>
 					
 					</h:dataTable>
+					
+					<p:commandButton action="#{chartController.download(facesContext, gatewayParameter)}" ajax="false" 
+						value="herunterladen" process="gatewayParameter"
+						update="gatewayParameter" />
 				
 				</h:panelGrid>
 				

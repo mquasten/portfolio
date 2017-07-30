@@ -10,10 +10,10 @@ import org.springframework.util.StringUtils;
 public enum Gateway {
 
 	
-	ArivaRateHistory("ARH", GatewayGroup.RateHistory), 
-	ArivaDividendHistory("ADH", GatewayGroup.DividendHistory), 
-	GoogleRateHistory("GRH", GatewayGroup.RateHistory), 
-	CentralBankExchangeRates("BER", GatewayGroup.ExchangeRate);
+	ArivaRateHistory("ARH", GatewayGroup.RateHistory, ".csv"), 
+	ArivaDividendHistory("ADH", GatewayGroup.DividendHistory, ".html"), 
+	GoogleRateHistory("GRH", GatewayGroup.RateHistory, ".csv"), 
+	CentralBankExchangeRates("BER", GatewayGroup.ExchangeRate, ".csv");
 	
 	public enum GatewayGroup {
 		RateHistory,
@@ -24,10 +24,12 @@ public enum Gateway {
 	static final String DELIMITER = "-";
 	private final String id;
 	private final GatewayGroup gatewayGroup;
+	private final String fileExtension;
 
-	Gateway(final String id, final GatewayGroup gatewayGroup) {
+	Gateway(final String id, final GatewayGroup gatewayGroup, final String fileExtension) {
 		this.id = id;
 		this.gatewayGroup=gatewayGroup;
+		this.fileExtension=fileExtension;
 	}
 
 	String id() {
@@ -71,6 +73,10 @@ public enum Gateway {
 		idSyntaxGuard(id, index);
 		final String gatewayId = id.substring(index + 1, id.length());
 		return gatewayValue(gatewayId);
+	}
+	
+	public final String downloadName(final String... keys) {
+		return id(keys) + fileExtension;
 	}
 
 	private static Gateway gatewayValue(final String gatewayId) {
