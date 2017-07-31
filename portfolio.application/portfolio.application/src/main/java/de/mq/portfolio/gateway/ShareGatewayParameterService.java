@@ -11,6 +11,8 @@ public interface ShareGatewayParameterService {
 
 	GatewayParameterAggregation<Share> gatewayParameters(final Share share);
 
+	String history(final GatewayParameter gatewayParameter);
+
 	
 
 }

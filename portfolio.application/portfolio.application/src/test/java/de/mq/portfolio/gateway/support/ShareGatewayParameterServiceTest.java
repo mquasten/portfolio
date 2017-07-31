@@ -1,7 +1,7 @@
 package de.mq.portfolio.gateway.support;
 
+import java.util.AbstractMap;
 import java.util.Arrays;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,13 +12,11 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.BeanUtils;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.GatewayParameterAggregation;
-
 import de.mq.portfolio.share.Share;
 
 public class ShareGatewayParameterServiceTest {
@@ -32,12 +30,14 @@ public class ShareGatewayParameterServiceTest {
 	private final Share share = Mockito.mock(Share.class);
 
 	private final GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
+	private final GatewayHistoryRepository gatewayHistoryRepository = Mockito.mock(GatewayHistoryRepository.class);
 	private final Map<Class<?>, Object> dependencies = new HashMap<>();
 
 	@Before
 	public final void setup() {
 
 		dependencies.put(GatewayParameterRepository.class, gatewayParameterRepository);
+		dependencies.put(GatewayHistoryRepository.class, gatewayHistoryRepository);
 		Arrays.asList(ShareGatewayParameterServiceImpl.class.getDeclaredFields()).stream().filter(field -> dependencies.containsKey(field.getType())).forEach(field -> ReflectionTestUtils.setField(shareGatewayParameterService, field.getName(), dependencies.get(field.getType())));
 
 		Mockito.when(gatewayParameter.gateway()).thenReturn(Gateway.GoogleRateHistory);
@@ -86,9 +86,8 @@ public class ShareGatewayParameterServiceTest {
 	@Test
 	public final void dependencies() throws BeanInstantiationException, NoSuchMethodException, SecurityException {
 
-		final Object service = BeanUtils.instantiateClass(shareGatewayParameterService.getClass().getDeclaredConstructor(GatewayParameterRepository.class), gatewayParameterRepository);
+		final Object service = BeanUtils.instantiateClass(shareGatewayParameterService.getClass().getDeclaredConstructor(GatewayParameterRepository.class, GatewayHistoryRepository.class), gatewayParameterRepository, gatewayHistoryRepository);
 
-		Assert.assertEquals(gatewayParameterRepository,
-				DataAccessUtils.requiredSingleResult(Arrays.asList(ShareGatewayParameterServiceImpl.class.getDeclaredFields()).stream().filter(field -> dependencies.containsKey(field.getType())).map(field -> ReflectionTestUtils.getField(service, field.getName())).collect(Collectors.toList())));
+	    Assert.assertEquals(dependencies, Arrays.asList(ShareGatewayParameterServiceImpl.class.getDeclaredFields()).stream().filter(field -> dependencies.containsKey(field.getType())).map(field -> new AbstractMap.SimpleImmutableEntry<>(field.getType(), ReflectionTestUtils.getField(service, field.getName()))).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue())));
 	}
 }

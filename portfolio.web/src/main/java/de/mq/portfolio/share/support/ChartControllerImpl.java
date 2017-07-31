@@ -1,7 +1,8 @@
 package de.mq.portfolio.share.support;
 
 import java.io.IOException;
-
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import org.primefaces.model.chart.LineChartSeries;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.HttpClientErrorException;
 
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.ShareGatewayParameterService;
@@ -27,19 +28,19 @@ import de.mq.portfolio.share.TimeCourse;
 @Scope("singleton")
 public class ChartControllerImpl {
 
-	private final ShareService shareService;
-	
+	static final String CONTENT_DISPOSITION_HEADER = "Content-Disposition";
+	static final String FILE_ATTACHEMENT_FORMAT = "attachment; filename=\"%s\"";
 
-	@Autowired
-	private RestOperations restOperations;
-	private final  ShareGatewayParameterService shareGatewayParameterService;
+	private final ShareService shareService;
+
+	private final ShareGatewayParameterService shareGatewayParameterService;
 
 	final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Autowired
-	ChartControllerImpl(final ShareService shareService, final  ShareGatewayParameterService shareGatewayParameterService) {
+	ChartControllerImpl(final ShareService shareService, final ShareGatewayParameterService shareGatewayParameterService) {
 		this.shareService = shareService;
-		this.shareGatewayParameterService=shareGatewayParameterService;
+		this.shareGatewayParameterService = shareGatewayParameterService;
 	}
 
 	public void init(final ChartAO chartAO) {
@@ -49,12 +50,9 @@ public class ChartControllerImpl {
 			return;
 		}
 		chartAO.setTimeCourse(timeCourse.get());
-	
-		
-	
+
 		refresh(chartAO);
-	
-		
+
 		final Collection<LineChartSeries> ratesSeries = new ArrayList<>();
 
 		final LineChartSeries series = new LineChartSeries();
@@ -64,49 +62,57 @@ public class ChartControllerImpl {
 		series.setShowMarker(false);
 		series.setLabel(timeCourse.get().share().name().replaceAll("'", " "));
 		chartAO.assign(ratesSeries);
-		
-		
+
 		setGatewayParameters(chartAO, timeCourse);
 
 	}
 
 	private void setGatewayParameters(final ChartAO chartAO, final Optional<TimeCourse> timeCourse) {
 		try {
-		
+
 			chartAO.setGatewayParameters(shareGatewayParameterService.gatewayParameters(timeCourse.get().share()).gatewayParameters());
-		} catch (final Exception ex ) {
+		} catch (final Exception ex) {
 			chartAO.setMessage(ex.getMessage());
 		}
 	}
-	
-	
-	
+
 	public void refresh(final ChartAO chartAO) {
 		final Optional<TimeCourse> timeCourse = shareService.realTimeCourses(Arrays.asList(chartAO.getCode()), false).stream().findAny();
 		chartAO.setRealTimeRates(Arrays.asList());
-		if( ! timeCourse.isPresent()){
+		if (!timeCourse.isPresent()) {
 			return;
 		}
 		chartAO.setRealTimeRates(timeCourse.get().rates());
 	}
-	
-	public void download(final FacesContext facesContext, final GatewayParameter gatewayParameter) throws IOException {
-		final byte[] content = restOperations.getForObject(gatewayParameter.urlTemplate(), String.class, gatewayParameter.parameters()).getBytes();
+
+	public void download(final FacesContext facesContext, final GatewayParameter gatewayParameter, final ChartAO chartAO) throws IOException {
 		final ExternalContext externalContext = facesContext.getExternalContext();
+		try {
 
-		externalContext.responseReset(); 
-		//externalContext.setResponseContentType("applica");
-		externalContext.setResponseContentLength(content.length);
-		
-		externalContext.setResponseHeader("Content-Disposition", "attachment; filename=\"" +gatewayParameter.gateway().downloadName(gatewayParameter.code())+ "\""); // The Save As popup magic is done here. You can give it any file name you want, this only won't work in MSIE, it will use current request URL as file name instead.
+			final byte[] content = shareGatewayParameterService.history(gatewayParameter).getBytes();
 
-		externalContext.getResponseOutputStream().write( content);
-		
-	
-		facesContext.responseComplete();
+			externalContext.responseReset();
+			externalContext.setResponseContentLength(content.length);
+
+			externalContext.setResponseHeader(CONTENT_DISPOSITION_HEADER, String.format(FILE_ATTACHEMENT_FORMAT, gatewayParameter.gateway().downloadName(gatewayParameter.code())));
+			externalContext.getResponseOutputStream().write(content);
+
+			facesContext.responseComplete();
+
+		} catch (final HttpClientErrorException clientErrorException) {
+			final StringWriter errors = new StringWriter();
+			clientErrorException.printStackTrace(new PrintWriter(errors));
+			final byte[] content = String.format("<h2>Error during Download %s</h2><h4>%s</h4><label>%s</label>", gatewayParameter.gateway(), clientErrorException.getMessage(), errors).getBytes();
+			externalContext.responseReset();
+			externalContext.setResponseContentLength(content.length);
+
+			externalContext.setResponseHeader(CONTENT_DISPOSITION_HEADER, String.format(FILE_ATTACHEMENT_FORMAT, gatewayParameter.gateway().id(gatewayParameter.code()) + ".html"));
+			externalContext.getResponseOutputStream().write(content);
+
+			facesContext.responseComplete();
+
+		}
+
 	}
-	
-	
-
 
 }

@@ -22,10 +22,13 @@ import de.mq.portfolio.share.Share;
 abstract class ShareGatewayParameterServiceImpl implements ShareGatewayParameterService {
 
 	private final GatewayParameterRepository gatewayParameterRepository;
+	
+	private final GatewayHistoryRepository gatewayHistoryRepository;
 
 	@Autowired
-	ShareGatewayParameterServiceImpl(final GatewayParameterRepository gatewayParameterRepository) {
+	ShareGatewayParameterServiceImpl(final GatewayParameterRepository gatewayParameterRepository, final GatewayHistoryRepository gatewayHistoryRepository) {
 		this.gatewayParameterRepository = gatewayParameterRepository;
+		this.gatewayHistoryRepository=gatewayHistoryRepository;
 	}
 
 	/*
@@ -57,6 +60,12 @@ abstract class ShareGatewayParameterServiceImpl implements ShareGatewayParameter
 	
 	public final void save(final GatewayParameter gatewayParameter) {
 		gatewayParameterRepository.save(gatewayParameter);
+	}
+	
+
+	@Override
+	public final String history(final GatewayParameter gatewayParameter) {
+		return gatewayHistoryRepository.history(gatewayParameter).getBody();
 	}
 
 	@Lookup
