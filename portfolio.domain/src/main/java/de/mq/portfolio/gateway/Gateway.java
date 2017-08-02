@@ -47,7 +47,7 @@ public enum Gateway {
 
 	public static String pattern(final String idPattern, final String... keys) {
 		Assert.notNull(keys, "Keys is mandatory.");
-		Assert.notEmpty(Arrays.asList(keys), "At lets one key expected.");
+		Assert.notEmpty(Arrays.asList(keys), "At least one key expected.");
 		return StringUtils.arrayToDelimitedString(keys, DELIMITER)+ DELIMITER+ idPattern;
 	}
 

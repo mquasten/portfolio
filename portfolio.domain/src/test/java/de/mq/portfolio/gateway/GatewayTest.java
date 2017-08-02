@@ -10,6 +10,7 @@ import de.mq.portfolio.gateway.Gateway.GatewayGroup;
 public class GatewayTest {
 
 	private static final String ID_PATTERN = "%s-%s";
+	private static final String FILENAME_FORMAT = ID_PATTERN+".%s";
 	private static String CODE = "SAP.DE";
 
 	private static String EXCHANGE_RATE = "EUR-USD";
@@ -78,5 +79,14 @@ public class GatewayTest {
 	@Test
 	public final void createGatewayGroup() {
 		Arrays.asList(GatewayGroup.values()).forEach(value -> Assert.assertEquals(value, GatewayGroup.valueOf(value.name())));
+	}
+	
+	@Test
+	public final void downloadName() {
+		Assert.assertEquals(String.format(FILENAME_FORMAT, CODE, Gateway.ArivaDividendHistory.id(), "html" ), Gateway.ArivaDividendHistory.downloadName(CODE));
+		
+		
+		Arrays.asList(Gateway.values()).stream().filter(value -> value != Gateway.ArivaDividendHistory).forEach(value -> Assert.assertEquals(String.format(FILENAME_FORMAT, CODE, value.id(), "csv" ),value.downloadName(CODE)));
+		
 	}
 }
