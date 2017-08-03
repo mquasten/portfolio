@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import de.mq.portfolio.gateway.Gateway;
@@ -20,6 +21,8 @@ import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.share.Share;
 
 public class ShareGatewayParameterServiceTest {
+
+	private static final String RESPONSE = "Response";
 
 	private static final String CODE = "JNJ";
 
@@ -88,6 +91,18 @@ public class ShareGatewayParameterServiceTest {
 
 		final Object service = BeanUtils.instantiateClass(shareGatewayParameterService.getClass().getDeclaredConstructor(GatewayParameterRepository.class, GatewayHistoryRepository.class), gatewayParameterRepository, gatewayHistoryRepository);
 
-	    Assert.assertEquals(dependencies, Arrays.asList(ShareGatewayParameterServiceImpl.class.getDeclaredFields()).stream().filter(field -> dependencies.containsKey(field.getType())).map(field -> new AbstractMap.SimpleImmutableEntry<>(field.getType(), ReflectionTestUtils.getField(service, field.getName()))).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue())));
+		Assert.assertEquals(dependencies, Arrays.asList(ShareGatewayParameterServiceImpl.class.getDeclaredFields()).stream().filter(field -> dependencies.containsKey(field.getType()))
+				.map(field -> new AbstractMap.SimpleImmutableEntry<>(field.getType(), ReflectionTestUtils.getField(service, field.getName()))).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue())));
+	}
+
+	@Test
+	public final void history() {
+		@SuppressWarnings("unchecked")
+		final HttpEntity<String> entity = Mockito.mock(HttpEntity.class);
+		Mockito.when(entity.getBody()).thenReturn(RESPONSE);
+		Mockito.when(gatewayHistoryRepository.history(gatewayParameter)).thenReturn(entity);
+
+		Assert.assertEquals(RESPONSE, shareGatewayParameterService.history(gatewayParameter));
+		Mockito.verify(gatewayHistoryRepository).history(gatewayParameter);
 	}
 }
