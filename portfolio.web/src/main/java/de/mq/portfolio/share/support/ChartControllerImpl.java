@@ -28,6 +28,8 @@ import de.mq.portfolio.share.TimeCourse;
 @Scope("singleton")
 public class ChartControllerImpl {
 
+	static final String HTML_EXTENSION = ".html";
+	static final String ERROR_HTML_PATTERN = "<h2>Error during Download %s</h2><h4>%s</h4><label>%s</label>";
 	static final String CONTENT_DISPOSITION_HEADER = "Content-Disposition";
 	static final String FILE_ATTACHEMENT_FORMAT = "attachment; filename=\"%s\"";
 
@@ -85,32 +87,24 @@ public class ChartControllerImpl {
 		chartAO.setRealTimeRates(timeCourse.get().rates());
 	}
 
-	public void download(final FacesContext facesContext, final GatewayParameter gatewayParameter, final ChartAO chartAO) throws IOException {
+	public void download(final FacesContext facesContext, final GatewayParameter gatewayParameter) throws IOException {
 		final ExternalContext externalContext = facesContext.getExternalContext();
 		try {
-
 			final byte[] content = shareGatewayParameterService.history(gatewayParameter).getBytes();
-
 			externalContext.responseReset();
 			externalContext.setResponseContentLength(content.length);
-
 			externalContext.setResponseHeader(CONTENT_DISPOSITION_HEADER, String.format(FILE_ATTACHEMENT_FORMAT, gatewayParameter.gateway().downloadName(gatewayParameter.code())));
 			externalContext.getResponseOutputStream().write(content);
-
 			facesContext.responseComplete();
-
 		} catch (final HttpClientErrorException clientErrorException) {
 			final StringWriter errors = new StringWriter();
 			clientErrorException.printStackTrace(new PrintWriter(errors));
-			final byte[] content = String.format("<h2>Error during Download %s</h2><h4>%s</h4><label>%s</label>", gatewayParameter.gateway(), clientErrorException.getMessage(), errors).getBytes();
+			final byte[] content = String.format(ERROR_HTML_PATTERN, gatewayParameter.gateway(), clientErrorException.getMessage(), errors).getBytes();
 			externalContext.responseReset();
 			externalContext.setResponseContentLength(content.length);
-
-			externalContext.setResponseHeader(CONTENT_DISPOSITION_HEADER, String.format(FILE_ATTACHEMENT_FORMAT, gatewayParameter.gateway().id(gatewayParameter.code()) + ".html"));
+			externalContext.setResponseHeader(CONTENT_DISPOSITION_HEADER, String.format(FILE_ATTACHEMENT_FORMAT, gatewayParameter.gateway().id(gatewayParameter.code()) + HTML_EXTENSION));
 			externalContext.getResponseOutputStream().write(content);
-
 			facesContext.responseComplete();
-
 		}
 
 	}
