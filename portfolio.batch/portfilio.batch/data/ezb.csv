@@ -1,0 +1,2 @@
+EUR-USD;CentralBankExchangeRates;http://www.bundesbank.de/cae/servlet/StatisticDownload?tsId=BBEX3.D.{targetCurrency}.{sourceCurrency}.BB.AC.000&its_csvFormat=de&its_fileFormat=csv&mode=its;{sourceCurrency:'EUR', targetCurrency:'USD'}
+EUR-GBP;CentralBankExchangeRates;http://www.bundesbank.de/cae/servlet/StatisticDownload?tsId=BBEX3.D.{targetCurrency}.{sourceCurrency}.BB.AC.000&its_csvFormat=de&its_fileFormat=csv&mode=its;{sourceCurrency:'EUR', targetCurrency:'GBP'}

@@ -83,7 +83,7 @@ public class ShareServiceTest {
 		Mockito.when(historyRepository.converters(share)).thenReturn(Arrays.asList(TimeCourseConverterType.DateInRange));
 		Mockito.when(timeCourseConverter.convert(timeCourse)).thenReturn(convertedTimeCourse);
 		
-		Mockito.when(shareGatewayParameterService.gatewayParameter(share, Arrays.asList(Gateway.GoogleRateHistory))).thenReturn(gatewayParameterAggregation);
+		Mockito.when(shareGatewayParameterService.aggregationForRequiredGateways(share, Arrays.asList(Gateway.GoogleRateHistory))).thenReturn(gatewayParameterAggregation);
 		Mockito.when(historyRepository.supports(share)).thenReturn(Arrays.asList(Gateway.GoogleRateHistory));
 		Mockito.when(historyRepository.history(gatewayParameterAggregation)).thenReturn(timeCourse);
 		

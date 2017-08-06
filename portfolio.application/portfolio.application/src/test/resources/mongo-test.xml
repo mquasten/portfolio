@@ -49,7 +49,7 @@
     
     
     
-    
+    <bean class="de.mq.portfolio.gateway.support.GatewayParameterListenerImpl" />
     
     
     

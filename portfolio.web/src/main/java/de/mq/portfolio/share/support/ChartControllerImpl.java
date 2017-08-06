@@ -72,7 +72,7 @@ public class ChartControllerImpl {
 	private void setGatewayParameters(final ChartAO chartAO, final Optional<TimeCourse> timeCourse) {
 		try {
 
-			chartAO.setGatewayParameters(shareGatewayParameterService.gatewayParameters(timeCourse.get().share()).gatewayParameters());
+			chartAO.setGatewayParameters(shareGatewayParameterService.aggregationForAllGateways(timeCourse.get().share()).gatewayParameters());
 		} catch (final Exception ex) {
 			chartAO.setMessage(ex.getMessage());
 		}

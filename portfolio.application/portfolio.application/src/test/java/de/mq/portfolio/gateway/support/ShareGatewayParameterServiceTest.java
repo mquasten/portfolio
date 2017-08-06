@@ -28,7 +28,7 @@ public class ShareGatewayParameterServiceTest {
 
 	private final GatewayParameterRepository gatewayParameterRepository = Mockito.mock(GatewayParameterRepository.class);
 
-	private final ShareGatewayParameterServiceImpl shareGatewayParameterService = Mockito.mock(ShareGatewayParameterServiceImpl.class, Mockito.CALLS_REAL_METHODS);
+	private final AbstractShareGatewayParameterService shareGatewayParameterService = Mockito.mock(AbstractShareGatewayParameterService.class, Mockito.CALLS_REAL_METHODS);
 
 	private final Share share = Mockito.mock(Share.class);
 
@@ -41,7 +41,7 @@ public class ShareGatewayParameterServiceTest {
 
 		dependencies.put(GatewayParameterRepository.class, gatewayParameterRepository);
 		dependencies.put(GatewayHistoryRepository.class, gatewayHistoryRepository);
-		Arrays.asList(ShareGatewayParameterServiceImpl.class.getDeclaredFields()).stream().filter(field -> dependencies.containsKey(field.getType())).forEach(field -> ReflectionTestUtils.setField(shareGatewayParameterService, field.getName(), dependencies.get(field.getType())));
+		Arrays.asList(AbstractShareGatewayParameterService.class.getDeclaredFields()).stream().filter(field -> dependencies.containsKey(field.getType())).forEach(field -> ReflectionTestUtils.setField(shareGatewayParameterService, field.getName(), dependencies.get(field.getType())));
 
 		Mockito.when(gatewayParameter.gateway()).thenReturn(Gateway.GoogleRateHistory);
 
@@ -55,8 +55,8 @@ public class ShareGatewayParameterServiceTest {
 	}
 
 	@Test
-	public final void gatewayParameter() {
-		final GatewayParameterAggregation<Share> gatewayParameterAggregation = shareGatewayParameterService.gatewayParameter(share, Arrays.asList(Gateway.GoogleRateHistory));
+	public final void aggregationForRequiredGateways() {
+		final GatewayParameterAggregation<Share> gatewayParameterAggregation = shareGatewayParameterService.aggregationForRequiredGateways(share, Arrays.asList(Gateway.GoogleRateHistory));
 
 		Assert.assertEquals(share, gatewayParameterAggregation.domain());
 		Assert.assertEquals(1, gatewayParameterAggregation.gatewayParameters().size());
@@ -65,14 +65,14 @@ public class ShareGatewayParameterServiceTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public final void gatewayParameterGatewaysEmpty() {
-		shareGatewayParameterService.gatewayParameter(share, Arrays.asList());
+	public final void aggregationForRequiredGatewaysEmpty() {
+		shareGatewayParameterService.aggregationForRequiredGateways(share, Arrays.asList());
 
 	}
 
 	@Test
-	public final void gatewayParameters() {
-		final GatewayParameterAggregation<Share> gatewayParameterAggregation = shareGatewayParameterService.gatewayParameters(share);
+	public final void aggregationForAllGateways() {
+		final GatewayParameterAggregation<Share> gatewayParameterAggregation = shareGatewayParameterService.aggregationForAllGateways(share);
 
 		Assert.assertEquals(share, gatewayParameterAggregation.domain());
 		Assert.assertEquals(1, gatewayParameterAggregation.gatewayParameters().size());
@@ -91,7 +91,7 @@ public class ShareGatewayParameterServiceTest {
 
 		final Object service = BeanUtils.instantiateClass(shareGatewayParameterService.getClass().getDeclaredConstructor(GatewayParameterRepository.class, GatewayHistoryRepository.class), gatewayParameterRepository, gatewayHistoryRepository);
 
-		Assert.assertEquals(dependencies, Arrays.asList(ShareGatewayParameterServiceImpl.class.getDeclaredFields()).stream().filter(field -> dependencies.containsKey(field.getType()))
+		Assert.assertEquals(dependencies, Arrays.asList(AbstractShareGatewayParameterService.class.getDeclaredFields()).stream().filter(field -> dependencies.containsKey(field.getType()))
 				.map(field -> new AbstractMap.SimpleImmutableEntry<>(field.getType(), ReflectionTestUtils.getField(service, field.getName()))).collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue())));
 	}
 

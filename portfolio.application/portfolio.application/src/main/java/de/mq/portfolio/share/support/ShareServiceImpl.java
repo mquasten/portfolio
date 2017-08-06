@@ -60,7 +60,7 @@ class ShareServiceImpl implements ShareService {
 			return new TimeCourseImpl(share, Arrays.asList(), Arrays.asList());
 		}
 		
-		final GatewayParameterAggregation<Share> gatewayParameterAggregation = shareGatewayParameterService.gatewayParameter(share, supportedGateways);
+		final GatewayParameterAggregation<Share> gatewayParameterAggregation = shareGatewayParameterService.aggregationForRequiredGateways(share, supportedGateways);
 		
 		
 		final TimeCourse  result =  historyRepository.history(gatewayParameterAggregation);

@@ -100,7 +100,7 @@ public class ChartControllerTest {
 		Mockito.when(realTimeCourse.rates()).thenReturn(Arrays.asList(last, current));
 		Mockito.when(shareService.realTimeCourses(Arrays.asList(CODE), false)).thenReturn(Arrays.asList(realTimeCourse));
 
-		Mockito.when(shareGatewayParameterService.gatewayParameters(share)).thenReturn(gatewayParameterAggregation);
+		Mockito.when(shareGatewayParameterService.aggregationForAllGateways(share)).thenReturn(gatewayParameterAggregation);
 		Mockito.when(gatewayParameterAggregation.gatewayParameters()).thenReturn(Arrays.asList(gatewayParameter));
 
 		Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
@@ -148,7 +148,7 @@ public class ChartControllerTest {
 
 	@Test
 	public final void initGatewayParameterSucks() {
-		Mockito.doThrow(new IllegalArgumentException(MESSAGE)).when(shareGatewayParameterService).gatewayParameters(share);
+		Mockito.doThrow(new IllegalArgumentException(MESSAGE)).when(shareGatewayParameterService).aggregationForAllGateways(share);
 		chartController.init(chartAO);
 		Mockito.verify(chartAO).setMessage(MESSAGE);
 	}

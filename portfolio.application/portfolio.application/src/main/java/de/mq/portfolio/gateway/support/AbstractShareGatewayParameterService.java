@@ -19,14 +19,14 @@ import de.mq.portfolio.gateway.ShareGatewayParameterService;
 import de.mq.portfolio.share.Share;
 
 @Service
-abstract class ShareGatewayParameterServiceImpl implements ShareGatewayParameterService {
+abstract class AbstractShareGatewayParameterService implements ShareGatewayParameterService {
 
 	private final GatewayParameterRepository gatewayParameterRepository;
 	
 	private final GatewayHistoryRepository gatewayHistoryRepository;
 
 	@Autowired
-	ShareGatewayParameterServiceImpl(final GatewayParameterRepository gatewayParameterRepository, final GatewayHistoryRepository gatewayHistoryRepository) {
+	AbstractShareGatewayParameterService(final GatewayParameterRepository gatewayParameterRepository, final GatewayHistoryRepository gatewayHistoryRepository) {
 		this.gatewayParameterRepository = gatewayParameterRepository;
 		this.gatewayHistoryRepository=gatewayHistoryRepository;
 	}
@@ -36,7 +36,7 @@ abstract class ShareGatewayParameterServiceImpl implements ShareGatewayParameter
 	 * @see de.mq.portfolio.gateway.support.ShareGatewayParameterService#gatewayParameter(de.mq.portfolio.share.Share, java.util.Collection)
 	 */
 	@Override
-	public GatewayParameterAggregation<Share> gatewayParameter(final Share share, final Collection<Gateway> gateways) {
+	public GatewayParameterAggregation<Share> aggregationForRequiredGateways(final Share share, final Collection<Gateway> gateways) {
 		shareRequiredGuard(share);
 		Assert.isTrue( !CollectionUtils.isEmpty(gateways) , "At least 1 gateway is required.");
 		return gatewayParameterAggregationBuilder().withDomain(share).withGatewayParameters(gateways.stream().map(gateway -> gatewayParameterRepository.gatewayParameter(gateway, share.code())).collect(Collectors.toList())).build();
@@ -51,7 +51,7 @@ abstract class ShareGatewayParameterServiceImpl implements ShareGatewayParameter
 	 * @see de.mq.portfolio.gateway.support.ShareGatewayParameterService#gatewayParameters(de.mq.portfolio.share.Share)
 	 */
 	@Override
-	public GatewayParameterAggregation<Share> gatewayParameters(final Share share) {
+	public GatewayParameterAggregation<Share> aggregationForAllGateways(final Share share) {
 		shareRequiredGuard(share);
 		return gatewayParameterAggregationBuilder().withGatewayParameters(gatewayParameterRepository.gatewayParameters(share.code())).withDomain(share).build();
 	}
