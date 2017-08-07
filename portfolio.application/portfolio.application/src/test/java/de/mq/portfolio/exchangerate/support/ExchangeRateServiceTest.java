@@ -15,6 +15,9 @@ import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
+import de.mq.portfolio.gateway.ExchangeRateGatewayParameterService;
+import de.mq.portfolio.gateway.Gateway;
+import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.share.Data;
 import org.junit.Assert;
 
@@ -22,7 +25,7 @@ import org.junit.Assert;
 public class ExchangeRateServiceTest {
 
 	
-	private static final String LINK = "http://www.bundesbank.de/cae/servlet/StatisticDownload?tsId=BBEX3.D.USD.EUR.BB.AC.000&its_csvFormat=de&its_fileFormat=csv&mode=its";
+	
 	private  final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository = Mockito.mock(ExchangeRateDatebaseRepository.class); 
 	private final  ExchangeRateRepository exchangeRateRepository = Mockito.mock(ExchangeRateRepository.class);  ;
 	private  final ExchangeRateService exchangeRateService = Mockito.mock(AbstractExchangeRateService.class , Mockito.CALLS_REAL_METHODS );
@@ -37,6 +40,11 @@ public class ExchangeRateServiceTest {
 	
 	private final Map<Class<?> ,Object> dependencies = new HashMap<>();
 	
+	ExchangeRateGatewayParameterService exchangeRateGatewayParameterService = Mockito.mock(ExchangeRateGatewayParameterService.class);
+	
+	@SuppressWarnings("unchecked")
+	private GatewayParameterAggregation<ExchangeRate> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
+	
 	@Before
 	public final void setup() throws NoSuchMethodException, SecurityException {
 		
@@ -47,6 +55,7 @@ public class ExchangeRateServiceTest {
 		dependencies.put(ExchangeRateRepository.class, exchangeRateRepository);
 		dependencies.put(ExchangeRateDatebaseRepository.class, exchangeRateDatebaseRepository);
 		dependencies.put(RealtimeExchangeRateRepository.class, realtimeExchangeRateRepository);
+		dependencies.put(ExchangeRateGatewayParameterService.class, exchangeRateGatewayParameterService);
 		ReflectionUtils.doWithFields(exchangeRateService.getClass(), field -> ReflectionTestUtils.setField(exchangeRateService, field.getName(), dependencies.get(field.getType())), field -> dependencies.containsKey(field.getType()));
 		
 		Mockito.doReturn(builder).when(((AbstractExchangeRateService)exchangeRateService)).newBuilder();
@@ -54,8 +63,9 @@ public class ExchangeRateServiceTest {
 	
 	@Test
 	public final void exchangeRate() {
-		Mockito.when(exchangeRate.link()).thenReturn(LINK);
-		Mockito.when(exchangeRateRepository.history(exchangeRate.link())).thenReturn(rates);
+		Mockito.when(exchangeRateGatewayParameterService.aggregationForRequiredGateway(exchangeRate, Gateway.CentralBankExchangeRates)).thenReturn(gatewayParameterAggregation);
+		Mockito.when(exchangeRateRepository.supports()).thenReturn(Gateway.CentralBankExchangeRates);
+		Mockito.when(exchangeRateRepository.history(gatewayParameterAggregation)).thenReturn(rates);
 		
 		Assert.assertEquals(exchangeRate, exchangeRateService.exchangeRate(exchangeRate));
 		Mockito.verify(exchangeRate, Mockito.times(1)).assign(rates);
@@ -93,13 +103,14 @@ public class ExchangeRateServiceTest {
 	
 	@Test
 	public final void constructorInjection() throws NoSuchMethodException, SecurityException {
-		final ExchangeRateService service  = BeanUtils.instantiateClass( exchangeRateService.getClass().getDeclaredConstructor(ExchangeRateDatebaseRepository.class, ExchangeRateRepository.class, RealtimeExchangeRateRepository.class),exchangeRateDatebaseRepository , exchangeRateRepository, realtimeExchangeRateRepository);
+		final ExchangeRateService service  = BeanUtils.instantiateClass( exchangeRateService.getClass().getDeclaredConstructor(ExchangeRateDatebaseRepository.class, ExchangeRateRepository.class, RealtimeExchangeRateRepository.class, ExchangeRateGatewayParameterService.class),exchangeRateDatebaseRepository , exchangeRateRepository, realtimeExchangeRateRepository, exchangeRateGatewayParameterService);
 		final Map<Class<?> ,Object> results = new HashMap<>();
 		ReflectionUtils.doWithFields(service.getClass(), field -> results.put(field.getType(), ReflectionTestUtils.getField(service, field.getName())), field -> dependencies.containsKey(field.getType()));
-	    Assert.assertEquals(3, results.size());
+	    Assert.assertEquals(4, results.size());
 	    Assert.assertEquals(exchangeRateRepository, results.get(ExchangeRateRepository.class));
 	    Assert.assertEquals(exchangeRateDatebaseRepository, results.get(ExchangeRateDatebaseRepository.class));
 	    Assert.assertEquals(realtimeExchangeRateRepository, results.get(RealtimeExchangeRateRepository.class));
+	    Assert.assertEquals(exchangeRateGatewayParameterService, results.get(ExchangeRateGatewayParameterService.class));
 	}
 	
 	@Test

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
+import de.mq.portfolio.gateway.ExchangeRateGatewayParameterService;
 import de.mq.portfolio.share.Data;
 
 @Service("exchangeRateService")
@@ -18,12 +19,15 @@ abstract class AbstractExchangeRateService implements ExchangeRateService {
 	private final ExchangeRateRepository exchangeRateRepository;
 
 	private final RealtimeExchangeRateRepository realtimeExchangeRateRepository;
+	
+	private  final ExchangeRateGatewayParameterService exchangeRateGatewayParameterService;
 
 	@Autowired
-	AbstractExchangeRateService(final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository, final ExchangeRateRepository exchangeRateRepository, final RealtimeExchangeRateRepository realtimeExchangeRateRepository) {
+	AbstractExchangeRateService(final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository, final ExchangeRateRepository exchangeRateRepository, final RealtimeExchangeRateRepository realtimeExchangeRateRepository, final ExchangeRateGatewayParameterService exchangeRateGatewayParameterService) {
 		this.exchangeRateDatebaseRepository = exchangeRateDatebaseRepository;
 		this.exchangeRateRepository = exchangeRateRepository;
 		this.realtimeExchangeRateRepository = realtimeExchangeRateRepository;
+		this.exchangeRateGatewayParameterService=exchangeRateGatewayParameterService;
 	}
 
 	/*
@@ -35,7 +39,7 @@ abstract class AbstractExchangeRateService implements ExchangeRateService {
 	 */
 	@Override
 	public final ExchangeRate exchangeRate(final ExchangeRate exchangeRate) {
-		final Collection<Data> rates = exchangeRateRepository.history(exchangeRate.link());
+		final Collection<Data> rates = exchangeRateRepository.history(exchangeRateGatewayParameterService.aggregationForRequiredGateway(exchangeRate, exchangeRateRepository.supports()));
 		exchangeRate.assign(rates);
 		return exchangeRate;
 	}

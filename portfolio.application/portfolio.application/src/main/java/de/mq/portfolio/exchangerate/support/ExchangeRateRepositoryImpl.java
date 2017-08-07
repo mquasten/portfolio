@@ -10,6 +10,10 @@ import org.springframework.stereotype.Repository;
 
 import org.springframework.web.client.RestOperations;
 
+import de.mq.portfolio.exchangerate.ExchangeRate;
+import de.mq.portfolio.gateway.Gateway;
+import de.mq.portfolio.gateway.GatewayParameter;
+import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.support.DataImpl;
 
@@ -25,9 +29,12 @@ class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
 
 
 	@Override
-	public final Collection<Data> history(final String url) {
+	public final Collection<Data> history(GatewayParameterAggregation<ExchangeRate> gatewayParameterAggregation) {
 		final String[] last = {null };
-		return Collections.unmodifiableList(Arrays.asList(restOperations.getForObject(url, String.class).split("\n")).stream().map(line -> line.split(";")).filter(cols -> cols.length>=2 && cols[0].matches("^[0-9]{4}.*")).map(cols-> {
+		final GatewayParameter gatewayParameter = gatewayParameterAggregation.gatewayParameter(Gateway.CentralBankExchangeRates);
+		
+		
+		return Collections.unmodifiableList(Arrays.asList(restOperations.getForObject(gatewayParameter.urlTemplate(), String.class, gatewayParameter.parameters()).split("\n")).stream().map(line -> line.split(";")).filter(cols -> cols.length>=2 && cols[0].matches("^[0-9]{4}.*")).map(cols-> {
 			 if( !  cols[1].matches("[0-9,]+")  ) {
 				 cols[1]=last[0];
 			 } else {
@@ -38,6 +45,12 @@ class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
 		}).filter(cols -> cols[1] != null).map(cols -> new DataImpl(cols[0], Double.valueOf(cols[1].replace(',', '.')))).collect(Collectors.toList()));
 		
 		
+	}
+
+
+	@Override
+	public Gateway supports() {
+		return Gateway.CentralBankExchangeRates;
 	}
 
 }

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import de.mq.portfolio.gateway.GatewayParameterAggregation;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/mongo-test.xml", "/application-test.xml" })
+@Ignore
 public class ExchangeRateGatewayParameterServiceIntegrationTest {
 
 	private static final String CURRENCY_USD = "USD";
@@ -94,10 +96,7 @@ public class ExchangeRateGatewayParameterServiceIntegrationTest {
 	public final void history() {
 		final GatewayParameter gatewayParameter = new GatewayParameterImpl(String.format("%s-%s", exchangeRate.source(), exchangeRate.target()), Gateway.CentralBankExchangeRates, URL,
 				String.format("{%s:'%s', %s:'%s'}", SOURCE_CURRENCY_PARAM_NAME, CURRENCY_EUR, TARGET_CURRENCY_PARAM_NAME, CURRENCY_USD));
-		// final GatewayParameterAggregation<ExchangeRate>
-		// gatewayParameterAggregation =
-		// gatewayParameterAggregationBuilder.withDomain(exchangeRate).withGatewayParameter(gatewayParameter).build();
-
+		
 		final List<String[]> lines = Arrays.asList(exchangeRateGatewayParameterService.history(gatewayParameter).replaceAll("[\"]", "").split("\n")).stream().map(line -> line.split("[;]")).filter(cols -> cols.length == 2 && cols[0].matches("[0-9].*")).collect(Collectors.toList());
 
 		Assert.assertTrue(lines.size() > 4500);
