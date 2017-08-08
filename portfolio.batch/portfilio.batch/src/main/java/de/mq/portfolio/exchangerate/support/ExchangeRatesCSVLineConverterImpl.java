@@ -10,10 +10,9 @@ public class ExchangeRatesCSVLineConverterImpl implements Converter<String[], Ex
 
 	@Override
 	public ExchangeRate  convert(final String[] source) {
-		
 		Assert.notNull(source);
-		Assert.isTrue(source.length==3);
-		return new ExchangeRateImpl(source[0], source[1], source[2]);
+		Assert.isTrue(source.length==2, "2 columns expected.");
+		return new ExchangeRateImpl(source[0], source[1]);
 	}
 
 }

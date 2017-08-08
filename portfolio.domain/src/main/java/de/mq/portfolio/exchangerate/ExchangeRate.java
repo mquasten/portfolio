@@ -11,8 +11,6 @@ public interface ExchangeRate {
 
 	String target();
 
-	String link();
-
 	List<Data> rates();
 
 	void assign(final Collection<Data> rates);

@@ -23,7 +23,7 @@ public class ExchangeRateImpl implements ExchangeRate {
 
 	private final String target;
 
-	private final String link;
+	
 
 	private final List<Data> rates = new ArrayList<>();
 
@@ -31,23 +31,19 @@ public class ExchangeRateImpl implements ExchangeRate {
 	private ExchangeRateImpl() {
 		this.source = null;
 		this.target = null;
-		this.link = null;
 		this.id = null;
 	}
 
-	ExchangeRateImpl(final String source, final String target, final String link) {
+	public ExchangeRateImpl(final String source, final String target) {
 		this.source = source;
 		this.target = target;
-		this.link = link;
 		this.id = new UUID(source.hashCode(), target.hashCode()).toString();
 	}
 
-	public ExchangeRateImpl(final String source, final String target) {
-		this(source, target, "");
-	}
+	
 	
 	public ExchangeRateImpl(final String source, final String target, final  List<Data> rates) {
-		this(source, target, "");
+		this(source, target);
 		assign(rates);
 	}
 
@@ -59,11 +55,6 @@ public class ExchangeRateImpl implements ExchangeRate {
 	@Override
 	public final String target() {
 		return target;
-	}
-
-	@Override
-	public final String link() {
-		return link;
 	}
 
 	@Override

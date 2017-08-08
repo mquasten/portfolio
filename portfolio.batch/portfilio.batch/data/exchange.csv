@@ -1,2 +1,2 @@
-EUR;USD;http://www.bundesbank.de/cae/servlet/StatisticDownload?tsId=BBEX3.D.USD.EUR.BB.AC.000&its_csvFormat=de&its_fileFormat=csv&mode=its
-EUR;GBP;http://www.bundesbank.de/cae/servlet/StatisticDownload?tsId=BBEX3.D.GBP.EUR.BB.AC.000&its_csvFormat=de&its_fileFormat=csv&mode=its
+EUR;USD
+EUR;GBP

@@ -21,10 +21,10 @@ import de.mq.portfolio.share.Data;
 
 public class ExchangeRateTest {
 
-	private static final String LINK = "http://www.bundesbank.de/cae/servlet/StatisticDownload?tsId=BBEX3.D.USD.EUR.BB.AC.000&its_csvFormat=de&its_fileFormat=csv&mode=its";
+	
 	private static final String TARGET = "USD";
 	private static final String SOURCE = "EUR";
-	private final ExchangeRate exchangeRate = new ExchangeRateImpl(SOURCE, TARGET, LINK);
+	private final ExchangeRate exchangeRate = new ExchangeRateImpl(SOURCE, TARGET);
 
 	@Test
 	public final void source() {
@@ -36,10 +36,7 @@ public class ExchangeRateTest {
 		Assert.assertEquals(TARGET, exchangeRate.target());
 	}
 
-	@Test
-	public final void link() {
-		Assert.assertEquals(LINK, exchangeRate.link());
-	}
+	
 
 	@Test
 	public final void hash() {
@@ -57,13 +54,13 @@ public class ExchangeRateTest {
 
 	@Test
 	public final void equals() {
-		Assert.assertTrue(exchangeRate.equals(new ExchangeRateImpl(SOURCE, TARGET, LINK)));
-		Assert.assertFalse(exchangeRate.equals(new ExchangeRateImpl(TARGET, SOURCE, LINK)));
-		Assert.assertFalse(exchangeRate.equals(new ExchangeRateImpl(SOURCE, SOURCE, LINK)));
+		Assert.assertTrue(exchangeRate.equals(new ExchangeRateImpl(SOURCE, TARGET)));
+		Assert.assertFalse(exchangeRate.equals(new ExchangeRateImpl(TARGET, SOURCE)));
+		Assert.assertFalse(exchangeRate.equals(new ExchangeRateImpl(SOURCE, SOURCE)));
 
-		final ExchangeRate inValid = new ExchangeRateImpl(SOURCE, TARGET, LINK);
+		final ExchangeRate inValid = new ExchangeRateImpl(SOURCE, TARGET);
 		setInvalid(inValid);
-		Assert.assertFalse(inValid.equals(new ExchangeRateImpl(TARGET, SOURCE, LINK)));
+		Assert.assertFalse(inValid.equals(new ExchangeRateImpl(TARGET, SOURCE)));
 		Assert.assertFalse(exchangeRate.equals(inValid));
 		Assert.assertFalse(exchangeRate.equals(new Date()));
 	}
@@ -86,14 +83,7 @@ public class ExchangeRateTest {
 		Assert.assertEquals(data, exchangeRate.rates().stream().findAny().get());
 	}
 
-	@Test
-	public final void create() {
-		ExchangeRate exchangeRate = new ExchangeRateImpl(SOURCE, TARGET);
-		Assert.assertEquals(SOURCE, exchangeRate.source());
-		Assert.assertEquals(TARGET, exchangeRate.target());
-		Assert.assertTrue(exchangeRate.link().isEmpty());
-	}
-
+	
 	@Test
 	public final void id() {
 		ReflectionUtils.doWithFields(ExchangeRateImpl.class, field -> Assert.assertEquals(new UUID(SOURCE.hashCode(), TARGET.hashCode()).toString(), ReflectionTestUtils.getField(exchangeRate, field.getName())),
@@ -105,7 +95,6 @@ public class ExchangeRateTest {
 		final ExchangeRate exchangeRate = BeanUtils.instantiateClass(ExchangeRateImpl.class);
 		Assert.assertNull(exchangeRate.source());
 		Assert.assertNull(exchangeRate.target());
-		Assert.assertNull(exchangeRate.link());
 		ReflectionUtils.doWithFields(ExchangeRateImpl.class, field -> Assert.assertNull(ReflectionTestUtils.getField(exchangeRate, field.getName())), field -> field.isAnnotationPresent(Id.class));
 	}
 	
