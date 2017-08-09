@@ -19,6 +19,8 @@ import de.mq.portfolio.share.support.HistoryDateUtil;
 @Document(collection = "GatewayParameter")
 class GatewayParameterImpl implements GatewayParameter {
 
+	static final String IDS_VARIABLE_NAME = "ids";
+
 	@Id
 	private final String id;
 
@@ -47,6 +49,9 @@ class GatewayParameterImpl implements GatewayParameter {
 
 		final ExpressionParser parser = new SpelExpressionParser();
 		final StandardEvaluationContext context = new StandardEvaluationContext(new HistoryDateUtil());
+		
+		context.setVariable(IDS_VARIABLE_NAME, Gateway.ids(id));
+		
 		@SuppressWarnings("unchecked")
 		final Map<String, String> parameterMap = (Map<String, String>) parser.parseExpression(parameterExpression).getValue(context);
 		this.parameters.putAll(parameterMap);

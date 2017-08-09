@@ -1,6 +1,8 @@
 package de.mq.portfolio.gateway.support;
 
 
+
+
 import java.util.Map;
 
 import org.junit.Assert;
@@ -14,6 +16,8 @@ import de.mq.portfolio.share.support.HistoryDateUtil;
 
 public class GatewayParameterTest {
 
+	private static final String ID_FIELD = "id";
+	private static final String GATEWAY_PARAM_NAME = "gateway";
 	private static final String URL_TEMPLATE_ARH = "http://www.ariva.de/quote/historic/historic.csv?secu={shareId}&boerse_id={stockExchangeId}&clean_split=1&clean_payout=0&clean_bezug=1&min_time={startDate}&max_time={endDate}&trenner={delimiter}&go=Download";
 	private static final String CODE_JNJ = "JNJ";
 	private static final String STOCK_EXCHANGE_ID_NYSE = "21";
@@ -24,6 +28,10 @@ public class GatewayParameterTest {
 	private static final String PARAM_START_DATE = "startDate";
 	private static final String PARAM_END_DATE = "endDate";
 	private static final String PARAM_DELIMITER = "delimiter";
+	private static final String SOURCE_CURRENCY_PARAM_NAME = "sourceCurrency";
+	private static final String TARGET_CURRENCY_PARAM_NAME = "targetCurrency";
+	private static final String CURRENCY_EUR="EUR" ;
+	private static final String CURRENCY_USD = "USD";
 	
 	private HistoryDateUtil historyDateUtil = new HistoryDateUtil();
 	private final String parameterString = String.format("{%s:'%s', %s:'%s', %s:oneYearBack(germanYearToDayDateFormat), %s:oneDayBack(germanYearToDayDateFormat), %s:'%s'}", 
@@ -70,6 +78,17 @@ public class GatewayParameterTest {
 		Assert.assertNotNull(BeanUtils.instantiateClass(GatewayParameterImpl.class));
 	}
 
+	@Test
+	public final void ids() {
+		final String spEl =String.format("{%s:#%s[0], %s:#%s[1], %s:#%s[2]}", SOURCE_CURRENCY_PARAM_NAME, GatewayParameterImpl.IDS_VARIABLE_NAME, TARGET_CURRENCY_PARAM_NAME, GatewayParameterImpl.IDS_VARIABLE_NAME, GATEWAY_PARAM_NAME, GatewayParameterImpl.IDS_VARIABLE_NAME);
+		
+		final GatewayParameter gatewayParameter = new GatewayParameterImpl(String.format("%s-%s", CURRENCY_EUR, CURRENCY_USD), Gateway.CentralBankExchangeRates, "urlTemplate", spEl);
+	
+		Assert.assertEquals(3, gatewayParameter.parameters().size());
+		Assert.assertEquals(CURRENCY_USD, gatewayParameter.parameters().get(TARGET_CURRENCY_PARAM_NAME));
+		Assert.assertEquals(CURRENCY_EUR, gatewayParameter.parameters().get(SOURCE_CURRENCY_PARAM_NAME));
+		Assert.assertEquals((String) ReflectionTestUtils.getField(Gateway.CentralBankExchangeRates, ID_FIELD), gatewayParameter.parameters().get(GATEWAY_PARAM_NAME));
+	}
 	
 
 }

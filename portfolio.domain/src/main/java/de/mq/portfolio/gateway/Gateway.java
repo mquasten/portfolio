@@ -1,6 +1,7 @@
 package de.mq.portfolio.gateway;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.dao.support.DataAccessUtils;
@@ -73,6 +74,10 @@ public enum Gateway {
 		idSyntaxGuard(id, index);
 		final String gatewayId = id.substring(index + 1, id.length());
 		return gatewayValue(gatewayId);
+	}
+	
+	public static List<String> ids(final String idString) {
+		return Arrays.asList(StringUtils.delimitedListToStringArray(idString, DELIMITER));
 	}
 	
 	public final String downloadName(final String... keys) {
