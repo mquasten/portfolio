@@ -49,7 +49,6 @@ class GatewayParameterImpl implements GatewayParameter {
 
 		final ExpressionParser parser = new SpelExpressionParser();
 		final StandardEvaluationContext context = new StandardEvaluationContext(new HistoryDateUtil());
-		
 		context.setVariable(IDS_VARIABLE_NAME, Gateway.ids(id));
 		
 		@SuppressWarnings("unchecked")

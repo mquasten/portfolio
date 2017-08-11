@@ -4,7 +4,7 @@ import org.springframework.http.HttpEntity;
 
 import de.mq.portfolio.gateway.GatewayParameter;
 
-interface GatewayHistoryRepository {
+public interface GatewayHistoryRepository {
 
 	HttpEntity<String> history(GatewayParameter gatewayParameter);
 

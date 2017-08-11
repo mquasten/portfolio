@@ -8,23 +8,23 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import org.springframework.web.client.RestOperations;
-
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.GatewayParameterAggregation;
+import de.mq.portfolio.gateway.support.GatewayHistoryRepository;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.support.DataImpl;
 
 @Repository
 class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
 	
-	private final RestOperations restOperations;
+
+	private final GatewayHistoryRepository gatewayHistoryRepository;
 	
 	@Autowired
-	public ExchangeRateRepositoryImpl(final RestOperations restOperations) {
-		this.restOperations = restOperations;
+	public ExchangeRateRepositoryImpl(final GatewayHistoryRepository gatewayHistoryRepository) {
+		this.gatewayHistoryRepository = gatewayHistoryRepository;
 	}
 
 
@@ -33,8 +33,7 @@ class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
 		final String[] last = {null };
 		final GatewayParameter gatewayParameter = gatewayParameterAggregation.gatewayParameter(Gateway.CentralBankExchangeRates);
 		
-		
-		return Collections.unmodifiableList(Arrays.asList(restOperations.getForObject(gatewayParameter.urlTemplate(), String.class, gatewayParameter.parameters()).split("\n")).stream().map(line -> line.split(";")).filter(cols -> cols.length>=2 && cols[0].matches("^[0-9]{4}.*")).map(cols-> {
+		return Collections.unmodifiableList(Arrays.asList(gatewayHistoryRepository.history(gatewayParameter).getBody().split("\n")).stream().map(line -> line.split(";")).filter(cols -> cols.length>=2 && cols[0].matches("^[0-9]{4}.*")).map(cols-> {
 			 if( !  cols[1].matches("[0-9,]+")  ) {
 				 cols[1]=last[0];
 			 } else {
