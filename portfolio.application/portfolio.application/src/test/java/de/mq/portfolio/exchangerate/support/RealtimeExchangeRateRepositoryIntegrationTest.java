@@ -16,7 +16,7 @@ import de.mq.portfolio.exchangerate.ExchangeRate;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/application-test.xml" })
+@ContextConfiguration(locations = { "/application-test.xml",  "/mongo-test.xml" })
 @TestPropertySource(properties={"realtime.exchangerates.url=" + RealtimeExchangeRateRepositoryTest.EXCHANGERATES_URL,"realtime.exchangerates.dateformat=" + RealtimeExchangeRateRepositoryTest.EXCHANGERATES_DATEFORMAT})
 @Ignore
 public class RealtimeExchangeRateRepositoryIntegrationTest {
@@ -28,9 +28,8 @@ public class RealtimeExchangeRateRepositoryIntegrationTest {
 	public final void exchangeRates() {
 		final Collection<ExchangeRate> exchangeRates = Arrays.asList(new ExchangeRateImpl("EUR", "USD"), new ExchangeRateImpl("EUR", "GBP"),  new ExchangeRateImpl("USD", "GBP"));
 		final Collection<ExchangeRate> results = realtimeExchangeRateRepository.exchangeRates(exchangeRates);
-		Assert.assertEquals(3, results.size());
 		
-		System.out.println(results);
+		Assert.assertEquals(3, results.size());
 	}
 
 }

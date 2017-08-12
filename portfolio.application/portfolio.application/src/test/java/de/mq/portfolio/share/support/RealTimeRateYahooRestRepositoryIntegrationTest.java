@@ -24,7 +24,7 @@ import de.mq.portfolio.share.TimeCourse;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/application-test.xml" })
+@ContextConfiguration(locations = { "/application-test.xml" ,  "/mongo-test.xml" })
 @Ignore
 public class RealTimeRateYahooRestRepositoryIntegrationTest {
 	

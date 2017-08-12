@@ -35,7 +35,7 @@ public class HistoryArivaRestRepositoryIntegrationTest {
 	private HistoryRepository historyRestRepository;
 	private final Share share = Mockito.mock(Share.class);
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") 
 	private final GatewayParameterAggregation<Share> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
 
 	private final GatewayParameter gatewayParameterRates = Mockito.mock(GatewayParameter.class);

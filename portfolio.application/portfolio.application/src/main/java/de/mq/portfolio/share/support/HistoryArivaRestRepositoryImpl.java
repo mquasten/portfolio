@@ -27,17 +27,17 @@ import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.support.ConfigurableConversionService;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestOperations;
 import org.springframework.web.util.UriTemplate;
 
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.GatewayParameterAggregation;
+import de.mq.portfolio.gateway.support.GatewayHistoryRepository;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
@@ -56,15 +56,15 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 
 	private final DateFormat dateFormatRates;
 	private final DateFormat dateFormatDividends = new SimpleDateFormat("dd.MM.yy");
-	private final RestOperations restOperations;
+	private final GatewayHistoryRepository gatewayHistoryRepository;
 
 	private final boolean wknCheck;
 	private final Collection<Imports> imports = new ArrayList<>();
 
 	@Autowired
-	HistoryArivaRestRepositoryImpl(final RestOperations restOperations, final HistoryDateUtil historyDateUtil, @Value("${history.ariva.wkncheck}") final boolean wknCheck, @Value("${history.ariva.imports?:Rates,Dividends}") final String imports) {
+	HistoryArivaRestRepositoryImpl(final GatewayHistoryRepository gatewayHistoryRepository, final HistoryDateUtil historyDateUtil, @Value("${history.ariva.wkncheck}") final boolean wknCheck, @Value("${history.ariva.imports?:Rates,Dividends}") final String imports) {
 
-		this.restOperations = restOperations;
+		this.gatewayHistoryRepository = gatewayHistoryRepository;
 
 		dateFormatRates = historyDateUtil.getGermanYearToDayDateFormat();
 
@@ -102,7 +102,8 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 		System.out.println(gatewayParameter);
 
 		System.out.println(new UriTemplate(gatewayParameter.urlTemplate()).expand(gatewayParameter.parameters()));
-		final String html = restOperations.getForObject(gatewayParameter.urlTemplate(), String.class, gatewayParameter.parameters());
+		
+		final String html = gatewayHistoryRepository.history(gatewayParameter).getBody();
 
 		final Document doc = Jsoup.parse(html);
 
@@ -138,7 +139,8 @@ abstract class HistoryArivaRestRepositoryImpl implements HistoryRepository {
 
 		Assert.hasText(parameters.get(PARAM_DELIMITER));
 		System.out.println(new UriTemplate(gatewayParameter.urlTemplate()).expand(parameters));
-		final ResponseEntity<String> responseEntity = restOperations.getForEntity(gatewayParameter.urlTemplate(), String.class, parameters);
+		
+		final HttpEntity<String> responseEntity = gatewayHistoryRepository.history(gatewayParameter);
 		attachementHeaderWknGuard(gatewayParameterAggregation.domain(), responseEntity.getHeaders());
 		return exceptionTranslationBuilderResult().withResource(() -> {
 			return new BufferedReader(new StringReader(responseEntity.getBody()));

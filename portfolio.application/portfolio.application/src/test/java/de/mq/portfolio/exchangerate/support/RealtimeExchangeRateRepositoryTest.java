@@ -29,11 +29,9 @@ import de.mq.portfolio.support.ExceptionTranslationBuilderImpl;
 
 public class RealtimeExchangeRateRepositoryTest {
 	
-	
-
 	private static final String URL_PATH = "urlPath";
 
-	final static String EXCHANGERATES_URL= "http://finance.yahoo.com/d/quotes.csv?s={currencies}&f=sl1d1t1";
+	final static String EXCHANGERATES_URL= "http://download.finance.yahoo.com/d/quotes.csv?s={currencies}&f=sl1d1t1";
 	
 	final static String EXCHANGERATES_DATEFORMAT= "M/d/yy h:mma";
 	

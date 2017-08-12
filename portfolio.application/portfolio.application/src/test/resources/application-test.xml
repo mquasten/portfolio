@@ -34,7 +34,10 @@
 
 	<bean class="de.mq.portfolio.gateway.support.GatewayParameterRepositoryImpl" />
 
+	<bean class="de.mq.portfolio.gateway.support.GatewayHistoryRepositoryImpl" />
 
+
+	<bean class="de.mq.portfolio.exchangerate.support.AbstractRealtimeExchangeRateRepository" />
 
 
 	<bean
