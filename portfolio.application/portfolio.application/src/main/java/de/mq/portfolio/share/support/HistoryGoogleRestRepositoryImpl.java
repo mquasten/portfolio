@@ -14,12 +14,12 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
-import org.springframework.web.client.RestOperations;
 import org.springframework.web.util.UriTemplate;
 
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.GatewayParameterAggregation;
+import de.mq.portfolio.gateway.support.GatewayHistoryRepository;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
@@ -29,12 +29,14 @@ import de.mq.portfolio.support.ExceptionTranslationBuilder;
 @Profile("google")
 abstract class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 	private final String datePattern = "[0-9]{1,2}-[A-z]{3,3}-[0-9]{2,2}";
-	private final RestOperations restOperations;
+	
 	private final DateFormat dateFormat;
+	
+	private final  GatewayHistoryRepository gatewayHistoryRepository;
 
 	@Autowired
-	HistoryGoogleRestRepositoryImpl(final RestOperations restOperations, final HistoryDateUtil historyDateUtil) {
-		this.restOperations = restOperations;
+	HistoryGoogleRestRepositoryImpl(GatewayHistoryRepository gatewayHistoryRepository, final HistoryDateUtil historyDateUtil) {
+		this.gatewayHistoryRepository = gatewayHistoryRepository;
 		this.dateFormat = historyDateUtil.getGoogleDateFormat();
 	}
 
@@ -53,7 +55,7 @@ abstract class HistoryGoogleRestRepositoryImpl implements HistoryRepository {
 
 		System.out.println(new UriTemplate(gatewayParameter.urlTemplate()).expand(gatewayParameter.parameters()));
 
-		final String result = restOperations.getForObject(gatewayParameter.urlTemplate(), String.class, gatewayParameter.parameters());
+		final String result = gatewayHistoryRepository.history(gatewayParameter).getBody();
 
 		Assert.hasText(result, "ResponseBody is mandatory.");
 
