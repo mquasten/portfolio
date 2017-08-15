@@ -31,6 +31,7 @@ abstract class AbstractExchangeRateGatewayParameterService implements ExchangeRa
 	public GatewayParameterAggregation<ExchangeRate> aggregationForRequiredGateway(final ExchangeRate exchangeRate, final Gateway gateway) {
 		exchangeRateMandatoryGurad(exchangeRate);
 		gatewayGroupGuard(gateway);
+	
 		final GatewayParameter gatewayParameter = gatewayParameterRepository.gatewayParameter(gateway, exchangeRate.source(), exchangeRate.target());
 		return gatewayParameterAggregationBuilder().withDomain(exchangeRate).withGatewayParameter(gatewayParameter).build();
 
