@@ -65,6 +65,10 @@ abstract class AbstractExchangeRateService implements ExchangeRateService {
 	public final void save(final ExchangeRate exchangeRate) {
 		exchangeRateDatebaseRepository.save(exchangeRate);
 	}
+	
+	public final void saveMock(final ExchangeRate exchangeRate) {
+		System.out.println("save:" + exchangeRate.source() + " " + exchangeRate.target());
+	}
 
 	/*
 	 * (non-Javadoc)
