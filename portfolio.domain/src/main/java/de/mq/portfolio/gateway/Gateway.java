@@ -51,6 +51,10 @@ public enum Gateway {
 		Assert.notEmpty(Arrays.asList(keys), "At least one key expected.");
 		return StringUtils.arrayToDelimitedString(keys, DELIMITER)+ DELIMITER+ idPattern;
 	}
+	public String patternMatchesId(final String startPattern) {
+		Assert.notNull(startPattern);
+		return String.format("%s%s%s", startPattern, DELIMITER,id);
+	}
 
 	public static String code(final String id) {
 		final int index = id.lastIndexOf(DELIMITER);

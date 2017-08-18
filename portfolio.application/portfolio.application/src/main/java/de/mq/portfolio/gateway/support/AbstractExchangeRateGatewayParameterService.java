@@ -1,7 +1,5 @@
 package de.mq.portfolio.gateway.support;
 
-
-import java.util.Arrays;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,10 +64,6 @@ abstract class AbstractExchangeRateGatewayParameterService implements ExchangeRa
 	}
 	
 	
-	public final Collection<GatewayParameter> read(Gateway gateway) {
-		return Arrays.asList(new GatewayParameterImpl("EUR-USD", Gateway.CentralBankExchangeRates, "whatever", "{x:'x'}"));
-	}
-
 	@Lookup
 	abstract GatewayParameterAggregationBuilder<ExchangeRate> gatewayParameterAggregationBuilder();
 }

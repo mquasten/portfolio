@@ -1,5 +1,6 @@
 package de.mq.portfolio.gateway.support;
 
+
 import java.util.Collection;
 import java.util.Collections;
 
@@ -40,6 +41,14 @@ class GatewayParameterRepositoryImpl  implements GatewayParameterRepository {
 	@Override
 	public Collection<GatewayParameter> gatewayParameters(final String... keys) {
 		return Collections.unmodifiableList(mongoOperations.find(new Query(Criteria.where("id").regex(Gateway.pattern(".*" , keys).replaceAll("\\^", "."))), GatewayParameterImpl.class));
+	}
+	
+	public final Collection<GatewayParameter> gatewayParameters(Gateway gateway) {
+		
+		final Query query = new Query(Criteria.where("id").regex(gateway.patternMatchesId(".*")));
+		
+		return Collections.unmodifiableCollection(mongoOperations.find(query, GatewayParameterImpl.class));
+		
 	}
 	
 	
