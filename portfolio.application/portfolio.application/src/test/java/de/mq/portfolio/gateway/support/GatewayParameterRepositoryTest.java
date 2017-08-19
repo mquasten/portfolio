@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
@@ -104,4 +105,27 @@ public class GatewayParameterRepositoryTest {
 		Assert.assertEquals(Gateway.pattern(".*", "." +code), queryParams.values().stream().findAny().get().toString());
 	}
 
+	
+	@Test
+	public final void gatewayParametersForGateWay() {
+		final Collection<Query> queries = new ArrayList<>();
+		Mockito.doAnswer(answer -> {
+			Assert.assertEquals(GatewayParameterImpl.class, answer.getArguments()[1]);
+			queries.add((Query) answer.getArguments()[0]);
+			return Arrays.asList(gatewayParameter);
+		}).when(mongoOperations).find(Mockito.any(Query.class), Mockito.any());
+		
+		final Collection<GatewayParameter> results = ((GatewayParameterRepositoryImpl)gatewayParameterRepository).gatewayParameters(Gateway.CentralBankExchangeRates);
+		
+		Assert.assertEquals(1, results.size());
+		Assert.assertEquals(gatewayParameter, DataAccessUtils.requiredSingleResult(results));
+		
+		Assert.assertEquals(1, queries.size());
+		final Map<?, ?> queryParams = DataAccessUtils.requiredSingleResult(queries).getQueryObject().toMap();
+		Assert.assertEquals(1, queryParams.size());
+		Assert.assertEquals(idFieldName(), DataAccessUtils.requiredSingleResult(queryParams.keySet()));
+		Assert.assertEquals(".*-BER", DataAccessUtils.requiredSingleResult(queryParams.values()).toString());
+		Assert.assertEquals(Pattern.class, DataAccessUtils.requiredSingleResult(queries).getQueryObject().get(idFieldName()).getClass());
+		
+	}
 }

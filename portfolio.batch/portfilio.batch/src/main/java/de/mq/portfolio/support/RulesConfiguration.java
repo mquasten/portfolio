@@ -68,7 +68,7 @@ class RulesConfiguration {
 	@Scope("prototype")
 	RulesEngine importExchangeRates2(final ExchangeRateService exchangeRateService, final GatewayParameterRepository gatewayParameterRepository, final RulesEngineBuilder rulesEngineBuilder) {
 		return rulesEngineBuilder.withName(IMPORT_EXCHANGE_RATES_2_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(gatewayParameterRepository, SPEL_READ_GATEWAY_PARMETERS)).withRule(new ProcessServiceRuleImpl<>(new GatewayParameter2ExchangeRateConverterImpl(), "convert(#item)"))
-				.withRule(new ProcessServiceRuleImpl<>(exchangeRateService, SPEL_PROCESS_EXCHANGE_RATE_ITEM)).withRule(new ProcessServiceRuleImpl<>(exchangeRateService, "saveMock(#item)")).build();
+				.withRule(new ProcessServiceRuleImpl<>(exchangeRateService, SPEL_PROCESS_EXCHANGE_RATE_ITEM)).withRule(new ProcessServiceRuleImpl<>(exchangeRateService, SPEL_SAVE_ITEM)).build();
 	}
 
 	@Bean

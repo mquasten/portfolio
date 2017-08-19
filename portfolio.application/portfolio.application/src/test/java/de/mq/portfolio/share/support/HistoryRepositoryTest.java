@@ -66,4 +66,9 @@ public class HistoryRepositoryTest {
 		Assert.assertEquals((Double) DIVIDEND.doubleValue(), (Double) dividend.value());
 		Assert.assertEquals( ((HistoryRestRepositoryImpl)historyRepository).df.parseObject(DATE1), dividend.date());
 	}
+	
+	@Test
+	public final void supports() {
+		Assert.assertTrue(historyRepository.supports(share).isEmpty());
+	}
 }

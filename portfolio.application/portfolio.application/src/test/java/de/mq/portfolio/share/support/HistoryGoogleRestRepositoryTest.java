@@ -167,4 +167,7 @@ public class HistoryGoogleRestRepositoryTest {
 	public final void converters() {
 		Assert.assertEquals(Arrays.asList(TimeCourseConverter.TimeCourseConverterType.DateInRange), historyRepository.converters(share));
 	}
+	
+	
+	
 }

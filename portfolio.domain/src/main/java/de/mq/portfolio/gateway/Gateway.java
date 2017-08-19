@@ -52,7 +52,7 @@ public enum Gateway {
 		return StringUtils.arrayToDelimitedString(keys, DELIMITER)+ DELIMITER+ idPattern;
 	}
 	public String patternMatchesId(final String startPattern) {
-		Assert.notNull(startPattern);
+		Assert.hasText(startPattern);
 		return String.format("%s%s%s", startPattern, DELIMITER,id);
 	}
 
