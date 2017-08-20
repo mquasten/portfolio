@@ -35,10 +35,11 @@ import de.mq.portfolio.batch.RulesEngine;
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl;
+import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.ShareGatewayParameterService;
 import de.mq.portfolio.gateway.support.GatewayParameterCSVLineConverterImpl;
-
+import de.mq.portfolio.gateway.support.GatewayParameterRepository;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
 import de.mq.portfolio.share.support.SharesCSVLineConverterImpl;
@@ -84,6 +85,8 @@ public class RulesConfigurationTest {
 	private final  ExchangeRateService  exchangeRateService = Mockito.mock(ExchangeRateService.class);
 	
 	private final ShareGatewayParameterService shareGatewayParameterService = Mockito.mock(ShareGatewayParameterService.class);
+	
+	private final GatewayParameterRepository gatewayParameterRepository = Mockito.mock(GatewayParameterRepository.class);
 	
 	@Before
 	public final void setup() {
@@ -222,6 +225,10 @@ public class RulesConfigurationTest {
 		
 	}
 	
+	
+	
+	
+	
 	@Test
 	public void  importArivaRateHistory() {
 		
@@ -285,7 +292,44 @@ public class RulesConfigurationTest {
 		
 	}
 	
-
+	
+	
+	@Test
+	public void  importExchangeRates2() {
+		
+		Assert.assertEquals(rulesEngine, rulesConfiguration.importExchangeRates2(exchangeRateService, gatewayParameterRepository, rulesEngineBuilder, Gateway.CentralBankExchangeRates));
+		Assert.assertEquals(RulesConfiguration.IMPORT_EXCHANGE_RATES_2_RULE_ENGINE_NAME, nameCaptor.getValue());
+	
+		final List<Rule> rules = ruleCapor.getAllValues();
+		Assert.assertEquals(4, rules.size());
+		
+		Assert.assertEquals(ImportServiceRuleImpl.class, rules.get(0).getClass());
+		IntStream.range(1, 4).forEach(i -> Assert.assertEquals(ProcessServiceRuleImpl.class, rules.get(i).getClass()));
+		
+		
+		final Expression inputExpression = fieldValue(rules.get(0), Expression.class);
+		Assert.assertEquals(String.format(RulesConfiguration.SPEL_READ_GATEWAY_PARMETERS_PATERN, Gateway.CentralBankExchangeRates), inputExpression.getExpressionString());
+		
+		Assert.assertTrue(ReflectionTestUtils.getField(rules.get(0), TARGET_FIELD)  instanceof  GatewayParameterRepository);
+		
+		
+		
+		Assert.assertTrue(ReflectionTestUtils.getField(rules.get(1), TARGET_FIELD)  instanceof  GatewayParameter2ExchangeRateConverterImpl);
+		final Expression converterExpression = fieldValue(rules.get(1), Expression.class);
+		Assert.assertEquals(RulesConfiguration.SPEL_CONVERT_GATEWAY_IDS, converterExpression.getExpressionString());
+		
+		
+		final Expression processExpression = fieldValue(rules.get(2), Expression.class);
+		Assert.assertEquals(RulesConfiguration.SPEL_PROCESS_EXCHANGE_RATE_ITEM, processExpression.getExpressionString());
+		Assert.assertTrue(ReflectionTestUtils.getField(rules.get(2), TARGET_FIELD)  instanceof  ExchangeRateService);
+		
+		
+		final Expression outputExpression = fieldValue(rules.get(3), Expression.class);
+		Assert.assertEquals(RulesConfiguration.SPEL_SAVE_ITEM, outputExpression.getExpressionString());
+		Assert.assertTrue(ReflectionTestUtils.getField(rules.get(3), TARGET_FIELD)  instanceof  ExchangeRateService);
+	
+	}
+		
 	@SuppressWarnings("unchecked")
 	@Test
 	public final void batchProcessor() {

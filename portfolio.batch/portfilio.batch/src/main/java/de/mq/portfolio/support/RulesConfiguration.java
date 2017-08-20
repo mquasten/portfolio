@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,7 @@ import de.mq.portfolio.batch.RulesEngine;
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.exchangerate.support.ExchangeRatesCSVLineConverterImpl;
+import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.ShareGatewayParameterService;
 import de.mq.portfolio.gateway.support.GatewayParameterCSVLineConverterImpl;
@@ -34,6 +36,8 @@ import de.mq.portfolio.user.support.UsersCSVLineConverterImpl;
 @Import({ AbstractJsonInputService.class })
 class RulesConfiguration {
 
+	private static final String SPEL_EXCHANGE_RATE_REPOSITORY_SUPPORTS = "#{exchangeRateRepository.supports()}";
+	static final String SPEL_CONVERT_GATEWAY_IDS = "convert(#item)";
 	static final String QUERY_PARAMETER_NAME = "query";
 	static final String SHARE_NAME_PARAMETER_NAME = "shareName";
 	static final String STOCK_EXCHANGE_ID_PARAMETER_NAME = "stockExchangeId";
@@ -54,7 +58,7 @@ class RulesConfiguration {
 	static final String SPEL_SAVE_ITEM = "save(#item)";
 	static final String SPEL_READ_FILENAME = "read(#filename)";
 
-	static final String SPEL_READ_GATEWAY_PARMETERS = "gatewayParameters(T(de.mq.portfolio.gateway.Gateway).CentralBankExchangeRates)";
+	static final String SPEL_READ_GATEWAY_PARMETERS_PATERN = "gatewayParameters(T(de.mq.portfolio.gateway.Gateway).%s)";
 
 	@Bean
 	@Scope("prototype")
@@ -66,8 +70,8 @@ class RulesConfiguration {
 
 	@Bean
 	@Scope("prototype")
-	RulesEngine importExchangeRates2(final ExchangeRateService exchangeRateService, final GatewayParameterRepository gatewayParameterRepository, final RulesEngineBuilder rulesEngineBuilder) {
-		return rulesEngineBuilder.withName(IMPORT_EXCHANGE_RATES_2_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(gatewayParameterRepository, SPEL_READ_GATEWAY_PARMETERS)).withRule(new ProcessServiceRuleImpl<>(new GatewayParameter2ExchangeRateConverterImpl(), "convert(#item)"))
+	RulesEngine importExchangeRates2(final ExchangeRateService exchangeRateService, final GatewayParameterRepository gatewayParameterRepository, final RulesEngineBuilder rulesEngineBuilder, @Value(SPEL_EXCHANGE_RATE_REPOSITORY_SUPPORTS) final Gateway supportedGateway) {
+		return rulesEngineBuilder.withName(IMPORT_EXCHANGE_RATES_2_RULE_ENGINE_NAME).withRule(new ImportServiceRuleImpl<>(gatewayParameterRepository, String.format(SPEL_READ_GATEWAY_PARMETERS_PATERN, supportedGateway))).withRule(new ProcessServiceRuleImpl<>(new GatewayParameter2ExchangeRateConverterImpl(), SPEL_CONVERT_GATEWAY_IDS))
 				.withRule(new ProcessServiceRuleImpl<>(exchangeRateService, SPEL_PROCESS_EXCHANGE_RATE_ITEM)).withRule(new ProcessServiceRuleImpl<>(exchangeRateService, SPEL_SAVE_ITEM)).build();
 	}
 

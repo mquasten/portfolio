@@ -16,7 +16,7 @@ import de.mq.portfolio.gateway.support.GatewayHistoryRepository;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.support.DataImpl;
 
-@Repository
+@Repository("exchangeRateRepository")
 class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
 	
 
