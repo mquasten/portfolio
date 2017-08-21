@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -142,7 +144,13 @@ class ShareServiceImpl implements ShareService {
 	@Override
 	public  final Collection<TimeCourse> realTimeCourses(final Collection<String> codes, final boolean useLastStoredTimeCourse){
 		final Map<String, TimeCourse> timeCourses = shareRepository.timeCourses(codes).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
-		final Map<String,TimeCourse> realTimeCourses =   realTimeRateRepository.rates(timeCourses.values().stream().map(tc -> tc.share()).collect(Collectors.toList())).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
+		final List<Share> shares = timeCourses.values().stream().map(tc -> tc.share()).collect(Collectors.toList());
+		
+		//System.out.println("*********************************");
+		
+		//Collection<GatewayParameterAggregation<Share>> results = shares.stream().map(share ->shareGatewayParameterService.aggregationForRequiredGateways(share, Arrays.asList(Gateway.YahooRealtimeRate))).collect(Collectors.toList());
+		
+		final Map<String,TimeCourse> realTimeCourses =   realTimeRateRepository.rates(shares).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
 			
 	
 		return codes.stream().map(code -> {

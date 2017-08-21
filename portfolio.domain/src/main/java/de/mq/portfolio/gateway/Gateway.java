@@ -14,11 +14,13 @@ public enum Gateway {
 	ArivaRateHistory("ARH", GatewayGroup.RateHistory, ".csv"), 
 	ArivaDividendHistory("ADH", GatewayGroup.DividendHistory, ".html"), 
 	GoogleRateHistory("GRH", GatewayGroup.RateHistory, ".csv"), 
+	YahooRealtimeRate("YRR", GatewayGroup.RealtimeRate, ".csv"),
 	CentralBankExchangeRates("BER", GatewayGroup.ExchangeRate, ".csv");
 	
 	public enum GatewayGroup {
 		RateHistory,
 		DividendHistory,
+		RealtimeRate,
 		ExchangeRate;
 	}
 

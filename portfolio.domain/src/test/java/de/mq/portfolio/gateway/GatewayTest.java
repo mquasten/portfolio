@@ -71,11 +71,12 @@ public class GatewayTest {
 	
 	@Test
 	public final void gatewayGroups() {
-		Assert.assertEquals(3, (Gateway.GatewayGroup.values().length));
+		Assert.assertEquals(4, (Gateway.GatewayGroup.values().length));
 		Assert.assertEquals(GatewayGroup.RateHistory, Gateway.GoogleRateHistory.gatewayGroup());
 		Assert.assertEquals(GatewayGroup.RateHistory, Gateway.ArivaRateHistory.gatewayGroup());
 		Assert.assertEquals(GatewayGroup.DividendHistory, Gateway.ArivaDividendHistory.gatewayGroup());
 		Assert.assertEquals(GatewayGroup.ExchangeRate, Gateway.CentralBankExchangeRates.gatewayGroup());
+		Assert.assertEquals(GatewayGroup.RealtimeRate, Gateway.YahooRealtimeRate.gatewayGroup());
 	}
 	
 	@Test
