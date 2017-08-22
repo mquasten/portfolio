@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -54,6 +55,13 @@ abstract class AbstractShareGatewayParameterService implements ShareGatewayParam
 	public GatewayParameterAggregation<Share> aggregationForAllGateways(final Share share) {
 		shareRequiredGuard(share);
 		return gatewayParameterAggregationBuilder().withGatewayParameters(gatewayParameterRepository.gatewayParameters(share.code())).withDomain(share).build();
+	}
+	
+	public GatewayParameterAggregation<Share> merge(final Collection<Share> shares, final Gateway gateway) {
+		final Collection<GatewayParameter> gatewayParameters = shares.stream().map(share -> gatewayParameterRepository.gatewayParameter(gateway, share.code())).collect(Collectors.toList());
+		final  String key = gatewayParameters.stream().map(gatewayParameter -> gatewayParameter.code()).reduce("" , (a,b)-> a+b  );
+		final String urlTemplate = DataAccessUtils.requiredSingleResult(gatewayParameters.stream().map(gatewayParameter -> gatewayParameter.urlTemplate().replaceAll("\\s+", "")).collect(Collectors.toSet()));
+		return null;
 	}
 
 	
