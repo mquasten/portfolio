@@ -105,4 +105,27 @@ public class ShareGatewayParameterServiceTest {
 		Assert.assertEquals(RESPONSE, shareGatewayParameterService.history(gatewayParameter));
 		Mockito.verify(gatewayHistoryRepository).history(gatewayParameter);
 	}
+	@Test
+	public final void merge() {
+		
+		final Share jnj = prepareForShare(CODE, "url?s={query }");
+		final Share pg = prepareForShare("PG", "url?s={ query }");
+		final Share ko = prepareForShare("KO", "url?s={\r    query  \r    }");
+		final Share sap = prepareForShare("SAP.DE","url?s={\tquery\t}"	);
+		final Share vz = prepareForShare("VZ",  "url?s={\t\n query \t\n}" );
+	
+		
+		shareGatewayParameterService.merge(Arrays.asList(jnj, pg,ko, sap, vz), Gateway.YahooRealtimeRate);
+	}
+
+	private Share prepareForShare(final String code, final String url) {
+		final Share share = Mockito.mock(Share.class);
+		final GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
+		Mockito.when(gatewayParameter.code()).thenReturn(code);
+		
+		Mockito.when(share.code()).thenReturn(code);
+		Mockito.when(gatewayParameter.urlTemplate()).thenReturn(url);
+		Mockito.when(gatewayParameterRepository.gatewayParameter(Gateway.YahooRealtimeRate, code)).thenReturn(gatewayParameter);
+		return share;
+	}
 }
