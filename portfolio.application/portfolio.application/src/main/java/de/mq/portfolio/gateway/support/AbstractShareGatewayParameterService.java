@@ -2,6 +2,8 @@ package de.mq.portfolio.gateway.support;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -57,7 +59,7 @@ abstract class AbstractShareGatewayParameterService implements ShareGatewayParam
 		return gatewayParameterAggregationBuilder().withGatewayParameters(gatewayParameterRepository.gatewayParameters(share.code())).withDomain(share).build();
 	}
 	
-	public GatewayParameterAggregation<Share> merge(final Collection<Share> shares, final Gateway gateway) {
+	public GatewayParameter  merge(final Collection<Share> shares, final Gateway gateway) {
 		final Collection<GatewayParameter> gatewayParameters = shares.stream().map(share -> gatewayParameterRepository.gatewayParameter(gateway, share.code())).collect(Collectors.toList());
 		
 		final int keySize =  DataAccessUtils.requiredSingleResult(gatewayParameters.stream().map(gatewayParameter -> Gateway.ids(gateway.id(gatewayParameter.code())).size()).collect(Collectors.toSet()));
@@ -67,13 +69,14 @@ abstract class AbstractShareGatewayParameterService implements ShareGatewayParam
 		
 		final String key = StringUtils.collectionToDelimitedString(keys, "-");
 		
-	
-		
 		final String urlTemplate = DataAccessUtils.requiredSingleResult(gatewayParameters.stream().map(GatewayParameter::urlTemplate).map(StringUtils::trimAllWhitespace).collect(Collectors.toSet()));
+		final Map<String, Collection<String>> parameters  = new HashMap<>();
+		gatewayParameters.forEach(gatewayParameter-> gatewayParameter.parameters().keySet().forEach(name -> parameters.put(name, new ArrayList<>())));
+		gatewayParameters.forEach(gatewayParameter-> gatewayParameter.parameters().entrySet().forEach(entry -> parameters.get(entry.getKey()).add(entry.getValue())));
+		final Collection<String> mergedParameters = parameters.entrySet().stream().map(entry -> String.format("%s:'%s'", entry.getKey(), StringUtils.collectionToCommaDelimitedString(entry.getValue()))).collect(Collectors.toList());
 		
-		System.out.println(key);
-		System.out.println(urlTemplate);
-		return null;
+		final String spEl = String.format("{%s}",StringUtils.collectionToCommaDelimitedString(mergedParameters));
+		return new GatewayParameterImpl(key, gateway, urlTemplate, spEl);
 	}
 
 	

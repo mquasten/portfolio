@@ -22,6 +22,10 @@ import de.mq.portfolio.share.Share;
 
 public class ShareGatewayParameterServiceTest {
 
+	private static final String QUERY_PARAMETER_NAME = "query";
+
+	private static final String URL = "url?s={query}";
+
 	private static final String RESPONSE = "Response";
 
 	private static final String CODE = "JNJ";
@@ -115,7 +119,15 @@ public class ShareGatewayParameterServiceTest {
 		final Share vz = prepareForShare("VZ",  "url?s={\t\n query \t\n}" );
 	
 		
-		shareGatewayParameterService.merge(Arrays.asList(jnj, pg,ko, sap, vz), Gateway.YahooRealtimeRate);
+		final GatewayParameter gatewayParameter = shareGatewayParameterService.merge(Arrays.asList(jnj, pg,ko, sap, vz), Gateway.YahooRealtimeRate);
+		final String code = "JNJ,PG,KO,SAP.DE,VZ";
+		Assert.assertEquals(code, gatewayParameter.code());
+		Assert.assertEquals(URL, gatewayParameter.urlTemplate());
+		Assert.assertEquals(Gateway.YahooRealtimeRate, gatewayParameter.gateway());
+		Assert.assertEquals(1, gatewayParameter.parameters().size());
+		
+		Assert.assertEquals(QUERY_PARAMETER_NAME, gatewayParameter.parameters().keySet().stream().findAny().get());
+		Assert.assertEquals(code, gatewayParameter.parameters().values().stream().findAny().get());
 	}
 
 	private Share prepareForShare(final String code, final String url) {
@@ -126,6 +138,9 @@ public class ShareGatewayParameterServiceTest {
 		Mockito.when(share.code()).thenReturn(code);
 		Mockito.when(gatewayParameter.urlTemplate()).thenReturn(url);
 		Mockito.when(gatewayParameterRepository.gatewayParameter(Gateway.YahooRealtimeRate, code)).thenReturn(gatewayParameter);
+		final Map<String,String> parameters = new HashMap<>();
+		parameters.put(QUERY_PARAMETER_NAME, code);
+		Mockito.when(gatewayParameter.parameters()).thenReturn(parameters);
 		return share;
 	}
 }
