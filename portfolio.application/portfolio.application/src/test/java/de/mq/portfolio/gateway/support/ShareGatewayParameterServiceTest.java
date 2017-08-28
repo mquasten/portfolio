@@ -1,8 +1,11 @@
 package de.mq.portfolio.gateway.support;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -119,15 +122,26 @@ public class ShareGatewayParameterServiceTest {
 		final Share vz = prepareForShare("VZ",  "url?s={\t\n query \t\n}" );
 	
 		
-		final GatewayParameter gatewayParameter = shareGatewayParameterService.merge(Arrays.asList(jnj, pg,ko, sap, vz), Gateway.YahooRealtimeRate);
+		final GatewayParameterAggregation<Collection<Share>>  aggregation = shareGatewayParameterService.merge(Arrays.asList(jnj, pg,ko, sap, vz), Gateway.YahooRealtimeRate);
 		final String code = "JNJ,PG,KO,SAP.DE,VZ";
-		Assert.assertEquals(code, gatewayParameter.code());
-		Assert.assertEquals(URL, gatewayParameter.urlTemplate());
-		Assert.assertEquals(Gateway.YahooRealtimeRate, gatewayParameter.gateway());
-		Assert.assertEquals(1, gatewayParameter.parameters().size());
 		
-		Assert.assertEquals(QUERY_PARAMETER_NAME, gatewayParameter.parameters().keySet().stream().findAny().get());
-		Assert.assertEquals(code, gatewayParameter.parameters().values().stream().findAny().get());
+		final GatewayParameter mergedGatewayParameter = aggregation.gatewayParameter(Gateway.YahooRealtimeRate);
+		Assert.assertEquals(code, mergedGatewayParameter.code());
+		Assert.assertEquals(URL, mergedGatewayParameter.urlTemplate());
+		Assert.assertEquals(Gateway.YahooRealtimeRate, mergedGatewayParameter.gateway());
+		Assert.assertEquals(1, mergedGatewayParameter.parameters().size());
+		
+		Assert.assertEquals(QUERY_PARAMETER_NAME, mergedGatewayParameter.parameters().keySet().stream().findAny().get());
+		Assert.assertEquals(code, mergedGatewayParameter.parameters().values().stream().findAny().get());
+		
+		Assert.assertEquals(5, aggregation.domain().size());
+		final List<Share> aggregatedShares = new ArrayList<>(aggregation.domain());
+		Assert.assertEquals(jnj, aggregatedShares.get(0));
+		Assert.assertEquals(pg, aggregatedShares.get(1));
+		Assert.assertEquals(ko, aggregatedShares.get(2));
+		Assert.assertEquals(sap, aggregatedShares.get(3));
+		Assert.assertEquals(vz, aggregatedShares.get(4));
+		
 	}
 
 	private Share prepareForShare(final String code, final String url) {

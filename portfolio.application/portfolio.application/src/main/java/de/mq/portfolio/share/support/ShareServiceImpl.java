@@ -35,6 +35,8 @@ class ShareServiceImpl implements ShareService {
 	
 	private final ShareGatewayParameterService shareGatewayParameterService;
 	
+	
+	
 	private final Map<TimeCourseConverter.TimeCourseConverterType, TimeCourseConverter> timeCourseConverters = new HashMap<>();
 
 	@Autowired
@@ -146,9 +148,13 @@ class ShareServiceImpl implements ShareService {
 		final Map<String, TimeCourse> timeCourses = shareRepository.timeCourses(codes).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
 		final List<Share> shares = timeCourses.values().stream().map(tc -> tc.share()).collect(Collectors.toList());
 		
-		//System.out.println("*********************************");
-		
-		//Collection<GatewayParameterAggregation<Share>> results = shares.stream().map(share ->shareGatewayParameterService.aggregationForRequiredGateways(share, Arrays.asList(Gateway.YahooRealtimeRate))).collect(Collectors.toList());
+		/*System.out.println("*********************************");
+	
+		GatewayParameterAggregation<Collection<Share>>  gatewayParameterAggregation  = shareGatewayParameterService.merge(shares, Gateway.YahooRealtimeRate);
+		System.out.println(gatewayParameterAggregation.gatewayParameter( Gateway.YahooRealtimeRate).code());
+		System.out.println((gatewayParameterAggregation.gatewayParameter( Gateway.YahooRealtimeRate).urlTemplate()));  
+		System.out.println(gatewayParameterAggregation.domain()); */
+	
 		
 		final Map<String,TimeCourse> realTimeCourses =   realTimeRateRepository.rates(shares).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
 			

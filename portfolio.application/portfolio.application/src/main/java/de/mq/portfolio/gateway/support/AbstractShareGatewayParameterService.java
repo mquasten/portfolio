@@ -42,7 +42,7 @@ abstract class AbstractShareGatewayParameterService implements ShareGatewayParam
 	public GatewayParameterAggregation<Share> aggregationForRequiredGateways(final Share share, final Collection<Gateway> gateways) {
 		shareRequiredGuard(share);
 		Assert.isTrue( !CollectionUtils.isEmpty(gateways) , "At least 1 gateway is required.");
-		return gatewayParameterAggregationBuilder().withDomain(share).withGatewayParameters(gateways.stream().map(gateway -> gatewayParameterRepository.gatewayParameter(gateway, share.code())).collect(Collectors.toList())).build();
+		return gatewayParameterAggregationBuilderShare().withDomain(share).withGatewayParameters(gateways.stream().map(gateway -> gatewayParameterRepository.gatewayParameter(gateway, share.code())).collect(Collectors.toList())).build();
 	}
 
 	private void shareRequiredGuard(final Share share) {
@@ -56,10 +56,11 @@ abstract class AbstractShareGatewayParameterService implements ShareGatewayParam
 	@Override
 	public GatewayParameterAggregation<Share> aggregationForAllGateways(final Share share) {
 		shareRequiredGuard(share);
-		return gatewayParameterAggregationBuilder().withGatewayParameters(gatewayParameterRepository.gatewayParameters(share.code())).withDomain(share).build();
+		return gatewayParameterAggregationBuilderShare().withGatewayParameters(gatewayParameterRepository.gatewayParameters(share.code())).withDomain(share).build();
 	}
 	
-	public GatewayParameter  merge(final Collection<Share> shares, final Gateway gateway) {
+	@Override
+	public GatewayParameterAggregation<Collection<Share>>   merge(final Collection<Share> shares, final Gateway gateway) {
 		final Collection<GatewayParameter> gatewayParameters = shares.stream().map(share -> gatewayParameterRepository.gatewayParameter(gateway, share.code())).collect(Collectors.toList());
 		
 		final int keySize =  DataAccessUtils.requiredSingleResult(gatewayParameters.stream().map(gatewayParameter -> Gateway.ids(gateway.id(gatewayParameter.code())).size()).collect(Collectors.toSet()));
@@ -76,7 +77,9 @@ abstract class AbstractShareGatewayParameterService implements ShareGatewayParam
 		final Collection<String> mergedParameters = parameters.entrySet().stream().map(entry -> String.format("%s:'%s'", entry.getKey(), StringUtils.collectionToCommaDelimitedString(entry.getValue()))).collect(Collectors.toList());
 		
 		final String spEl = String.format("{%s}",StringUtils.collectionToCommaDelimitedString(mergedParameters));
-		return new GatewayParameterImpl(key, gateway, urlTemplate, spEl);
+		
+		return gatewayParameterAggregationBuilderShareCollection().withGatewayParameter(new GatewayParameterImpl(key, gateway, urlTemplate, spEl)).withDomain(shares).build();
+		
 	}
 
 	
@@ -92,5 +95,13 @@ abstract class AbstractShareGatewayParameterService implements ShareGatewayParam
 	}
 
 	@Lookup
-	abstract GatewayParameterAggregationBuilder<Share> gatewayParameterAggregationBuilder();
+	abstract<T>  GatewayParameterAggregationBuilder<T> gatewayParameterAggregationBuilder();
+	
+	private GatewayParameterAggregationBuilder<Share> gatewayParameterAggregationBuilderShare() {
+		return  gatewayParameterAggregationBuilder();
+	} 
+	
+	private GatewayParameterAggregationBuilder<Collection<Share>> gatewayParameterAggregationBuilderShareCollection() {
+		return  gatewayParameterAggregationBuilder();
+	} 
 }
