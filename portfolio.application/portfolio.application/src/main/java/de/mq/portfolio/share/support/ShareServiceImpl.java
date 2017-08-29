@@ -148,15 +148,15 @@ class ShareServiceImpl implements ShareService {
 		final Map<String, TimeCourse> timeCourses = shareRepository.timeCourses(codes).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
 		final List<Share> shares = timeCourses.values().stream().map(tc -> tc.share()).collect(Collectors.toList());
 		
-		/*System.out.println("*********************************");
+		System.out.println("*********************************");
 	
-		GatewayParameterAggregation<Collection<Share>>  gatewayParameterAggregation  = shareGatewayParameterService.merge(shares, Gateway.YahooRealtimeRate);
+		final GatewayParameterAggregation<Collection<Share>>  gatewayParameterAggregation  = shareGatewayParameterService.merge(shares, realTimeRateRepository.supports(shares));
 		System.out.println(gatewayParameterAggregation.gatewayParameter( Gateway.YahooRealtimeRate).code());
 		System.out.println((gatewayParameterAggregation.gatewayParameter( Gateway.YahooRealtimeRate).urlTemplate()));  
-		System.out.println(gatewayParameterAggregation.domain()); */
+		System.out.println(gatewayParameterAggregation.domain()); 
 	
 		
-		final Map<String,TimeCourse> realTimeCourses =   realTimeRateRepository.rates(shares).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
+		final Map<String,TimeCourse> realTimeCourses =   realTimeRateRepository.rates(gatewayParameterAggregation).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
 			
 	
 		return codes.stream().map(code -> {

@@ -207,7 +207,7 @@ public class ShareServiceTest {
 		Mockito.verify(shareRepository, Mockito.times(1)).timeCourses(Arrays.asList(CODE));
 	}
 	
-
+/*
 	@Test
 	public final void realTimeCourses() {
 		final TimeCourse timeCourseDax = newTimeCourseMock(CODE, DAX, "EUR", DAX_LAST_RATE_DB);
@@ -250,7 +250,7 @@ public class ShareServiceTest {
 		Assert.assertEquals(DOW_LAST_RATE_DB,  (Double)realTimeCourses.get(1).rates().get(0).value());
 		Assert.assertEquals(DOW_REALTIME_RATE,  (Double)realTimeCourses.get(1).rates().get(1).value());
 	
-	}
+	} 
 	
 	
 	@Test
@@ -277,6 +277,7 @@ public class ShareServiceTest {
 	
 	}
 
+*/
 
 	private List<TimeCourse> realtimeRates(final TimeCourse timeCourseDax, final TimeCourse timeCourseDow) {
 		return Arrays.asList(new TimeCourseImpl(timeCourseDax.share(), Arrays.asList(new DataImpl(new Date(), DAX_LAST_RATE), new DataImpl(new Date(), DAX_REALTIME_RATE)), Arrays.asList()),new TimeCourseImpl(timeCourseDow.share(), Arrays.asList(new DataImpl(new Date(), DOW_LAST_RATE), new DataImpl(new Date(), DOW_REALTIME_RATE)), Arrays.asList()));

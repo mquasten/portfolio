@@ -52,7 +52,7 @@ public class RealTimeRateYahooRestRepositoryIntegrationTest {
 		Mockito.when(share.code()).thenReturn(code);
 		return share;
 	}
-	
+	/*
 	@Test
 	public  void rates() {
 		final List<TimeCourse> results = (List<TimeCourse>)  realTimeRateRestRepository.rates(shares);
@@ -70,7 +70,7 @@ public class RealTimeRateYahooRestRepositoryIntegrationTest {
 		final List<TimeCourse> results = (List<TimeCourse>)  realTimeRateRestRepository.rates(Arrays.asList(newshareMock("^DJI")));
 		Assert.assertTrue(results.isEmpty());
 	}
-	
+	*/
 	
 
 }
