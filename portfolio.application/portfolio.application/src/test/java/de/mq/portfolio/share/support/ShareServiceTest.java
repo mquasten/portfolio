@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import de.mq.portfolio.gateway.Gateway;
+import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.gateway.ShareGatewayParameterService;
 import de.mq.portfolio.share.Data;
@@ -49,6 +50,10 @@ public class ShareServiceTest {
 	
 	@SuppressWarnings("unchecked")
 	private final GatewayParameterAggregation<Share> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
+	@SuppressWarnings("unchecked")
+	private final GatewayParameterAggregation<Collection<Share>> gatewayParameterAggregationShares = Mockito.mock(GatewayParameterAggregation.class);
+	
+	private final GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
 
 	private final Share share = Mockito.mock(Share.class);
 
@@ -87,6 +92,10 @@ public class ShareServiceTest {
 		Mockito.when(historyRepository.supports(share)).thenReturn(Arrays.asList(Gateway.GoogleRateHistory));
 		Mockito.when(historyRepository.history(gatewayParameterAggregation)).thenReturn(timeCourse);
 		
+		Mockito.when(gatewayParameter.code()).thenReturn("...");
+		Mockito.when(gatewayParameter.urlTemplate()).thenReturn("...");
+		Mockito.when(gatewayParameterAggregationShares.gatewayParameter(Gateway.YahooRealtimeRate)).thenReturn(gatewayParameter);
+		Mockito.when(realTimeRateRestRepository.supports(Mockito.any())).thenReturn(Gateway.YahooRealtimeRate);
 		shareService = new ShareServiceImpl(historyRepository, shareRepository, realTimeRateRestRepository, shareGatewayParameterService, Arrays.asList(timeCourseConverter));
 	}
 
@@ -207,14 +216,17 @@ public class ShareServiceTest {
 		Mockito.verify(shareRepository, Mockito.times(1)).timeCourses(Arrays.asList(CODE));
 	}
 	
-/*
+
 	@Test
 	public final void realTimeCourses() {
 		final TimeCourse timeCourseDax = newTimeCourseMock(CODE, DAX, "EUR", DAX_LAST_RATE_DB);
 		final TimeCourse timeCourseDow = newTimeCourseMock(OTHER_CODE, DOW, "USD", DOW_LAST_RATE_DB);
 		Mockito.when(shareRepository.timeCourses(Arrays.asList(CODE, OTHER_CODE))).thenReturn(Arrays.asList(timeCourseDax, timeCourseDow));
+		final Collection<Share> shares = Arrays.asList(timeCourseDax.share(), timeCourseDow.share());
+		Mockito.when(shareGatewayParameterService.merge(shares, Gateway.YahooRealtimeRate)).thenReturn(gatewayParameterAggregationShares);
+		Mockito.when(gatewayParameterAggregationShares.domain()).thenReturn(shares);
 		final List<TimeCourse> results = realtimeRates(timeCourseDax, timeCourseDow);
-		Mockito.when( realTimeRateRestRepository.rates(Arrays.asList(timeCourseDax.share(), timeCourseDow.share()))).thenReturn(results);
+		Mockito.when( realTimeRateRestRepository.rates(gatewayParameterAggregationShares)).thenReturn(results);
 		
 		final List<TimeCourse> realTimeCourses = new ArrayList<>(shareService.realTimeCourses(Arrays.asList(CODE, OTHER_CODE), false));
 		
@@ -230,6 +242,7 @@ public class ShareServiceTest {
 	
 	}
 	
+	/*
 	@Test
 	public final void realTimeCoursesReplaceLastRateWithLastFromDatabase() {
 		final TimeCourse timeCourseDax = newTimeCourseMock(CODE, DAX, "EUR", DAX_LAST_RATE_DB);

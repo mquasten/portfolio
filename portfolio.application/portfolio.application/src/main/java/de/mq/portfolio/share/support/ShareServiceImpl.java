@@ -147,18 +147,10 @@ class ShareServiceImpl implements ShareService {
 	public  final Collection<TimeCourse> realTimeCourses(final Collection<String> codes, final boolean useLastStoredTimeCourse){
 		final Map<String, TimeCourse> timeCourses = shareRepository.timeCourses(codes).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
 		final List<Share> shares = timeCourses.values().stream().map(tc -> tc.share()).collect(Collectors.toList());
-		
-		System.out.println("*********************************");
-	
 		final GatewayParameterAggregation<Collection<Share>>  gatewayParameterAggregation  = shareGatewayParameterService.merge(shares, realTimeRateRepository.supports(shares));
-		System.out.println(gatewayParameterAggregation.gatewayParameter( Gateway.YahooRealtimeRate).code());
-		System.out.println((gatewayParameterAggregation.gatewayParameter( Gateway.YahooRealtimeRate).urlTemplate()));  
-		System.out.println(gatewayParameterAggregation.domain()); 
-	
 		
 		final Map<String,TimeCourse> realTimeCourses =   realTimeRateRepository.rates(gatewayParameterAggregation).stream().collect(Collectors.toMap(tc -> tc.code(), tc -> tc));
 			
-	
 		return codes.stream().map(code -> {
 			final TimeCourse timeCourse = timeCourses.get(code);
 			if (useLastStoredTimeCourse&&!timeCourse.rates().isEmpty()) {
@@ -168,11 +160,7 @@ class ShareServiceImpl implements ShareService {
 			
 			return realTimeCourses.containsKey(code) ? realTimeCourses.get(code): new TimeCourseImpl(timeCourse.share(), Arrays.asList(), Arrays.asList());
 		}).collect(Collectors.toList());		
-				
-			
-		
-		
-		
+					
 	} 
 	
 
