@@ -242,14 +242,18 @@ public class ShareServiceTest {
 	
 	}
 	
-	/*
+	
 	@Test
 	public final void realTimeCoursesReplaceLastRateWithLastFromDatabase() {
 		final TimeCourse timeCourseDax = newTimeCourseMock(CODE, DAX, "EUR", DAX_LAST_RATE_DB);
 		final TimeCourse timeCourseDow = newTimeCourseMock(OTHER_CODE, DOW, "USD", DOW_LAST_RATE_DB);
 		Mockito.when(shareRepository.timeCourses(Arrays.asList(CODE, OTHER_CODE))).thenReturn(Arrays.asList(timeCourseDax, timeCourseDow));
+		final Collection<Share> shares = Arrays.asList(timeCourseDax.share(), timeCourseDow.share());
+		Mockito.when(shareGatewayParameterService.merge(shares, Gateway.YahooRealtimeRate)).thenReturn(gatewayParameterAggregationShares);
+		Mockito.when(gatewayParameterAggregationShares.domain()).thenReturn(shares);
+		
 		final List<TimeCourse> results = realtimeRates(timeCourseDax, timeCourseDow);
-		Mockito.when( realTimeRateRestRepository.rates(Arrays.asList(timeCourseDax.share(), timeCourseDow.share()))).thenReturn(results);
+		Mockito.when( realTimeRateRestRepository.rates(gatewayParameterAggregationShares)).thenReturn(results);
 		
 		final List<TimeCourse> realTimeCourses = new ArrayList<>(shareService.realTimeCourses(Arrays.asList(CODE, OTHER_CODE), true));
 		
@@ -266,6 +270,7 @@ public class ShareServiceTest {
 	} 
 	
 	
+	
 	@Test
 	public final void realTimeCoursesReplaceLastRateWithLastFromDatabaseNoRateAware() {
 		final TimeCourse timeCourseDax = newTimeCourseMock(CODE, DAX, "EUR", DAX_LAST_RATE_DB);
@@ -274,7 +279,11 @@ public class ShareServiceTest {
 		Mockito.when(timeCourseDow.rates()).thenReturn(Arrays.asList());
 		Mockito.when(shareRepository.timeCourses(Arrays.asList(CODE, OTHER_CODE))).thenReturn(Arrays.asList(timeCourseDax, timeCourseDow));
 		final List<TimeCourse> results = realtimeRates(timeCourseDax, timeCourseDow);
-		Mockito.when( realTimeRateRestRepository.rates(Arrays.asList(timeCourseDax.share(), timeCourseDow.share()))).thenReturn(results);
+		final Collection<Share> shares = Arrays.asList(timeCourseDax.share(), timeCourseDow.share());
+		Mockito.when(shareGatewayParameterService.merge(shares, Gateway.YahooRealtimeRate)).thenReturn(gatewayParameterAggregationShares);
+		Mockito.when(gatewayParameterAggregationShares.domain()).thenReturn(shares);
+		
+		Mockito.when( realTimeRateRestRepository.rates(gatewayParameterAggregationShares)).thenReturn(results);
 		
 		final List<TimeCourse> realTimeCourses = new ArrayList<>(shareService.realTimeCourses(Arrays.asList(CODE, OTHER_CODE), true));
 		
@@ -289,11 +298,39 @@ public class ShareServiceTest {
 		Assert.assertEquals(DOW_REALTIME_RATE,  (Double)realTimeCourses.get(1).rates().get(1).value());
 	
 	}
+	
+	@Test
+	public final void realTimeCoursesCodeNotFound() {
+		final TimeCourse timeCourseDax = newTimeCourseMock(CODE, DAX, "EUR", DAX_LAST_RATE_DB);
+		final TimeCourse timeCourseDow = newTimeCourseMock(OTHER_CODE, DOW, "USD", DOW_LAST_RATE_DB);
+		Mockito.when(shareRepository.timeCourses(Arrays.asList(CODE, OTHER_CODE))).thenReturn(Arrays.asList(timeCourseDax, timeCourseDow));
+		final Collection<Share> shares = Arrays.asList(timeCourseDax.share(), timeCourseDow.share());
+		Mockito.when(shareGatewayParameterService.merge(shares, Gateway.YahooRealtimeRate)).thenReturn(gatewayParameterAggregationShares);
+		Mockito.when(gatewayParameterAggregationShares.domain()).thenReturn(shares);
+		final List<TimeCourse> results = realtimeRates(timeCourseDax);
+		Mockito.when( realTimeRateRestRepository.rates(gatewayParameterAggregationShares)).thenReturn(results);
+		
+		final List<TimeCourse> realTimeCourses = new ArrayList<>(shareService.realTimeCourses(Arrays.asList(CODE, OTHER_CODE), false));
 
-*/
+
+		
+		Assert.assertEquals(2, realTimeCourses.size());
+		Assert.assertEquals(0, realTimeCourses.get(1).rates().size());
+		Assert.assertEquals(2, realTimeCourses.get(0).rates().size());
+		Assert.assertEquals(CODE, realTimeCourses.get(0).code());
+		Assert.assertEquals(OTHER_CODE, realTimeCourses.get(1).code());
+		Assert.assertEquals(DAX_LAST_RATE,  (Double)realTimeCourses.get(0).rates().get(0).value());
+		Assert.assertEquals(DAX_REALTIME_RATE,  (Double)realTimeCourses.get(0).rates().get(1).value());
+	//	Assert.assertEquals(DOW_LAST_RATE,  (Double)realTimeCourses.get(1).rates().get(0).value());
+	//	Assert.assertEquals(DOW_REALTIME_RATE,  (Double)realTimeCourses.get(1).rates().get(1).value());
+	}
 
 	private List<TimeCourse> realtimeRates(final TimeCourse timeCourseDax, final TimeCourse timeCourseDow) {
 		return Arrays.asList(new TimeCourseImpl(timeCourseDax.share(), Arrays.asList(new DataImpl(new Date(), DAX_LAST_RATE), new DataImpl(new Date(), DAX_REALTIME_RATE)), Arrays.asList()),new TimeCourseImpl(timeCourseDow.share(), Arrays.asList(new DataImpl(new Date(), DOW_LAST_RATE), new DataImpl(new Date(), DOW_REALTIME_RATE)), Arrays.asList()));
+	}
+	
+	private List<TimeCourse> realtimeRates(final TimeCourse timeCourseDax) {
+		return Arrays.asList(new TimeCourseImpl(timeCourseDax.share(), Arrays.asList(new DataImpl(new Date(), DAX_LAST_RATE), new DataImpl(new Date(), DAX_REALTIME_RATE)), Arrays.asList()));
 	}
 
 	private TimeCourse newTimeCourseMock(final String code, final String name, final String currency, final Double endRate) {

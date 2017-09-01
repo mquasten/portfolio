@@ -157,8 +157,7 @@ class ShareServiceImpl implements ShareService {
 			
 				return new TimeCourseImpl(timeCourse.share(), Arrays.asList(timeCourse.rates().get(timeCourse.rates().size()-1), realTimeCourses.get(code).rates().get(1)), Arrays.asList());
 			}
-			
-			return realTimeCourses.containsKey(code) ? realTimeCourses.get(code): new TimeCourseImpl(timeCourse.share(), Arrays.asList(), Arrays.asList());
+			return realTimeCourses.containsKey(code) ? realTimeCourses.get(code) : new TimeCourseImpl(timeCourse.share(), Arrays.asList(), Arrays.asList());
 		}).collect(Collectors.toList());		
 					
 	} 
