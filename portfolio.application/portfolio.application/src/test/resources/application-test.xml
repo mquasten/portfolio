@@ -29,6 +29,10 @@
 
 	<bean id="yahooRealtimeRepository"
 		class="de.mq.portfolio.share.support.RealTimeRateYahooRestRepositoryImpl" />
+		
+	<bean id="googleRealtimeRepository"
+		class="de.mq.portfolio.share.support.RealTimeRateGoogleRestRepositoryImpl" />	
+		
 	<bean class="de.mq.portfolio.support.ExceptionTranslationBuilderImpl"
 		scope="prototype" />
 
