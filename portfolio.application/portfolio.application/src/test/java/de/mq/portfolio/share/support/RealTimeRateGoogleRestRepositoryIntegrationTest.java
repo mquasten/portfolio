@@ -37,7 +37,7 @@ public class RealTimeRateGoogleRestRepositoryIntegrationTest {
 		final GatewayParameterAggregation<Collection<Share>> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
 		final GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
 		//Mockito.when(gatewayParameter.code()).thenReturn(StringUtils.collectionToCommaDelimitedString(shares.stream().map( Share::code).collect(Collectors.toList())));
-		Mockito.when(gatewayParameter.urlTemplate()).thenReturn("http://finance.google.com/finance/info?client=ig&q=#{query}");
+		Mockito.when(gatewayParameter.urlTemplate()).thenReturn("http://finance.google.com/finance/info?client=ig&q={query}");
 		final Map<String,String> parameters = new HashMap<>();
 		parameters.put("query", StringUtils.collectionToCommaDelimitedString(shares.stream().map( Share::code).collect(Collectors.toList())));
 		Mockito.when(gatewayParameter.parameters()).thenReturn(parameters);

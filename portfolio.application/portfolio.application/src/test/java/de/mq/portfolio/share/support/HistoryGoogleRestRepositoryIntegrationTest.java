@@ -65,8 +65,8 @@ public class HistoryGoogleRestRepositoryIntegrationTest {
 	public final void history() {
 
 		final TimeCourse result = historyRestRepository.history(gatewayParameterAggregation);
-		
-		Assert.assertTrue(result.rates().size() > 250 );;
+	
+		Assert.assertTrue(result.rates().size() >= 250 );;
 	}
 
 	

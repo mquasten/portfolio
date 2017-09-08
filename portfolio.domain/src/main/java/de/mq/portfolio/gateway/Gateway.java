@@ -15,7 +15,7 @@ public enum Gateway {
 	ArivaDividendHistory("ADH", GatewayGroup.DividendHistory, ".html"), 
 	GoogleRateHistory("GRH", GatewayGroup.RateHistory, ".csv"), 
 	YahooRealtimeRate("YRR", GatewayGroup.RealtimeRate, ".csv"),
-	GoogleRealtimeRate("YRR", GatewayGroup.RealtimeRate, ".csv"),
+	GoogleRealtimeRate("GRR", GatewayGroup.RealtimeRate, ".csv"),
 	CentralBankExchangeRates("BER", GatewayGroup.ExchangeRate, ".csv");
 	
 	public enum GatewayGroup {
