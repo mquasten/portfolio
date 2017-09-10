@@ -6,3 +6,23 @@ It seems that you are already a user. As a reminder, your API key is: A4UVNBWZCA
 https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=ETR:SAP&interval=1min&apikey=A4UVNBWZCAKHED9K
 
 support@alphavantage.co
+
+
+
+Google Finance
+
+In Google Finance, intra-day data is available free for several stock markets. The complete list can be found here.
+
+Data is available in several frequencies with the lowest one being one-minute time frame.
+
+The URL format is: https://www.google.com/finance/getprices?i=[PERIOD]&p=[DAYS]d&f=d,o,h,l,c,v&df=cpct&q=[TICKER]
+
+Example: https://www.google.com/finance/getprices?i=60&p=1d&f=d,o,h,l,c,v&df=cpct&q=IBM
+
+[PERIOD]: Interval or frequency in seconds
+[DAYS]: The historical data period, where "10d" means that we need historical stock prices data for the past 10 days.
+[TICKER]: This is the ticker symbol of the stock
+
+Symbol Lookup: https://www.google.com/finance
+
+More information: Intraday Data for US Stocks
