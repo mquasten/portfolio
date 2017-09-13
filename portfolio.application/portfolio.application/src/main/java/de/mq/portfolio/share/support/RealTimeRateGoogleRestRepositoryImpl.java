@@ -3,9 +3,13 @@ package de.mq.portfolio.share.support;
 
 
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +17,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -23,9 +28,10 @@ import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
+import de.mq.portfolio.support.ExceptionTranslationBuilder;
 
 @Repository
-class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepository{
+abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepository{
 	
 	private final RestOperations restOperations;
 	RealTimeRateGoogleRestRepositoryImpl(final RestOperations restOperations){
@@ -66,16 +72,51 @@ class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepository{
 		return parameters;
 	}
 
-	private void rates(final String url,final Map<String,String> parameter) {
+	private TimeCourse rates(final String url,final Map<String,String> parameter) {
 		
 		final String result = restOperations.getForObject(url, String.class, parameter);
 		
-		System.out.println(result);
+		TimeCourse timeCourse =  exceptionTranslationBuilder().withResource(() -> new BufferedReader(new StringReader(result))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {
+			return toTimeCourse(bufferedReader);
+		}).translate();
+		
+		System.exit(1);
+		return timeCourse;
+				
+	}
+	
+	private TimeCourse toTimeCourse(BufferedReader bufferedReader) throws IOException {
+		double close=-1;
+		double last=-1;
+		
+		for (String line = ""; line != null; line = bufferedReader.readLine()) {
+		//	System.out.println(line);
+			final  String[] columns=line.split("[,]");
+			if(( columns.length != 2)|| (!columns[0].matches("^[a0-9]+"))){
+				continue;
+			}
+			
+		
+			if( line.matches("^a.*")) {
+				close=last;
+			} 
+			
+			last=Double.parseDouble(columns[1]);
+			System.out.println(line);
+			
+		}
+		System.out.println(close);
+		System.out.println(last);
+		System.out.println(new Date((1505309460l+ 390*60L) *1000));
+		return null;
 	}
 
 	@Override
 	public Gateway supports(final Collection< Share> shares) {
 		return Gateway.GoogleRealtimeRate;
 	}
+	
+	@Lookup
+	abstract ExceptionTranslationBuilder<TimeCourse, BufferedReader> exceptionTranslationBuilder();
 
 }
