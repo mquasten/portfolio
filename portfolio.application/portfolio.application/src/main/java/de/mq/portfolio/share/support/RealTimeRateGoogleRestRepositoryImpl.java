@@ -89,26 +89,57 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		double close=-1;
 		double last=-1;
 		
+		long startTimeStamp = -1 ;  
+		long lastTimeOffset=-1; 
+		Date closeDate = null;
 		for (String line = ""; line != null; line = bufferedReader.readLine()) {
 		//	System.out.println(line);
 			final  String[] columns=line.split("[,]");
+			
 			if(( columns.length != 2)|| (!columns[0].matches("^[a0-9]+"))){
 				continue;
 			}
 			
 		
-			if( line.matches("^a.*")) {
+			if( line.matches("^a.*") &&  lastTimeOffset > 0 ){
+				closeDate= new Date(startTimeStamp + lastTimeOffset*1000 *60 );	
+				lastTimeOffset=-1;
+			}
+			
+			if( line.matches("^a.*")   )  {
+				
+				
+				startTimeStamp=1000* Long.parseLong(columns[0].replaceFirst("^a", ""));
+				
 				close=last;
 			} 
+			else {
+				lastTimeOffset=Long.parseLong(columns[0]);	
+			}
+			
+			
 			
 			last=Double.parseDouble(columns[1]);
-			System.out.println(line);
+			
+			//System.out.println(line);
 			
 		}
-		System.out.println(close);
-		System.out.println(last);
-		System.out.println(new Date((1505309460l+ 390*60L) *1000));
-		return null;
+		
+		final Date currentDate= new Date(startTimeStamp+ lastTimeOffset*1000*60);
+		
+		Assert.isTrue(close > 0, "Close rate is not found.");
+		Assert.isTrue(last > 0, "Current rate is not found.");
+		Assert.notNull(closeDate , "Close date not found.");
+		
+		Assert.isTrue(startTimeStamp > 0, "Start time not found.");
+		Assert.isTrue(lastTimeOffset > 0, "Current time offset not found.");
+		
+		System.out.println(closeDate +"->" + close );
+		
+		
+		System.out.println(currentDate +"->" + last );
+		
+		return new TimeCourseImpl(null, Arrays.asList(new DataImpl(closeDate, close), new DataImpl(currentDate, last) ), Arrays.asList());
 	}
 
 	@Override
