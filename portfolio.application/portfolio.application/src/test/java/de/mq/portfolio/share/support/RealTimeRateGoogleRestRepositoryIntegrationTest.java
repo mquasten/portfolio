@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -23,7 +24,7 @@ import de.mq.portfolio.share.Share;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/application-test.xml" ,  "/mongo-test.xml" })
-//@Ignore
+@Ignore
 public class RealTimeRateGoogleRestRepositoryIntegrationTest {
 	
 	@Autowired
