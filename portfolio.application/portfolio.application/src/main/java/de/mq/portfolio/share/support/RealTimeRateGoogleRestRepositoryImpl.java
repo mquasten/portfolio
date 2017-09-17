@@ -44,20 +44,14 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		
 		final GatewayParameter gatewayParameter = gatewayParameterAggregation.gatewayParameter(Gateway.GoogleRealtimeRate);
 		final List<Map<String, String>> parameters = parameters(gatewayParameter, gatewayParameterAggregation.domain().size());
+	
+		
+		return IntStream.range(0, parameters.size()).mapToObj(i -> rates(gatewayParameter.urlTemplate() , parameters.get(i), ((List<Share>)gatewayParameterAggregation.domain()).get(i))).collect(Collectors.toList());
 		
 		
-		
-		parameters.forEach(parameterMap -> {
-			rates(gatewayParameter.urlTemplate() , parameterMap);
-		} );
-		
-		
-		
-		
-		return Arrays.asList(new TimeCourseImpl(null, Arrays.asList(), Arrays.asList()));
 	}
 
-	protected List<Map<String, String>> parameters(final GatewayParameter gatewayParameter, final int expectedSize ) {
+	private List<Map<String, String>> parameters(final GatewayParameter gatewayParameter, final int expectedSize ) {
 		final List<Map<String,String>> parameters = IntStream.range(0, expectedSize).mapToObj(i -> new HashMap<String,String>()).collect(Collectors.toList());
 		
 		
@@ -72,20 +66,20 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		return parameters;
 	}
 
-	private TimeCourse rates(final String url,final Map<String,String> parameter) {
+	private TimeCourse rates(final String url,final Map<String,String> parameter, final Share share) {
 		
 		final String result = restOperations.getForObject(url, String.class, parameter);
 		
 		TimeCourse timeCourse =  exceptionTranslationBuilder().withResource(() -> new BufferedReader(new StringReader(result))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {
-			return toTimeCourse(bufferedReader);
+			return toTimeCourse(bufferedReader, share);
 		}).translate();
 		
-		System.exit(1);
+		
 		return timeCourse;
 				
 	}
 	
-	private TimeCourse toTimeCourse(BufferedReader bufferedReader) throws IOException {
+	private TimeCourse toTimeCourse(final BufferedReader bufferedReader, final Share share) throws IOException {
 		double close=-1;
 		double last=-1;
 		
@@ -134,12 +128,14 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		Assert.isTrue(startTimeStamp > 0, "Start time not found.");
 		Assert.isTrue(lastTimeOffset > 0, "Current time offset not found.");
 		
+		System.out.println(share.code());
+		
 		System.out.println(closeDate +"->" + close );
 		
 		
 		System.out.println(currentDate +"->" + last );
 		
-		return new TimeCourseImpl(null, Arrays.asList(new DataImpl(closeDate, close), new DataImpl(currentDate, last) ), Arrays.asList());
+		return new TimeCourseImpl(share, Arrays.asList(new DataImpl(closeDate, close), new DataImpl(currentDate, last) ), Arrays.asList());
 	}
 
 	@Override
