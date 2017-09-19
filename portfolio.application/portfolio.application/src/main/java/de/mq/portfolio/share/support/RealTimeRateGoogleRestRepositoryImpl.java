@@ -54,6 +54,8 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 	private List<Map<String, String>> parameters(final GatewayParameter gatewayParameter, final int expectedSize ) {
 		final List<Map<String,String>> parameters = IntStream.range(0, expectedSize).mapToObj(i -> new HashMap<String,String>()).collect(Collectors.toList());
 		
+	
+		
 		
 		final Collection<Entry<String,String[]>> allEntries = gatewayParameter.parameters().entrySet().stream().map(entry -> new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), StringUtils.commaDelimitedListToStringArray(entry.getValue()))).collect(Collectors.toList()) ;
 		
@@ -63,13 +65,20 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		
 		
 		allEntries.forEach(entry -> IntStream.range(0, expectedSize).forEach(i -> parameters.get(i).put(entry.getKey(), entry.getValue()[i])));
+		
 		return parameters;
 	}
 
 	private TimeCourse rates(final String url,final Map<String,String> parameter, final Share share) {
 		
-		final String result = restOperations.getForObject(url, String.class, parameter);
 		
+		System.out.println(share);
+		
+		System.out.println(parameter);
+		System.out.println(url);
+		
+		final String result = restOperations.getForObject(url, String.class, parameter);
+	
 		TimeCourse timeCourse =  exceptionTranslationBuilder().withResource(() -> new BufferedReader(new StringReader(result))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {
 			return toTimeCourse(bufferedReader, share);
 		}).translate();
@@ -87,7 +96,7 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		long lastTimeOffset=-1; 
 		Date closeDate = null;
 		for (String line = ""; line != null; line = bufferedReader.readLine()) {
-		//	System.out.println(line);
+		
 			final  String[] columns=line.split("[,]");
 			
 			if(( columns.length != 2)|| (!columns[0].matches("^[a0-9]+"))){
@@ -128,12 +137,11 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		Assert.isTrue(startTimeStamp > 0, "Start time not found.");
 		Assert.isTrue(lastTimeOffset > 0, "Current time offset not found.");
 		
-		System.out.println(share.code());
+		System.out.println(closeDate);
+		System.out.println(close);
 		
-		System.out.println(closeDate +"->" + close );
-		
-		
-		System.out.println(currentDate +"->" + last );
+		System.out.println(currentDate);
+		System.out.println(last);
 		
 		return new TimeCourseImpl(share, Arrays.asList(new DataImpl(closeDate, close), new DataImpl(currentDate, last) ), Arrays.asList());
 	}
