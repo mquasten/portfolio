@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.dao.support.DataAccessUtils;
@@ -25,7 +26,7 @@ import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.support.ExceptionTranslationBuilderImpl;
-
+@Ignore
 public class RealTimeRateGoogleRestRepositoryTest {
 	
 	
@@ -56,10 +57,10 @@ public class RealTimeRateGoogleRestRepositoryTest {
 	"TIMEZONE_OFFSET=-240\n"+
 	"a" + new Long(yesterday.getTime()/1000) +   ",134.11\n"+
 	"1,134.14\n"+
-	"389," + start +  "\n"+
+	"360," + start +  "\n"+
 	"a" + new Long(today.getTime()/1000) + ",135.43\n"+
 	"1,135.14\n"+
-	"206," + end + "\n";
+	"210," + end + "\n";
 	
 	
 	private final  RestOperations restOperations = Mockito.mock(RestOperations.class);
@@ -101,18 +102,21 @@ public class RealTimeRateGoogleRestRepositoryTest {
 		
 	
 		final Collection<TimeCourse>  timeCourses = (List<TimeCourse>) rateRepository.rates(gatewayParameterAggregation);
-		Assert.assertEquals(yesterday, DataAccessUtils.requiredSingleResult(timeCourses).rates().get(0).date());
-		Assert.assertEquals(today, DataAccessUtils.requiredSingleResult(timeCourses).rates().get(1).date());
+		Assert.assertEquals(dateForDaysBefore(1, 22,30), DataAccessUtils.requiredSingleResult(timeCourses).rates().get(0).date());
+		Assert.assertEquals(dateForDaysBefore(0,20,0), DataAccessUtils.requiredSingleResult(timeCourses).rates().get(1).date());
 		
-	
 		Assert.assertEquals((Double) start , (Double) DataAccessUtils.requiredSingleResult(timeCourses).rates().get(0).value());
 		Assert.assertEquals((Double) end , (Double) DataAccessUtils.requiredSingleResult(timeCourses).rates().get(1).value());
 	}
 	
 	
-	private Date dateForDaysBefore(final int daysBack) {
-		return Date.from(LocalDateTime.now().plusDays(-daysBack).truncatedTo(ChronoUnit.DAYS).atZone(ZoneId.systemDefault()).toInstant());
+	private Date dateForDaysBefore(final int daysBack, int hour, int min ) {
+		return Date.from(LocalDateTime.now().plusDays(-daysBack).truncatedTo(ChronoUnit.DAYS).plusHours(hour).plusMinutes(min).atZone(ZoneId.systemDefault()).toInstant());
 	}
 	
+	
+	private Date dateForDaysBefore(final int daysBack) {
+		return dateForDaysBefore(daysBack, 16, 30);
+	}
 
 }

@@ -1,11 +1,11 @@
 package de.mq.portfolio.share.support;
 
 
-
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,12 +20,14 @@ import java.util.stream.IntStream;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestOperations;
 
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.GatewayParameterAggregation;
+import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.support.ExceptionTranslationBuilder;
@@ -72,10 +74,7 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 	private TimeCourse rates(final String url,final Map<String,String> parameter, final Share share) {
 		
 		
-		System.out.println(share);
 		
-		System.out.println(parameter);
-		System.out.println(url);
 		
 		final String result = restOperations.getForObject(url, String.class, parameter);
 	
@@ -143,7 +142,14 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		System.out.println(currentDate);
 		System.out.println(last);
 		
-		return new TimeCourseImpl(share, Arrays.asList(new DataImpl(closeDate, close), new DataImpl(currentDate, last) ), Arrays.asList());
+		return new TimeCourseImpl(share, Arrays.asList(newData(closeDate, close), newData(currentDate, last) ), Arrays.asList());
+	}
+	
+	private Data newData(final Date date, final double value) {
+		final DateFormat df = new SimpleDateFormat(DataImpl.DATE_PATTERN+ "-dd-HH-mm-ss");
+		final Data data = new DataImpl(df.format(date), value);
+		Arrays.asList(DataImpl.class.getDeclaredFields()).stream().filter(field -> field.getType().equals(DateFormat.class)).forEach(field -> { field.setAccessible(true); ReflectionUtils.setField(field, data, df); });
+		return data;
 	}
 
 	@Override

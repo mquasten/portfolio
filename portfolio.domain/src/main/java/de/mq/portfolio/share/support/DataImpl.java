@@ -13,10 +13,10 @@ import de.mq.portfolio.share.Data;
 
 public class DataImpl implements Data {
 	
-	static final String DATE_PATTERN = "yyyy-MM-dd";
+	static final String DATE_PATTERN = "yyyy-MM-dd:hh";
 
 	@Transient
-	private final DateFormat df = new SimpleDateFormat(DATE_PATTERN);
+	private  DateFormat df = new SimpleDateFormat(DATE_PATTERN);
 	
 	private String  date;
 
@@ -27,8 +27,10 @@ public class DataImpl implements Data {
 	public Date date() {
 		try {
 			Assert.hasText(date);
+		
 			return df.parse(this.date);
 		} catch (ParseException e) {
+			e.printStackTrace();
 			 throw new IllegalArgumentException(String.format("Invalid Date %s", this.date));
 		}
 	}
@@ -56,6 +58,8 @@ public class DataImpl implements Data {
 		this.date = df.format(date);
 		this.value = value;
 	}
+	
+	
 	
 	@SuppressWarnings("unused")
 	private DataImpl()  {
