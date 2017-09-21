@@ -10,13 +10,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestOperations;
 
@@ -26,14 +25,20 @@ import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.support.ExceptionTranslationBuilderImpl;
-@Ignore
+
 public class RealTimeRateGoogleRestRepositoryTest {
 	
 	
-	private static final String MARKET = "ETR";
+	private static final String CODE_KO = "KO";
 
 
-	private static final String CODE = "SAP.DE";
+	private static final String MARKET_KO = "NYSE";
+
+
+	private static final String MARKET_SAP = "ETR";
+
+
+	private static final String CODE_SAP = "SAP.DE";
 
 
 	private static final String URL = "urlTemplate";
@@ -43,24 +48,14 @@ public class RealTimeRateGoogleRestRepositoryTest {
 
 	private final  Date yesterday = dateForDaysBefore(1);
 	private final Date today = dateForDaysBefore(0);
-	private final double start = 91d;
-	private final double end = 92d; 
+
 	
+	private static Double START_SAP = 91d;
+	private static Double END_SAP= 92d;
 	
+	private static Double START_KO = 45d;
+	private static Double END_KO= 46d;
 	
-	final String content = "EXCHANGE%3DNYSE\n"+
-	"MARKET_OPEN_MINUTE=570\n"+
-	"MARKET_CLOSE_MINUTE=960\n"+
-	"INTERVAL=60\n"+
-	"COLUMNS=DATE,CLOSE\n"+
-	"DATA=\n"+
-	"TIMEZONE_OFFSET=-240\n"+
-	"a" + new Long(yesterday.getTime()/1000) +   ",134.11\n"+
-	"1,134.14\n"+
-	"360," + start +  "\n"+
-	"a" + new Long(today.getTime()/1000) + ",135.43\n"+
-	"1,135.14\n"+
-	"210," + end + "\n";
 	
 	
 	private final  RestOperations restOperations = Mockito.mock(RestOperations.class);
@@ -70,43 +65,73 @@ public class RealTimeRateGoogleRestRepositoryTest {
 	@SuppressWarnings("unchecked")
 	private final GatewayParameterAggregation<Collection<Share>> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class, Mockito.CALLS_REAL_METHODS);
 	
-	
-	
-	
-	private Share share = Mockito.mock(Share.class);
+	private Share shareSAP = Mockito.mock(Share.class);
+	private Share shareKO = Mockito.mock(Share.class);
 	private RealTimeRateGoogleRestRepositoryImpl rateRepository;
 	
 	@Before
 	public final void setup() throws Exception {
+		Mockito.when(shareSAP.code()).thenReturn(CODE_SAP);
+		Mockito.when(shareKO.code()).thenReturn(CODE_KO);
+		final Map<String, String> params = parameterMap(shareSAP.code()+"," +shareKO.code(), MARKET_SAP+"," + MARKET_KO);
+	
+		final Map<String, String> paramsSAP = parameterMap(shareSAP.code(), MARKET_SAP);
+		final Map<String, String> paramsKO = parameterMap(shareKO.code(), MARKET_KO);
 		
-		final Map<String,String> params =  new HashMap<>();
-	    params.put("query", CODE.replaceFirst(".DE", ""));
-	    params.put("market", MARKET);
+		
 		Mockito.when(gatewayParameter.parameters()).thenReturn(params);
 		Mockito.when(gatewayParameter.urlTemplate()).thenReturn(URL);
-	
 		
-		
-	    Mockito.when(restOperations.getForObject(URL,String.class,params)).thenReturn(content);
+	    Mockito.when(restOperations.getForObject(URL,String.class,paramsSAP)).thenReturn(content(START_SAP,END_SAP));
+	    Mockito.when(restOperations.getForObject(URL,String.class,paramsKO)).thenReturn(content(START_KO,END_KO));
 		rateRepository  = Mockito.mock(RealTimeRateGoogleRestRepositoryImpl.class);
-		Mockito.doReturn(new ExceptionTranslationBuilderImpl<>()).when(rateRepository).exceptionTranslationBuilder();
+		Mockito.doAnswer(a -> new ExceptionTranslationBuilderImpl<>()).when(rateRepository).exceptionTranslationBuilder();
 		Arrays.asList(RealTimeRateGoogleRestRepositoryImpl.class.getDeclaredFields()).stream().filter(field -> field.getType().equals(RestOperations.class)).forEach(field -> ReflectionTestUtils.setField(rateRepository, field.getName(), restOperations));
 	    Mockito.when(gatewayParameterAggregation.gatewayParameter(Gateway.GoogleRealtimeRate)).thenReturn(gatewayParameter);
-	    Mockito.when(gatewayParameterAggregation.domain()).thenReturn(Arrays.asList(share));
-	    Mockito.when(gatewayParameter.code()).thenReturn("SAP.DE");
+	    Mockito.when(gatewayParameterAggregation.domain()).thenReturn(Arrays.asList(shareSAP, shareKO));
+	 
 	   
+	}
+
+	protected Map<String, String> parameterMap(final String query, final String market) {
+		final Map<String,String> params =  new HashMap<>();
+	    params.put("query", query.replaceFirst(".DE", ""));
+	    params.put("market", market);
+		return params;
+	}
+	
+	private String content(final double start, final double end) {
+		return "EXCHANGE%3DNYSE\n"+
+				"MARKET_OPEN_MINUTE=570\n"+
+				"MARKET_CLOSE_MINUTE=960\n"+
+				"INTERVAL=60\n"+
+				"COLUMNS=DATE,CLOSE\n"+
+				"DATA=\n"+
+				"TIMEZONE_OFFSET=-240\n"+
+				"a" + new Long(yesterday.getTime()/1000) +   ",134.11\n"+
+				"1,134.14\n"+
+				"360," + start +  "\n"+
+				"a" + new Long(today.getTime()/1000) + ",135.43\n"+
+				"1,135.14\n"+
+				"210," + end + "\n";
 	}
 	
 	@Test
 	public final void rates() throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
 	
-		final Collection<TimeCourse>  timeCourses = (List<TimeCourse>) rateRepository.rates(gatewayParameterAggregation);
-		Assert.assertEquals(dateForDaysBefore(1, 22,30), DataAccessUtils.requiredSingleResult(timeCourses).rates().get(0).date());
-		Assert.assertEquals(dateForDaysBefore(0,20,0), DataAccessUtils.requiredSingleResult(timeCourses).rates().get(1).date());
+		final List<TimeCourse>  timeCourses = rateRepository.rates(gatewayParameterAggregation).stream().collect(Collectors.toList());
+		Assert.assertEquals(2, timeCourses.size());
+		timeCourses.forEach(timeCourse -> {
+			Assert.assertEquals(dateForDaysBefore(1, 22,30),timeCourse.rates().get(0).date());
+			Assert.assertEquals(dateForDaysBefore(0,20,0), timeCourse.rates().get(1).date());	
+		});
 		
-		Assert.assertEquals((Double) start , (Double) DataAccessUtils.requiredSingleResult(timeCourses).rates().get(0).value());
-		Assert.assertEquals((Double) end , (Double) DataAccessUtils.requiredSingleResult(timeCourses).rates().get(1).value());
+		
+		Assert.assertEquals(START_SAP , (Double) timeCourses.get(0).rates().get(0).value());
+		Assert.assertEquals(END_SAP, (Double) timeCourses.get(0).rates().get(1).value());
+		Assert.assertEquals(START_KO , (Double) timeCourses.get(1).rates().get(0).value());
+		Assert.assertEquals(END_KO, (Double) timeCourses.get(1).rates().get(1).value());
 	}
 	
 	
