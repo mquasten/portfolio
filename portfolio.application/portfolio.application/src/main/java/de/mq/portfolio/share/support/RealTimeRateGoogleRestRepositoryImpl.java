@@ -84,15 +84,18 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 	private TimeCourse toTimeCourse(final BufferedReader bufferedReader, final Share share) throws IOException {
 		double close=-1;
 		double last=-1;
-		
+	
 		long startTimeStamp = -1 ;  
 		long lastTimeOffset=-1; 
 		Date closeDate = null;
 		for (String line = ""; line != null; line = bufferedReader.readLine()) {
 		
+			
+			
 			final  String[] columns=line.split("[,]");
 			
 			if(( columns.length != 2)|| (!columns[0].matches("^[a0-9]+"))){
+			
 				continue;
 			}
 			
@@ -117,19 +120,18 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 			
 			last=Double.parseDouble(columns[1]);
 			
-			//System.out.println(line);
 			
 		}
 		
-		final Date currentDate= new Date(startTimeStamp+ lastTimeOffset*1000*60);
 		
-		Assert.isTrue(close > 0, "Close rate is not found.");
 		Assert.isTrue(last > 0, "Current rate is not found.");
+		Assert.isTrue(close > 0, "Close rate is not found.");
+		
+		
 		Assert.notNull(closeDate , "Close date not found.");
 		
-		Assert.isTrue(startTimeStamp > 0, "Start time not found.");
 		Assert.isTrue(lastTimeOffset > 0, "Current time offset not found.");
-		
+		final Date currentDate= new Date(startTimeStamp+ lastTimeOffset*1000*60);
 		System.out.println(closeDate);
 		System.out.println(close);
 		

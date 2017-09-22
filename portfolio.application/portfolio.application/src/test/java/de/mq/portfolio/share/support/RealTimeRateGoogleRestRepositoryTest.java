@@ -68,15 +68,18 @@ public class RealTimeRateGoogleRestRepositoryTest {
 	private Share shareSAP = Mockito.mock(Share.class);
 	private Share shareKO = Mockito.mock(Share.class);
 	private RealTimeRateGoogleRestRepositoryImpl rateRepository;
+	private final Map<String, String> params = new HashMap<>();
+	private final Map<String, String> paramsSAP =new HashMap<>();
+	private final Map<String, String> paramsKO =new HashMap<>();
 	
 	@Before
 	public final void setup() throws Exception {
 		Mockito.when(shareSAP.code()).thenReturn(CODE_SAP);
 		Mockito.when(shareKO.code()).thenReturn(CODE_KO);
-		final Map<String, String> params = parameterMap(shareSAP.code()+"," +shareKO.code(), MARKET_SAP+"," + MARKET_KO);
+		params.putAll(parameterMap(shareSAP.code()+"," +shareKO.code(), MARKET_SAP+"," + MARKET_KO));
 	
-		final Map<String, String> paramsSAP = parameterMap(shareSAP.code(), MARKET_SAP);
-		final Map<String, String> paramsKO = parameterMap(shareKO.code(), MARKET_KO);
+		paramsSAP.putAll(parameterMap(shareSAP.code(), MARKET_SAP));
+		paramsKO.putAll(parameterMap(shareKO.code(), MARKET_KO));
 		
 		
 		Mockito.when(gatewayParameter.parameters()).thenReturn(params);
@@ -93,7 +96,7 @@ public class RealTimeRateGoogleRestRepositoryTest {
 	   
 	}
 
-	protected Map<String, String> parameterMap(final String query, final String market) {
+	private Map<String, String> parameterMap(final String query, final String market) {
 		final Map<String,String> params =  new HashMap<>();
 	    params.put("query", query.replaceFirst(".DE", ""));
 	    params.put("market", market);
@@ -142,6 +145,83 @@ public class RealTimeRateGoogleRestRepositoryTest {
 	
 	private Date dateForDaysBefore(final int daysBack) {
 		return dateForDaysBefore(daysBack, 16, 30);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void ratesDifferentSizeGatewayParameterArrays(){
+		params.putAll(parameterMap(shareSAP.code()+"," +shareKO.code(), MARKET_SAP));
+		rateRepository.rates(gatewayParameterAggregation);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void ratesCurrentTimeOffsetMissing() {
+		Mockito.when(restOperations.getForObject(URL,String.class,paramsSAP)).thenReturn(invalidContent(true));
+		rateRepository.rates(gatewayParameterAggregation);
+		  
+	
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void ratesCloseDateMissing() {
+		Mockito.when(restOperations.getForObject(URL,String.class,paramsSAP)).thenReturn(invalidContent(false));
+		rateRepository.rates(gatewayParameterAggregation);
+		  
+	
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void ratesCloseRateMissing() {
+		
+		String invalidContent = "EXCHANGE%3DNYSE\n"+
+				"MARKET_OPEN_MINUTE=570\n"+
+				"MARKET_CLOSE_MINUTE=960\n"+
+				"INTERVAL=60\n"+
+				"COLUMNS=DATE,CLOSE\n"+
+				"DATA=\n"+
+				"TIMEZONE_OFFSET=-240\n"+
+				 "1,134.14\n"; 
+		Mockito.when(restOperations.getForObject(URL,String.class,paramsSAP)).thenReturn(invalidContent);
+		rateRepository.rates(gatewayParameterAggregation);
+	
+	}
+	
+
+	@Test(expected=IllegalArgumentException.class)
+public final void ratesLasteRateMissing() {
+		
+		String invalidContent = "EXCHANGE%3DNYSE\n"+
+				"MARKET_OPEN_MINUTE=570\n"+
+				"MARKET_CLOSE_MINUTE=960\n"+
+				"INTERVAL=60\n"+
+				"COLUMNS=DATE,CLOSE\n"+
+				"DATA=\n"+
+				"TIMEZONE_OFFSET=-240\n";
+				
+		Mockito.when(restOperations.getForObject(URL,String.class,paramsSAP)).thenReturn(invalidContent);
+		rateRepository.rates(gatewayParameterAggregation);
+	
+	}
+
+	private String invalidContent(final boolean closeAware) {
+		String result = "EXCHANGE%3DNYSE\n"+
+				"MARKET_OPEN_MINUTE=570\n"+
+				"MARKET_CLOSE_MINUTE=960\n"+
+				"INTERVAL=60\n"+
+				"COLUMNS=DATE,CLOSE\n"+
+				"DATA=\n"+
+				"TIMEZONE_OFFSET=-240\n"+
+			
+				  "a" + new Long(yesterday.getTime()/1000) +   ",134.11\n";
+				
+		if( closeAware){		
+		 result+= "1,134.14\n";
+		
+		}
+		
+		 result+="a" + new Long(today.getTime()/1000) + ",135.43\n";	
+		
+		 
+		return result;
 	}
 
 }
