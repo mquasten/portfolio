@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -32,7 +31,7 @@ import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.support.ExceptionTranslationBuilder;
 
-@Repository
+//@Repository
 abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepository{
 	
 	private final RestOperations restOperations;
@@ -87,6 +86,7 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 	
 		long startTimeStamp = -1 ;  
 		long lastTimeOffset=-1; 
+		int interval = -1; 
 		Date closeDate = null;
 		for (String line = ""; line != null; line = bufferedReader.readLine()) {
 		
@@ -94,14 +94,21 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 			
 			final  String[] columns=line.split("[,]");
 			
-			if(( columns.length != 2)|| (!columns[0].matches("^[a0-9]+"))){
-			
+			if(( columns.length ==1)&& line.trim().startsWith("INTERVAL")) {
+				final String[] cols= line.split("[=]");
+				Assert.isTrue( cols.length == 2, "Invalid Intervall-Header." );
+				interval = Integer.parseInt(cols[1]);
 				continue;
 			}
 			
+			if(( columns.length != 2)|| (!columns[0].matches("^[a0-9]+"))){
+				continue;
+			}
+			
+			Assert.isTrue(interval > 0, "Interval is mandatory.");
 		
 			if( line.matches("^a.*") &&  lastTimeOffset > 0 ){
-				closeDate= new Date(startTimeStamp + lastTimeOffset*1000 *60 );	
+				closeDate= new Date(startTimeStamp + lastTimeOffset*1000 *interval );	
 				lastTimeOffset=-1;
 			}
 			
@@ -131,7 +138,7 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		Assert.notNull(closeDate , "Close date not found.");
 		
 		Assert.isTrue(lastTimeOffset > 0, "Current time offset not found.");
-		final Date currentDate= new Date(startTimeStamp+ lastTimeOffset*1000*60);
+		final Date currentDate= new Date(startTimeStamp+ lastTimeOffset*1000*interval);
 		System.out.println(closeDate);
 		System.out.println(close);
 		
