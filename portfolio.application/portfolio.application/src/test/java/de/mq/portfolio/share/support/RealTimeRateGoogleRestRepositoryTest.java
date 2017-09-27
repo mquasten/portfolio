@@ -18,8 +18,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.test.util.ReflectionTestUtils;
+
 import org.springframework.web.client.RestOperations;
 
 import de.mq.portfolio.gateway.Gateway;
@@ -78,7 +80,9 @@ public class RealTimeRateGoogleRestRepositoryTest {
 
 		Mockito.when(restOperations.getForObject(URL, String.class, paramsSAP)).thenReturn(content(START_SAP, END_SAP));
 		Mockito.when(restOperations.getForObject(URL, String.class, paramsKO)).thenReturn(content(START_KO, END_KO));
+		final DefaultConversionService conversionService = new DefaultConversionService();
 		rateRepository = Mockito.mock(RealTimeRateGoogleRestRepositoryImpl.class);
+		Mockito.when(rateRepository.configurableConversionService()).thenReturn(conversionService);
 		Mockito.doAnswer(a -> new ExceptionTranslationBuilderImpl<>()).when(rateRepository).exceptionTranslationBuilder();
 		Arrays.asList(RealTimeRateGoogleRestRepositoryImpl.class.getDeclaredFields()).stream().filter(field -> field.getType().equals(RestOperations.class)).forEach(field -> ReflectionTestUtils.setField(rateRepository, field.getName(), restOperations));
 		Mockito.when(gatewayParameterAggregation.gatewayParameter(Gateway.GoogleRealtimeRate)).thenReturn(gatewayParameter);
@@ -94,7 +98,7 @@ public class RealTimeRateGoogleRestRepositoryTest {
 	}
 
 	private String content(final double start, final double end) {
-		return "EXCHANGE%3DNYSE\n" + "MARKET_OPEN_MINUTE=570\n" + "MARKET_CLOSE_MINUTE=960\n" + "INTERVAL=60\n" + "COLUMNS=DATE,CLOSE\n" + "DATA=\n" + "TIMEZONE_OFFSET=-240\n" + "a" + new Long(yesterday.getTime() / 1000) + ",134.11\n" + "1,134.14\n" + "360," + start + "\n" + "a"
+		return "EXCHANGE%3DNYSE\n" + "MARKET_OPEN_MINUTE=570\n" + "MARKET_CLOSE_MINUTE=960\n" + RealTimeRateGoogleRestRepositoryImpl.INTERVAL_HEADER+"=60\n" + "COLUMNS=DATE,CLOSE\n" + "DATA=\n" + "TIMEZONE_OFFSET=-240\n" + "a" + new Long(yesterday.getTime() / 1000) + ",134.11\n" + "1,134.14\n" + "360," + start + "\n" + "a"
 				+ new Long(today.getTime() / 1000) + ",135.43\n" + "1,135.14\n" + "210," + end + "\n";
 	}
 
@@ -145,7 +149,7 @@ public class RealTimeRateGoogleRestRepositoryTest {
 	@Test(expected = IllegalArgumentException.class)
 	public final void ratesCloseRateMissing() {
 
-		String invalidContent = "EXCHANGE%3DNYSE\n" + "MARKET_OPEN_MINUTE=570\n" + "MARKET_CLOSE_MINUTE=960\n" + "INTERVAL=60\n" + "COLUMNS=DATE,CLOSE\n" + "DATA=\n" + "TIMEZONE_OFFSET=-240\n" + "1,134.14\n";
+		String invalidContent = "EXCHANGE%3DNYSE\n" + "MARKET_OPEN_MINUTE=570\n" + "MARKET_CLOSE_MINUTE=960\n" +RealTimeRateGoogleRestRepositoryImpl.INTERVAL_HEADER +"=60\n" + "COLUMNS=DATE,CLOSE\n" + "DATA=\n" + "TIMEZONE_OFFSET=-240\n" + "1,134.14\n";
 		Mockito.when(restOperations.getForObject(URL, String.class, paramsSAP)).thenReturn(invalidContent);
 		rateRepository.rates(gatewayParameterAggregation);
 
@@ -154,7 +158,7 @@ public class RealTimeRateGoogleRestRepositoryTest {
 	@Test(expected = IllegalArgumentException.class)
 	public final void ratesLasteRateMissing() {
 
-		String invalidContent = "EXCHANGE%3DNYSE\n" + "MARKET_OPEN_MINUTE=570\n" + "MARKET_CLOSE_MINUTE=960\n" + "INTERVAL=60\n" + "COLUMNS=DATE,CLOSE\n" + "DATA=\n" + "TIMEZONE_OFFSET=-240\n";
+		String invalidContent = "EXCHANGE%3DNYSE\n" + "MARKET_OPEN_MINUTE=570\n" + "MARKET_CLOSE_MINUTE=960\n" + RealTimeRateGoogleRestRepositoryImpl.INTERVAL_HEADER +"=60\n" + "COLUMNS=DATE,CLOSE\n" + "DATA=\n" + "TIMEZONE_OFFSET=-240\n";
 
 		Mockito.when(restOperations.getForObject(URL, String.class, paramsSAP)).thenReturn(invalidContent);
 		rateRepository.rates(gatewayParameterAggregation);
@@ -162,7 +166,7 @@ public class RealTimeRateGoogleRestRepositoryTest {
 	}
 
 	private String invalidContent(final boolean closeAware) {
-		String result = "EXCHANGE%3DNYSE\n" + "MARKET_OPEN_MINUTE=570\n" + "MARKET_CLOSE_MINUTE=960\n" + "INTERVAL=60\n" + "COLUMNS=DATE,CLOSE\n" + "DATA=\n" + "TIMEZONE_OFFSET=-240\n" +
+		String result = "EXCHANGE%3DNYSE\n" + "MARKET_OPEN_MINUTE=570\n" + "MARKET_CLOSE_MINUTE=960\n" + RealTimeRateGoogleRestRepositoryImpl.INTERVAL_HEADER+ "=60\n" + "COLUMNS=DATE,CLOSE\n" + "DATA=\n" + "TIMEZONE_OFFSET=-240\n" +
 
 				"a" + new Long(yesterday.getTime() / 1000) + ",134.11\n";
 
@@ -187,6 +191,18 @@ public class RealTimeRateGoogleRestRepositoryTest {
 		final Object repository = 	BeanUtils.instantiateClass(constructor, restOperations);
 		final Object dependency = DataAccessUtils.requiredSingleResult(Arrays.asList(RealTimeRateGoogleRestRepositoryImpl.class.getDeclaredFields()).stream().filter( field -> field.getType().equals(RestOperations.class)).map(field -> ReflectionTestUtils.getField(repository, field.getName())).collect(Collectors.toSet()));
 	    Assert.assertEquals(restOperations, dependency);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void invalidIntervalHeader() {
+		Mockito.when(restOperations.getForObject(URL, String.class, paramsKO)).thenReturn(content(START_KO, END_KO).replaceFirst(RealTimeRateGoogleRestRepositoryImpl.INTERVAL_HEADER+".*", RealTimeRateGoogleRestRepositoryImpl.INTERVAL_HEADER));
+		rateRepository.rates(gatewayParameterAggregation);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void intervalHeaderMissing() {
+		Mockito.when(restOperations.getForObject(URL, String.class, paramsKO)).thenReturn(content(START_KO, END_KO).replaceFirst(RealTimeRateGoogleRestRepositoryImpl.INTERVAL_HEADER+".*", ""));
+		rateRepository.rates(gatewayParameterAggregation);
 	}
 
 }

@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Lookup;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -34,6 +35,8 @@ import de.mq.portfolio.support.ExceptionTranslationBuilder;
 //@Repository
 abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepository{
 	
+	static final String INTERVAL_HEADER = "INTERVAL";
+	
 	private final RestOperations restOperations;
 	RealTimeRateGoogleRestRepositoryImpl(final RestOperations restOperations){
 		this.restOperations=restOperations;
@@ -45,9 +48,10 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		
 		final GatewayParameter gatewayParameter = gatewayParameterAggregation.gatewayParameter(Gateway.GoogleRealtimeRate);
 		final List<Map<String, String>> parameters = parameters(gatewayParameter, gatewayParameterAggregation.domain().size());
-	
+		final ConversionService configurableConversionService = configurableConversionService();
 		
-		return IntStream.range(0, parameters.size()).mapToObj(i -> rates(gatewayParameter.urlTemplate() , parameters.get(i), ((List<Share>)gatewayParameterAggregation.domain()).get(i))).collect(Collectors.toList());
+		
+		return IntStream.range(0, parameters.size()).mapToObj(i -> rates(configurableConversionService, gatewayParameter.urlTemplate() , parameters.get(i), ((List<Share>)gatewayParameterAggregation.domain()).get(i))).collect(Collectors.toList());
 		
 		
 	}
@@ -64,15 +68,13 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		return parameters;
 	}
 
-	private TimeCourse rates(final String url,final Map<String,String> parameter, final Share share) {
-		
-		
+	private TimeCourse rates(final ConversionService conversionService, final String url,final Map<String,String> parameter, final Share share) {
 		
 		
 		final String result = restOperations.getForObject(url, String.class, parameter);
 	
 		TimeCourse timeCourse =  exceptionTranslationBuilder().withResource(() -> new BufferedReader(new StringReader(result))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {
-			return toTimeCourse(bufferedReader, share);
+			return toTimeCourse(conversionService, bufferedReader, share);
 		}).translate();
 		
 		
@@ -80,7 +82,7 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 				
 	}
 	
-	private TimeCourse toTimeCourse(final BufferedReader bufferedReader, final Share share) throws IOException {
+	private TimeCourse toTimeCourse(final ConversionService conversionService, final BufferedReader bufferedReader, final Share share) throws IOException {
 		double close=-1;
 		double last=-1;
 	
@@ -88,16 +90,19 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		long lastTimeOffset=-1; 
 		int interval = -1; 
 		Date closeDate = null;
+		
+	
+		
 		for (String line = ""; line != null; line = bufferedReader.readLine()) {
 		
 			
 			
 			final  String[] columns=line.split("[,]");
 			
-			if(( columns.length ==1)&& line.trim().startsWith("INTERVAL")) {
+			if(( columns.length ==1)&& line.trim().startsWith(INTERVAL_HEADER)) {
 				final String[] cols= line.split("[=]");
 				Assert.isTrue( cols.length == 2, "Invalid Intervall-Header." );
-				interval = Integer.parseInt(cols[1]);
+				interval =  conversionService.convert(cols[1], Integer.class);
 				continue;
 			}
 			
@@ -115,17 +120,17 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 			if( line.matches("^a.*")   )  {
 				
 				
-				startTimeStamp=1000* Long.parseLong(columns[0].replaceFirst("^a", ""));
+				startTimeStamp=1000* conversionService.convert(columns[0].replaceFirst("^a", ""), Long.class);
 				
 				close=last;
 			} 
 			else {
-				lastTimeOffset=Long.parseLong(columns[0]);	
+				lastTimeOffset=conversionService.convert(columns[0], Long.class);
 			}
 			
 			
 			
-			last=Double.parseDouble(columns[1]);
+			last=conversionService.convert(columns[1], Double.class);
 			
 			
 		}
@@ -149,7 +154,7 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 	}
 	
 	private Data newData(final Date date, final double value) {
-		final DateFormat df = new SimpleDateFormat(DataImpl.DATE_PATTERN+ "-dd-HH-mm-ss");
+		final DateFormat df = new SimpleDateFormat(DataImpl.DATE_PATTERN+ "-HH-mm-ss");
 		final Data data = new DataImpl(df.format(date), value);
 		Arrays.asList(DataImpl.class.getDeclaredFields()).stream().filter(field -> field.getType().equals(DateFormat.class)).forEach(field -> { field.setAccessible(true); ReflectionUtils.setField(field, data, df); });
 		return data;
@@ -162,5 +167,9 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 	
 	@Lookup
 	abstract ExceptionTranslationBuilder<TimeCourse, BufferedReader> exceptionTranslationBuilder();
+	
+	
+	@Lookup
+	abstract ConversionService configurableConversionService();
 
 }
