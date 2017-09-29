@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StringUtils;
@@ -35,9 +36,14 @@ import de.mq.portfolio.share.TimeCourse;
 @Ignore
 public class RealTimeRateGoogleRestRepositoryIntegrationTest {
 	
+	private static final String URL = "http://finance.google.com/finance/getprices?i=60&p=2d&f=d,c&df=cpct&q={query}&x={market}";
+
 	@Autowired
 	@Qualifier("googleRealtimeRepository")
 	private  RealTimeRateRepository realTimeRateRepository; 
+	
+	@Value("#{stocks}")
+	private Map<String,String> stocks;
 	
 	@Test
 	public final void rates() {
@@ -49,7 +55,7 @@ public class RealTimeRateGoogleRestRepositoryIntegrationTest {
 		//Mockito.when(gatewayParameter.code()).thenReturn(StringUtils.collectionToCommaDelimitedString(shares.stream().map( Share::code).collect(Collectors.toList())));
 		
 																
-		Mockito.when(gatewayParameter.urlTemplate()).thenReturn("http://finance.google.com/finance/getprices?i=60&p=2d&f=d,c&df=cpct&q={query}&x={market}");
+		Mockito.when(gatewayParameter.urlTemplate()).thenReturn(URL);
 		final Map<String,String> parameters = new HashMap<>();
 		parameters.put("query", StringUtils.collectionToCommaDelimitedString(shares.stream().map( share -> share.code().replaceAll("[.].*$", "")).collect(Collectors.toList())));
 		parameters.put("market", StringUtils.collectionToCommaDelimitedString(shares.stream().map(share -> share.code().endsWith(".DE") ? "ETR" : "NYSE").collect(Collectors.toList())));
@@ -86,6 +92,16 @@ public class RealTimeRateGoogleRestRepositoryIntegrationTest {
 		final Share share = Mockito.mock(Share.class);
 		Mockito.when(share.code()).thenReturn(code);
 		return share;
+	}
+	
+	@Test
+	public final void generateCsv() {
+		stocks.entrySet().stream().sorted((e1,e2) ->  e1.getValue().compareToIgnoreCase(e2.getValue())).forEach(entry -> {
+			final String[] values = entry.getValue().split("[:]");
+		
+			System.out.println(entry.getKey()+";" + Gateway.GoogleRealtimeRate +";" + URL+";"+String.format("{query:'%s', market:'%s'}", values[1], values[0]));
+			
+		});
 	}
 	
 
