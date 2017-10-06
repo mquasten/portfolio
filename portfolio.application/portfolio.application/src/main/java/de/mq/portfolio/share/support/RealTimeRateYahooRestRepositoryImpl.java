@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import org.springframework.web.client.RestOperations;
@@ -29,6 +30,7 @@ import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.support.ExceptionTranslationBuilder;
 
 @Repository
+@Profile("yahoo")
 public abstract class RealTimeRateYahooRestRepositoryImpl implements RealTimeRateRepository {
 
 	private final RestOperations restOperations;
