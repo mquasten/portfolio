@@ -59,3 +59,5 @@ SIE.DE;YahooRealtimeRate;http://download.finance.yahoo.com/d/quotes.csv?s={query
 TKA.DE;YahooRealtimeRate;http://download.finance.yahoo.com/d/quotes.csv?s={query}&f=snbaopl1;{query:#ids[0]}
 VNA.DE;YahooRealtimeRate;http://download.finance.yahoo.com/d/quotes.csv?s={query}&f=snbaopl1;{query:#ids[0]}
 VOW3.DE;YahooRealtimeRate;http://download.finance.yahoo.com/d/quotes.csv?s={query}&f=snbaopl1;{query:#ids[0]}
+^DJI;YahooRealtimeRate;http://download.finance.yahoo.com/d/quotes.csv?s={query}&f=snbaopl1;{query:#ids[0]}
+^GDAXI;YahooRealtimeRate;http://download.finance.yahoo.com/d/quotes.csv?s={query}&f=snbaopl1;{query:#ids[0]}

@@ -30,7 +30,7 @@ import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.support.ExceptionTranslationBuilder;
 
 @Repository
-@Profile("yahoo")
+@Profile({"yahoo", "ariva"})
 public abstract class RealTimeRateYahooRestRepositoryImpl implements RealTimeRateRepository {
 
 	private final RestOperations restOperations;
