@@ -66,7 +66,6 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		
 		allEntries.stream().map(entry -> entry.getValue().length).forEach(length -> Assert.isTrue(length==expectedSize, String.format("ParameterArray has wrong size : %s, expected %s.", length, expectedSize) ));
 		
-		
 		allEntries.forEach(entry -> IntStream.range(0, expectedSize).forEach(i -> parameters.get(i).put(entry.getKey(), entry.getValue()[i])));
 		
 		return parameters;
