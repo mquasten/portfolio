@@ -59,3 +59,5 @@ V;GoogleRealtimeRate;http://finance.google.com/finance/getprices?i=60&p=2d&f=d,c
 VZ;GoogleRealtimeRate;http://finance.google.com/finance/getprices?i=60&p=2d&f=d,c&df=cpct&q={query}&x={market};{query:'VZ', market:'NYSE'}
 WMT;GoogleRealtimeRate;http://finance.google.com/finance/getprices?i=60&p=2d&f=d,c&df=cpct&q={query}&x={market};{query:'WMT', market:'NYSE'}
 XOM;GoogleRealtimeRate;http://finance.google.com/finance/getprices?i=60&p=2d&f=d,c&df=cpct&q={query}&x={market};{query:'XOM', market:'NYSE'}
+^DJI;GoogleRealtimeRate;http://finance.google.com/finance/getprices?i=60&p=2d&f=d,c&df=cpct&q={query}&x={market};{query:'^DJI', market:'NYSE'}
+^GDAXI;GoogleRealtimeRate;http://finance.google.com/finance/getprices?i=60&p=2d&f=d,c&df=cpct&q={query}&x={market};{query:'^GDAXI', market:'ETR'}

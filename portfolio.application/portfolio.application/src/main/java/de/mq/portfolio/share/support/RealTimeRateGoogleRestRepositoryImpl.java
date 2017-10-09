@@ -54,7 +54,7 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		final ConversionService configurableConversionService = configurableConversionService();
 		
 		
-		return IntStream.range(0, parameters.size()).mapToObj(i -> rates(configurableConversionService, gatewayParameter.urlTemplate() , parameters.get(i), ((List<Share>)gatewayParameterAggregation.domain()).get(i))).collect(Collectors.toList());
+		return IntStream.range(0, parameters.size()).mapToObj(i -> rates(configurableConversionService, gatewayParameter.urlTemplate() , parameters.get(i), ((List<Share>)gatewayParameterAggregation.domain()).get(i))).filter(tc -> tc.rates().size() != 0 ).collect(Collectors.toList());
 		
 		
 	}
@@ -65,6 +65,7 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		final Collection<Entry<String,String[]>> allEntries = gatewayParameter.parameters().entrySet().stream().map(entry -> new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), StringUtils.commaDelimitedListToStringArray(entry.getValue()))).collect(Collectors.toList()) ;
 		
 		allEntries.stream().map(entry -> entry.getValue().length).forEach(length -> Assert.isTrue(length==expectedSize, String.format("ParameterArray has wrong size : %s, expected %s.", length, expectedSize) ));
+		
 		
 		allEntries.forEach(entry -> IntStream.range(0, expectedSize).forEach(i -> parameters.get(i).put(entry.getKey(), entry.getValue()[i])));
 		
@@ -77,6 +78,8 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		final String result = restOperations.getForObject(url, String.class, parameter);
 	
 		TimeCourse timeCourse =  exceptionTranslationBuilder().withResource(() -> new BufferedReader(new StringReader(result))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {
+			
+			
 			return toTimeCourse(conversionService, bufferedReader, share);
 		}).translate();
 		
@@ -86,6 +89,12 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 	}
 	
 	private TimeCourse toTimeCourse(final ConversionService conversionService, final BufferedReader bufferedReader, final Share share) throws IOException {
+		
+		if( share.isIndex()) {
+			return new TimeCourseImpl(share, Arrays.asList(), Arrays.asList());
+		}
+		
+		
 		double close=-1;
 		double last=-1;
 	
@@ -94,12 +103,8 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		int interval = -1; 
 		Date closeDate = null;
 		
-	
-		
 		for (String line = ""; line != null; line = bufferedReader.readLine()) {
 		
-			
-			
 			final  String[] columns=line.split("[,]");
 			
 			if(( columns.length ==1)&& line.trim().startsWith(INTERVAL_HEADER)) {
@@ -147,11 +152,6 @@ abstract class RealTimeRateGoogleRestRepositoryImpl  implements RealTimeRateRepo
 		
 		Assert.isTrue(lastTimeOffset > 0, "Current time offset not found.");
 		final Date currentDate= new Date(startTimeStamp+ lastTimeOffset*1000*interval);
-		System.out.println(closeDate);
-		System.out.println(close);
-		
-		System.out.println(currentDate);
-		System.out.println(last);
 		
 		return new TimeCourseImpl(share, Arrays.asList(newData(closeDate, close), newData(currentDate, last) ), Arrays.asList());
 	}
