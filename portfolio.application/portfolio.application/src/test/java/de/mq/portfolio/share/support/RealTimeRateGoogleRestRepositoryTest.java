@@ -118,6 +118,19 @@ public class RealTimeRateGoogleRestRepositoryTest {
 		Assert.assertEquals(END_KO, (Double) timeCourses.get(1).rates().get(1).value());
 	}
 
+	@Test
+	public final void ratesIndex() {
+
+		Share share = Mockito.mock(Share.class);
+		Mockito.when(share.code()).thenReturn("^DAXI");
+		Mockito.when(share.isIndex()).thenReturn(true);
+		params.clear();
+		params.putAll(parameterMap(share.code()  , MARKET_SAP ));
+		Mockito.when(gatewayParameter.parameters()).thenReturn(params);
+		Mockito.when(gatewayParameterAggregation.domain()).thenReturn(Arrays.asList(share));
+		Assert.assertTrue(rateRepository.rates(gatewayParameterAggregation).isEmpty());
+	}
+
 	private Date dateForDaysBefore(final int daysBack, int hour, int min) {
 		return Date.from(LocalDateTime.now().plusDays(-daysBack).truncatedTo(ChronoUnit.DAYS).plusHours(hour).plusMinutes(min).atZone(ZoneId.systemDefault()).toInstant());
 	}
