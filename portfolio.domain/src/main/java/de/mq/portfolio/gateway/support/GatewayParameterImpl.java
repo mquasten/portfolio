@@ -19,6 +19,8 @@ import de.mq.portfolio.share.support.HistoryDateUtil;
 @Document(collection = "GatewayParameter")
 class GatewayParameterImpl implements GatewayParameter {
 
+	private static final String BASENAME_METHOD_NAME = "basename";
+
 	static final String IDS_VARIABLE_NAME = "ids";
 
 	@Id
@@ -49,6 +51,7 @@ class GatewayParameterImpl implements GatewayParameter {
 
 		final ExpressionParser parser = new SpelExpressionParser();
 		final StandardEvaluationContext context = new StandardEvaluationContext(new HistoryDateUtil());
+		context.registerFunction(BASENAME_METHOD_NAME, HistoryDateUtil.basenameMethod());
 		context.setVariable(IDS_VARIABLE_NAME, Gateway.ids(id));
 		
 		@SuppressWarnings("unchecked")
@@ -59,6 +62,8 @@ class GatewayParameterImpl implements GatewayParameter {
 		this.parameters.keySet().forEach(parameter -> Assert.hasText("Parameter key is mandatory."));
 		this.parameters.values().forEach(parameter -> Assert.hasText("Parameter value is mandatory."));
 	}
+
+	
 
 	@SuppressWarnings("unused")
 	private GatewayParameterImpl() {

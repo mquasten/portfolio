@@ -1,14 +1,20 @@
 package de.mq.portfolio.share.support;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.dao.support.DataAccessUtils;
 
 
 public class HistoryDateUtilTest {
@@ -65,4 +71,38 @@ public class HistoryDateUtilTest {
 	public final void germanYearToDayDateFormat() {
 		Assert.assertEquals(new SimpleDateFormat(HistoryDateUtil.GERMAN_YEAR_TO_DAY_DATE_FORMAT, Locale.GERMANY), historyDateUtil.getGermanYearToDayDateFormat());
 	}
+	
+	@Test
+	public final void basename() {
+		Assert.assertEquals("SAP", HistoryDateUtil.basename("SAP.DE"));
+		Assert.assertTrue(HistoryDateUtil.basename(null).isEmpty());
+	} 
+	
+	@Test
+	public final void basenameMethod() {
+		final Method method = HistoryDateUtil.basenameMethod();
+		Assert.assertEquals(HistoryDateUtil.BASENAME_METHOD_NAME, method.getName());
+		Assert.assertEquals(1, method.getParameterTypes().length);
+		Assert.assertEquals(String.class, method.getParameterTypes()[0]);
+	}
+	
+	@Test
+	public final void basenameMethodSucks() throws SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		final Method m = DataAccessUtils.requiredSingleResult(Arrays.asList(HistoryDateUtil.class.getDeclaredMethods()).stream().filter(method  -> Modifier.isStatic(method.getModifiers()) && method.getReturnType().equals(Method.class) && method.getParameterTypes().length==1 && method.getParameterTypes()[0].equals(String.class)).collect(Collectors.toList()));
+		m.setAccessible(true);
+		try{
+		m.invoke(null, "dontLetMeGetMe");
+		Assert.fail(InvocationTargetException.class.getName() + " should be raised.");
+		} catch (InvocationTargetException ex ){
+
+			Assert.assertTrue(ex.getTargetException() instanceof IllegalStateException);
+	
+		}
+		
+	}
+
+
+	
+
+	
 }

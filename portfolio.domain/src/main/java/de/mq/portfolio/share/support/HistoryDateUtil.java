@@ -1,5 +1,6 @@
 package de.mq.portfolio.share.support;
 
+import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public final class HistoryDateUtil {
 	
+	static  final String BASENAME_METHOD_NAME = "basename";
 	static final String GERMAN_YEAR_TO_DAY_DATE_FORMAT = "yyyy-MM-dd";
 	static final String GOOGLE_DATE_FORMAT = "d-MMM-yy";
 	static final int OFFSET_DAYS_ONE_DAY_BACK = 1;
@@ -48,6 +50,26 @@ public final class HistoryDateUtil {
 	
 	public final DateFormat getGermanYearToDayDateFormat() {
 		return  germanYearToDayDateFormat;
+	}
+	
+	public static String basename(final String name ) {
+		 return name != null ? name.split("[.]")[0] : "";
+		
+	}
+	
+	public static Method basenameMethod() {
+		return method(BASENAME_METHOD_NAME);
+	}
+
+	private static Method method(final String name ) {
+		try {
+			
+			return HistoryDateUtil.class.getDeclaredMethod(name, String.class );
+		} catch (final Exception ex) {
+			
+		
+			throw new IllegalStateException();
+		}
 	}
 
 }
