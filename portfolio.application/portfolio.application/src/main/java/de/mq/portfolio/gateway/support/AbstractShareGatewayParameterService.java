@@ -62,9 +62,10 @@ abstract class AbstractShareGatewayParameterService implements ShareGatewayParam
 	@Override
 	public GatewayParameterAggregation<Collection<Share>>   merge(final Collection<Share> shares, final Gateway gateway) {
 		final Collection<GatewayParameter> gatewayParameters = shares.stream().map(share -> gatewayParameterRepository.gatewayParameter(gateway, share.code())).collect(Collectors.toList());
-		
+			
 		final int keySize =  DataAccessUtils.requiredSingleResult(gatewayParameters.stream().map(gatewayParameter -> Gateway.ids(gateway.id(gatewayParameter.code())).size()).collect(Collectors.toSet()));
-		Assert.isTrue(keySize >= 2);
+		
+		Assert.isTrue(keySize >= 2, "Key should have at least 2 columns.");
 		final Collection<String> keys = new ArrayList<>();
 		IntStream.range(0, keySize-1).forEach(i -> keys.add(StringUtils.collectionToCommaDelimitedString(gatewayParameters.stream().map(gatewayParameter -> Gateway.ids(gateway.id(gatewayParameter.code())).get(i)).collect(Collectors.toList()))));
 		

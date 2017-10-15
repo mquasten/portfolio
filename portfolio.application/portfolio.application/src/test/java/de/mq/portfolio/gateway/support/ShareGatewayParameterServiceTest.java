@@ -143,6 +143,20 @@ public class ShareGatewayParameterServiceTest {
 		Assert.assertEquals(vz, aggregatedShares.get(4));
 		
 	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void mergeInvalidKeysize() {
+		
+		final Share jnj = prepareForShare(CODE, "url?s={query }");
+		final Gateway gateway = Mockito.mock(Gateway.class);
+		Mockito.when(gatewayParameter.code()).thenReturn(CODE);
+		Mockito.when(gatewayParameterRepository.gatewayParameter(gateway, CODE)).thenReturn(gatewayParameter);
+		Mockito.when(gateway.id(Mockito.any())).thenReturn(CODE);
+		
+		
+		shareGatewayParameterService.merge(Arrays.asList(jnj),gateway);
+		
+	}
 
 	private Share prepareForShare(final String code, final String url) {
 		final Share share = Mockito.mock(Share.class);
