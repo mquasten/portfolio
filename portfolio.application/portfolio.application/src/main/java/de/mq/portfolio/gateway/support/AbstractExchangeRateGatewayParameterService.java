@@ -1,11 +1,18 @@
 package de.mq.portfolio.gateway.support;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.gateway.ExchangeRateGatewayParameterService;
@@ -33,7 +40,7 @@ abstract class AbstractExchangeRateGatewayParameterService implements ExchangeRa
 		gatewayGroupGuard(gateway);
 	
 		final GatewayParameter gatewayParameter = gatewayParameterRepository.gatewayParameter(gateway, exchangeRate.source(), exchangeRate.target());
-		return gatewayParameterAggregationBuilder().withDomain(exchangeRate).withGatewayParameter(gatewayParameter).build();
+		return builder().withDomain(exchangeRate).withGatewayParameter(gatewayParameter).build();
 
 	}
 
@@ -55,7 +62,7 @@ abstract class AbstractExchangeRateGatewayParameterService implements ExchangeRa
 		final Collection<GatewayParameter> gatewayParameters = gatewayParameterRepository.gatewayParameters(exchangeRate.source(), exchangeRate.target());
 		
 		gatewayParameters.stream().map(gatewayParameter -> gatewayParameter.gateway()).forEach(gateway -> gatewayGroupGuard(gateway));
-		return gatewayParameterAggregationBuilder().withDomain(exchangeRate).withGatewayParameters(gatewayParameters).build();
+		return builder().withDomain(exchangeRate).withGatewayParameters(gatewayParameters).build();
 	}
 
 	@Override
@@ -63,7 +70,42 @@ abstract class AbstractExchangeRateGatewayParameterService implements ExchangeRa
 		return gatewayHistoryRepository.history(gatewayParameter).getBody();
 	}
 	
+	@Override
+	public GatewayParameterAggregation<Collection<ExchangeRate>>   merge(final Collection<ExchangeRate> exhangerates, final Gateway gateway) {
+		final Collection<GatewayParameter> gatewayParameters = exhangerates.stream().map(exhangerate -> gatewayParameterRepository.gatewayParameter(gateway, exhangerate.source() +"-" + exhangerate.target())).collect(Collectors.toList());
+			
+		final int keySize =  DataAccessUtils.requiredSingleResult(gatewayParameters.stream().map(gatewayParameter -> Gateway.ids(gateway.id(gatewayParameter.code())).size()).collect(Collectors.toSet()));
+		
+		Assert.isTrue(keySize >= 2, "Key should have at least 2 columns.");
+		final Collection<String> keys = new ArrayList<>();
+		IntStream.range(0, keySize-1).forEach(i -> keys.add(StringUtils.collectionToCommaDelimitedString(gatewayParameters.stream().map(gatewayParameter -> Gateway.ids(gateway.id(gatewayParameter.code())).get(i)).collect(Collectors.toList()))));
+		
+		final String key = StringUtils.collectionToDelimitedString(keys, "-");
+		
+		final String urlTemplate = DataAccessUtils.requiredSingleResult(gatewayParameters.stream().map(GatewayParameter::urlTemplate).map(StringUtils::trimAllWhitespace).collect(Collectors.toSet()));
+		final Map<String, Collection<String>> parameters  = new HashMap<>();
+		gatewayParameters.forEach(gatewayParameter-> gatewayParameter.parameters().keySet().forEach(name -> parameters.put(name, new ArrayList<>())));
+		gatewayParameters.forEach(gatewayParameter-> gatewayParameter.parameters().entrySet().forEach(entry -> parameters.get(entry.getKey()).add(entry.getValue())));
+		final Collection<String> mergedParameters = parameters.entrySet().stream().map(entry -> String.format("%s:'%s'", entry.getKey(), StringUtils.collectionToCommaDelimitedString(entry.getValue()))).collect(Collectors.toList());
+		
+		final String spEl = String.format("{%s}",StringUtils.collectionToCommaDelimitedString(mergedParameters));
+		
+		return aggregateBuilder().withGatewayParameter(new GatewayParameterImpl(key, gateway, urlTemplate, spEl)).withDomain(exhangerates).build();
+		
+	}
+	
 	
 	@Lookup
-	abstract GatewayParameterAggregationBuilder<ExchangeRate> gatewayParameterAggregationBuilder();
+	abstract <T>  GatewayParameterAggregationBuilder<T> gatewayParameterAggregationBuilder();
+	
+	
+	private GatewayParameterAggregationBuilder<ExchangeRate> builder() {
+		return  gatewayParameterAggregationBuilder();
+	} 
+	
+	private GatewayParameterAggregationBuilder<Collection<ExchangeRate>> aggregateBuilder() {
+		return  gatewayParameterAggregationBuilder();
+	} 
+	
+
 }

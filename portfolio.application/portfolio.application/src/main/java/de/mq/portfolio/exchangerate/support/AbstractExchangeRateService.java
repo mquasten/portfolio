@@ -108,6 +108,11 @@ abstract class AbstractExchangeRateService implements ExchangeRateService {
 	 */
 	@Override
 	public final Collection<ExchangeRate> realTimeExchangeRates(final Collection<ExchangeRate> exchangeRates) {
+		
+		System.out.println("*********************************");
+		System.out.println(exchangeRateGatewayParameterService.getClass());
+		//System.out.println(exchangeRateGatewayParameterService.merge(exchangeRates, Gateway.CentralBankExchangeRates));
+		
 		return realtimeExchangeRateRepository.exchangeRates(exchangeRates);
 	}
 
