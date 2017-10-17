@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.gateway.ExchangeRateGatewayParameterService;
+import de.mq.portfolio.gateway.Gateway;
+import de.mq.portfolio.gateway.GatewayParameter;
+import de.mq.portfolio.gateway.GatewayParameterAggregation;
+
 import de.mq.portfolio.share.Data;
 
 @Service("exchangeRateService")
@@ -111,7 +115,15 @@ abstract class AbstractExchangeRateService implements ExchangeRateService {
 		
 		System.out.println("*********************************");
 		System.out.println(exchangeRateGatewayParameterService.getClass());
-		//System.out.println(exchangeRateGatewayParameterService.merge(exchangeRates, Gateway.CentralBankExchangeRates));
+		final GatewayParameterAggregation<Collection<ExchangeRate>> gatewayParameterAggregation  = exchangeRateGatewayParameterService.merge(exchangeRates, Gateway.YahooRealtimeExchangeRates);
+		if( gatewayParameterAggregation != null){
+		final GatewayParameter gatewayParameter = gatewayParameterAggregation.gatewayParameter(Gateway.YahooRealtimeExchangeRates);
+		
+		System.out.println(gatewayParameter.code());
+		System.out.println(gatewayParameter.urlTemplate());
+		System.out.println(gatewayParameterAggregation.domain().size());
+		}
+		
 		
 		return realtimeExchangeRateRepository.exchangeRates(exchangeRates);
 	}

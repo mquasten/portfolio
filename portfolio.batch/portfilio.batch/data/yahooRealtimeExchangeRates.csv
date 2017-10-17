@@ -1,0 +1,4 @@
+EUR-EUR;YahooRealtimeExchangeRates;url;{sourceCurrency:#ids[0], targetCurrency:#ids[1]}
+USD-USD;YahooRealtimeExchangeRates;url;{sourceCurrency:#ids[0], targetCurrency:#ids[1]}
+USD-EUR;YahooRealtimeExchangeRates;url;{sourceCurrency:#ids[0], targetCurrency:#ids[1]}
+EUR-USD;YahooRealtimeExchangeRates;url;{sourceCurrency:#ids[0], targetCurrency:#ids[1]}
