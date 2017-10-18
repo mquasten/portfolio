@@ -49,6 +49,10 @@ public abstract class AbstractRealtimeExchangeRateRepository implements Realtime
 	@Override
 	public final List<ExchangeRate> exchangeRates(final Collection<ExchangeRate> rates) {
 		final String queryString = rates.stream().map(exchangeRate ->  exchangeRate.source() + exchangeRate.target() + "=X").reduce( "",  ( a,b) -> !StringUtils.isEmpty(a)? a+", "+ b :b );
+		System.out.println("---------------------------");
+		System.out.println(url);
+		System.out.println(queryString);
+		System.out.println("---------------------------");
 		
 		return    exceptionTranslationBuilderResult().withResource( () ->  new BufferedReader(new StringReader(restOperations.getForObject(url, String.class, queryString)))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {return  read(bufferedReader);}).translate();	
 	}

@@ -29,8 +29,6 @@ class GatewayParameterRepositoryImpl  implements GatewayParameterRepository {
 	public GatewayParameter gatewayParameter(final Gateway gateway, final String... keys) {
 		Assert.notNull(gateway, "Gateway is mandatory.");
 		final Query query = new Query(Criteria.where("id").is(gateway.id(keys)));
-		
-		System.out.println(">>>" + gateway.id(keys));
 		return DataAccessUtils.requiredSingleResult(mongoOperations.find(query, GatewayParameterImpl.class));
 		
 	}

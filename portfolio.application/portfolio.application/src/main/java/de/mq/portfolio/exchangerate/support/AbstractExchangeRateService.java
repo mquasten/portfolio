@@ -122,6 +122,9 @@ abstract class AbstractExchangeRateService implements ExchangeRateService {
 		System.out.println(gatewayParameter.code());
 		System.out.println(gatewayParameter.urlTemplate());
 		System.out.println(gatewayParameterAggregation.domain().size());
+		
+		System.out.println(gatewayParameter.parameters());
+		System.out.println("*********************************");
 		}
 		
 		

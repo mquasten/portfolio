@@ -80,8 +80,7 @@ abstract class AbstractExchangeRateGatewayParameterService implements ExchangeRa
 		Assert.isTrue(keySize == 3, "Key should have 3 columns.");
 		final Collection<String> keys = new ArrayList<>();
 		IntStream.range(0, keySize-2).forEach(i -> keys.add(StringUtils.collectionToCommaDelimitedString(gatewayParameters.stream().map(gatewayParameter -> Arrays.asList(gatewayParameter.code()).get(i)).collect(Collectors.toList()))));
-		System.out.println(keySize);
-		System.out.println(keys);
+		
 		final String key = StringUtils.collectionToDelimitedString(keys, "|");
 		
 		final String urlTemplate = DataAccessUtils.requiredSingleResult(gatewayParameters.stream().map(GatewayParameter::urlTemplate).map(StringUtils::trimAllWhitespace).collect(Collectors.toSet()));
