@@ -1,12 +1,11 @@
 package de.mq.portfolio.gateway.support;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -78,11 +77,11 @@ abstract class AbstractExchangeRateGatewayParameterService implements ExchangeRa
 		final int keySize =  DataAccessUtils.requiredSingleResult(gatewayParameters.stream().map(gatewayParameter -> Gateway.ids(gateway.id(gatewayParameter.code())).size()).collect(Collectors.toSet()));
 		
 		Assert.isTrue(keySize == 3, "Key should have 3 columns.");
-		final Collection<String> keys = new ArrayList<>();
-		IntStream.range(0, keySize-2).forEach(i -> keys.add(StringUtils.collectionToCommaDelimitedString(gatewayParameters.stream().map(gatewayParameter -> Arrays.asList(gatewayParameter.code()).get(i)).collect(Collectors.toList()))));
+		//IntStream.range(0, keySize-2).forEach(i -> keys.add(StringUtils.collectionToCommaDelimitedString(gatewayParameters.stream().map(gatewayParameter -> Arrays.asList(gatewayParameter.code()).get(i)).collect(Collectors.toList()))));
+		//keys.addAll(gatewayParameters.stream().map(gatewayParameter -> gatewayParameter.code()).collect(Collectors.toList()));
+		final String key = StringUtils.collectionToDelimitedString(gatewayParameters.stream().map(gatewayParameter -> gatewayParameter.code()).collect(Collectors.toList()), "|");
 		
-		final String key = StringUtils.collectionToDelimitedString(keys, "|");
-		
+	
 		final String urlTemplate = DataAccessUtils.requiredSingleResult(gatewayParameters.stream().map(GatewayParameter::urlTemplate).map(StringUtils::trimAllWhitespace).collect(Collectors.toSet()));
 		final Map<String, Collection<String>> parameters  = new HashMap<>();
 		gatewayParameters.forEach(gatewayParameter-> gatewayParameter.parameters().keySet().forEach(name -> parameters.put(name, new ArrayList<>())));
