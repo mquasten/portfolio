@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.ExchangeRateCalculator;
 import de.mq.portfolio.gateway.ExchangeRateGatewayParameterService;
-import de.mq.portfolio.gateway.Gateway;
-import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.GatewayParameterAggregation;
-
 import de.mq.portfolio.share.Data;
 
 @Service("exchangeRateService")
@@ -23,15 +20,16 @@ abstract class AbstractExchangeRateService implements ExchangeRateService {
 	private final ExchangeRateRepository exchangeRateRepository;
 
 	private final RealtimeExchangeRateRepository realtimeExchangeRateRepository;
-	
-	private  final ExchangeRateGatewayParameterService exchangeRateGatewayParameterService;
+
+	private final ExchangeRateGatewayParameterService exchangeRateGatewayParameterService;
 
 	@Autowired
-	AbstractExchangeRateService(final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository, final ExchangeRateRepository exchangeRateRepository, final RealtimeExchangeRateRepository realtimeExchangeRateRepository, final ExchangeRateGatewayParameterService exchangeRateGatewayParameterService) {
+	AbstractExchangeRateService(final ExchangeRateDatebaseRepository exchangeRateDatebaseRepository, final ExchangeRateRepository exchangeRateRepository, final RealtimeExchangeRateRepository realtimeExchangeRateRepository,
+			final ExchangeRateGatewayParameterService exchangeRateGatewayParameterService) {
 		this.exchangeRateDatebaseRepository = exchangeRateDatebaseRepository;
 		this.exchangeRateRepository = exchangeRateRepository;
 		this.realtimeExchangeRateRepository = realtimeExchangeRateRepository;
-		this.exchangeRateGatewayParameterService=exchangeRateGatewayParameterService;
+		this.exchangeRateGatewayParameterService = exchangeRateGatewayParameterService;
 	}
 
 	/*
@@ -112,23 +110,8 @@ abstract class AbstractExchangeRateService implements ExchangeRateService {
 	 */
 	@Override
 	public final Collection<ExchangeRate> realTimeExchangeRates(final Collection<ExchangeRate> exchangeRates) {
-		
-		System.out.println("*********************************");
-		System.out.println(exchangeRateGatewayParameterService.getClass());
-		final GatewayParameterAggregation<Collection<ExchangeRate>> gatewayParameterAggregation  = exchangeRateGatewayParameterService.merge(exchangeRates, Gateway.YahooRealtimeExchangeRates);
-		if( gatewayParameterAggregation != null){
-		final GatewayParameter gatewayParameter = gatewayParameterAggregation.gatewayParameter(Gateway.YahooRealtimeExchangeRates);
-		
-		System.out.println(gatewayParameter.code());
-		System.out.println(gatewayParameter.urlTemplate());
-		System.out.println(gatewayParameterAggregation.domain().size());
-		
-		System.out.println(gatewayParameter.parameters());
-		System.out.println("*********************************");
-		}
-		
-		
-		return realtimeExchangeRateRepository.exchangeRates(exchangeRates);
+		final GatewayParameterAggregation<Collection<ExchangeRate>> gatewayParameterAggregation = exchangeRateGatewayParameterService.merge(exchangeRates, realtimeExchangeRateRepository.supports(exchangeRates));
+		return realtimeExchangeRateRepository.exchangeRates(gatewayParameterAggregation);
 	}
 
 	@Lookup

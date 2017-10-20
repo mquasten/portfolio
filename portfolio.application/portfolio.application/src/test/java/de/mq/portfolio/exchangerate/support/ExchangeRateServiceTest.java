@@ -3,9 +3,9 @@ package de.mq.portfolio.exchangerate.support;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -19,7 +19,6 @@ import de.mq.portfolio.gateway.ExchangeRateGatewayParameterService;
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.share.Data;
-import org.junit.Assert;
 
  
 public class ExchangeRateServiceTest {
@@ -134,9 +133,17 @@ public class ExchangeRateServiceTest {
 	public final void realTimeExchangeRates() {
 		
 		final Collection<ExchangeRate> expectedExchangeRates = Arrays.asList(Mockito.mock(ExchangeRate.class));
-		Mockito.doReturn(expectedExchangeRates).when(realtimeExchangeRateRepository).exchangeRates(Arrays.asList(exchangeRate));
+		@SuppressWarnings("unchecked")
+		final GatewayParameterAggregation<Collection<ExchangeRate>> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
+		Mockito.doReturn(expectedExchangeRates).when(realtimeExchangeRateRepository).exchangeRates(gatewayParameterAggregation);
+		Mockito.when(realtimeExchangeRateRepository.supports(Arrays.asList(exchangeRate))).thenReturn(Gateway.YahooRealtimeExchangeRates);
+	
+		Mockito.when(exchangeRateGatewayParameterService.merge(Arrays.asList(exchangeRate), Gateway.YahooRealtimeExchangeRates)).thenReturn(gatewayParameterAggregation);
 		
 		Assert.assertEquals(expectedExchangeRates, exchangeRateService.realTimeExchangeRates(Arrays.asList(exchangeRate)));
-		Mockito.verify(realtimeExchangeRateRepository).exchangeRates(Arrays.asList(exchangeRate));
+		Mockito.verify(realtimeExchangeRateRepository).exchangeRates(gatewayParameterAggregation);
+		Mockito.verify(realtimeExchangeRateRepository).supports(Arrays.asList(exchangeRate));
+		Mockito.verify(exchangeRateGatewayParameterService).merge(Arrays.asList(exchangeRate), Gateway.YahooRealtimeExchangeRates);
+		
 	}
 }

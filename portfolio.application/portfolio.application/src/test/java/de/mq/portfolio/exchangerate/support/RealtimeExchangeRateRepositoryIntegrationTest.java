@@ -7,12 +7,14 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
+import de.mq.portfolio.gateway.GatewayParameterAggregation;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -26,8 +28,10 @@ public class RealtimeExchangeRateRepositoryIntegrationTest {
 	
 	@Test
 	public final void exchangeRates() {
+		@SuppressWarnings("unchecked")
+		GatewayParameterAggregation<Collection<ExchangeRate>> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
 		final Collection<ExchangeRate> exchangeRates = Arrays.asList(new ExchangeRateImpl("EUR", "USD"), new ExchangeRateImpl("EUR", "GBP"),  new ExchangeRateImpl("USD", "GBP"));
-		final Collection<ExchangeRate> results = realtimeExchangeRateRepository.exchangeRates(exchangeRates);
+		final Collection<ExchangeRate> results = realtimeExchangeRateRepository.exchangeRates(gatewayParameterAggregation);
 		
 		Assert.assertEquals(3, results.size());
 	}

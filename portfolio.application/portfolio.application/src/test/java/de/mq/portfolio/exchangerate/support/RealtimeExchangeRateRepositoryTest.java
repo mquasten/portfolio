@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestOperations;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
+import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.support.ExceptionTranslationBuilderImpl;
 
 
@@ -60,7 +62,10 @@ public class RealtimeExchangeRateRepositoryTest {
 	@SuppressWarnings("unchecked")
 	private ArgumentCaptor<Class<String>> classCaptor = (ArgumentCaptor<Class<String>>) ArgumentCaptor.forClass( (Class<?>) Class.class);
 	
-	private ArgumentCaptor<String> paramCaptor = ArgumentCaptor.forClass(String.class);
+	private final ArgumentCaptor<String> paramCaptor = ArgumentCaptor.forClass(String.class);
+	
+	@SuppressWarnings("unchecked")
+	private final GatewayParameterAggregation<Collection<ExchangeRate>> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
 	
 	@Before
 	public final void setup() {
@@ -79,8 +84,8 @@ public class RealtimeExchangeRateRepositoryTest {
 	@Test
 	public final void exchangeRates() throws ParseException {
 		
-		final List<ExchangeRate> results = new ArrayList<>(realtimeExchangeRateRepository.exchangeRates(Arrays.asList(new ExchangeRateImpl("USD", "EUR"), new ExchangeRateImpl("EUR", "USD"))));
-		
+		//final List<ExchangeRate> results = new ArrayList<>(realtimeExchangeRateRepository.exchangeRates(Arrays.asList(new ExchangeRateImpl("USD", "EUR"), new ExchangeRateImpl("EUR", "USD"))));
+		final List<ExchangeRate> results = new ArrayList<>(realtimeExchangeRateRepository.exchangeRates(gatewayParameterAggregation));
 		final Date date = new SimpleDateFormat(EXCHANGERATES_DATEFORMAT).parse(DATE + " " + TIME);
 				
 				
@@ -119,7 +124,8 @@ public class RealtimeExchangeRateRepositoryTest {
 	private void prepareAndExecuteWithWrongLine(final String wrongLine) {
 		Mockito.when(restOperations.getForObject(Mockito.anyString(), Mockito.any(), Mockito.any(String.class))).thenReturn( wrongLine);
 		
-		realtimeExchangeRateRepository.exchangeRates(Arrays.asList(new ExchangeRateImpl("USD", "EUR")));
+		//realtimeExchangeRateRepository.exchangeRates(Arrays.asList(new ExchangeRateImpl("USD", "EUR")));
+		realtimeExchangeRateRepository.exchangeRates(gatewayParameterAggregation);
 	}
 
 	private String newWrongLine(final String sourceCurrency, final String rate, final String time ) {

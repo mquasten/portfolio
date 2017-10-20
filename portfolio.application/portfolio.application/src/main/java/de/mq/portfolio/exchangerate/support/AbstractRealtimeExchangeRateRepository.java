@@ -19,10 +19,12 @@ import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.data.util.ReflectionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestOperations;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
+import de.mq.portfolio.gateway.Gateway;
+import de.mq.portfolio.gateway.GatewayParameter;
+import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.support.DataImpl;
 import de.mq.portfolio.support.ExceptionTranslationBuilder;
@@ -31,15 +33,12 @@ import de.mq.portfolio.support.ExceptionTranslationBuilder;
 public abstract class AbstractRealtimeExchangeRateRepository implements RealtimeExchangeRateRepository {
 	
 	private  final DateFormat dateFormat;
-	private final String url; 
 	private final RestOperations restOperations;
 		
 	@Autowired
-	AbstractRealtimeExchangeRateRepository(final RestOperations restOperations, @Value("${realtime.exchangerates.url}" )final String url, @Value("${realtime.exchangerates.dateformat}") final String dateFormat) {
+	AbstractRealtimeExchangeRateRepository(final RestOperations restOperations, @Value("${realtime.exchangerates.dateformat}") final String dateFormat) {
 		this.restOperations = restOperations;
-		this.url=url;
 		this.dateFormat=new SimpleDateFormat(dateFormat);
-		
 	}
 	
 	/* (non-Javadoc)
@@ -47,14 +46,9 @@ public abstract class AbstractRealtimeExchangeRateRepository implements Realtime
 	 */
 	
 	@Override
-	public final List<ExchangeRate> exchangeRates(final Collection<ExchangeRate> rates) {
-		final String queryString = rates.stream().map(exchangeRate ->  exchangeRate.source() + exchangeRate.target() + "=X").reduce( "",  ( a,b) -> !StringUtils.isEmpty(a)? a+", "+ b :b );
-		System.out.println("---------------------------");
-		System.out.println(url);
-		System.out.println(queryString);
-		System.out.println("---------------------------");
-		
-		return    exceptionTranslationBuilderResult().withResource( () ->  new BufferedReader(new StringReader(restOperations.getForObject(url, String.class, queryString)))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {return  read(bufferedReader);}).translate();	
+	public final List<ExchangeRate> exchangeRates(final GatewayParameterAggregation<Collection<ExchangeRate>> gatewayParameterAggregation) {		
+		final GatewayParameter gatewayParameter = gatewayParameterAggregation.gatewayParameter(Gateway.YahooRealtimeExchangeRates);
+		return    exceptionTranslationBuilderResult().withResource( () ->  new BufferedReader(new StringReader(restOperations.getForObject(gatewayParameter.urlTemplate(), String.class, gatewayParameter.parameters())))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {return  read(bufferedReader);}).translate();	
 	}
 	private List<ExchangeRate> read(BufferedReader bufferedReader) throws IOException, ParseException {
 	
@@ -86,6 +80,12 @@ public abstract class AbstractRealtimeExchangeRateRepository implements Realtime
 		return results;
 	}
 
+	@Override
+	public  Gateway supports(Collection<ExchangeRate> exchangeRates) {
+		System.out.println("!!!!!!!!!!!!!!!!!!!!!");
+		return Gateway.YahooRealtimeExchangeRates;
+		
+	}
 	
 	
 	@SuppressWarnings("unchecked")
