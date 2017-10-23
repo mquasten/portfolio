@@ -31,80 +31,81 @@ import de.mq.portfolio.support.ExceptionTranslationBuilder;
 
 @Repository
 public abstract class AbstractRealtimeExchangeRateRepository implements RealtimeExchangeRateRepository {
-	
-	private  final DateFormat dateFormat;
+
+	private final DateFormat dateFormat;
 	private final RestOperations restOperations;
-		
+
 	@Autowired
 	AbstractRealtimeExchangeRateRepository(final RestOperations restOperations, @Value("${realtime.exchangerates.dateformat}") final String dateFormat) {
 		this.restOperations = restOperations;
-		this.dateFormat=new SimpleDateFormat(dateFormat);
+		this.dateFormat = new SimpleDateFormat(dateFormat);
 	}
-	
-	/* (non-Javadoc)
-	 * @see de.mq.portfolio.exchangerate.support.RealtimeExchangeRateRepository#exchangeRates(java.util.Collection)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.mq.portfolio.exchangerate.support.RealtimeExchangeRateRepository#
+	 * exchangeRates(java.util.Collection)
 	 */
-	
+
 	@Override
-	public final List<ExchangeRate> exchangeRates(final GatewayParameterAggregation<Collection<ExchangeRate>> gatewayParameterAggregation) {		
+	public final List<ExchangeRate> exchangeRates(final GatewayParameterAggregation<Collection<ExchangeRate>> gatewayParameterAggregation) {
 		final GatewayParameter gatewayParameter = gatewayParameterAggregation.gatewayParameter(Gateway.YahooRealtimeExchangeRates);
-		return    exceptionTranslationBuilderResult().withResource( () ->  new BufferedReader(new StringReader(restOperations.getForObject(gatewayParameter.urlTemplate(), String.class, gatewayParameter.parameters())))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class)).withStatement(bufferedReader -> {return  read(bufferedReader);}).translate();	
+		return exceptionTranslationBuilderResult().withResource(() -> new BufferedReader(new StringReader(restOperations.getForObject(gatewayParameter.urlTemplate(), String.class, gatewayParameter.parameters())))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class))
+				.withStatement(bufferedReader -> {
+					return read(bufferedReader);
+				}).translate();
 	}
+
 	private List<ExchangeRate> read(BufferedReader bufferedReader) throws IOException, ParseException {
-	
-		final ConfigurableConversionService configurableConversionService =configurableConversionService();
-		
-		configurableConversionService.addConverter(String.class, Date.class, dateString -> exceptionTranslationBuilderConversionService().withStatement(() ->  dateFormat.parse(dateString) ).translate());
-		
+
+		final ConfigurableConversionService configurableConversionService = configurableConversionService();
+
+		configurableConversionService.addConverter(String.class, Date.class, dateString -> exceptionTranslationBuilderConversionService().withStatement(() -> dateFormat.parse(dateString)).translate());
+
 		final List<ExchangeRate> results = new ArrayList<>();
-		for (String line = bufferedReader.readLine(); line != null; line = bufferedReader.readLine() ) {	
-			
+		for (String line = bufferedReader.readLine(); line != null; line = bufferedReader.readLine()) {
+
 			final String[] cols = line.replaceAll("[\"]", "").replaceAll("=X", "").split("[,;]");
-			if(cols.length < 4){
+			if (cols.length < 4) {
 				continue;
 			}
-			
-			
-			final  String dateString = cols[2]+ " " + cols[3];
-			Assert.isTrue(cols[0].length()==6, "Invalid currencyCodes: " + cols[0]);
-			
+
+			final String dateString = cols[2] + " " + cols[3];
+			Assert.isTrue(cols[0].length() == 6, "Invalid currencyCodes: " + cols[0]);
+
 			configurableConversionService.convert(dateString, Date.class);
 			final ExchangeRate exchangeRate = new ExchangeRateImpl(cols[0].substring(0, 3), cols[0].substring(3));
-			
-			final Data rate = new DataImpl(dateString,configurableConversionService.convert(cols[1], Double.class));
+
+			final Data rate = new DataImpl(dateString, configurableConversionService.convert(cols[1], Double.class));
 			Arrays.asList(rate.getClass().getDeclaredFields()).stream().filter(field -> field.getType().equals(DateFormat.class)).forEach(field -> ReflectionUtils.setField(field, rate, dateFormat));
 			exchangeRate.assign(Arrays.asList(rate));
 			results.add(exchangeRate);
-	 
+
 		}
 		return results;
 	}
 
 	@Override
-	public  Gateway supports(Collection<ExchangeRate> exchangeRates) {
-		System.out.println("!!!!!!!!!!!!!!!!!!!!!");
+	public Gateway supports(Collection<ExchangeRate> exchangeRates) {
 		return Gateway.YahooRealtimeExchangeRates;
-		
+
 	}
-	
-	
+
 	@SuppressWarnings("unchecked")
-	private ExceptionTranslationBuilder<List<ExchangeRate>,BufferedReader> exceptionTranslationBuilderResult(){
-		return (ExceptionTranslationBuilder<List<ExchangeRate>,BufferedReader>) exceptionTranslationBuilder();
+	private ExceptionTranslationBuilder<List<ExchangeRate>, BufferedReader> exceptionTranslationBuilderResult() {
+		return (ExceptionTranslationBuilder<List<ExchangeRate>, BufferedReader>) exceptionTranslationBuilder();
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private ExceptionTranslationBuilder<Date,BufferedReader> exceptionTranslationBuilderConversionService(){
-		return (ExceptionTranslationBuilder<Date,BufferedReader>) exceptionTranslationBuilder();
+	private ExceptionTranslationBuilder<Date, BufferedReader> exceptionTranslationBuilderConversionService() {
+		return (ExceptionTranslationBuilder<Date, BufferedReader>) exceptionTranslationBuilder();
 	}
-	
+
 	@Lookup
-	abstract ExceptionTranslationBuilder<?,BufferedReader> exceptionTranslationBuilder(); 
-	
+	abstract ExceptionTranslationBuilder<?, BufferedReader> exceptionTranslationBuilder();
+
 	@Lookup
 	abstract ConfigurableConversionService configurableConversionService();
-
-	
-	
 
 }

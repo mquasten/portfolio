@@ -19,7 +19,7 @@ import de.mq.portfolio.gateway.GatewayParameterAggregation;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/application-test.xml",  "/mongo-test.xml" })
-@TestPropertySource(properties={"realtime.exchangerates.url=" + RealtimeExchangeRateRepositoryTest.EXCHANGERATES_URL,"realtime.exchangerates.dateformat=" + RealtimeExchangeRateRepositoryTest.EXCHANGERATES_DATEFORMAT})
+@TestPropertySource(properties={"realtime.exchangerates.dateformat=" + RealtimeExchangeRateRepositoryTest.EXCHANGERATES_DATEFORMAT})
 @Ignore
 public class RealtimeExchangeRateRepositoryIntegrationTest {
 	
