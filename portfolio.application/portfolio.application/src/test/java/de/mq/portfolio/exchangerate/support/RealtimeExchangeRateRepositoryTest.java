@@ -30,8 +30,8 @@ import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.support.ExceptionTranslationBuilderImpl;
 
 public class RealtimeExchangeRateRepositoryTest {
-
-	static final String URL_PATH = "http://download.finance.yahoo.com/d/quotes.csv?s={currencies}&f=sl1d1t1";
+	
+	static final String URL_PATH = "http://download.finance.yahoo.com/d/quotes.csv?s={query}&f=sl1d1t1";
 
 	final static String EXCHANGERATES_DATEFORMAT = "M/d/yy h:mma";
 
