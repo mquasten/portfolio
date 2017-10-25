@@ -28,6 +28,8 @@ import de.mq.portfolio.gateway.GatewayParameterAggregation;
 @Ignore
 public class RealtimeExchangeRateRepositoryIntegrationTest {
 
+	static final String URL_PATH = "http://download.finance.yahoo.com/d/quotes.csv?s={query}&f=sl1d1t1";
+	
 	@Autowired
 	private RealtimeExchangeRateRepository realtimeExchangeRateRepository;
 
@@ -36,7 +38,7 @@ public class RealtimeExchangeRateRepositoryIntegrationTest {
 		@SuppressWarnings("unchecked")
 		final GatewayParameterAggregation<Collection<ExchangeRate>> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
 		final GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
-		Mockito.when(gatewayParameter.urlTemplate()).thenReturn(RealtimeExchangeRateRepositoryTest.URL_PATH);
+		Mockito.when(gatewayParameter.urlTemplate()).thenReturn(URL_PATH);
 		final Map<String, String> parameter = new HashMap<>();
 		parameter.put("query", "EURUSD=X,EURGBP=X,USDGBP=X");
 		Mockito.when(gatewayParameter.parameters()).thenReturn(parameter);

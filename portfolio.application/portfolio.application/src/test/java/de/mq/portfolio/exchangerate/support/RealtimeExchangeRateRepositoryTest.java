@@ -21,17 +21,17 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.RestOperations;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.GatewayParameterAggregation;
+import de.mq.portfolio.gateway.support.GatewayHistoryRepository;
 import de.mq.portfolio.support.ExceptionTranslationBuilderImpl;
 
 public class RealtimeExchangeRateRepositoryTest {
 	
-	static final String URL_PATH = "http://download.finance.yahoo.com/d/quotes.csv?s={query}&f=sl1d1t1";
+	
 
 	final static String EXCHANGERATES_DATEFORMAT = "M/d/yy h:mma";
 
@@ -49,32 +49,24 @@ public class RealtimeExchangeRateRepositoryTest {
 
 	private final AbstractRealtimeExchangeRateRepository realtimeExchangeRateRepository = Mockito.mock(AbstractRealtimeExchangeRateRepository.class, Mockito.CALLS_REAL_METHODS);
 
-	private final RestOperations restOperations = Mockito.mock(RestOperations.class);
 
 	private final Map<String, Object> dependencies = new HashMap<>();
 
 	private final GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
-	private final Map<String, String> parameters = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
 	private final GatewayParameterAggregation<Collection<ExchangeRate>> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
 
+	private GatewayHistoryRepository gatewayHistoryRepository = Mockito.mock(GatewayHistoryRepository.class);
+	
 	@Before
 	public final void setup() {
-
-		parameters.put("query", "someCurrencies");
-
-		Mockito.when(gatewayParameter.urlTemplate()).thenReturn(URL_PATH);
 		Mockito.when(gatewayParameterAggregation.gatewayParameter(Gateway.YahooRealtimeExchangeRates)).thenReturn(gatewayParameter);
-		Mockito.when(gatewayParameter.parameters()).thenReturn(parameters);
 		dependencies.put("dateFormat", new SimpleDateFormat(EXCHANGERATES_DATEFORMAT));
-		dependencies.put("restOperations", restOperations);
-
-		Mockito.when(restOperations.getForObject(URL_PATH, String.class, parameters)).thenReturn(DATA);
-
+		dependencies.put("gatewayHistoryRepository", gatewayHistoryRepository);
+		Mockito.when(gatewayHistoryRepository.historyAsString(gatewayParameter)).thenReturn(DATA);
 		Mockito.doReturn(new DefaultConversionService()).when(realtimeExchangeRateRepository).configurableConversionService();
 		Mockito.doAnswer(a -> new ExceptionTranslationBuilderImpl<>()).when(realtimeExchangeRateRepository).exceptionTranslationBuilder();
-
 		Arrays.asList(AbstractRealtimeExchangeRateRepository.class.getDeclaredFields()).stream().filter(field -> !Modifier.isStatic(field.getModifiers()) && dependencies.containsKey(field.getName()))
 				.forEach(field -> ReflectionTestUtils.setField(realtimeExchangeRateRepository, field.getName(), dependencies.get(field.getName())));
 	}
@@ -106,7 +98,8 @@ public class RealtimeExchangeRateRepositoryTest {
 	}
 
 	private void prepareAndExecuteWithWrongLine(final String wrongLine) {
-		Mockito.when(restOperations.getForObject(URL_PATH, String.class, parameters)).thenReturn(wrongLine);
+		
+		Mockito.when(gatewayHistoryRepository.historyAsString(gatewayParameter)).thenReturn(wrongLine);
 		realtimeExchangeRateRepository.exchangeRates(gatewayParameterAggregation);
 	}
 
@@ -126,7 +119,7 @@ public class RealtimeExchangeRateRepositoryTest {
 
 	@Test
 	public final void create() throws BeanInstantiationException, NoSuchMethodException, SecurityException {
-		final RealtimeExchangeRateRepository newRealtimeExchangeRateRepository = BeanUtils.instantiateClass(realtimeExchangeRateRepository.getClass().getDeclaredConstructor(RestOperations.class, String.class), restOperations, EXCHANGERATES_DATEFORMAT);
+		final RealtimeExchangeRateRepository newRealtimeExchangeRateRepository = BeanUtils.instantiateClass(realtimeExchangeRateRepository.getClass().getDeclaredConstructor(GatewayHistoryRepository.class, String.class), gatewayHistoryRepository, EXCHANGERATES_DATEFORMAT);
 		final Map<String, Object> results = Arrays.asList(AbstractRealtimeExchangeRateRepository.class.getDeclaredFields()).stream().filter(field -> !Modifier.isStatic(field.getModifiers()) && dependencies.containsKey(field.getName()))
 				.collect(Collectors.toMap(field -> field.getName(), field -> ReflectionTestUtils.getField(newRealtimeExchangeRateRepository, field.getName())));
 

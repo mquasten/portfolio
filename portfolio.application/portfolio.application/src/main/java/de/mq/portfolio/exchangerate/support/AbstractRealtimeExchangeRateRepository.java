@@ -19,12 +19,11 @@ import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.data.util.ReflectionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
-import org.springframework.web.client.RestOperations;
-
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.GatewayParameterAggregation;
+import de.mq.portfolio.gateway.support.GatewayHistoryRepository;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.support.DataImpl;
 import de.mq.portfolio.support.ExceptionTranslationBuilder;
@@ -33,11 +32,13 @@ import de.mq.portfolio.support.ExceptionTranslationBuilder;
 public abstract class AbstractRealtimeExchangeRateRepository implements RealtimeExchangeRateRepository {
 
 	private final DateFormat dateFormat;
-	private final RestOperations restOperations;
+	//private final RestOperations restOperations;
+	
+	GatewayHistoryRepository gatewayHistoryRepository;
 
 	@Autowired
-	AbstractRealtimeExchangeRateRepository(final RestOperations restOperations, @Value("${realtime.exchangerates.dateformat}") final String dateFormat) {
-		this.restOperations = restOperations;
+	AbstractRealtimeExchangeRateRepository(final GatewayHistoryRepository gatewayHistoryRepository, @Value("${realtime.exchangerates.dateformat}") final String dateFormat) {
+		this.gatewayHistoryRepository = gatewayHistoryRepository;
 		this.dateFormat = new SimpleDateFormat(dateFormat);
 	}
 
@@ -51,7 +52,7 @@ public abstract class AbstractRealtimeExchangeRateRepository implements Realtime
 	@Override
 	public final List<ExchangeRate> exchangeRates(final GatewayParameterAggregation<Collection<ExchangeRate>> gatewayParameterAggregation) {
 		final GatewayParameter gatewayParameter = gatewayParameterAggregation.gatewayParameter(Gateway.YahooRealtimeExchangeRates);
-		return exceptionTranslationBuilderResult().withResource(() -> new BufferedReader(new StringReader(restOperations.getForObject(gatewayParameter.urlTemplate(), String.class, gatewayParameter.parameters())))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class))
+		return exceptionTranslationBuilderResult().withResource(() -> new BufferedReader(new StringReader(gatewayHistoryRepository.historyAsString(gatewayParameter)))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class))
 				.withStatement(bufferedReader -> {
 					return read(bufferedReader);
 				}).translate();

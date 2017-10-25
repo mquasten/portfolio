@@ -104,6 +104,7 @@ abstract class AbstractExchangeRateGatewayParameterService implements ExchangeRa
 	} 
 	
 	private GatewayParameterAggregationBuilder<Collection<ExchangeRate>> aggregateBuilder() {
+	
 		return  gatewayParameterAggregationBuilder();
 	} 
 	

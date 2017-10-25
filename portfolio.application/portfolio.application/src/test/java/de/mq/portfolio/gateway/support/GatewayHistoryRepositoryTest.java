@@ -14,6 +14,8 @@ import de.mq.portfolio.gateway.GatewayParameter;
 
 public class GatewayHistoryRepositoryTest {
 
+	private static final String RESPONSE = "Kylie is nice";
+
 	private static final String URL_TEMPLATE = "urlTemplate";
 
 	private final RestOperations restOperations = Mockito.mock(RestOperations.class);
@@ -34,6 +36,7 @@ public class GatewayHistoryRepositoryTest {
 		Mockito.when(gatewayParameter.urlTemplate()).thenReturn(URL_TEMPLATE);
 
 		Mockito.when(restOperations.getForEntity(URL_TEMPLATE, String.class, parameters)).thenReturn(entity);
+		Mockito.when(restOperations.getForObject(URL_TEMPLATE, String.class, parameters)).thenReturn(RESPONSE);
 	}
 
 	@Test()
@@ -41,6 +44,13 @@ public class GatewayHistoryRepositoryTest {
 		Assert.assertEquals(entity, gatewayHistoryRepository.history(gatewayParameter));
 
 		Mockito.verify(restOperations).getForEntity(URL_TEMPLATE, String.class, parameters);
+	}
+	
+	@Test()
+	public final void historyAsString() {
+		Assert.assertEquals(RESPONSE, gatewayHistoryRepository.historyAsString(gatewayParameter));
+		
+		Mockito.verify(restOperations).getForObject(URL_TEMPLATE, String.class, parameters);
 	}
 
 }

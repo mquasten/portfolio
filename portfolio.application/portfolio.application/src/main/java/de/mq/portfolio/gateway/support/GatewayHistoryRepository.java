@@ -6,6 +6,8 @@ import de.mq.portfolio.gateway.GatewayParameter;
 
 public interface GatewayHistoryRepository {
 
-	HttpEntity<String> history(GatewayParameter gatewayParameter);
+	HttpEntity<String> history(final GatewayParameter gatewayParameter);
+	
+	String historyAsString(final GatewayParameter gatewayParameter);
 
 }

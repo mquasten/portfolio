@@ -58,6 +58,7 @@ public class ExchangeRateGatewayParameterServiceIntegrationTest {
 		gatewayHistoryRepository = new GatewayHistoryRepositoryImpl(restOperations);
 		exchangeRateGatewayParameterService = new AbstractExchangeRateGatewayParameterService(gatewayParameterRepository, gatewayHistoryRepository) {
 
+			@SuppressWarnings("unchecked")
 			@Override
 			GatewayParameterAggregationBuilder<ExchangeRate> gatewayParameterAggregationBuilder() {
 				return gatewayParameterAggregationBuilder;

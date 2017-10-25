@@ -21,6 +21,14 @@ class GatewayHistoryRepositoryImpl implements GatewayHistoryRepository {
 	public final  HttpEntity<String> history(final GatewayParameter gatewayParameter) {
 		return restOperations.getForEntity(gatewayParameter.urlTemplate(),String.class, gatewayParameter.parameters());		
 	}
+
+
+
+	@Override
+	public String historyAsString(GatewayParameter gatewayParameter) {
+		return restOperations.getForObject(gatewayParameter.urlTemplate(), String.class, gatewayParameter.parameters());
+	}
+	
 	
 
 }

@@ -2,6 +2,7 @@ package de.mq.portfolio.gateway.support;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -104,6 +105,14 @@ public class ExchangeRateGatewayParameterServiceTest {
 		final Map<Class<?>, Object> injected = Arrays.asList(AbstractExchangeRateGatewayParameterService.class.getDeclaredFields()).stream().filter(field -> dependencies.containsKey(field.getType()))
 				.collect(Collectors.toMap(Field::getType, field -> ReflectionTestUtils.getField(service, field.getName())));
 		Assert.assertEquals(dependencies, injected);
+	}
+	
+	@Test
+	public final void aggregateBuilder() {
+	   final Collection<Method> methods = Arrays.asList(AbstractExchangeRateGatewayParameterService.class.getDeclaredMethods()).stream().filter(method -> method.getParameterTypes().length==0&& method.getReturnType().equals(GatewayParameterAggregationBuilder.class)).collect(Collectors.toSet());	
+	   Assert.assertEquals(3, methods.size());
+	   
+	   methods.forEach(method -> Assert.assertEquals(gatewayParameterAggregationBuilder, ReflectionTestUtils.invokeMethod(exchangeRateGatewayParameterService, method.getName())));
 	}
 
 }
