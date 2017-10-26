@@ -1,18 +1,12 @@
 package de.mq.portfolio.gateway.support;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
-
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.gateway.ExchangeRateGatewayParameterService;
@@ -73,24 +67,10 @@ abstract class AbstractExchangeRateGatewayParameterService implements ExchangeRa
 	@Override
 	public GatewayParameterAggregation<Collection<ExchangeRate>>   merge(final Collection<ExchangeRate> exhangerates, final Gateway gateway) {
 		final Collection<GatewayParameter> gatewayParameters = exhangerates.stream().map(exhangerate -> gatewayParameterRepository.gatewayParameter(gateway, exhangerate.source() +"-" + exhangerate.target())).collect(Collectors.toList());
-			
-		final int keySize =  DataAccessUtils.requiredSingleResult(gatewayParameters.stream().map(gatewayParameter -> Gateway.ids(gateway.id(gatewayParameter.code())).size()).collect(Collectors.toSet()));
+		System.out.println("--- AbstractShareGatewayParameterService.merge() ---");
+		final MergedGatewayParameterBuilder mergedGatewayParameterBuilder = mergedGatewayParameterBuilder();
 		
-		Assert.isTrue(keySize == 3, "Key should have 3 columns.");
-		//IntStream.range(0, keySize-2).forEach(i -> keys.add(StringUtils.collectionToCommaDelimitedString(gatewayParameters.stream().map(gatewayParameter -> Arrays.asList(gatewayParameter.code()).get(i)).collect(Collectors.toList()))));
-		//keys.addAll(gatewayParameters.stream().map(gatewayParameter -> gatewayParameter.code()).collect(Collectors.toList()));
-		final String key = StringUtils.collectionToDelimitedString(gatewayParameters.stream().map(gatewayParameter -> gatewayParameter.code()).collect(Collectors.toList()), "|");
-		
-	
-		final String urlTemplate = DataAccessUtils.requiredSingleResult(gatewayParameters.stream().map(GatewayParameter::urlTemplate).map(StringUtils::trimAllWhitespace).collect(Collectors.toSet()));
-		final Map<String, Collection<String>> parameters  = new HashMap<>();
-		gatewayParameters.forEach(gatewayParameter-> gatewayParameter.parameters().keySet().forEach(name -> parameters.put(name, new ArrayList<>())));
-		gatewayParameters.forEach(gatewayParameter-> gatewayParameter.parameters().entrySet().forEach(entry -> parameters.get(entry.getKey()).add(entry.getValue())));
-		final Collection<String> mergedParameters = parameters.entrySet().stream().map(entry -> String.format("%s:'%s'", entry.getKey(), StringUtils.collectionToCommaDelimitedString(entry.getValue()))).collect(Collectors.toList());
-		
-		final String spEl = String.format("{%s}",StringUtils.collectionToCommaDelimitedString(mergedParameters));
-		
-		return aggregateBuilder().withGatewayParameter(new GatewayParameterImpl(key, gateway, urlTemplate, spEl)).withDomain(exhangerates).build();
+		return aggregateBuilder().withGatewayParameter(mergedGatewayParameterBuilder.withGateway(gateway).withGatewayParameter(gatewayParameters).build()).withDomain(exhangerates).build(); 
 		
 	}
 	
@@ -98,6 +78,8 @@ abstract class AbstractExchangeRateGatewayParameterService implements ExchangeRa
 	@Lookup
 	abstract <T>  GatewayParameterAggregationBuilder<T> gatewayParameterAggregationBuilder();
 	
+	@Lookup
+	abstract MergedGatewayParameterBuilder mergedGatewayParameterBuilder();
 	
 	private GatewayParameterAggregationBuilder<ExchangeRate> builder() {
 		return  gatewayParameterAggregationBuilder();

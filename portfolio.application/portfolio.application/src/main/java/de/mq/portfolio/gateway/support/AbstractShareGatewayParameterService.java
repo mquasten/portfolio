@@ -1,19 +1,13 @@
 package de.mq.portfolio.gateway.support;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
@@ -62,24 +56,11 @@ abstract class AbstractShareGatewayParameterService implements ShareGatewayParam
 	@Override
 	public GatewayParameterAggregation<Collection<Share>>   merge(final Collection<Share> shares, final Gateway gateway) {
 		final Collection<GatewayParameter> gatewayParameters = shares.stream().map(share -> gatewayParameterRepository.gatewayParameter(gateway, share.code())).collect(Collectors.toList());
-			
-		final int keySize =  DataAccessUtils.requiredSingleResult(gatewayParameters.stream().map(gatewayParameter -> Gateway.ids(gateway.id(gatewayParameter.code())).size()).collect(Collectors.toSet()));
 		
-		Assert.isTrue(keySize >= 2, "Key should have at least 2 columns.");
-		final Collection<String> keys = new ArrayList<>();
-		IntStream.range(0, keySize-1).forEach(i -> keys.add(StringUtils.collectionToCommaDelimitedString(gatewayParameters.stream().map(gatewayParameter -> Gateway.ids(gateway.id(gatewayParameter.code())).get(i)).collect(Collectors.toList()))));
+		System.out.println("*** AbstractExchangeRateGatewayParameterService.merge() ***");
 		
-		final String key = StringUtils.collectionToDelimitedString(keys, "-");
-		
-		final String urlTemplate = DataAccessUtils.requiredSingleResult(gatewayParameters.stream().map(GatewayParameter::urlTemplate).map(StringUtils::trimAllWhitespace).collect(Collectors.toSet()));
-		final Map<String, Collection<String>> parameters  = new HashMap<>();
-		gatewayParameters.forEach(gatewayParameter-> gatewayParameter.parameters().keySet().forEach(name -> parameters.put(name, new ArrayList<>())));
-		gatewayParameters.forEach(gatewayParameter-> gatewayParameter.parameters().entrySet().forEach(entry -> parameters.get(entry.getKey()).add(entry.getValue())));
-		final Collection<String> mergedParameters = parameters.entrySet().stream().map(entry -> String.format("%s:'%s'", entry.getKey(), StringUtils.collectionToCommaDelimitedString(entry.getValue()))).collect(Collectors.toList());
-		
-		final String spEl = String.format("{%s}",StringUtils.collectionToCommaDelimitedString(mergedParameters));
-		
-		return gatewayParameterAggregationBuilderShareCollection().withGatewayParameter(new GatewayParameterImpl(key, gateway, urlTemplate, spEl)).withDomain(shares).build();
+		return gatewayParameterAggregationBuilderShareCollection().withGatewayParameter( new MergedGatewayParameterBuilderImpl().withGatewayParameter(gatewayParameters).withGateway(gateway).build()).withDomain(shares).build();
+	
 		
 	}
 
@@ -105,4 +86,6 @@ abstract class AbstractShareGatewayParameterService implements ShareGatewayParam
 	private GatewayParameterAggregationBuilder<Collection<Share>> gatewayParameterAggregationBuilderShareCollection() {
 		return  gatewayParameterAggregationBuilder();
 	} 
+	
+	
 }

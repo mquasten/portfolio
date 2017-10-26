@@ -53,6 +53,8 @@ public class ExchangeRateGatewayParameterServiceIntegrationTest {
 
 	private final GatewayParameterAggregationBuilderImpl<ExchangeRate> gatewayParameterAggregationBuilder = new GatewayParameterAggregationBuilderImpl<>();
 
+	private final MergedGatewayParameterBuilder mergedGatewayParameterBuilder = new MergedGatewayParameterBuilderImpl();
+	
 	@Before
 	public final void setup() {
 		gatewayHistoryRepository = new GatewayHistoryRepositoryImpl(restOperations);
@@ -62,6 +64,12 @@ public class ExchangeRateGatewayParameterServiceIntegrationTest {
 			@Override
 			GatewayParameterAggregationBuilder<ExchangeRate> gatewayParameterAggregationBuilder() {
 				return gatewayParameterAggregationBuilder;
+			}
+
+
+			@Override
+			MergedGatewayParameterBuilder mergedGatewayParameterBuilder() {
+				return mergedGatewayParameterBuilder;
 			}
 		};
 
