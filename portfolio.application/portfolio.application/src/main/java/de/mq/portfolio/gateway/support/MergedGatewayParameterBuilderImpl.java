@@ -27,11 +27,16 @@ class MergedGatewayParameterBuilderImpl implements MergedGatewayParameterBuilder
 	 */
 	@Override
 	public MergedGatewayParameterBuilder withGatewayParameter(final Collection<GatewayParameter> gatewayParameters) {
+		gatewayParameterExistsGuard(gatewayParameters);
 		Assert.isTrue(this.gatewayParameters.isEmpty(), "GatewayParameters already assigned.");
-		Assert.notNull(gatewayParameters, "At least one GatewayParameter is required.");
-		Assert.isTrue(!gatewayParameters.isEmpty(), "At least one GatewayParameter is required.");
 		this.gatewayParameters.addAll(gatewayParameters);
 		return this;
+	}
+
+	private void gatewayParameterExistsGuard(final Collection<GatewayParameter> gatewayParameters) {
+		Assert.notNull(gatewayParameters, "At least one GatewayParameter is required.");
+		Assert.isTrue(!gatewayParameters.isEmpty(), "At least one GatewayParameter is required.");
+	
 	}
 	
 	/* (non-Javadoc)
@@ -39,10 +44,14 @@ class MergedGatewayParameterBuilderImpl implements MergedGatewayParameterBuilder
 	 */
 	@Override
 	public MergedGatewayParameterBuilder withGateway(Gateway gateway) {
-		Assert.notNull(gateway, "Gateway is mandatory");
+		gatewayExistsGuard(gateway);
 		Assert.isNull(this.gateway, "Gateway is already assigned.");
 		this.gateway=gateway;
 		return this;
+	}
+
+	private void gatewayExistsGuard(Gateway gateway) {
+		Assert.notNull(gateway, "Gateway is mandatory");
 	}
 	
 	/* (non-Javadoc)
@@ -50,6 +59,8 @@ class MergedGatewayParameterBuilderImpl implements MergedGatewayParameterBuilder
 	 */
 	@Override
 	public GatewayParameter  build() {
+		gatewayParameterExistsGuard(gatewayParameters);
+		gatewayExistsGuard(gateway);
 		final int keySize =  DataAccessUtils.requiredSingleResult(gatewayParameters.stream().map(gatewayParameter -> Gateway.ids(gateway.id(gatewayParameter.code())).size()).collect(Collectors.toSet()));
 
 		Assert.isTrue(keySize >=  2, "Key should have al least  2 columns.");

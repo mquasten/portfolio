@@ -54,10 +54,10 @@ public class ShareGatewayParameterServiceTest {
 
 		Mockito.when(share.code()).thenReturn(CODE);
 		Mockito.when(gatewayParameterRepository.gatewayParameter(Gateway.GoogleRateHistory, CODE)).thenReturn(gatewayParameter);
-		Mockito.doAnswer(answer -> {
-			return new GatewayParameterAggregationBuilderImpl<>();
-		}).when(shareGatewayParameterService).gatewayParameterAggregationBuilder();
+		Mockito.doAnswer(answer -> new GatewayParameterAggregationBuilderImpl<>()).when(shareGatewayParameterService).gatewayParameterAggregationBuilder();
 
+		
+		Mockito.doAnswer(answer -> new MergedGatewayParameterBuilderImpl() ).when(shareGatewayParameterService).mergedGatewayParameterBuilder();
 		Mockito.when(gatewayParameterRepository.gatewayParameters(CODE)).thenReturn(Arrays.asList(gatewayParameter));
 	}
 

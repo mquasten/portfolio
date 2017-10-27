@@ -56,12 +56,8 @@ abstract class AbstractShareGatewayParameterService implements ShareGatewayParam
 	@Override
 	public GatewayParameterAggregation<Collection<Share>>   merge(final Collection<Share> shares, final Gateway gateway) {
 		final Collection<GatewayParameter> gatewayParameters = shares.stream().map(share -> gatewayParameterRepository.gatewayParameter(gateway, share.code())).collect(Collectors.toList());
-		
-		System.out.println("*** AbstractExchangeRateGatewayParameterService.merge() ***");
-		
-		return gatewayParameterAggregationBuilderShareCollection().withGatewayParameter( new MergedGatewayParameterBuilderImpl().withGatewayParameter(gatewayParameters).withGateway(gateway).build()).withDomain(shares).build();
-	
-		
+		final MergedGatewayParameterBuilder mergedGatewayParameterBuilder = mergedGatewayParameterBuilder();
+		return gatewayParameterAggregationBuilderShareCollection().withGatewayParameter( mergedGatewayParameterBuilder.withGatewayParameter(gatewayParameters).withGateway(gateway).build()).withDomain(shares).build();
 	}
 
 	
@@ -75,6 +71,9 @@ abstract class AbstractShareGatewayParameterService implements ShareGatewayParam
 	public final String history(final GatewayParameter gatewayParameter) {
 		return gatewayHistoryRepository.history(gatewayParameter).getBody();
 	}
+	
+	@Lookup
+	abstract MergedGatewayParameterBuilder mergedGatewayParameterBuilder();
 
 	@Lookup
 	abstract<T>  GatewayParameterAggregationBuilder<T> gatewayParameterAggregationBuilder();
