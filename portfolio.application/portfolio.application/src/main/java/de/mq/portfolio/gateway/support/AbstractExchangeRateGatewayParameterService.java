@@ -67,11 +67,8 @@ abstract class AbstractExchangeRateGatewayParameterService implements ExchangeRa
 	@Override
 	public GatewayParameterAggregation<Collection<ExchangeRate>>   merge(final Collection<ExchangeRate> exhangerates, final Gateway gateway) {
 		final Collection<GatewayParameter> gatewayParameters = exhangerates.stream().map(exhangerate -> gatewayParameterRepository.gatewayParameter(gateway, exhangerate.source() +"-" + exhangerate.target())).collect(Collectors.toList());
-		System.out.println("--- AbstractShareGatewayParameterService.merge() ---");
 		final MergedGatewayParameterBuilder mergedGatewayParameterBuilder = mergedGatewayParameterBuilder();
-		
 		return aggregateBuilder().withGatewayParameter(mergedGatewayParameterBuilder.withGateway(gateway).withGatewayParameter(gatewayParameters).build()).withDomain(exhangerates).build(); 
-		
 	}
 	
 	
@@ -86,7 +83,6 @@ abstract class AbstractExchangeRateGatewayParameterService implements ExchangeRa
 	} 
 	
 	private GatewayParameterAggregationBuilder<Collection<ExchangeRate>> aggregateBuilder() {
-	
 		return  gatewayParameterAggregationBuilder();
 	} 
 	

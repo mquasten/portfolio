@@ -33,12 +33,15 @@ public class ExchangeRateGatewayParameterServiceTest {
 	private final Map<Class<?>, Object> dependencies = new HashMap<>();
 	private GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
 	private final ExchangeRate exchangeRate = Mockito.mock(ExchangeRate.class);
+	
+	
 
 	@SuppressWarnings("unchecked")
-	private final GatewayParameterAggregationBuilder<ExchangeRate> gatewayParameterAggregationBuilder = Mockito.mock(GatewayParameterAggregationBuilder.class);
+	private final GatewayParameterAggregationBuilder<Object> gatewayParameterAggregationBuilder = Mockito.mock(GatewayParameterAggregationBuilder.class);
 	@SuppressWarnings("unchecked")
-	private GatewayParameterAggregation<ExchangeRate> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
-
+	private GatewayParameterAggregation<Object> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
+	private final MergedGatewayParameterBuilder mergedGatewayParameterBuilder =  Mockito.mock(MergedGatewayParameterBuilder.class);
+	private final GatewayParameter mergedGatewayParameter = Mockito.mock(GatewayParameter.class); 
 	@SuppressWarnings("unchecked")
 	private final HttpEntity<String> httpEntity = Mockito.mock(HttpEntity.class);
 
@@ -60,6 +63,11 @@ public class ExchangeRateGatewayParameterServiceTest {
 
 		Mockito.when(gatewayHistoryRepository.history(gatewayParameter)).thenReturn(httpEntity);
 		Mockito.when(httpEntity.getBody()).thenReturn(CONTENT);
+		Mockito.when(mergedGatewayParameterBuilder.withGateway(Gateway.YahooRealtimeExchangeRates)).thenReturn(mergedGatewayParameterBuilder);
+		Mockito.when(mergedGatewayParameterBuilder.withGatewayParameter(Arrays.asList(gatewayParameter))).thenReturn(mergedGatewayParameterBuilder);
+		Mockito.when(mergedGatewayParameterBuilder.build()).thenReturn(mergedGatewayParameter);
+		
+		Mockito.doAnswer(answer -> mergedGatewayParameterBuilder).when(exchangeRateGatewayParameterService).mergedGatewayParameterBuilder();
 	}
 
 	@Test
@@ -113,6 +121,19 @@ public class ExchangeRateGatewayParameterServiceTest {
 	   Assert.assertEquals(3, methods.size());
 	   
 	   methods.forEach(method -> Assert.assertEquals(gatewayParameterAggregationBuilder, ReflectionTestUtils.invokeMethod(exchangeRateGatewayParameterService, method.getName())));
+	}
+	
+	@Test
+	public final void merge() {
+		 Mockito.when(gatewayParameterRepository.gatewayParameter(Gateway.YahooRealtimeExchangeRates, exchangeRate.source() + "-" + exchangeRate.target())).thenReturn(gatewayParameter);
+		
+		Assert.assertEquals(gatewayParameterAggregation, exchangeRateGatewayParameterService.merge(Arrays.asList(exchangeRate), Gateway.YahooRealtimeExchangeRates));
+
+		Mockito.verify(mergedGatewayParameterBuilder).withGateway(Gateway.YahooRealtimeExchangeRates);
+		Mockito.verify(mergedGatewayParameterBuilder).withGatewayParameter(Arrays.asList(gatewayParameter));
+		Mockito.verify(mergedGatewayParameterBuilder).build();
+		Mockito.verify(gatewayParameterAggregationBuilder).withGatewayParameter(mergedGatewayParameter);
+		Mockito.verify(gatewayParameterAggregationBuilder).withDomain(Arrays.asList(exchangeRate));
 	}
 
 }
