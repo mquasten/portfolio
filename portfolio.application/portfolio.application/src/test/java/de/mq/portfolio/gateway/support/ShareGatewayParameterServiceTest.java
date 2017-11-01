@@ -42,6 +42,8 @@ public class ShareGatewayParameterServiceTest {
 	private final GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
 	private final GatewayHistoryRepository gatewayHistoryRepository = Mockito.mock(GatewayHistoryRepository.class);
 	private final Map<Class<?>, Object> dependencies = new HashMap<>();
+	
+	private final MergedGatewayParameterBuilder mergedGatewayParameterBuilder = Mockito.mock(MergedGatewayParameterBuilder.class);
 
 	@Before
 	public final void setup() {
@@ -57,7 +59,7 @@ public class ShareGatewayParameterServiceTest {
 		Mockito.doAnswer(answer -> new GatewayParameterAggregationBuilderImpl<>()).when(shareGatewayParameterService).gatewayParameterAggregationBuilder();
 
 		
-		Mockito.doAnswer(answer -> new MergedGatewayParameterBuilderImpl() ).when(shareGatewayParameterService).mergedGatewayParameterBuilder();
+		Mockito.doAnswer(answer ->  mergedGatewayParameterBuilder ).when(shareGatewayParameterService).mergedGatewayParameterBuilder();
 		Mockito.when(gatewayParameterRepository.gatewayParameters(CODE)).thenReturn(Arrays.asList(gatewayParameter));
 	}
 
@@ -114,25 +116,38 @@ public class ShareGatewayParameterServiceTest {
 	}
 	@Test
 	public final void merge() {
+		final Collection<GatewayParameter> gatewayParameters = new ArrayList<>();
+		final Share jnj = prepareForShare(gatewayParameters, CODE);
+		final Share pg = prepareForShare(gatewayParameters, "PG");
+		final Share ko = prepareForShare(gatewayParameters, "KO");
+		final Share sap = prepareForShare(gatewayParameters, "SAP.DE");
+		final Share vz = prepareForShare(gatewayParameters, "VZ" );
 		
-		final Share jnj = prepareForShare(CODE, "url?s={query }");
-		final Share pg = prepareForShare("PG", "url?s={ query }");
-		final Share ko = prepareForShare("KO", "url?s={\r    query  \r    }");
-		final Share sap = prepareForShare("SAP.DE","url?s={\tquery\t}"	);
-		final Share vz = prepareForShare("VZ",  "url?s={\t\n query \t\n}" );
+		final GatewayParameter mergedGatewayParameter = Mockito.mock(GatewayParameter.class);
+		final String aggregatedCode = String.format("%s,%s,%s,%s,%s", jnj.code(), pg.code(), ko.code(), sap.code(),vz.code());
+		final Map<String,String> parameters = new HashMap<>();
+		parameters.put("query", aggregatedCode);
+		Mockito.when(mergedGatewayParameter.code()).thenReturn(aggregatedCode);
+		Mockito.when(mergedGatewayParameter.parameters()).thenReturn(parameters);
 	
+		Mockito.when(mergedGatewayParameter.gateway()).thenReturn(Gateway.YahooRealtimeRate);
+		Mockito.when(mergedGatewayParameter.urlTemplate()).thenReturn(URL);
+		
+		Mockito.when(mergedGatewayParameterBuilder.withGateway(Gateway.YahooRealtimeRate)).thenReturn(mergedGatewayParameterBuilder);
+		Mockito.when(mergedGatewayParameterBuilder.withGatewayParameter(gatewayParameters)).thenReturn(mergedGatewayParameterBuilder);
+		Mockito.when(mergedGatewayParameterBuilder.build()).thenReturn(mergedGatewayParameter);
 		
 		final GatewayParameterAggregation<Collection<Share>>  aggregation = shareGatewayParameterService.merge(Arrays.asList(jnj, pg,ko, sap, vz), Gateway.YahooRealtimeRate);
 		final String code = "JNJ,PG,KO,SAP.DE,VZ";
 		
-		final GatewayParameter mergedGatewayParameter = aggregation.gatewayParameter(Gateway.YahooRealtimeRate);
-		Assert.assertEquals(code, mergedGatewayParameter.code());
-		Assert.assertEquals(URL, mergedGatewayParameter.urlTemplate());
-		Assert.assertEquals(Gateway.YahooRealtimeRate, mergedGatewayParameter.gateway());
-		Assert.assertEquals(1, mergedGatewayParameter.parameters().size());
+		final GatewayParameter result = aggregation.gatewayParameter(Gateway.YahooRealtimeRate);
+		Assert.assertEquals(code, result.code());
+		Assert.assertEquals(URL, result.urlTemplate());
+		Assert.assertEquals(Gateway.YahooRealtimeRate, result.gateway());
+		Assert.assertEquals(1, result.parameters().size());
 		
-		Assert.assertEquals(QUERY_PARAMETER_NAME, mergedGatewayParameter.parameters().keySet().stream().findAny().get());
-		Assert.assertEquals(code, mergedGatewayParameter.parameters().values().stream().findAny().get());
+		Assert.assertEquals(QUERY_PARAMETER_NAME, result.parameters().keySet().stream().findAny().get());
+		Assert.assertEquals(code, result.parameters().values().stream().findAny().get());
 		
 		Assert.assertEquals(5, aggregation.domain().size());
 		final List<Share> aggregatedShares = new ArrayList<>(aggregation.domain());
@@ -144,27 +159,14 @@ public class ShareGatewayParameterServiceTest {
 		
 	}
 	
-	@Test(expected=IllegalArgumentException.class)
-	public final void mergeInvalidKeysize() {
-		
-		final Share jnj = prepareForShare(CODE, "url?s={query }");
-		final Gateway gateway = Mockito.mock(Gateway.class);
-		Mockito.when(gatewayParameter.code()).thenReturn(CODE);
-		Mockito.when(gatewayParameterRepository.gatewayParameter(gateway, CODE)).thenReturn(gatewayParameter);
-		Mockito.when(gateway.id(Mockito.any())).thenReturn(CODE);
-		
-		
-		shareGatewayParameterService.merge(Arrays.asList(jnj),gateway);
-		
-	}
 
-	private Share prepareForShare(final String code, final String url) {
+	private Share prepareForShare(final Collection<GatewayParameter> gatewayParameters, final String code) {
 		final Share share = Mockito.mock(Share.class);
 		final GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
 		Mockito.when(gatewayParameter.code()).thenReturn(code);
-		
+		gatewayParameters.add(gatewayParameter);
 		Mockito.when(share.code()).thenReturn(code);
-		Mockito.when(gatewayParameter.urlTemplate()).thenReturn(url);
+		
 		Mockito.when(gatewayParameterRepository.gatewayParameter(Gateway.YahooRealtimeRate, code)).thenReturn(gatewayParameter);
 		final Map<String,String> parameters = new HashMap<>();
 		parameters.put(QUERY_PARAMETER_NAME, code);
