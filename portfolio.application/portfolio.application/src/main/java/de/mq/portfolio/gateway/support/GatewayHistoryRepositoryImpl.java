@@ -26,6 +26,8 @@ class GatewayHistoryRepositoryImpl implements GatewayHistoryRepository {
 
 	@Override
 	public String historyAsString(GatewayParameter gatewayParameter) {
+		System.out.println(gatewayParameter.urlTemplate());
+		System.out.println(gatewayParameter.parameters());
 		return restOperations.getForObject(gatewayParameter.urlTemplate(), String.class, gatewayParameter.parameters());
 	}
 	
