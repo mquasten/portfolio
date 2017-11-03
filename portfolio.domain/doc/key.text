@@ -13,3 +13,6 @@ Thank you for choosing currencylayer.
 Best regards,
 
 currencylayer Support 
+
+http://download.finance.yahoo.com/d/quotes.csv?s={query}&f=sl1d1t1
+{query=EUREUR=X,USDEUR=X}

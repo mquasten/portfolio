@@ -27,6 +27,9 @@
 
 	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate" />
 
+
+
+
 	<bean id="yahooRealtimeRepository"
 		class="de.mq.portfolio.share.support.RealTimeRateYahooRestRepositoryImpl" />
 		
@@ -41,7 +44,7 @@
 	<bean class="de.mq.portfolio.gateway.support.GatewayHistoryRepositoryImpl" />
 
 
-	<bean class="de.mq.portfolio.exchangerate.support.AbstractRealtimeExchangeRateRepository" />
+	<bean class="de.mq.portfolio.exchangerate.support.RealtimeExchangeRateApiLayerRepository" />
 
 
 	<bean
@@ -51,6 +54,7 @@
 
 	<bean scope="prototype"
 		class="de.mq.portfolio.exchangerate.support.ExchangeRateCalculatorBuilderImpl" />
+
 
 
 

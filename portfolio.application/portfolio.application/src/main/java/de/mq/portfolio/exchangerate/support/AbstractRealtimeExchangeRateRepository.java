@@ -17,8 +17,8 @@ import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.data.util.ReflectionUtils;
-import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
+
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
@@ -28,11 +28,11 @@ import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.support.DataImpl;
 import de.mq.portfolio.support.ExceptionTranslationBuilder;
 
-@Repository
+
 public abstract class AbstractRealtimeExchangeRateRepository implements RealtimeExchangeRateRepository {
 
 	private final DateFormat dateFormat;
-	//private final RestOperations restOperations;
+
 	
 	GatewayHistoryRepository gatewayHistoryRepository;
 
