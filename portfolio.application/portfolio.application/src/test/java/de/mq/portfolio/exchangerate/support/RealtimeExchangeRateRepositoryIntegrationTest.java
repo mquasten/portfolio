@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -27,7 +26,7 @@ import de.mq.portfolio.gateway.GatewayParameterAggregation;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/application-test.xml", "/mongo-test.xml" })
 @TestPropertySource(properties = { "realtime.exchangerates.dateformat=" + RealtimeExchangeRateRepositoryTest.EXCHANGERATES_DATEFORMAT })
-@Ignore
+
 public class RealtimeExchangeRateRepositoryIntegrationTest {
 
 	static final String URL_PATH = "http://www.apilayer.net/api/live?access_key=be9610f3981bac8e49bcb4d90329c376&currencies={currencies}";
@@ -60,10 +59,10 @@ public class RealtimeExchangeRateRepositoryIntegrationTest {
 		Assert.assertTrue(rate(results, "USDEUR") > 0.8d && rate(results, "USDEUR") < 1d);
 		Assert.assertTrue(rate(results, "USDGBP") > 0.7d && rate(results, "USDGBP") < 0.8d);
 		Assert.assertTrue(rate(results, "EUREUR") == 1d) ;
-		//results.stream().map(er -> er.rates().get(0).date()).forEach(date -> System.out.println((Math.abs(date.getTime() - System.currentTimeMillis()) / 1000 / 60/60)));
+		results.stream().map(er -> er.rates().get(0).date()).forEach(date -> Assert.assertEquals(30, Math.abs(date.getTime()  -   System.currentTimeMillis()) / 1000 / 60 ));
 	}
 
-	protected double rate(final Collection<ExchangeRate> results, String code) {
+	private double rate(final Collection<ExchangeRate> results, String code) {
 		return DataAccessUtils.requiredSingleResult(results.stream().filter(er -> (er.source() + er.target()).equals(code)).map(er -> er.rates().get(0).value()).collect(Collectors.toSet())).doubleValue();
 	}
 

@@ -1,5 +1,6 @@
 package de.mq.portfolio.exchangerate.support;
 
+import java.lang.reflect.Modifier;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Clock;
@@ -14,7 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.util.ReflectionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestOperations;
@@ -23,22 +24,21 @@ import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.GatewayParameterAggregation;
+import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.support.DataImpl;
 
 @Repository
-class RealtimeExchangeRateApiLayerRepository implements RealtimeExchangeRateRepository {
-
-	private final DateFormat dateFormat;
-
-	
+class RealtimeExchangeRateApiLayerRepository implements RealtimeExchangeRateRepository {	
 	
 	
 	private final RestOperations restOperations;
+	
+	private final DateFormat df = new SimpleDateFormat( "yyyy-MM-ddHHmm");
 
 	@Autowired
-	RealtimeExchangeRateApiLayerRepository(final RestOperations restOperations, @Value("${realtime.exchangerates.dateformat}") final String dateFormat) {
+	RealtimeExchangeRateApiLayerRepository(final RestOperations restOperations) {
 		this.restOperations = restOperations;
-		this.dateFormat = new SimpleDateFormat(dateFormat);
+	
 	}
 
 	/*
@@ -62,24 +62,33 @@ class RealtimeExchangeRateApiLayerRepository implements RealtimeExchangeRateRepo
 		
 		final List<ExchangeRate> results = new ArrayList<>();
 		final Date estimatedDate =  Date.from(ZonedDateTime.now(Clock.systemDefaultZone()).minusMinutes(30).toInstant());;
+	
 		for(final Entry<String,Number> entry : ((Map<String,Number>) jsonAsMap.get("quotes")).entrySet()) {
 			Assert.isTrue(entry.getKey().length()==6, "Invalid Currency.");
 			final ExchangeRate exchangeRate = new ExchangeRateImpl(entry.getKey().substring(0, 3), entry.getKey().substring(3, 6));
-		    
-			exchangeRate.assign(Arrays.asList(new DataImpl(estimatedDate, entry.getValue().doubleValue())));
+			
+
+			final Data data = newData(estimatedDate, entry.getValue().doubleValue());
+			exchangeRate.assign(Arrays.asList(data));
 			results.add(exchangeRate);
 		}
-		results.add(new ExchangeRateImpl("EUR", "EUR" , Arrays.asList(new DataImpl(estimatedDate, 1d))));
+		results.add(new ExchangeRateImpl("EUR", "EUR" , Arrays.asList(newData(estimatedDate, 1d))));
 		
 		return results;
 		
 		
 	}
 
+	private Data newData(final Date estimatedDate, final double value) {
+		final Data data = new DataImpl(estimatedDate, value);
+		Arrays.asList(data.getClass().getDeclaredFields()).stream().filter(field -> field.getType().equals(DateFormat.class)).forEach(field -> ReflectionUtils.setField(field, data, df));
+		Arrays.asList(data.getClass().getDeclaredFields()).stream().filter(field ->  !Modifier.isStatic(field.getModifiers()) && field.getType().equals(String.class)).forEach(field -> ReflectionUtils.setField(field,data, df.format(estimatedDate)));
+		return data;
+	}
+
 	@Override
 	public Gateway supports(Collection<ExchangeRate> exchangeRates) {
-		// TODO Auto-generated method stub
-		return null;
+		return Gateway.YahooRealtimeExchangeRates;
 	}
 
 	
