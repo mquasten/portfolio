@@ -63,7 +63,7 @@ public class ExchangeRateGatewayParameterServiceTest {
 
 		Mockito.when(gatewayHistoryRepository.history(gatewayParameter)).thenReturn(httpEntity);
 		Mockito.when(httpEntity.getBody()).thenReturn(CONTENT);
-		Mockito.when(mergedGatewayParameterBuilder.withGateway(Gateway.YahooRealtimeExchangeRates)).thenReturn(mergedGatewayParameterBuilder);
+		Mockito.when(mergedGatewayParameterBuilder.withGateway(Gateway.ApiLayerRealtimeExchangeRates)).thenReturn(mergedGatewayParameterBuilder);
 		Mockito.when(mergedGatewayParameterBuilder.withGatewayParameter(Arrays.asList(gatewayParameter))).thenReturn(mergedGatewayParameterBuilder);
 		Mockito.when(mergedGatewayParameterBuilder.build()).thenReturn(mergedGatewayParameter);
 		
@@ -125,11 +125,11 @@ public class ExchangeRateGatewayParameterServiceTest {
 	
 	@Test
 	public final void merge() {
-		 Mockito.when(gatewayParameterRepository.gatewayParameter(Gateway.YahooRealtimeExchangeRates, exchangeRate.source() + "-" + exchangeRate.target())).thenReturn(gatewayParameter);
+		 Mockito.when(gatewayParameterRepository.gatewayParameter(Gateway.ApiLayerRealtimeExchangeRates, exchangeRate.source() + "-" + exchangeRate.target())).thenReturn(gatewayParameter);
 		
-		Assert.assertEquals(gatewayParameterAggregation, exchangeRateGatewayParameterService.merge(Arrays.asList(exchangeRate), Gateway.YahooRealtimeExchangeRates));
+		Assert.assertEquals(gatewayParameterAggregation, exchangeRateGatewayParameterService.merge(Arrays.asList(exchangeRate), Gateway.ApiLayerRealtimeExchangeRates));
 
-		Mockito.verify(mergedGatewayParameterBuilder).withGateway(Gateway.YahooRealtimeExchangeRates);
+		Mockito.verify(mergedGatewayParameterBuilder).withGateway(Gateway.ApiLayerRealtimeExchangeRates);
 		Mockito.verify(mergedGatewayParameterBuilder).withGatewayParameter(Arrays.asList(gatewayParameter));
 		Mockito.verify(mergedGatewayParameterBuilder).build();
 		Mockito.verify(gatewayParameterAggregationBuilder).withGatewayParameter(mergedGatewayParameter);

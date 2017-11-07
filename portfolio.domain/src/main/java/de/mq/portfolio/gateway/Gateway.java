@@ -17,7 +17,7 @@ public enum Gateway {
 	YahooRealtimeRate("YRR", GatewayGroup.RealtimeRate, ".csv"),
 	GoogleRealtimeRate("GRR", GatewayGroup.RealtimeRate, ".csv"),
 	CentralBankExchangeRates("BER", GatewayGroup.ExchangeRate, ".csv"),
-	YahooRealtimeExchangeRates("YRE", GatewayGroup.ExchangeRate, ".csv");
+	ApiLayerRealtimeExchangeRates("ARE", GatewayGroup.ExchangeRate, ".csv");
 	
 	public enum GatewayGroup {
 		RateHistory,

@@ -1,0 +1,2 @@
+EUR-EUR;ApiLayerRealtimeExchangeRates;http://www.apilayer.net/api/live?access_key=be9610f3981bac8e49bcb4d90329c376&currencies={currencies};{currencies:#ids[1]}
+USD-EUR;ApiLayerRealtimeExchangeRates;http://www.apilayer.net/api/live?access_key=be9610f3981bac8e49bcb4d90329c376&currencies={currencies};{currencies:#ids[1]}

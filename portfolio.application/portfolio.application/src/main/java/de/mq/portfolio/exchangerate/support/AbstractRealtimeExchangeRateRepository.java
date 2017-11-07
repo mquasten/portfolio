@@ -51,7 +51,7 @@ public abstract class AbstractRealtimeExchangeRateRepository implements Realtime
 
 	@Override
 	public final List<ExchangeRate> exchangeRates(final GatewayParameterAggregation<Collection<ExchangeRate>> gatewayParameterAggregation) {
-		final GatewayParameter gatewayParameter = gatewayParameterAggregation.gatewayParameter(Gateway.YahooRealtimeExchangeRates);
+		final GatewayParameter gatewayParameter = gatewayParameterAggregation.gatewayParameter(Gateway.ApiLayerRealtimeExchangeRates);
 		return exceptionTranslationBuilderResult().withResource(() -> new BufferedReader(new StringReader(gatewayHistoryRepository.historyAsString(gatewayParameter)))).withTranslation(IllegalStateException.class, Arrays.asList(IOException.class))
 				.withStatement(bufferedReader -> {
 					return read(bufferedReader);
@@ -89,7 +89,7 @@ public abstract class AbstractRealtimeExchangeRateRepository implements Realtime
 
 	@Override
 	public Gateway supports(Collection<ExchangeRate> exchangeRates) {
-		return Gateway.YahooRealtimeExchangeRates;
+		return Gateway.ApiLayerRealtimeExchangeRates;
 
 	}
 

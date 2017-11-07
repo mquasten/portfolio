@@ -117,7 +117,7 @@ public class MergedGatewayParameterBuilderTest {
 	
 	@Test(expected=IllegalArgumentException.class)
 	public void gatewayParameterExistsGuard() {
-		new MergedGatewayParameterBuilderImpl().withGateway(Gateway.YahooRealtimeExchangeRates).build();
+		new MergedGatewayParameterBuilderImpl().withGateway(Gateway.ApiLayerRealtimeExchangeRates).build();
 	}
 
 }

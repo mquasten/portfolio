@@ -1,4 +1,0 @@
-EUR-EUR;YahooRealtimeExchangeRates;http://download.finance.yahoo.com/d/quotes.csv?s={query}&f=sl1d1t1;{query:#ids[0]+#ids[1]+'=X'}
-USD-USD;YahooRealtimeExchangeRates;http://download.finance.yahoo.com/d/quotes.csv?s={query}&f=sl1d1t1;{query:#ids[0]+#ids[1]+'=X'}
-USD-EUR;YahooRealtimeExchangeRates;http://download.finance.yahoo.com/d/quotes.csv?s={query}&f=sl1d1t1;{query:#ids[0]+#ids[1]+'=X'}
-EUR-USD;YahooRealtimeExchangeRates;http://download.finance.yahoo.com/d/quotes.csv?s={query}&f=sl1d1t1;{query:#ids[0]+#ids[1]+'=X'}

@@ -136,14 +136,14 @@ public class ExchangeRateServiceTest {
 		@SuppressWarnings("unchecked")
 		final GatewayParameterAggregation<Collection<ExchangeRate>> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
 		Mockito.doReturn(expectedExchangeRates).when(realtimeExchangeRateRepository).exchangeRates(gatewayParameterAggregation);
-		Mockito.when(realtimeExchangeRateRepository.supports(Arrays.asList(exchangeRate))).thenReturn(Gateway.YahooRealtimeExchangeRates);
+		Mockito.when(realtimeExchangeRateRepository.supports(Arrays.asList(exchangeRate))).thenReturn(Gateway.ApiLayerRealtimeExchangeRates);
 	
-		Mockito.when(exchangeRateGatewayParameterService.merge(Arrays.asList(exchangeRate), Gateway.YahooRealtimeExchangeRates)).thenReturn(gatewayParameterAggregation);
+		Mockito.when(exchangeRateGatewayParameterService.merge(Arrays.asList(exchangeRate), Gateway.ApiLayerRealtimeExchangeRates)).thenReturn(gatewayParameterAggregation);
 		
 		Assert.assertEquals(expectedExchangeRates, exchangeRateService.realTimeExchangeRates(Arrays.asList(exchangeRate)));
 		Mockito.verify(realtimeExchangeRateRepository).exchangeRates(gatewayParameterAggregation);
 		Mockito.verify(realtimeExchangeRateRepository).supports(Arrays.asList(exchangeRate));
-		Mockito.verify(exchangeRateGatewayParameterService).merge(Arrays.asList(exchangeRate), Gateway.YahooRealtimeExchangeRates);
+		Mockito.verify(exchangeRateGatewayParameterService).merge(Arrays.asList(exchangeRate), Gateway.ApiLayerRealtimeExchangeRates);
 		
 	}
 }

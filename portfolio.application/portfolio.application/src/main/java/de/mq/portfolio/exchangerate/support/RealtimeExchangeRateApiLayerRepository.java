@@ -31,6 +31,8 @@ import de.mq.portfolio.share.support.DataImpl;
 class RealtimeExchangeRateApiLayerRepository implements RealtimeExchangeRateRepository {	
 	
 	
+	private static final String QUOTES_KEY = "quotes";
+
 	private final RestOperations restOperations;
 	
 	private final DateFormat df = new SimpleDateFormat( "yyyy-MM-ddHHmm");
@@ -51,23 +53,14 @@ class RealtimeExchangeRateApiLayerRepository implements RealtimeExchangeRateRepo
 	@SuppressWarnings("unchecked")
 	@Override
 	public final List<ExchangeRate> exchangeRates(final GatewayParameterAggregation<Collection<ExchangeRate>> gatewayParameterAggregation) {
-		final GatewayParameter gatewayParameter = gatewayParameterAggregation.gatewayParameter(Gateway.YahooRealtimeExchangeRates);
-		
-		
-		
-		
-		
-	
+		final GatewayParameter gatewayParameter = gatewayParameterAggregation.gatewayParameter(Gateway.ApiLayerRealtimeExchangeRates);
 		final Map<String,Object> jsonAsMap = restOperations.getForObject(gatewayParameter.urlTemplate(), HashMap.class, gatewayParameter.parameters());
-		
 		final List<ExchangeRate> results = new ArrayList<>();
 		final Date estimatedDate =  Date.from(ZonedDateTime.now(Clock.systemDefaultZone()).minusMinutes(30).toInstant());;
-	
-		for(final Entry<String,Number> entry : ((Map<String,Number>) jsonAsMap.get("quotes")).entrySet()) {
+		Assert.notNull(jsonAsMap.get(QUOTES_KEY), "Quotes should exist in ResultMap.");
+		for(final Entry<String,Number> entry : ((Map<String,Number>) jsonAsMap.get(QUOTES_KEY)).entrySet()) {
 			Assert.isTrue(entry.getKey().length()==6, "Invalid Currency.");
 			final ExchangeRate exchangeRate = new ExchangeRateImpl(entry.getKey().substring(0, 3), entry.getKey().substring(3, 6));
-			
-
 			final Data data = newData(estimatedDate, entry.getValue().doubleValue());
 			exchangeRate.assign(Arrays.asList(data));
 			results.add(exchangeRate);
@@ -88,7 +81,7 @@ class RealtimeExchangeRateApiLayerRepository implements RealtimeExchangeRateRepo
 
 	@Override
 	public Gateway supports(Collection<ExchangeRate> exchangeRates) {
-		return Gateway.YahooRealtimeExchangeRates;
+		return Gateway.ApiLayerRealtimeExchangeRates;
 	}
 
 	

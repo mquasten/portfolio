@@ -7,16 +7,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
-
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.gateway.Gateway;
@@ -25,8 +23,7 @@ import de.mq.portfolio.gateway.GatewayParameterAggregation;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/application-test.xml", "/mongo-test.xml" })
-@TestPropertySource(properties = { "realtime.exchangerates.dateformat=" + RealtimeExchangeRateRepositoryTest.EXCHANGERATES_DATEFORMAT })
-
+@Ignore
 public class RealtimeExchangeRateRepositoryIntegrationTest {
 
 	static final String URL_PATH = "http://www.apilayer.net/api/live?access_key=be9610f3981bac8e49bcb4d90329c376&currencies={currencies}";
@@ -45,7 +42,7 @@ public class RealtimeExchangeRateRepositoryIntegrationTest {
 		final Map<String, String> parameter = new HashMap<>();
 		parameter.put("currencies", "EUR,GBP");
 		Mockito.when(gatewayParameter.parameters()).thenReturn(parameter);
-		Mockito.when(gatewayParameterAggregation.gatewayParameter(Gateway.YahooRealtimeExchangeRates)).thenReturn(gatewayParameter);
+		Mockito.when(gatewayParameterAggregation.gatewayParameter(Gateway.ApiLayerRealtimeExchangeRates)).thenReturn(gatewayParameter);
 
 		final Collection<ExchangeRate> results = realtimeExchangeRateRepository.exchangeRates(gatewayParameterAggregation);
 

@@ -61,7 +61,7 @@ public class RealtimeExchangeRateRepositoryTest {
 	
 	@Before
 	public final void setup() {
-		Mockito.when(gatewayParameterAggregation.gatewayParameter(Gateway.YahooRealtimeExchangeRates)).thenReturn(gatewayParameter);
+		Mockito.when(gatewayParameterAggregation.gatewayParameter(Gateway.ApiLayerRealtimeExchangeRates)).thenReturn(gatewayParameter);
 		dependencies.put("dateFormat", new SimpleDateFormat(EXCHANGERATES_DATEFORMAT));
 		dependencies.put("gatewayHistoryRepository", gatewayHistoryRepository);
 		Mockito.when(gatewayHistoryRepository.historyAsString(gatewayParameter)).thenReturn(DATA);
@@ -127,7 +127,7 @@ public class RealtimeExchangeRateRepositoryTest {
 	}
 	@Test
 	public final void supports(){
-		Assert.assertEquals(Gateway.YahooRealtimeExchangeRates, realtimeExchangeRateRepository.supports(Arrays.asList(Mockito.any(ExchangeRate.class))));
+		Assert.assertEquals(Gateway.ApiLayerRealtimeExchangeRates, realtimeExchangeRateRepository.supports(Arrays.asList(Mockito.any(ExchangeRate.class))));
 	}
 
 }
