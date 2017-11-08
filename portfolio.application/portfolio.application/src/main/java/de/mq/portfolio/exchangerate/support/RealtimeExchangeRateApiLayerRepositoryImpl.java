@@ -28,17 +28,17 @@ import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.support.DataImpl;
 
 @Repository
-class RealtimeExchangeRateApiLayerRepository implements RealtimeExchangeRateRepository {	
+class RealtimeExchangeRateApiLayerRepositoryImpl implements RealtimeExchangeRateRepository {	
 	
 	
-	private static final String QUOTES_KEY = "quotes";
+	static final String QUOTES_KEY = "quotes";
 
 	private final RestOperations restOperations;
 	
 	private final DateFormat df = new SimpleDateFormat( "yyyy-MM-ddHHmm");
 
 	@Autowired
-	RealtimeExchangeRateApiLayerRepository(final RestOperations restOperations) {
+	RealtimeExchangeRateApiLayerRepositoryImpl(final RestOperations restOperations) {
 		this.restOperations = restOperations;
 	
 	}
@@ -59,7 +59,7 @@ class RealtimeExchangeRateApiLayerRepository implements RealtimeExchangeRateRepo
 		final Date estimatedDate =  Date.from(ZonedDateTime.now(Clock.systemDefaultZone()).minusMinutes(30).toInstant());;
 		Assert.notNull(jsonAsMap.get(QUOTES_KEY), "Quotes should exist in ResultMap.");
 		for(final Entry<String,Number> entry : ((Map<String,Number>) jsonAsMap.get(QUOTES_KEY)).entrySet()) {
-			Assert.isTrue(entry.getKey().length()==6, "Invalid Currency.");
+			Assert.isTrue(entry.getKey().length()==6, "Invalid currencies: 2 x 3 letters expected.");
 			final ExchangeRate exchangeRate = new ExchangeRateImpl(entry.getKey().substring(0, 3), entry.getKey().substring(3, 6));
 			final Data data = newData(estimatedDate, entry.getValue().doubleValue());
 			exchangeRate.assign(Arrays.asList(data));
