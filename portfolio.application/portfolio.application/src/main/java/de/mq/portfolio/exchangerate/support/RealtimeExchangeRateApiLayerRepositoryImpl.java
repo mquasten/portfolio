@@ -30,7 +30,6 @@ import de.mq.portfolio.share.support.DataImpl;
 @Repository
 class RealtimeExchangeRateApiLayerRepositoryImpl implements RealtimeExchangeRateRepository {	
 	
-	
 	static final String QUOTES_KEY = "quotes";
 
 	private final RestOperations restOperations;
