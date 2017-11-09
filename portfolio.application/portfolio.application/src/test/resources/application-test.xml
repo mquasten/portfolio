@@ -44,7 +44,7 @@
 	<bean class="de.mq.portfolio.gateway.support.GatewayHistoryRepositoryImpl" />
 
 
-	<bean class="de.mq.portfolio.exchangerate.support.RealtimeExchangeRateApiLayerRepository" />
+	<bean class="de.mq.portfolio.exchangerate.support.RealtimeExchangeRateApiLayerRepositoryImpl" />
 
 
 	<bean
