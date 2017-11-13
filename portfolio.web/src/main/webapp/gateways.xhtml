@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Portfolio</title>
+
+
+	<f:metadata>
+	<f:viewParam name="code" value="#{gateways.code}" />
+		
+	<f:viewAction action="#{gatewaysController.init(gateways)}" />
+	</f:metadata>
+
+	<h:outputStylesheet library="css" name="style.css" />
+</h:head>
+
+<h:body>
+
+<h:form>
+		<h3 style="text-align: center;">
+			<h:outputText
+				value="Gateways #{gateways.code} " />
+		</h3>
+
+
+
+
+		<h:panelGrid style="width: 100%; text-align:center">
+	</h:panelGrid>
+	
+	<h:panelGroup style="display:block; text-align:center">
+			
+				<p:button value="zurück" outcome="chart" >
+					<f:param name="shareCode" value="#{gateways.code}" /> 
+				</p:button>
+
+	</h:panelGroup>
+</h:form>
+
+</h:body>
+
+</html>

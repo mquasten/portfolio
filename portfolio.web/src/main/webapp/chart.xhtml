@@ -38,6 +38,9 @@
 	
 			<h:panelGroup style="display:block; text-align:center">
 				<p:button value="zurück" outcome="shares" />
+				<p:button value="Gateways" outcome="gateways" >
+					<f:param name="code" value="#{chart.code}" /> 
+				</p:button>
 
 			</h:panelGroup>
 
@@ -193,8 +196,11 @@
 		</h:panelGrid>
 		
 		<h:panelGroup style="display:block; text-align:center">
-				
 				<p:button value="zurück" outcome="shares" />
+				<p:button value="Gateways" outcome="gateways" >
+					<f:param name="code" value="#{chart.code}" /> 
+				</p:button>
+				
 
 	    </h:panelGroup>
 
