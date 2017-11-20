@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -21,16 +22,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.gateway.Gateway;
-import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.share.Data;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.TimeCourse;
 
-import org.junit.Assert;
-
 public class ChartAOTest {
-
-	private static final String MESSAGE = "At least on Parameter required.";
 
 	private static final Double CURRENT_RATE = 47.11d;
 
@@ -39,7 +35,7 @@ public class ChartAOTest {
 	private static final String NAME = "Coca Cola";
 
 	private static final String CURRENCY_USD = "USD";
-
+ 
 	private static final String WKN = "0815";
 
 	private static final String CODE = "KO";
@@ -61,7 +57,6 @@ public class ChartAOTest {
 	private final Data current = Mockito.mock(Data.class);
 	private final List<Data> rates = Arrays.asList(last, current);
 	
-	private GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
 
 	@Before
 	public final void setup() {
@@ -122,14 +117,7 @@ public class ChartAOTest {
 		Assert.assertEquals(WKN, chartAO.getWkn());
 	}
 	
-	@Test
-	public final void  updated() {
-		Assert.assertTrue(((Map<?,?>)ReflectionTestUtils.getField(chartAO, "updated")).isEmpty());
-		chartAO.setTimeCourse(timeCourse);
-		Assert.assertEquals(lastUpdate, ((Map<?,?>)ReflectionTestUtils.getField(chartAO, "updated")).values().stream().findFirst().get());
-		Assert.assertEquals(Gateway.GoogleRateHistory, ((Map<?,?>)ReflectionTestUtils.getField(chartAO, "updated")).keySet().stream().findFirst().get());
-	}
-
+	
 	@Test
 	public final void currency() {
 		Assert.assertNull(chartAO.getCurrency());
@@ -188,26 +176,4 @@ public class ChartAOTest {
 		Assert.assertEquals(getField(LineChartModel.class), chartAO.getChartModel());
 	}
 	
-	@SuppressWarnings("unchecked")
-	@Test
-	public final void  lastUpdate() {
-		Assert.assertNull(chartAO.lastUpdate(Gateway.GoogleRateHistory));
-		((Map<Gateway,Date>)ReflectionTestUtils.getField(chartAO, "updated")).put(Gateway.GoogleRateHistory, lastUpdate);
-		Assert.assertEquals(lastUpdate, chartAO.lastUpdate(Gateway.GoogleRateHistory));
-
-	}
-	@Test
-	public final void gatewayParameters() {
-		Assert.assertTrue(chartAO.getGatewayParameters().isEmpty());
-		chartAO.setGatewayParameters(Arrays.asList(gatewayParameter));
-		Assert.assertEquals(1,chartAO.getGatewayParameters().size());
-		Assert.assertEquals(gatewayParameter, chartAO.getGatewayParameters().stream().findAny().get());
-		
-	}
-	@Test
-	public final void message() {
-		Assert.assertNull(chartAO.getMessage());
-		chartAO.setMessage(MESSAGE);
-		Assert.assertEquals(MESSAGE, chartAO.getMessage());
-	}
 }

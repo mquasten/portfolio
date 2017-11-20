@@ -18,38 +18,37 @@ import de.mq.portfolio.gateway.GatewayParameter;
 
 @Component("gateways")
 @Scope("view")
-public class GatewaysAO implements Serializable{
+public class GatewaysAO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String code;
-	private String message; 
+	private String message;
 	private final List<GatewayParameter> gatewayParameters = new ArrayList<>();
-	private final Map<Gateway,Date> updated = new HashMap<>();
-	public  String getMessage() {
+	private final Map<Gateway, Date> updated = new HashMap<>();
+
+	public String getMessage() {
 		return message;
 	}
 
-	
 	void setMessage(String message) {
 		this.message = message;
 	}
 
-
 	public final Date lastUpdate(final Gateway gateway) {
 		return updated.get(gateway);
 	}
-	
 
-	
-	public void assign( Collection<Entry<Gateway,Date>> updates) {
-		 
-		this.updated.putAll(updates.stream().collect(Collectors.toMap(Entry::getKey,Entry::getValue)));
+	public void assign(Collection<Entry<Gateway, Date>> updates) {
+
+		this.updated.putAll(updates.stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
 	}
+
 	public List<GatewayParameter> getGatewayParameters() {
 		return gatewayParameters;
 	}
-	 void setGatewayParameters( Collection<GatewayParameter> gatewayParameters ) {
-		 this.gatewayParameters.clear();
+
+	void setGatewayParameters(Collection<GatewayParameter> gatewayParameters) {
+		this.gatewayParameters.clear();
 		this.gatewayParameters.addAll(gatewayParameters);
 	}
 
