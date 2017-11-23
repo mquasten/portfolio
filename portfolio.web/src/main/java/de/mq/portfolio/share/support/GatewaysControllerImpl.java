@@ -58,6 +58,7 @@ public class GatewaysControllerImpl {
 			final StringWriter errors = new StringWriter();
 			clientErrorException.printStackTrace(new PrintWriter(errors));
 			final byte[] content = String.format(ERROR_HTML_PATTERN, gatewayParameter.gateway(), clientErrorException.getMessage(), errors).getBytes();
+			
 			externalContext.responseReset();
 			externalContext.setResponseContentLength(content.length);
 			externalContext.setResponseHeader(CONTENT_DISPOSITION_HEADER, String.format(FILE_ATTACHEMENT_FORMAT, gatewayParameter.gateway().id(gatewayParameter.code()) + HTML_EXTENSION));

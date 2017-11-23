@@ -17,6 +17,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import com.lowagie.text.pdf.codec.Base64.OutputStream;
 
@@ -91,11 +93,25 @@ public class GatewaysControllerTest {
 		
 		Mockito.verify(externalContext).responseReset();
 		Mockito.verify(externalContext).setResponseContentLength(HISTORY.length());
-		
 		Mockito.verify(outputStream).write(HISTORY.getBytes());
 		Mockito.verify(facesContext).responseComplete();
-		
 		Mockito.verify(externalContext).setResponseHeader(GatewaysControllerImpl.CONTENT_DISPOSITION_HEADER,String.format(GatewaysControllerImpl.FILE_ATTACHEMENT_FORMAT, Gateway.GoogleRealtimeRate.downloadName(CODE)));
+	}
+	
+	@Test
+	public final void downloadException() throws IOException {
+		Mockito.doThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, MESSAGE)).when(shareGatewayParameterService).history(gatewayParameter);
+		gatewaysController.download(facesContext, gatewayParameter);
+		
+		Mockito.verify(externalContext).responseReset();
+		final ArgumentCaptor<Integer> contentLengthCaptor = ArgumentCaptor.forClass(Integer.class);
+		Mockito.verify(externalContext).setResponseContentLength(contentLengthCaptor.capture());
+		Mockito.verify(externalContext).setResponseHeader(GatewaysControllerImpl.CONTENT_DISPOSITION_HEADER,String.format(GatewaysControllerImpl.FILE_ATTACHEMENT_FORMAT, gatewayParameter.gateway().id(gatewayParameter.code()) + GatewaysControllerImpl.HTML_EXTENSION));
+		final ArgumentCaptor<byte[]> contentCaptor = ArgumentCaptor.forClass(byte[].class);
+		Mockito.verify(outputStream).write(contentCaptor.capture());
+		Mockito.verify(facesContext).responseComplete();
+		Assert.assertEquals(contentCaptor.getValue().length, (int) contentLengthCaptor.getValue());
+		Assert.assertTrue(new String(contentCaptor.getValue()).contains(HttpStatus.INTERNAL_SERVER_ERROR.value() +" " + MESSAGE));
 	}
 
 }
