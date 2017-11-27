@@ -33,14 +33,14 @@ public class MergedGatewayParameterBuilderTest {
 	
 	@Test
 	public final void build() {
-		final MergedGatewayParameterBuilder mergedGatewayParameterBuilder = new MergedGatewayParameterBuilderImpl().withGateway(Gateway.YahooRealtimeRate).withGatewayParameter(Arrays.asList(jnj,pg,ko,sap,vz));
+		final MergedGatewayParameterBuilder mergedGatewayParameterBuilder = new MergedGatewayParameterBuilderImpl().withGateway(Gateway.GoogleRealtimeRate).withGatewayParameter(Arrays.asList(jnj,pg,ko,sap,vz));
 		final GatewayParameter  mergedGatewayParameter = mergedGatewayParameterBuilder.build();
 		final String code = CODE_JNJ+ ",PG,KO,SAP.DE,VZ";
 		
 		
 		Assert.assertEquals(code, mergedGatewayParameter.code());
 		Assert.assertEquals(URL, mergedGatewayParameter.urlTemplate());
-		Assert.assertEquals(Gateway.YahooRealtimeRate, mergedGatewayParameter.gateway());
+		Assert.assertEquals(Gateway.GoogleRealtimeRate, mergedGatewayParameter.gateway());
 		Assert.assertEquals(1, mergedGatewayParameter.parameters().size());
 		
 		Assert.assertEquals(QUERY_PARAMETER_NAME, mergedGatewayParameter.parameters().keySet().stream().findAny().get());
@@ -68,8 +68,8 @@ public class MergedGatewayParameterBuilderTest {
 	@Test
 	public final void withGateway() {
 		final MergedGatewayParameterBuilder mergedGatewayParameterBuilder = new MergedGatewayParameterBuilderImpl();
-		Assert.assertEquals(mergedGatewayParameterBuilder, mergedGatewayParameterBuilder.withGateway(Gateway.YahooRealtimeRate));
-		Assert.assertEquals(Gateway.YahooRealtimeRate, getFieldValue(mergedGatewayParameterBuilder, Gateway.class));
+		Assert.assertEquals(mergedGatewayParameterBuilder, mergedGatewayParameterBuilder.withGateway(Gateway.GoogleRealtimeRate));
+		Assert.assertEquals(Gateway.GoogleRealtimeRate, getFieldValue(mergedGatewayParameterBuilder, Gateway.class));
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
@@ -79,7 +79,7 @@ public class MergedGatewayParameterBuilderTest {
 	
 	@Test(expected=IllegalArgumentException.class)
 	public final void withGatewayAlreadyAssigned() {
-		new MergedGatewayParameterBuilderImpl().withGateway(Gateway.YahooRealtimeRate).withGateway(Gateway.ArivaDividendHistory);
+		new MergedGatewayParameterBuilderImpl().withGateway(Gateway.GoogleRealtimeRate).withGateway(Gateway.ArivaDividendHistory);
 	}
 
 

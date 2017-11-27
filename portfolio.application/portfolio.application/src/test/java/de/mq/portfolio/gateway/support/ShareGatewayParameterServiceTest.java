@@ -130,20 +130,20 @@ public class ShareGatewayParameterServiceTest {
 		Mockito.when(mergedGatewayParameter.code()).thenReturn(aggregatedCode);
 		Mockito.when(mergedGatewayParameter.parameters()).thenReturn(parameters);
 	
-		Mockito.when(mergedGatewayParameter.gateway()).thenReturn(Gateway.YahooRealtimeRate);
+		Mockito.when(mergedGatewayParameter.gateway()).thenReturn(Gateway.GoogleRealtimeRate);
 		Mockito.when(mergedGatewayParameter.urlTemplate()).thenReturn(URL);
 		
-		Mockito.when(mergedGatewayParameterBuilder.withGateway(Gateway.YahooRealtimeRate)).thenReturn(mergedGatewayParameterBuilder);
+		Mockito.when(mergedGatewayParameterBuilder.withGateway(Gateway.GoogleRealtimeRate)).thenReturn(mergedGatewayParameterBuilder);
 		Mockito.when(mergedGatewayParameterBuilder.withGatewayParameter(gatewayParameters)).thenReturn(mergedGatewayParameterBuilder);
 		Mockito.when(mergedGatewayParameterBuilder.build()).thenReturn(mergedGatewayParameter);
 		
-		final GatewayParameterAggregation<Collection<Share>>  aggregation = shareGatewayParameterService.merge(Arrays.asList(jnj, pg,ko, sap, vz), Gateway.YahooRealtimeRate);
+		final GatewayParameterAggregation<Collection<Share>>  aggregation = shareGatewayParameterService.merge(Arrays.asList(jnj, pg,ko, sap, vz), Gateway.GoogleRealtimeRate);
 		final String code = "JNJ,PG,KO,SAP.DE,VZ";
 		
-		final GatewayParameter result = aggregation.gatewayParameter(Gateway.YahooRealtimeRate);
+		final GatewayParameter result = aggregation.gatewayParameter(Gateway.GoogleRealtimeRate);
 		Assert.assertEquals(code, result.code());
 		Assert.assertEquals(URL, result.urlTemplate());
-		Assert.assertEquals(Gateway.YahooRealtimeRate, result.gateway());
+		Assert.assertEquals(Gateway.GoogleRealtimeRate, result.gateway());
 		Assert.assertEquals(1, result.parameters().size());
 		
 		Assert.assertEquals(QUERY_PARAMETER_NAME, result.parameters().keySet().stream().findAny().get());
@@ -167,7 +167,7 @@ public class ShareGatewayParameterServiceTest {
 		gatewayParameters.add(gatewayParameter);
 		Mockito.when(share.code()).thenReturn(code);
 		
-		Mockito.when(gatewayParameterRepository.gatewayParameter(Gateway.YahooRealtimeRate, code)).thenReturn(gatewayParameter);
+		Mockito.when(gatewayParameterRepository.gatewayParameter(Gateway.GoogleRealtimeRate, code)).thenReturn(gatewayParameter);
 		final Map<String,String> parameters = new HashMap<>();
 		parameters.put(QUERY_PARAMETER_NAME, code);
 		Mockito.when(gatewayParameter.parameters()).thenReturn(parameters);

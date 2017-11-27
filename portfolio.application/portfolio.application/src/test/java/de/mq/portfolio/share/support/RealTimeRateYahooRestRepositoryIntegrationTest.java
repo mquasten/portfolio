@@ -62,7 +62,7 @@ public class RealTimeRateYahooRestRepositoryIntegrationTest {
 		parameters.put(QUERY_PARAMETER, String.format("%s,%s,%s,%s,%s", CODE_SAP, CODE_JNJ, CODE_PG, CODE_KO, CODE_VZ ));;
 		Mockito.when(gatewayParameter.parameters()).thenReturn(parameters);
 		Mockito.when(gatewayParameter.urlTemplate()).thenReturn(URL);
-		Mockito.when(gatewayParameterAggregation.gatewayParameter(Gateway.YahooRealtimeRate)).thenReturn(gatewayParameter);
+		Mockito.when(gatewayParameterAggregation.gatewayParameter(Gateway.GoogleRealtimeRate)).thenReturn(gatewayParameter);
 		Mockito.when(gatewayParameterAggregation.domain()).thenReturn(shares);
 	}
 	private Share newshareMock(final String code) {

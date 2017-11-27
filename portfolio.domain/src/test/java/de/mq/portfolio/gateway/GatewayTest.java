@@ -76,7 +76,7 @@ public class GatewayTest {
 		Assert.assertEquals(GatewayGroup.RateHistory, Gateway.ArivaRateHistory.gatewayGroup());
 		Assert.assertEquals(GatewayGroup.DividendHistory, Gateway.ArivaDividendHistory.gatewayGroup());
 		Assert.assertEquals(GatewayGroup.ExchangeRate, Gateway.CentralBankExchangeRates.gatewayGroup());
-		Assert.assertEquals(GatewayGroup.RealtimeRate, Gateway.YahooRealtimeRate.gatewayGroup());
+	
 	}
 	
 	@Test
