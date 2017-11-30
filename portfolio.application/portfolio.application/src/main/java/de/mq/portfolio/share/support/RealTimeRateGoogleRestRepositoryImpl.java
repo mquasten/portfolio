@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
@@ -34,7 +33,7 @@ import de.mq.portfolio.share.TimeCourse;
 import de.mq.portfolio.support.ExceptionTranslationBuilder;
 
 @Repository
-@Profile("google")
+//@Profile("google")
 abstract class RealTimeRateGoogleRestRepositoryImpl implements RealTimeRateRepository {
 
 	static final String INTERVAL_HEADER = "INTERVAL";
