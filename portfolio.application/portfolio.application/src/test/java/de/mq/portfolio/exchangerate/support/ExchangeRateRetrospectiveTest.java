@@ -15,6 +15,7 @@ import org.junit.Assert;
 public class ExchangeRateRetrospectiveTest {
 	
 	private static final String PORTFOLIO_NAME = "min-risk";
+	private static final String TARGET = "USD";
 	private final Data start = Mockito.mock(Data.class);
 	private final Data end = Mockito.mock(Data.class);
 	
@@ -32,7 +33,7 @@ public class ExchangeRateRetrospectiveTest {
 		Mockito.when(end.date()).thenReturn(endDate);
 		Mockito.when(start.value()).thenReturn(startValue);
 		Mockito.when(end.value()).thenReturn(endValue);
-		exchangeRateRetrospective = new ExchangeRateRetrospectiveImpl(PORTFOLIO_NAME ,start,  end, Arrays.asList(start,end));
+		exchangeRateRetrospective = new ExchangeRateRetrospectiveImpl(PORTFOLIO_NAME , TARGET, start,  end, Arrays.asList(start,end));
 	}
 	
 	
@@ -76,8 +77,8 @@ public class ExchangeRateRetrospectiveTest {
 	}
 	
 	@Test
-	public final void createNameOnly() {
-		exchangeRateRetrospective= new ExchangeRateRetrospectiveImpl(PORTFOLIO_NAME);
+	public final void createNameAndTargetOnly() {
+		exchangeRateRetrospective= new ExchangeRateRetrospectiveImpl(PORTFOLIO_NAME, TARGET);
 		Assert.assertEquals(PORTFOLIO_NAME, exchangeRateRetrospective.name());
 		Assert.assertNull(exchangeRateRetrospective.endDate());
 		Assert.assertNull(exchangeRateRetrospective.startDate());

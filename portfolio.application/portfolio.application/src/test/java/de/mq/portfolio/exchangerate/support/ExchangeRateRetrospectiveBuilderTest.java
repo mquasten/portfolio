@@ -21,6 +21,7 @@ import org.junit.Assert;
 public class ExchangeRateRetrospectiveBuilderTest {
 
 	private static final String NAME = "Name";
+	private static final String TARGET = "USD";
 
 	private static Date START_DATE = Date.from(LocalDateTime.now().minusDays(1).atZone(ZoneId.systemDefault()).toInstant());
 
@@ -40,7 +41,9 @@ public class ExchangeRateRetrospectiveBuilderTest {
 	public final void withName() {
 		final ExchangeRateRetrospectiveBuilder builder = new ExchangeRateRetrospectiveBuilderImpl();
 		Assert.assertEquals(builder, builder.withName(NAME));
-		Assert.assertEquals(NAME, values(builder).get(String.class));
+		
+		System.out.println( values(builder));
+		Assert.assertEquals(NAME, values(builder, "n.*").get(String.class));
 
 	}
 
@@ -58,21 +61,27 @@ public class ExchangeRateRetrospectiveBuilderTest {
 		Assert.assertEquals(Arrays.asList(start, end), values(builder).get(Collection.class));
 	}
 
-	private Map<Class<?>, Object> values(final ExchangeRateRetrospectiveBuilder builder) {
+	private Map<Class<?>, Object> values(final ExchangeRateRetrospectiveBuilder builder, final String pattern) {
 		final Map<Class<?>, Object> values = new HashMap<>();
-		Arrays.asList(ExchangeRateRetrospectiveBuilderImpl.class.getDeclaredFields()).stream().filter(field -> !Modifier.isStatic(field.getModifiers())).forEach(field -> values.put(field.getType(), ReflectionTestUtils.getField(builder, field.getName())));
+		Arrays.asList(ExchangeRateRetrospectiveBuilderImpl.class.getDeclaredFields()).stream().filter(field -> !Modifier.isStatic(field.getModifiers())&& field.getName().matches(pattern)).forEach(field -> values.put(field.getType(), ReflectionTestUtils.getField(builder, field.getName())));
 		return values;
 	}
+	
+	private Map<Class<?>, Object> values(final ExchangeRateRetrospectiveBuilder builder) {
+		return values(builder, ".*");
+	}
+	
 
 	@Test
 	public final void build() {
-		final ExchangeRateRetrospective result = new ExchangeRateRetrospectiveBuilderImpl().withName(NAME).withStartDate(START_DATE).withExchangeRates(Arrays.asList(start, end)).build();
+		final ExchangeRateRetrospective result = new ExchangeRateRetrospectiveBuilderImpl().withName(NAME).withTarget(TARGET).withStartDate(START_DATE).withExchangeRates(Arrays.asList(start, end)).build();
 		Assert.assertEquals(START_DATE, result.startDate());
 		Assert.assertEquals(END_DATE, result.endDate());
 
 		Assert.assertEquals((Double) end.value(), result.endValue());
 		Assert.assertEquals((Double) start.value(), result.startValue());
 		Assert.assertEquals(NAME, result.name());
+		Assert.assertEquals(TARGET, result.target());
 		Assert.assertEquals((Double) ((end.value() - start.value()) / start.value()), result.rate());
 		Assert.assertEquals(2, result.exchangeRates().size());
 		Assert.assertTrue(result.exchangeRates().contains(start));
@@ -81,7 +90,7 @@ public class ExchangeRateRetrospectiveBuilderTest {
 
 	@Test
 	public final void buildNameOnly() {
-		final ExchangeRateRetrospective result = new ExchangeRateRetrospectiveBuilderImpl().withName(NAME).withStartDate(END_DATE).withExchangeRates(Arrays.asList(start)).build();
+		final ExchangeRateRetrospective result = new ExchangeRateRetrospectiveBuilderImpl().withName(NAME).withTarget(TARGET).withStartDate(END_DATE).withExchangeRates(Arrays.asList(start)).build();
 
 		Assert.assertNull(result.startDate());
 		Assert.assertNull(result.endDate());
@@ -89,6 +98,7 @@ public class ExchangeRateRetrospectiveBuilderTest {
 		Assert.assertNull(result.endValue());
 		Assert.assertNull(result.startValue());
 		Assert.assertEquals(NAME, result.name());
+		Assert.assertEquals(TARGET, result.target());
 		Assert.assertNull(result.rate());
 		Assert.assertTrue(result.exchangeRates().isEmpty());
 	}

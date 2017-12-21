@@ -27,22 +27,26 @@ class ExchangeRateRetrospectiveImpl implements ExchangeRateRetrospective {
 	private Double endValue;
 	
 	private Double rate;
+	private final String target; 
 	
 	private final Collection<Data> exchangeRates = new ArrayList<>();
 	
 
-	ExchangeRateRetrospectiveImpl(String name) {
+	ExchangeRateRetrospectiveImpl(String name, final String target) {
 		Assert.notNull(name);
+		Assert.notNull(target);
 		this.name = name;
+		this.target=target;
 	}
 	
-	ExchangeRateRetrospectiveImpl(final String name, final Data start, final Data end, Collection<Data> exchangeRates) {
-		this(name);
+	ExchangeRateRetrospectiveImpl(final String name, final String target, final Data start, final Data end, Collection<Data> exchangeRates) {
+		this(name, target);
 		Assert.notEmpty(exchangeRates);
 		Assert.notNull(start);
 		Assert.notNull(start.date());
 		Assert.notNull(end);
 		Assert.notNull(end.date());
+		Assert.notNull(target);
 		this.startDate = start.date();
 		this.endDate = end.date();
 		this.startValue = start.value();
@@ -94,6 +98,16 @@ class ExchangeRateRetrospectiveImpl implements ExchangeRateRetrospective {
 	public String name() {
 		return name;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.exchangerate.support.ExchangeRateRetrospective#target()
+	 */
+	@Override
+	public final String target() {
+		return this.target;
+	}
+
 
 	
 	/* (non-Javadoc)
@@ -112,5 +126,6 @@ class ExchangeRateRetrospectiveImpl implements ExchangeRateRetrospective {
 	public Collection<Data> exchangeRates() {
 		return Collections.unmodifiableCollection(exchangeRates);
 	}
-
+	
+	
 }

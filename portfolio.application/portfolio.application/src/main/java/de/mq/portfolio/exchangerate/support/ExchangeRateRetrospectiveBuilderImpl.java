@@ -19,6 +19,7 @@ import de.mq.portfolio.share.Data;
 class ExchangeRateRetrospectiveBuilderImpl implements ExchangeRateRetrospectiveBuilder {
 	
 	private String name;
+	private String target;
 	
 	private Date startDate;
 	
@@ -56,6 +57,18 @@ class ExchangeRateRetrospectiveBuilderImpl implements ExchangeRateRetrospectiveB
 		return this;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.exchangerate.support.ExchangeRateRetrospectiveBuilder#withTarget(java.lang.String)
+	 */
+	@Override
+	public ExchangeRateRetrospectiveBuilder withTarget(final String target) {
+		Assert.hasText(target, "Target is mandatory.");
+		Assert.isNull(this.target, "Target already assigned." );
+		this.target=target;
+		return this;
+	}
+	
 	/* (non-Javadoc)
 	 * @see de.mq.portfolio.exchangerate.support.xxx#build()
 	 */
@@ -63,11 +76,13 @@ class ExchangeRateRetrospectiveBuilderImpl implements ExchangeRateRetrospectiveB
 	public ExchangeRateRetrospective build() {
 		final List<Data> ratesSince = exchangeRates.stream().filter(data -> ! data.date().before(startDate)).collect(Collectors.toList());
 		if(ratesSince.size()<1){
-			return new ExchangeRateRetrospectiveImpl(name);
+			return new ExchangeRateRetrospectiveImpl(name, target);
 		}
 		
-		return new ExchangeRateRetrospectiveImpl(name, ratesSince.get(0),ratesSince.get(ratesSince.size()-1), ratesSince);
+		return new ExchangeRateRetrospectiveImpl(name, target,  ratesSince.get(0),ratesSince.get(ratesSince.size()-1), ratesSince);
 		
 	}
+
+	
 
 }

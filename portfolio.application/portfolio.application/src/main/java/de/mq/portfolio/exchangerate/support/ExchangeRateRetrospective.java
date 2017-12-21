@@ -21,4 +21,6 @@ public interface ExchangeRateRetrospective {
 
 	Collection<Data> exchangeRates();
 
+	String target();
+
 }

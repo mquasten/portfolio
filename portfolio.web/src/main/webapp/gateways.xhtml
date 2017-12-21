@@ -93,9 +93,8 @@
 	
 	<h:panelGroup style="display:block; text-align:center">
 			
-				<p:button value="zurück" outcome="chart" >
-					<f:param name="shareCode" value="#{gateways.code}" /> 
-				</p:button>
+				<p:button value="zurück"  outcome="#{gatewaysController.back(gateways)}"  />
+				
 
 	</h:panelGroup>
 </h:form>

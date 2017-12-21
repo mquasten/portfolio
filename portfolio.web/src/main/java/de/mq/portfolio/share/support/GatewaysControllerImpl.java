@@ -67,5 +67,9 @@ public class GatewaysControllerImpl {
 		}
 
 	}
+	
+	public String back(final GatewaysAO gatewaysAO) {
+		return String.format("/chart.xhtml?shareCode=%s" ,gatewaysAO.getCode());
+	}
 
 }

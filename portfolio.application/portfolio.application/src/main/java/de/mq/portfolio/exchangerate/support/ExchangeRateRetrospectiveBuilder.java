@@ -12,6 +12,8 @@ public interface ExchangeRateRetrospectiveBuilder {
 	ExchangeRateRetrospectiveBuilder withStartDate(final Date startDate);
 
 	ExchangeRateRetrospectiveBuilder withExchangeRates(final Collection<Data> exchangeRates);
+	
+	ExchangeRateRetrospectiveBuilder withTarget(final String target);
 
 	ExchangeRateRetrospective build();
 
