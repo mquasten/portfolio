@@ -8,6 +8,7 @@
 
 <composite:interface>
 	<composite:attribute name="retrospectives" />
+	<composite:attribute name="portfolioId" />
 	
 </composite:interface>
 
@@ -74,6 +75,7 @@
 				</f:facet>
 				<p:button value="anzeigen" disabled="#{rate.target()!='USD'}" outcome="/gateways">
 				<f:param name="code" value="#{rate.target()}"/>
+				<f:param name="portfolioId" value="#{cc.attrs.portfolioId}"/>
 				</p:button>
 			</p:column>
 

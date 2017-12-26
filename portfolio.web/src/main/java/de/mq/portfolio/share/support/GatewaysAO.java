@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
@@ -23,6 +24,9 @@ public class GatewaysAO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String code;
 	private String message;
+	
+	private String portfolioId; 
+
 	private final List<GatewayParameter> gatewayParameters = new ArrayList<>();
 	private final Map<Gateway, Date> updated = new HashMap<>();
 
@@ -60,4 +64,23 @@ public class GatewaysAO implements Serializable {
 		this.code = code;
 	}
 
+	boolean isExchangeRate() {
+		if( ! StringUtils.hasText(code)) {
+			return false;
+		}
+		return code.contains("USD");
+	}
+	
+	boolean isPortfolio() {
+		return StringUtils.hasText(portfolioId);
+	}
+	
+	public String getPortfolioId() {
+		return portfolioId;
+	}
+
+	public void setPortfolioId(String portfolioId) {
+		this.portfolioId = portfolioId;
+	}
+	
 }

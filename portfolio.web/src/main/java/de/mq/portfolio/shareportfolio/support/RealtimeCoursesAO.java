@@ -27,6 +27,7 @@ public class RealtimeCoursesAO implements Serializable {
 	static final String CURRENT_DATE_COLUMN = "currentDate";
 
 	static final String NAME_COLUMN = "name";
+	static final String CODE_COLUMN = "code";
 
 	static final String CURRENCY_COLUMN = "currency";
 
@@ -75,6 +76,9 @@ public class RealtimeCoursesAO implements Serializable {
 
 	public String getNameColumn() {
 		return NAME_COLUMN;
+	}
+	public String getCodeColumn() {
+		return CODE_COLUMN;
 	}
 
 	public String getLastColumn() {
@@ -187,6 +191,7 @@ public class RealtimeCoursesAO implements Serializable {
 		final Map<String, Object> values = new HashMap<>();
 		
 		realtimePortfolioAggregation.shareName(code);
+		values.put(CODE_COLUMN,  code );
 		values.put(NAME_COLUMN, realtimePortfolioAggregation.shareName(code) + " (" + code + ")");
 		values.put(LAST_COLUMN, realtimePortfolioAggregation.lastShareRate(code));
 		values.put(CURRENT_COLUMN, realtimePortfolioAggregation.shareRealtimeRate(code));

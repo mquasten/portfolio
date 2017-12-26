@@ -85,6 +85,19 @@
 						
 				</p:column>
 				
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Gateways" />
+					</f:facet>
+					
+					<p:button  value="anzeigen"  outcome="/gateways">
+					<f:param name="code" value="#{share[realtimeCourses.codeColumn]}"   />
+			
+						<f:param name="portfolioId" value="#{realtimeCourses.portfolioId}"   />
+					
+					</p:button>	
+				</p:column>
+				
 				
 </p:dataTable>
 

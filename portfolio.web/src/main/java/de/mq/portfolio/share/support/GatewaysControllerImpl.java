@@ -69,7 +69,10 @@ public class GatewaysControllerImpl {
 	}
 	
 	public String back(final GatewaysAO gatewaysAO) {
-		return String.format("/chart.xhtml?shareCode=%s" ,gatewaysAO.getCode());
+		if( ! gatewaysAO.isExchangeRate() ) {			
+			return gatewaysAO.isPortfolio() ?  String.format( "/realtimeCourses.xhtml?portfolioId=%s&filter=.*" , gatewaysAO.getPortfolioId()) : String.format("/chart.xhtml?shareCode=%s" ,gatewaysAO.getCode());
+		}
+		return gatewaysAO.isPortfolio() ? String.format("/exchangeRatesPortfolio.xhtml?portfolioId=%s" , gatewaysAO.getPortfolioId()) : "/exchangeRates.xhtml" ; 
 	}
 
 }
