@@ -21,6 +21,7 @@ import de.mq.portfolio.gateway.GatewayParameter;
 @Scope("view")
 public class GatewaysAO implements Serializable {
 
+	static final String CODE_USD = "USD";
 	private static final long serialVersionUID = 1L;
 	private String code;
 	private String message;
@@ -68,7 +69,7 @@ public class GatewaysAO implements Serializable {
 		if( ! StringUtils.hasText(code)) {
 			return false;
 		}
-		return code.contains("USD");
+		return code.contains(CODE_USD);
 	}
 	
 	boolean isPortfolio() {
