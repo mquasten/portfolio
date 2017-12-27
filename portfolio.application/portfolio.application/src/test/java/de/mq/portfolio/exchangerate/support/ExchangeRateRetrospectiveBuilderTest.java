@@ -41,8 +41,6 @@ public class ExchangeRateRetrospectiveBuilderTest {
 	public final void withName() {
 		final ExchangeRateRetrospectiveBuilder builder = new ExchangeRateRetrospectiveBuilderImpl();
 		Assert.assertEquals(builder, builder.withName(NAME));
-		
-		System.out.println( values(builder));
 		Assert.assertEquals(NAME, values(builder, "n.*").get(String.class));
 
 	}
@@ -59,6 +57,22 @@ public class ExchangeRateRetrospectiveBuilderTest {
 		final ExchangeRateRetrospectiveBuilder builder = new ExchangeRateRetrospectiveBuilderImpl();
 		Assert.assertEquals(builder, builder.withExchangeRates(Arrays.asList(start, end)));
 		Assert.assertEquals(Arrays.asList(start, end), values(builder).get(Collection.class));
+	}
+	
+	@Test
+	public final void withTarget() {
+		final ExchangeRateRetrospectiveBuilder builder = new ExchangeRateRetrospectiveBuilderImpl();
+		Assert.assertEquals(builder, builder.withTarget(TARGET));
+		Assert.assertEquals(TARGET, values(builder, "t.*").get(String.class));
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public final void withTargetNotNull(){
+		new ExchangeRateRetrospectiveBuilderImpl().withTarget(null);
+	}
+	@Test(expected=IllegalArgumentException.class)
+	public final void withTargetAlreadyAssigned(){
+		new ExchangeRateRetrospectiveBuilderImpl().withTarget(TARGET).withTarget(TARGET);
 	}
 
 	private Map<Class<?>, Object> values(final ExchangeRateRetrospectiveBuilder builder, final String pattern) {
@@ -89,7 +103,7 @@ public class ExchangeRateRetrospectiveBuilderTest {
 	}
 
 	@Test
-	public final void buildNameOnly() {
+	public final void buildNameAndTargetOnly() {
 		final ExchangeRateRetrospective result = new ExchangeRateRetrospectiveBuilderImpl().withName(NAME).withTarget(TARGET).withStartDate(END_DATE).withExchangeRates(Arrays.asList(start)).build();
 
 		Assert.assertNull(result.startDate());

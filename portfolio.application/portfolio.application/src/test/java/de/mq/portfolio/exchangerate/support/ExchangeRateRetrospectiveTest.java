@@ -2,8 +2,8 @@ package de.mq.portfolio.exchangerate.support;
 
 
 
-import java.sql.Date;
 import java.util.Arrays;
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -65,6 +65,12 @@ public class ExchangeRateRetrospectiveTest {
 	}
 	
 	@Test
+	public final void target() {
+		Assert.assertEquals(TARGET, exchangeRateRetrospective.target());
+	}
+	
+	
+	@Test
 	public final void  rate() {
 		Assert.assertEquals((Double) ((endValue-startValue)/startValue), exchangeRateRetrospective.rate());
 	}
@@ -80,6 +86,7 @@ public class ExchangeRateRetrospectiveTest {
 	public final void createNameAndTargetOnly() {
 		exchangeRateRetrospective= new ExchangeRateRetrospectiveImpl(PORTFOLIO_NAME, TARGET);
 		Assert.assertEquals(PORTFOLIO_NAME, exchangeRateRetrospective.name());
+		Assert.assertEquals(TARGET, exchangeRateRetrospective.target());
 		Assert.assertNull(exchangeRateRetrospective.endDate());
 		Assert.assertNull(exchangeRateRetrospective.startDate());
 		Assert.assertNull(exchangeRateRetrospective.endValue());

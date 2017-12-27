@@ -12,7 +12,6 @@ import de.mq.portfolio.share.Data;
 
 
 
-
 class ExchangeRateRetrospectiveImpl implements ExchangeRateRetrospective {
 	
 	
