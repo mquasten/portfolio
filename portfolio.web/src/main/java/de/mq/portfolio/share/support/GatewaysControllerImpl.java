@@ -20,6 +20,10 @@ import de.mq.portfolio.share.ShareService;
 @Scope("singleton")
 public class GatewaysControllerImpl {
 	
+	static final String URL_EXCHANGE_RATES = "/exchangeRates.xhtml";
+	static final String URL_PATTERN_EXCHANGE_RATES_PORTFOLIO = "/exchangeRatesPortfolio.xhtml?portfolioId=%s";
+	static final String URL_PATTERN_CHART = "/chart.xhtml?shareCode=%s";
+	static final String URL_PATTERN_REALTIME_COURSES = "/realtimeCourses.xhtml?portfolioId=%s&filter=.*";
 	private final ShareGatewayParameterService shareGatewayParameterService; 
 	private final ShareService shareService; 
 	
@@ -70,9 +74,9 @@ public class GatewaysControllerImpl {
 	
 	public String back(final GatewaysAO gatewaysAO) {
 		if( ! gatewaysAO.isExchangeRate() ) {			
-			return gatewaysAO.isPortfolio() ?  String.format( "/realtimeCourses.xhtml?portfolioId=%s&filter=.*" , gatewaysAO.getPortfolioId()) : String.format("/chart.xhtml?shareCode=%s" ,gatewaysAO.getCode());
+			return gatewaysAO.isPortfolio() ?  String.format( URL_PATTERN_REALTIME_COURSES , gatewaysAO.getPortfolioId()) : String.format(URL_PATTERN_CHART ,gatewaysAO.getCode());
 		}
-		return gatewaysAO.isPortfolio() ? String.format("/exchangeRatesPortfolio.xhtml?portfolioId=%s" , gatewaysAO.getPortfolioId()) : "/exchangeRates.xhtml" ; 
+		return gatewaysAO.isPortfolio() ? String.format(URL_PATTERN_EXCHANGE_RATES_PORTFOLIO , gatewaysAO.getPortfolioId()) : URL_EXCHANGE_RATES ; 
 	}
 
 }

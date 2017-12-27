@@ -11,6 +11,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,6 +35,7 @@ import de.mq.portfolio.share.TimeCourse;
 public class GatewaysControllerTest {
 	
 
+	private static final String PORTFOLIO_ID = UUID.randomUUID().toString();
 	private static final String HISTORY = "content";
 	private static final String MESSAGE = "don't worry just for test";
 	private static final List<Entry<Gateway, Date>> GATEWAY_ENTRIES = Arrays.asList(new AbstractMap.SimpleImmutableEntry<>(Gateway.GoogleRealtimeRate, new Date()));
@@ -113,5 +115,37 @@ public class GatewaysControllerTest {
 		Assert.assertEquals(contentCaptor.getValue().length, (int) contentLengthCaptor.getValue());
 		Assert.assertTrue(new String(contentCaptor.getValue()).contains(HttpStatus.INTERNAL_SERVER_ERROR.value() +" " + MESSAGE));
 	}
+	
+	@Test
+	public final void backRealtimeCourses() {
+		Mockito.when(gatewaysAO.isPortfolio()).thenReturn(true);
+		Mockito.when(gatewaysAO.isExchangeRate()).thenReturn(false);
+		Mockito.when(gatewaysAO.getPortfolioId()).thenReturn(PORTFOLIO_ID);
+		Assert.assertEquals(String.format(GatewaysControllerImpl.URL_PATTERN_REALTIME_COURSES, PORTFOLIO_ID), gatewaysController.back(gatewaysAO));
+	}
+	
+	@Test
+	public final void backChart() {
+		Mockito.when(gatewaysAO.isPortfolio()).thenReturn(false);
+		Mockito.when(gatewaysAO.isExchangeRate()).thenReturn(false);
+		Assert.assertEquals(String.format(GatewaysControllerImpl.URL_PATTERN_CHART, CODE), gatewaysController.back(gatewaysAO));
+	}
+	
+	@Test
+	public final void  backExchangeRatesPortfolio() {
+		Mockito.when(gatewaysAO.isPortfolio()).thenReturn(true);
+		Mockito.when(gatewaysAO.isExchangeRate()).thenReturn(true);
+		Mockito.when(gatewaysAO.getPortfolioId()).thenReturn(PORTFOLIO_ID);
+		
+		Assert.assertEquals(String.format(GatewaysControllerImpl.URL_PATTERN_EXCHANGE_RATES_PORTFOLIO, PORTFOLIO_ID), gatewaysController.back(gatewaysAO));
+	}
+	
+	@Test
+	public final void  backexchangeRates() {
+		Mockito.when(gatewaysAO.isPortfolio()).thenReturn(false);
+		Mockito.when(gatewaysAO.isExchangeRate()).thenReturn(true);
+		Assert.assertEquals(GatewaysControllerImpl.URL_EXCHANGE_RATES, gatewaysController.back(gatewaysAO));
+	}
+	
 
 }
