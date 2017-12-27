@@ -138,6 +138,7 @@ public class RealtimeCoursesAOTest {
 		Assert.assertEquals(100*(RATE_01_END-RATE_01_START)/RATE_01_START, sapMap.get(RealtimeCoursesAO.DELTA_PERCENT_COLUMN));
 		Assert.assertEquals(PORTFOLIO_CURRENCY, sapMap.get(RealtimeCoursesAO.CURRENCY_COLUMN));
 		Assert.assertEquals(String.format("%s (%s)", NAME_01, CODE_01), sapMap.get(RealtimeCoursesAO.NAME_COLUMN));
+		Assert.assertEquals(CODE_01, sapMap.get(RealtimeCoursesAO.CODE_COLUMN));
 		
 		final Map<String,Object> koMap = shares.get(1);
 		Assert.assertEquals(RATE_02_START, koMap.get(RealtimeCoursesAO.LAST_COLUMN));
@@ -146,7 +147,7 @@ public class RealtimeCoursesAOTest {
 		Assert.assertEquals(100*(RATE_02_END-RATE_02_START)/RATE_02_START, koMap.get(RealtimeCoursesAO.DELTA_PERCENT_COLUMN));
 		Assert.assertEquals(CURRENCY_USD, koMap.get(RealtimeCoursesAO.CURRENCY_COLUMN));
 		Assert.assertEquals(String.format("%s (%s)", NAME_02, CODE_02), koMap.get(RealtimeCoursesAO.NAME_COLUMN));
-		
+		Assert.assertEquals(CODE_02, koMap.get(RealtimeCoursesAO.CODE_COLUMN));
 	}
 	
 	@Test
@@ -224,6 +225,11 @@ public class RealtimeCoursesAOTest {
 	@Test
 	public final void nameColumn() {
 		Assert.assertEquals(RealtimeCoursesAO.NAME_COLUMN, realtimeCoursesAO.getNameColumn());
+	}
+	
+	@Test
+	public final void codeColumn() {
+		Assert.assertEquals(RealtimeCoursesAO.CODE_COLUMN, realtimeCoursesAO.getCodeColumn());
 	}
 	
 	@Test
