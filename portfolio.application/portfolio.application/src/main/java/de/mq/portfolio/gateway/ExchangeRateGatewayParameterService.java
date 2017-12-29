@@ -10,7 +10,7 @@ public interface ExchangeRateGatewayParameterService {
 
 	GatewayParameterAggregation<ExchangeRate> aggregationForRequiredGateway(final ExchangeRate exchangeRate, final Gateway gateway);
 
-	GatewayParameterAggregation<ExchangeRate> aggregationForAllGateways(final ExchangeRate exchangeRate);
+	Collection<GatewayParameter> allGatewayParameters(final ExchangeRate exchangeRate);
 
 	String history(final GatewayParameter gatewayParameter);
 

@@ -94,10 +94,7 @@ public class ExchangeRateGatewayParameterServiceTest {
 		final Collection<GatewayParameter> gatewayParameters = Arrays.asList(otherGatewayParameter, otherGatewayParameter);
 		Mockito.when(gatewayParameterRepository.gatewayParameters(CURRENCY_EUR, CURRENCY_USD)).thenReturn(gatewayParameters);
 
-		Assert.assertEquals(gatewayParameterAggregation, exchangeRateGatewayParameterService.aggregationForAllGateways(exchangeRate));
-
-		Mockito.verify(gatewayParameterAggregationBuilder).withDomain(exchangeRate);
-		Mockito.verify(gatewayParameterAggregationBuilder).withGatewayParameters(gatewayParameters);
+		Assert.assertEquals(gatewayParameters, exchangeRateGatewayParameterService.allGatewayParameters(exchangeRate));
 	}
 
 	@Test

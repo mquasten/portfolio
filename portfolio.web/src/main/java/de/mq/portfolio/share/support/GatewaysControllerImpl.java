@@ -3,7 +3,6 @@ package de.mq.portfolio.share.support;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.faces.context.ExternalContext;
@@ -12,6 +11,7 @@ import javax.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
 
 import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
@@ -19,6 +19,7 @@ import de.mq.portfolio.gateway.ExchangeRateGatewayParameterService;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.ShareGatewayParameterService;
 import de.mq.portfolio.share.ShareService;
+
 
 @Component("gatewaysController")
 @Scope("singleton")
@@ -59,22 +60,12 @@ public class GatewaysControllerImpl {
 	private Collection<GatewayParameter> gatewayParameters(final GatewaysAO gatewaysAO) {
 		if( gatewaysAO.isExchangeRate()){
 			final String[] codes = gatewaysAO.getCode().split("[-]");
-			final Collection<GatewayParameter> results = new ArrayList<>();
-			results.addAll(gatewayParameters(codes[0], codes[1]));
-			results.addAll(gatewayParameters(codes[1], codes[0]));
-			return results;
+			Assert.isTrue(codes.length==2 , "Wrong ExchangeRate: " +gatewaysAO.getCode());
+			return exchangeRateGatewayParameterService.allGatewayParameters(new ExchangeRateImpl(codes[0], codes[1]));
 		}
 		return shareGatewayParameterService.allGatewayParameters(new ShareImpl(gatewaysAO.getCode()));
 	}
 
-	private Collection<GatewayParameter> gatewayParameters(final String source, final String target) {
-		try {
-		return exchangeRateGatewayParameterService.aggregationForAllGateways(new ExchangeRateImpl(source, target)).gatewayParameters();
-		} catch ( IllegalArgumentException ia){
-			return new ArrayList<>();
-		}
-	}
-	
 	public void download(final FacesContext facesContext, final GatewayParameter gatewayParameter) throws IOException {
 		final ExternalContext externalContext = facesContext.getExternalContext();
 		try {

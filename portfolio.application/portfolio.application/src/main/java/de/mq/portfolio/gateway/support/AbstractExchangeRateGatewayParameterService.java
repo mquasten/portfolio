@@ -1,5 +1,6 @@
 package de.mq.portfolio.gateway.support;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -51,12 +52,13 @@ abstract class AbstractExchangeRateGatewayParameterService implements ExchangeRa
 	}
 
 	@Override
-	public GatewayParameterAggregation<ExchangeRate> aggregationForAllGateways(final ExchangeRate exchangeRate) {
+	public Collection<GatewayParameter> allGatewayParameters(final ExchangeRate exchangeRate) {
 		exchangeRateMandatoryGurad(exchangeRate);
-		final Collection<GatewayParameter> gatewayParameters = gatewayParameterRepository.gatewayParameters(exchangeRate.source(), exchangeRate.target());
-		
+		final Collection<GatewayParameter> gatewayParameters =  new ArrayList<>();
+		gatewayParameters.addAll(gatewayParameterRepository.gatewayParameters(exchangeRate.source(), exchangeRate.target()));
+		gatewayParameters.addAll(gatewayParameterRepository.gatewayParameters(exchangeRate.target(), exchangeRate.source()));
 		gatewayParameters.stream().map(gatewayParameter -> gatewayParameter.gateway()).forEach(gateway -> gatewayGroupGuard(gateway));
-		return builder().withDomain(exchangeRate).withGatewayParameters(gatewayParameters).build();
+		return gatewayParameters;
 	}
 
 	@Override
