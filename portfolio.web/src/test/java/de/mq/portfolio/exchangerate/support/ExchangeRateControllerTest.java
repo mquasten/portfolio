@@ -81,7 +81,7 @@ public class ExchangeRateControllerTest {
 		Mockito.when(exchangeRateRetrospectiveBuilder.withExchangeRates(Arrays.asList(initialRateWithExchangeRate))).thenReturn(exchangeRateRetrospectiveBuilder);
 		
 		Mockito.when(exchangeRateRetrospectiveBuilder.withName("€-US$")).thenReturn(exchangeRateRetrospectiveBuilder);
-		Mockito.when(exchangeRateRetrospectiveBuilder.withTarget("USD")).thenReturn(exchangeRateRetrospectiveBuilder);
+		Mockito.when(exchangeRateRetrospectiveBuilder.withTarget(Mockito.anyString())).thenReturn(exchangeRateRetrospectiveBuilder);
 		Mockito.when(exchangeRateRetrospectiveBuilder.withStartDate(initialDate)).thenReturn(exchangeRateRetrospectiveBuilder);
 		Mockito.when(exchangeRateRetrospectiveBuilder.build()).thenReturn(exchangeRateRetrospective);
 		

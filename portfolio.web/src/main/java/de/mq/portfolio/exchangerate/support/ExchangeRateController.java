@@ -54,9 +54,9 @@ public abstract class ExchangeRateController {
 
 		final Collection<ExchangeRate> rates = new ArrayList<>();
 		rates(exchangeRatesAO, rates, dates);
-
+		
 		exchangeRatesAO.setExchangeRateRetrospectives(
-				rates.stream().map(rate -> exchangeRateRetrospectiveBuilder().withTarget(rate.target()).withName(currencyConverter.convert(rate.source()) + "-" + currencyConverter.convert(rate.target())).withStartDate(Collections.max(dates)).withExchangeRates(rate.rates()).build()).collect(Collectors.toList()));
+				rates.stream().map(rate -> exchangeRateRetrospectiveBuilder().withTarget(rate.source() +"-" +rate.target()).withName(currencyConverter.convert(rate.source()) + "-" + currencyConverter.convert(rate.target())).withStartDate(Collections.max(dates)).withExchangeRates(rate.rates()).build()).collect(Collectors.toList()));
 
 		exchangeRatesAO.assign(rates.stream().map(exchangeRate -> new AbstractMap.SimpleImmutableEntry<>(exchangeRate.source() + "-" + exchangeRate.target(), series(exchangeRate, Collections.max(dates)))).collect(Collectors.toList()));
 	}

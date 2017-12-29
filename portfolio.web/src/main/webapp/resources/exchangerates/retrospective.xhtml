@@ -73,7 +73,7 @@
 			<f:facet name="header">
 					<h:outputText value="Gateways" />
 				</f:facet>
-				<p:button value="anzeigen" disabled="#{rate.target()!='USD'}" outcome="/gateways">
+				<p:button value="anzeigen"  outcome="/gateways">
 				<f:param name="code" value="#{rate.target()}"/>
 				<f:param name="portfolioId" value="#{cc.attrs.portfolioId}"/>
 				</p:button>

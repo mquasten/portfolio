@@ -53,7 +53,7 @@ public class GatewaysAOTest {
 	@Test
 	public final void isExchangeRate() {
 		Assert.assertFalse(gatewaysAO.isExchangeRate());
-		gatewaysAO.setCode(GatewaysAO.CODE_USD);
+		gatewaysAO.setCode("EUR-USD");
 		Assert.assertTrue(gatewaysAO.isExchangeRate());
 	}
 	

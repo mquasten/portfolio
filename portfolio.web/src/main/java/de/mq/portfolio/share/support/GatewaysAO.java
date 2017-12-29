@@ -69,7 +69,7 @@ public class GatewaysAO implements Serializable {
 		if( ! StringUtils.hasText(code)) {
 			return false;
 		}
-		return code.contains(CODE_USD);
+		return code.contains("-");
 	}
 	
 	boolean isPortfolio() {
