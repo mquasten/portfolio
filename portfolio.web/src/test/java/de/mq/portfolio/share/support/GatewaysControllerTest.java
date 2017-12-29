@@ -6,12 +6,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.UUID;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-
-import java.util.Optional;
-import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,7 +24,6 @@ import com.lowagie.text.pdf.codec.Base64.OutputStream;
 
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
-import de.mq.portfolio.gateway.GatewayParameterAggregation;
 import de.mq.portfolio.gateway.ShareGatewayParameterService;
 import de.mq.portfolio.share.Share;
 import de.mq.portfolio.share.ShareService;
@@ -49,8 +47,7 @@ public class GatewaysControllerTest {
 	private final GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
 	
 	private final GatewaysAO gatewaysAO = Mockito.mock(GatewaysAO.class);
-	@SuppressWarnings("unchecked")
-	private final GatewayParameterAggregation<Share> gatewayParameterAggregation = Mockito.mock(GatewayParameterAggregation.class);
+
 	private final ArgumentCaptor<Share> shareCaptor = ArgumentCaptor.forClass(Share.class);
 	
 	private final FacesContext facesContext = Mockito.mock(FacesContext.class);
@@ -63,8 +60,8 @@ public class GatewaysControllerTest {
 	public final void setup() throws IOException {
 		Mockito.when(gatewaysAO.getCode()).thenReturn(CODE);
 		Mockito.when(shareService.timeCourse(CODE)).thenReturn(Optional.of(timeCourse));
-		Mockito.when(shareGatewayParameterService.aggregationForAllGateways(shareCaptor.capture())).thenReturn(gatewayParameterAggregation);
-		Mockito.when(gatewayParameterAggregation.gatewayParameters()).thenReturn(Arrays.asList(gatewayParameter));
+		Mockito.when(shareGatewayParameterService.allGatewayParameters(shareCaptor.capture())).thenReturn(Arrays.asList(gatewayParameter));
+	
 		Mockito.when(timeCourse.updates()).thenReturn(GATEWAY_ENTRIES);
 		Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
 		Mockito.when(shareGatewayParameterService.history(gatewayParameter)).thenReturn(HISTORY);
@@ -84,7 +81,7 @@ public class GatewaysControllerTest {
 	
 	@Test
 	public final void initException() {
-		Mockito.doThrow(new IllegalStateException(MESSAGE)).when(shareGatewayParameterService).aggregationForAllGateways(shareCaptor.capture());
+		Mockito.doThrow(new IllegalStateException(MESSAGE)).when(shareGatewayParameterService).allGatewayParameters(shareCaptor.capture());
 		gatewaysController.init(gatewaysAO);
 		Mockito.verify(gatewaysAO).setMessage(MESSAGE);
 	}

@@ -48,9 +48,9 @@ abstract class AbstractShareGatewayParameterService implements ShareGatewayParam
 	 * @see de.mq.portfolio.gateway.support.ShareGatewayParameterService#gatewayParameters(de.mq.portfolio.share.Share)
 	 */
 	@Override
-	public GatewayParameterAggregation<Share> aggregationForAllGateways(final Share share) {
+	public Collection<GatewayParameter> allGatewayParameters(final Share share) {
 		shareRequiredGuard(share);
-		return gatewayParameterAggregationBuilderShare().withGatewayParameters(gatewayParameterRepository.gatewayParameters(share.code())).withDomain(share).build();
+		return gatewayParameterRepository.gatewayParameters(share.code());
 	}
 	
 	@Override

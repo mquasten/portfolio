@@ -10,7 +10,7 @@ public interface ShareGatewayParameterService {
 
 	GatewayParameterAggregation<Share> aggregationForRequiredGateways(final Share share, final Collection<Gateway> gateways);
 
-	GatewayParameterAggregation<Share> aggregationForAllGateways(final Share share);
+	Collection<GatewayParameter> allGatewayParameters(final Share share);
 
 	String history(final GatewayParameter gatewayParameter);
 

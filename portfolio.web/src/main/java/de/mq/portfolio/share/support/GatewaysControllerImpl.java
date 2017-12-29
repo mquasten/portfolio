@@ -64,7 +64,7 @@ public class GatewaysControllerImpl {
 			results.addAll(gatewayParameters(codes[1], codes[0]));
 			return results;
 		}
-		return shareGatewayParameterService.aggregationForAllGateways(new ShareImpl(gatewaysAO.getCode())).gatewayParameters();
+		return shareGatewayParameterService.allGatewayParameters(new ShareImpl(gatewaysAO.getCode()));
 	}
 
 	private Collection<GatewayParameter> gatewayParameters(final String source, final String target) {
