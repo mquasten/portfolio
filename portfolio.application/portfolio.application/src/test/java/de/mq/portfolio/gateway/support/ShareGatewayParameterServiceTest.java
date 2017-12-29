@@ -81,11 +81,11 @@ public class ShareGatewayParameterServiceTest {
 
 	@Test
 	public final void aggregationForAllGateways() {
-		final GatewayParameterAggregation<Share> gatewayParameterAggregation = shareGatewayParameterService.aggregationForAllGateways(share);
+		final Collection<GatewayParameter> results = shareGatewayParameterService.allGatewayParameters(share);
 
-		Assert.assertEquals(share, gatewayParameterAggregation.domain());
-		Assert.assertEquals(1, gatewayParameterAggregation.gatewayParameters().size());
-		Assert.assertEquals(gatewayParameter, gatewayParameterAggregation.gatewayParameters().stream().findAny().get());
+		
+		Assert.assertEquals(1, results.size());
+		Assert.assertEquals(gatewayParameter, results.stream().findAny().get());
 	}
 
 	@Test
