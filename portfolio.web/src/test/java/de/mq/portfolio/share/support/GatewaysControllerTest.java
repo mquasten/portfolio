@@ -3,6 +3,7 @@ package de.mq.portfolio.share.support;
 import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
@@ -22,6 +23,8 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import com.lowagie.text.pdf.codec.Base64.OutputStream;
 
+import de.mq.portfolio.exchangerate.ExchangeRate;
+import de.mq.portfolio.gateway.ExchangeRateGatewayParameterService;
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.ShareGatewayParameterService;
@@ -33,22 +36,27 @@ import de.mq.portfolio.share.TimeCourse;
 public class GatewaysControllerTest {
 	
 
+	private static final String CURRENCY_USD = "USD";
+	private static final String CURRENCY_EUR = "EUR";
 	private static final String PORTFOLIO_ID = UUID.randomUUID().toString();
 	private static final String HISTORY = "content";
 	private static final String MESSAGE = "don't worry just for test";
-	private static final List<Entry<Gateway, Date>> GATEWAY_ENTRIES = Arrays.asList(new AbstractMap.SimpleImmutableEntry<>(Gateway.GoogleRealtimeRate, new Date()));
+	private static final List<Entry<Gateway, Date>> GATEWAY_ENTRIES_SHARES= Arrays.asList(new AbstractMap.SimpleImmutableEntry<>(Gateway.GoogleRealtimeRate, new Date()));
 	private static final String CODE = "KO";
 	
 	private final ShareGatewayParameterService shareGatewayParameterService = Mockito.mock(ShareGatewayParameterService.class);
 	private final ShareService shareService = Mockito.mock(ShareService.class);
 	
-	private final   GatewaysControllerImpl gatewaysController = new GatewaysControllerImpl(shareGatewayParameterService, shareService);
+	private final ExchangeRateGatewayParameterService exchangeRateGatewayParameterService = Mockito.mock(ExchangeRateGatewayParameterService.class);
+	
+	private final   GatewaysControllerImpl gatewaysController = new GatewaysControllerImpl(shareGatewayParameterService, exchangeRateGatewayParameterService,  shareService);
 	private final TimeCourse timeCourse = Mockito.mock(TimeCourse.class);
 	private final GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
 	
 	private final GatewaysAO gatewaysAO = Mockito.mock(GatewaysAO.class);
 
 	private final ArgumentCaptor<Share> shareCaptor = ArgumentCaptor.forClass(Share.class);
+	private final ArgumentCaptor<ExchangeRate> exchangeRateCaptor = ArgumentCaptor.forClass(ExchangeRate.class);
 	
 	private final FacesContext facesContext = Mockito.mock(FacesContext.class);
 	private final ExternalContext externalContext = Mockito.mock(ExternalContext.class);
@@ -61,8 +69,11 @@ public class GatewaysControllerTest {
 		Mockito.when(gatewaysAO.getCode()).thenReturn(CODE);
 		Mockito.when(shareService.timeCourse(CODE)).thenReturn(Optional.of(timeCourse));
 		Mockito.when(shareGatewayParameterService.allGatewayParameters(shareCaptor.capture())).thenReturn(Arrays.asList(gatewayParameter));
+		
+		Mockito.when(exchangeRateGatewayParameterService.allGatewayParameters(exchangeRateCaptor.capture())).thenReturn(Arrays.asList(gatewayParameter));
+		
 	
-		Mockito.when(timeCourse.updates()).thenReturn(GATEWAY_ENTRIES);
+		Mockito.when(timeCourse.updates()).thenReturn(GATEWAY_ENTRIES_SHARES);
 		Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
 		Mockito.when(shareGatewayParameterService.history(gatewayParameter)).thenReturn(HISTORY);
 		Mockito.when(gatewayParameter.gateway()).thenReturn(Gateway.GoogleRealtimeRate);
@@ -75,8 +86,42 @@ public class GatewaysControllerTest {
 	public final void init() {
 		gatewaysController.init(gatewaysAO);
 		Assert.assertEquals(CODE, shareCaptor.getValue().code());
-		Mockito.verify(gatewaysAO).assign(GATEWAY_ENTRIES);
+		Mockito.verify(gatewaysAO).assign(GATEWAY_ENTRIES_SHARES);
 		Mockito.verify(gatewaysAO).setGatewayParameters(Arrays.asList(gatewayParameter));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public final void initExchangeRates() {
+		final String code = CURRENCY_EUR + "-" +CURRENCY_USD;
+		Mockito.when(gatewayParameter.gateway()).thenReturn(Gateway.CentralBankExchangeRates);
+		Mockito.when(gatewaysAO.isExchangeRate()).thenReturn(true);
+		Mockito.when(gatewaysAO.getCode()).thenReturn(code);
+	
+		Mockito.when(timeCourse.updates()).thenReturn(Arrays.asList());
+		Mockito.when(gatewayParameter.code()).thenReturn(code);
+		
+		
+		
+		gatewaysController.init(gatewaysAO);
+		Assert.assertEquals(CURRENCY_EUR, exchangeRateCaptor.getValue().source());
+		Assert.assertEquals(CURRENCY_USD, exchangeRateCaptor.getValue().target());
+		Mockito.verify(gatewaysAO).setGatewayParameters(Arrays.asList(gatewayParameter));
+		Mockito.verify(gatewaysAO, Mockito.never()).assign(Mockito.any(Collection.class));
+	
+	}
+	
+	@Test
+	public final void initExchangeRatesWrongCurrency() {
+	
+		final ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+		Mockito.when(gatewaysAO.getCode()).thenReturn(CODE);
+		Mockito.when(gatewaysAO.isExchangeRate()).thenReturn(true);
+		gatewaysController.init(gatewaysAO);
+		Mockito.verify(gatewaysAO).setMessage(messageCaptor.capture());
+		Assert.assertEquals(String.format(GatewaysControllerImpl.WRONG_EXCHANGE_RATE_PATTERN,CODE),  messageCaptor.getValue());
+	
+		
 	}
 	
 	@Test

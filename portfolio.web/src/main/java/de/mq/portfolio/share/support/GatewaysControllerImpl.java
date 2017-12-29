@@ -25,6 +25,7 @@ import de.mq.portfolio.share.ShareService;
 @Scope("singleton")
 public class GatewaysControllerImpl {
 	
+	static final String WRONG_EXCHANGE_RATE_PATTERN = "Wrong ExchangeRate: %s";
 	static final String URL_EXCHANGE_RATES = "/exchangeRates.xhtml";
 	static final String URL_PATTERN_EXCHANGE_RATES_PORTFOLIO = "/exchangeRatesPortfolio.xhtml?portfolioId=%s";
 	static final String URL_PATTERN_CHART = "/chart.xhtml?shareCode=%s";
@@ -32,8 +33,7 @@ public class GatewaysControllerImpl {
 	private final ShareGatewayParameterService shareGatewayParameterService; 
 	private final ShareService shareService; 
 	
-	@Autowired
-	private ExchangeRateGatewayParameterService exchangeRateGatewayParameterService;
+	private final ExchangeRateGatewayParameterService exchangeRateGatewayParameterService;
 	
 	static final String HTML_EXTENSION = ".html";
 	static final String ERROR_HTML_PATTERN = "<h2>Error during Download %s</h2><h4>%s</h4><label>%s</label>";
@@ -41,8 +41,9 @@ public class GatewaysControllerImpl {
 	static final String FILE_ATTACHEMENT_FORMAT = "attachment; filename=\"%s\"";
 	
 	@Autowired
-	GatewaysControllerImpl(final ShareGatewayParameterService shareGatewayParameterService, final ShareService shareService) {
+	GatewaysControllerImpl(final ShareGatewayParameterService shareGatewayParameterService,final ExchangeRateGatewayParameterService exchangeRateGatewayParameterService, final ShareService shareService) {
 		this.shareGatewayParameterService = shareGatewayParameterService;
+		this.exchangeRateGatewayParameterService=exchangeRateGatewayParameterService;
 		this.shareService=shareService;
 	}
 
@@ -60,7 +61,8 @@ public class GatewaysControllerImpl {
 	private Collection<GatewayParameter> gatewayParameters(final GatewaysAO gatewaysAO) {
 		if( gatewaysAO.isExchangeRate()){
 			final String[] codes = gatewaysAO.getCode().split("[-]");
-			Assert.isTrue(codes.length==2 , "Wrong ExchangeRate: " +gatewaysAO.getCode());
+			Assert.isTrue(codes.length==2 , String.format(WRONG_EXCHANGE_RATE_PATTERN, gatewaysAO.getCode()));
+			
 			return exchangeRateGatewayParameterService.allGatewayParameters(new ExchangeRateImpl(codes[0], codes[1]));
 		}
 		return shareGatewayParameterService.allGatewayParameters(new ShareImpl(gatewaysAO.getCode()));
