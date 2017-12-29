@@ -3,6 +3,8 @@ package de.mq.portfolio.share.support;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -12,6 +14,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 
+import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
+import de.mq.portfolio.gateway.ExchangeRateGatewayParameterService;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.ShareGatewayParameterService;
 import de.mq.portfolio.share.ShareService;
@@ -27,13 +31,16 @@ public class GatewaysControllerImpl {
 	private final ShareGatewayParameterService shareGatewayParameterService; 
 	private final ShareService shareService; 
 	
+	@Autowired
+	private ExchangeRateGatewayParameterService exchangeRateGatewayParameterService;
+	
 	static final String HTML_EXTENSION = ".html";
 	static final String ERROR_HTML_PATTERN = "<h2>Error during Download %s</h2><h4>%s</h4><label>%s</label>";
 	static final String CONTENT_DISPOSITION_HEADER = "Content-Disposition";
 	static final String FILE_ATTACHEMENT_FORMAT = "attachment; filename=\"%s\"";
 	
 	@Autowired
-	GatewaysControllerImpl(ShareGatewayParameterService shareGatewayParameterService, final ShareService shareService) {
+	GatewaysControllerImpl(final ShareGatewayParameterService shareGatewayParameterService, final ShareService shareService) {
 		this.shareGatewayParameterService = shareGatewayParameterService;
 		this.shareService=shareService;
 	}
@@ -42,12 +49,31 @@ public class GatewaysControllerImpl {
 	
 		shareService.timeCourse(gatewaysAO.getCode()).ifPresent(timecourse -> gatewaysAO.assign(timecourse.updates()));
 		try {
-			gatewaysAO.setGatewayParameters(shareGatewayParameterService.aggregationForAllGateways(new ShareImpl(gatewaysAO.getCode())).gatewayParameters());
+			gatewaysAO.setGatewayParameters(gatewayParameters(gatewaysAO));
 		} catch (final Exception ex) {
 			gatewaysAO.setMessage(ex.getMessage());
 		}
 	}
 	
+	
+	private Collection<GatewayParameter> gatewayParameters(final GatewaysAO gatewaysAO) {
+		if( gatewaysAO.isExchangeRate()){
+			final String[] codes = gatewaysAO.getCode().split("[-]");
+			final Collection<GatewayParameter> results = new ArrayList<>();
+			results.addAll(gatewayParameters(codes[0], codes[1]));
+			results.addAll(gatewayParameters(codes[1], codes[0]));
+			return results;
+		}
+		return shareGatewayParameterService.aggregationForAllGateways(new ShareImpl(gatewaysAO.getCode())).gatewayParameters();
+	}
+
+	private Collection<GatewayParameter> gatewayParameters(final String source, final String target) {
+		try {
+		return exchangeRateGatewayParameterService.aggregationForAllGateways(new ExchangeRateImpl(source, target)).gatewayParameters();
+		} catch ( IllegalArgumentException ia){
+			return new ArrayList<>();
+		}
+	}
 	
 	public void download(final FacesContext facesContext, final GatewayParameter gatewayParameter) throws IOException {
 		final ExternalContext externalContext = facesContext.getExternalContext();
