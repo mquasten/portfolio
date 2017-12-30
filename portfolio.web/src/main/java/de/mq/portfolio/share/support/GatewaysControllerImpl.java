@@ -14,7 +14,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
 
+import de.mq.portfolio.exchangerate.ExchangeRate;
 import de.mq.portfolio.exchangerate.support.ExchangeRateImpl;
+import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.gateway.ExchangeRateGatewayParameterService;
 import de.mq.portfolio.gateway.GatewayParameter;
 import de.mq.portfolio.gateway.ShareGatewayParameterService;
@@ -35,21 +37,30 @@ public class GatewaysControllerImpl {
 	
 	private final ExchangeRateGatewayParameterService exchangeRateGatewayParameterService;
 	
+	
+	private final ExchangeRateService exchangeRateService;
+	
 	static final String HTML_EXTENSION = ".html";
 	static final String ERROR_HTML_PATTERN = "<h2>Error during Download %s</h2><h4>%s</h4><label>%s</label>";
 	static final String CONTENT_DISPOSITION_HEADER = "Content-Disposition";
 	static final String FILE_ATTACHEMENT_FORMAT = "attachment; filename=\"%s\"";
 	
 	@Autowired
-	GatewaysControllerImpl(final ShareGatewayParameterService shareGatewayParameterService,final ExchangeRateGatewayParameterService exchangeRateGatewayParameterService, final ShareService shareService) {
+	GatewaysControllerImpl(final ShareGatewayParameterService shareGatewayParameterService,final ExchangeRateGatewayParameterService exchangeRateGatewayParameterService, final ShareService shareService, final ExchangeRateService exchangeRateService) {
 		this.shareGatewayParameterService = shareGatewayParameterService;
 		this.exchangeRateGatewayParameterService=exchangeRateGatewayParameterService;
 		this.shareService=shareService;
+		this.exchangeRateService=exchangeRateService;
 	}
 
 	public void init(final GatewaysAO gatewaysAO) {
 	
-		shareService.timeCourse(gatewaysAO.getCode()).ifPresent(timecourse -> gatewaysAO.assign(timecourse.updates()));
+		if( !gatewaysAO.isExchangeRate()) {
+			shareService.timeCourse(gatewaysAO.getCode()).ifPresent(timecourse -> gatewaysAO.assign(timecourse.updates()));
+		} else {
+			Assert.isTrue(gatewaysAO.getCode().split("[-]").length==2 , String.format(WRONG_EXCHANGE_RATE_PATTERN, gatewaysAO.getCode()));
+			exchangeRateService.exchangeRateOrReverse(exchangeRate(gatewaysAO.getCode())).ifPresent(exchangeRate -> gatewaysAO.assign(exchangeRate.updates()));
+		}
 		try {
 			gatewaysAO.setGatewayParameters(gatewayParameters(gatewaysAO));
 		} catch (final Exception ex) {
@@ -60,12 +71,15 @@ public class GatewaysControllerImpl {
 	
 	private Collection<GatewayParameter> gatewayParameters(final GatewaysAO gatewaysAO) {
 		if( gatewaysAO.isExchangeRate()){
-			final String[] codes = gatewaysAO.getCode().split("[-]");
-			Assert.isTrue(codes.length==2 , String.format(WRONG_EXCHANGE_RATE_PATTERN, gatewaysAO.getCode()));
-			
-			return exchangeRateGatewayParameterService.allGatewayParameters(new ExchangeRateImpl(codes[0], codes[1]));
+			return exchangeRateGatewayParameterService.allGatewayParameters(exchangeRate(gatewaysAO.getCode()));
 		}
 		return shareGatewayParameterService.allGatewayParameters(new ShareImpl(gatewaysAO.getCode()));
+	}
+
+	private ExchangeRate exchangeRate(final String code) {
+		final String[] codes = code.split("[-]");
+		final ExchangeRate exchangeRate = new ExchangeRateImpl(codes[0], codes[1]);
+		return exchangeRate;
 	}
 
 	public void download(final FacesContext facesContext, final GatewayParameter gatewayParameter) throws IOException {

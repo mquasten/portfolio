@@ -24,6 +24,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import com.lowagie.text.pdf.codec.Base64.OutputStream;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
+import de.mq.portfolio.exchangerate.support.ExchangeRateService;
 import de.mq.portfolio.gateway.ExchangeRateGatewayParameterService;
 import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.gateway.GatewayParameter;
@@ -49,7 +50,8 @@ public class GatewaysControllerTest {
 	
 	private final ExchangeRateGatewayParameterService exchangeRateGatewayParameterService = Mockito.mock(ExchangeRateGatewayParameterService.class);
 	
-	private final   GatewaysControllerImpl gatewaysController = new GatewaysControllerImpl(shareGatewayParameterService, exchangeRateGatewayParameterService,  shareService);
+	private ExchangeRateService exchangeRateService = Mockito.mock(ExchangeRateService.class);
+	private final   GatewaysControllerImpl gatewaysController = new GatewaysControllerImpl(shareGatewayParameterService, exchangeRateGatewayParameterService,  shareService, exchangeRateService);
 	private final TimeCourse timeCourse = Mockito.mock(TimeCourse.class);
 	private final GatewayParameter gatewayParameter = Mockito.mock(GatewayParameter.class);
 	
@@ -111,17 +113,11 @@ public class GatewaysControllerTest {
 	
 	}
 	
-	@Test
+	@Test(expected=IllegalArgumentException.class)
 	public final void initExchangeRatesWrongCurrency() {
-	
-		final ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
 		Mockito.when(gatewaysAO.getCode()).thenReturn(CODE);
 		Mockito.when(gatewaysAO.isExchangeRate()).thenReturn(true);
 		gatewaysController.init(gatewaysAO);
-		Mockito.verify(gatewaysAO).setMessage(messageCaptor.capture());
-		Assert.assertEquals(String.format(GatewaysControllerImpl.WRONG_EXCHANGE_RATE_PATTERN,CODE),  messageCaptor.getValue());
-	
-		
 	}
 	
 	@Test

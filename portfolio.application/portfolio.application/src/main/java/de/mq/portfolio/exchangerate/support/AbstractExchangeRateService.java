@@ -1,6 +1,9 @@
 package de.mq.portfolio.exchangerate.support;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -55,6 +58,23 @@ abstract class AbstractExchangeRateService implements ExchangeRateService {
 	@Override
 	public final Collection<ExchangeRate> exchangeRates() {
 		return exchangeRateDatebaseRepository.exchangerates();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see de.mq.portfolio.exchangerate.support.ExchangeRateService#exchangeRateOrReverse(de.mq.portfolio.exchangerate.ExchangeRate)
+	 */
+	@Override
+	public Optional<ExchangeRate> exchangeRateOrReverse(final ExchangeRate exchangeRate ) {
+		final Collection<ExchangeRate> results = new ArrayList<>();
+		results.addAll(exchangeRateDatebaseRepository.exchangerates(Arrays.asList(exchangeRate)));
+		if( results.size() == 0){
+			results.addAll(exchangeRateDatebaseRepository.exchangerates(Arrays.asList(new ExchangeRateImpl(exchangeRate.target(), exchangeRate.source()))));
+		}
+		if( results.isEmpty()){
+			return Optional.empty();
+		}
+		return results.stream().findFirst();
 	}
 
 	/*
