@@ -16,6 +16,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
+import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.share.Data;
 
 
@@ -106,6 +107,17 @@ public class ExchangeRateTest {
 		Assert.assertEquals(SOURCE, exchangeRate.source());
 		Assert.assertEquals(TARGET, exchangeRate.target());
 		Assert.assertEquals(Arrays.asList(data), exchangeRate.rates());
+	}
+	@Test
+	public final void updates() {
+		Assert.assertTrue(exchangeRate.updates().isEmpty());
+		final Data data = Mockito.mock(Data.class);
+		final Collection<Data> rates = new ArrayList<>();
+		rates.add(data);
+		exchangeRate.assign(rates);
+		Assert.assertEquals(1, exchangeRate.updates().size());
+		Assert.assertEquals(Gateway.CentralBankExchangeRates, exchangeRate.updates().stream().findFirst().get().getKey());
+		Assert.assertTrue(50 > Math.abs(exchangeRate.updates().stream().findFirst().get().getValue().getTime()- System.currentTimeMillis()));
 	}
 
 }

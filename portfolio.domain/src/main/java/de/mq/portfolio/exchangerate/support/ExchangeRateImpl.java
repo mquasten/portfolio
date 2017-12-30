@@ -1,9 +1,12 @@
 package de.mq.portfolio.exchangerate.support;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
@@ -11,6 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.StringUtils;
 
 import de.mq.portfolio.exchangerate.ExchangeRate;
+import de.mq.portfolio.gateway.Gateway;
 import de.mq.portfolio.share.Data;
 
 @Document(collection = "ExchangeRate")
@@ -23,7 +27,7 @@ public class ExchangeRateImpl implements ExchangeRate {
 
 	private final String target;
 
-	
+	private Date lastUpdate;
 
 	private final List<Data> rates = new ArrayList<>();
 
@@ -106,6 +110,20 @@ public class ExchangeRateImpl implements ExchangeRate {
 	public final void assign(final Collection<Data> rates) {
 		this.rates.clear();
 		this.rates.addAll(rates);
+		lastUpdate=new Date();
+	
 	}
+	
+	@Override
+	public Collection<Entry<Gateway,Date>> updates() {
+		final Collection <Entry<Gateway,Date>> results = new ArrayList<>();
+		if( lastUpdate != null){
+			results.add(new AbstractMap.SimpleImmutableEntry<>(Gateway.CentralBankExchangeRates, lastUpdate));
+		}
+		return Collections.unmodifiableCollection(results);
+	}
+	
+	
+
 
 }
