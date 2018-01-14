@@ -58,6 +58,7 @@ public class GatewaysControllerImpl {
 		if( !gatewaysAO.isExchangeRate()) {
 			shareService.timeCourse(gatewaysAO.getCode()).ifPresent(timecourse -> gatewaysAO.assign(timecourse.updates()));
 		} else {
+					
 			Assert.isTrue(gatewaysAO.getCode().split("[-]").length==2 , String.format(WRONG_EXCHANGE_RATE_PATTERN, gatewaysAO.getCode()));
 			exchangeRateService.exchangeRateOrReverse(exchangeRate(gatewaysAO.getCode())).ifPresent(exchangeRate -> gatewaysAO.assign(exchangeRate.updates()));
 		}

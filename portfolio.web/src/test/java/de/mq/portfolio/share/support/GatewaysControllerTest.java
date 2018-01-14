@@ -63,7 +63,7 @@ public class GatewaysControllerTest {
 	private final FacesContext facesContext = Mockito.mock(FacesContext.class);
 	private final ExternalContext externalContext = Mockito.mock(ExternalContext.class);
 	
-	
+	private final Date lastUpdateDate = Mockito.mock(Date.class);
 			
 	private final OutputStream outputStream = Mockito.mock(OutputStream.class);
 	@Before
@@ -81,6 +81,10 @@ public class GatewaysControllerTest {
 		Mockito.when(gatewayParameter.gateway()).thenReturn(Gateway.GoogleRealtimeRate);
 		Mockito.when(externalContext.getResponseOutputStream()).thenReturn(outputStream);
 		Mockito.when(gatewayParameter.code()).thenReturn(CODE);
+		
+		ExchangeRate exchangeRate = Mockito.mock(ExchangeRate.class);
+		Mockito.when(exchangeRate.updates()).thenReturn(Arrays.asList(new AbstractMap.SimpleImmutableEntry<>(Gateway.CentralBankExchangeRates, lastUpdateDate)));
+		Mockito.when(exchangeRateService.exchangeRateOrReverse(Mockito.any(ExchangeRate.class))).thenReturn(Optional.of(exchangeRate));
 		
 	}
 	
@@ -106,10 +110,17 @@ public class GatewaysControllerTest {
 		
 		
 		gatewaysController.init(gatewaysAO);
-		Assert.assertEquals(CURRENCY_EUR, exchangeRateCaptor.getValue().source());
-		Assert.assertEquals(CURRENCY_USD, exchangeRateCaptor.getValue().target());
+		Assert.assertEquals(CURRENCY_EUR, this.exchangeRateCaptor.getValue().source());
+		Assert.assertEquals(CURRENCY_USD, this.exchangeRateCaptor.getValue().target());
 		Mockito.verify(gatewaysAO).setGatewayParameters(Arrays.asList(gatewayParameter));
-		Mockito.verify(gatewaysAO, Mockito.never()).assign(Mockito.any(Collection.class));
+		@SuppressWarnings("rawtypes")
+		ArgumentCaptor<Collection> collectionCapture = ArgumentCaptor.forClass(Collection.class);
+		Mockito.verify(gatewaysAO).assign(collectionCapture.capture());
+		
+		Assert.assertEquals(1,collectionCapture.getValue().size());
+		Assert.assertEquals(Gateway.CentralBankExchangeRates, ((Entry<?,?>)collectionCapture.getValue().stream().findAny().get()).getKey());
+		Assert.assertEquals(lastUpdateDate, ((Entry<?,?>)collectionCapture.getValue().stream().findAny().get()).getValue());
+		Mockito.verify(exchangeRateService).exchangeRateOrReverse(Mockito.any(ExchangeRate.class));
 	
 	}
 	
